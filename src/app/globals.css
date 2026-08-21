@@ -1,29 +1,279 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --foreground: #ede7dd;
-  --noir: #050505;
-  --charcoal: #17171899;
-  --gold: #c6a15b;
-  --gold-soft: #c6a15b66;
-  --cream: #ede7dd;
+  --ink: #000000;
+  --paper: #ffffff;
+  --gold: #c6a664;
+  /* --gold is only ~2:1 on paper. This is the variant for gold TEXT on the
+     light closing sections; keep --gold for fills and for text on ink. */
+  --gold-on-light: #6f5622;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-noir: var(--noir);
-  --color-charcoal: #1a1a1a;
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
   --color-gold: var(--gold);
-  --color-gold-soft: var(--gold-soft);
-  --color-cream: var(--cream);
-  --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-serif-display);
+  --color-gold-on-light: var(--gold-on-light);
+  --font-display: var(--font-display);
+  --font-ui: var(--font-ui);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 14px;
 }
+
+/* ── CTA: underline only, no fills ────────────────────────────────────
+   Replaces the rounded/bordered/filled buttons across every section.
+   Bold, spaced-out label sitting close over a single continuous rule.
+
+   On hover the gold rule sweeps the full width left to right while the
+   glyphs lift and swap — each letter a beat behind the last via `--d`
+   (set per index in cta-link.tsx), so the word reads as a wave.
+
+   `.cta-link--dark` is for the closing section, on --paper rather than --ink. */
+.cta-link {
+  --cut: 0.32em; /* letter-spacing; also the trailing gap trimmed off the rule */
+  position: relative;
+  display: inline-flex;
+  font-family: var(--font-ui), sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: var(--cut);
+  text-transform: uppercase;
+  color: var(--paper);
+  transition: color 0.3s ease;
+}
+.cta-link:hover {
+  color: var(--gold);
+}
+.cta-link--dark {
+  color: var(--ink);
+}
+.cta-link--dark:hover {
+  color: var(--gold-on-light);
+}
+
+/* The rule lives here, spanning the whole label. `right: var(--cut)` trims
+   the trailing letter-spacing so the line stops under the last glyph
+   rather than floating past it. */
+.cta-link-chars {
+  position: relative;
+  display: inline-flex;
+  padding-bottom: 6px;
+}
+.cta-link-chars::before,
+.cta-link-chars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: var(--cut);
+  bottom: 0;
+  height: 1px;
+}
+.cta-link-chars::before {
+  background: currentColor;
+  opacity: 0.45;
+}
+.cta-link-chars::after {
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.cta-link--dark .cta-link-chars::after {
+  background: var(--gold-on-light);
+}
+.cta-link:hover .cta-link-chars::after {
+  transform: scaleX(1);
+}
+
+.cta-link-char {
+  display: inline-block;
+}
+/* position:relative so the stacked duplicate resolves `top:100%` against the
+   clip box itself. */
+.cta-link-char-clip {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2;
+}
+.cta-link-char-line {
+  display: block;
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--d);
+}
+.cta-link-char-line + .cta-link-char-line {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+.cta-link:hover .cta-link-char-line {
+  transform: translateY(-100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-link-chars::after,
+  .cta-link-char-line {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
+}
+
+/* ── Scroll reveals ───────────────────────────────────────────────────
+   Two motions, one gate. Both are *opt-in only once JS is confirmed
+   running*: the `reveal-ready` class is set on <html> by the reveal
+   hook, so with JS broken or slow the content is simply visible and
+   nothing can ship stranded at opacity 0. A timeout in the hook also
+   force-reveals anything the observer never fires for.
+
+   TEXT — by word, borrowing the CTA's hover mechanic: each word sits in
+   its own clip box and rises from below the baseline, one beat behind
+   the last. Same curve and step as the CTA so the page has one motion
+   vocabulary rather than two.
+
+   PLATES — a double wipe opening from the centre line outward, top and
+   bottom halves travelling in opposite directions at once
+   (inset(50% ...) → inset(0)). */
+/* The display headings run leading as tight as 0.82, so a clip box sized by
+   the line box would cut the ascenders and the tail of every "g". The
+   padding opens the box out to the glyph box (and past the italic
+   overhang); the matching negative margin keeps the word's footprint —
+   and, because overflow!=visible puts the baseline on the bottom margin
+   edge, its baseline — exactly where it was. Travel is 140% rather than
+   100% so the word still clears that enlarged box before it is hidden. */
+.reveal-word {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.3em 0.12em;
+  margin: -0.3em -0.12em;
+}
+.reveal-word > span {
+  display: inline-block;
+  will-change: transform;
+}
+.reveal-plate {
+  clip-path: inset(0);
+}
+
+html.reveal-ready [data-reveal]:not(.is-revealed) .reveal-word > span {
+  transform: translateY(140%);
+}
+html.reveal-ready [data-reveal] .reveal-word > span {
+  transition: transform 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--d, 0ms);
+}
+html.reveal-ready .reveal-plate:not(.is-revealed) {
+  clip-path: inset(50% 0 50% 0);
+}
+html.reveal-ready .reveal-plate {
+  transition: clip-path 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--d, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.reveal-ready [data-reveal]:not(.is-revealed) .reveal-word > span,
+  html.reveal-ready .reveal-plate:not(.is-revealed) {
+    transform: none;
+    clip-path: inset(0);
+  }
+  html.reveal-ready [data-reveal] .reveal-word > span,
+  html.reveal-ready .reveal-plate {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
+}
+
+/* ── Plain fade-up ────────────────────────────────────────────────────
+   For the one or two caption rows where running the per-word mechanic
+   would read as fussiness. A keyframe rather than a class-toggled
+   transition, so it runs on first paint and can never strand content. */
+@keyframes arca-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.arca-rise {
+  animation: arca-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arca-rise {
+    animation: none;
+  }
+}
+
+/* Custom scrollbar: black track, white handle. Lenis drives the real
+   document scroll, so the native scrollbar stays visible and is worth
+   styling. `scrollbar-color` covers Firefox; the ::-webkit rules cover
+   Chromium and Safari. */
+html {
+  scrollbar-color: var(--paper) var(--ink);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--ink);
+}
+
+/* Past frame 1421 (the white iris fully covers the screen — see
+   WhiteDotOverlay), the page is light for the rest of the scroll, so the
+   scrollbar flips: white track, black handle. */
+html.light-scroll {
+  scrollbar-color: var(--ink) var(--paper);
+}
+
+html.light-scroll::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+
+html.light-scroll::-webkit-scrollbar-thumb {
+  background: var(--ink);
+  border-color: var(--paper);
+}
+
+html.light-scroll::-webkit-scrollbar-corner {
+  background: var(--paper);
+}
+
+/* Lenis — keep native smooth-scroll from fighting it on programmatic jumps */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+html.lenis {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+

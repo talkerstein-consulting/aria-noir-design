@@ -1,36 +1,44 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import { Bodoni_Moda } from "next/font/google";
+import { Libre_Bodoni, Manrope } from "next/font/google";
 import "./globals.css";
-import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
-const sans = Manrope({
-  variable: "--font-geist-sans",
+const libreBodoni = Libre_Bodoni({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const serifDisplay = Bodoni_Moda({
-  variable: "--font-serif-display",
+const manrope = Manrope({
+  variable: "--font-ui",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: "Aria Noir",
-  description: "Cinematic eyewear for people who have moved beyond logos and into private taste.",
+  description: "Eyewear, carved not assembled.",
 };
+
+/**
+ * Runs before first paint. Reveal animations only arm themselves once this
+ * has marked the document — so if JS is off or fails to load, every
+ * heading and plate renders plainly visible instead of staying at the
+ * start of an animation that will never run.
+ */
+const ARM_REVEALS = `document.documentElement.classList.add("reveal-ready")`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${serifDisplay.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${libreBodoni.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-noir text-cream">
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
-      </body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: ARM_REVEALS }} />
+      </head>
+      <body className="min-h-full bg-ink text-paper">{children}</body>
     </html>
   );
 }
