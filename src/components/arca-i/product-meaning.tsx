@@ -6,10 +6,17 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  * The "Arca" definition — plate right, text left.
  *
  * The WHOLE SECTION is sticky at exactly one viewport tall. It pins the
- * moment its top reaches 0 and then never moves again: because its
- * containing block is <main>, which runs to the end of the page, there is
- * always more scroll left for it to stay stuck to. Nothing here animates
- * out and nothing here scrolls away.
+ * moment its top reaches 0 and holds there while the sections after it
+ * ride over the top of it. Nothing here animates out and nothing here
+ * scrolls away under its own power.
+ *
+ * How long it holds is decided by the wrapper around it in the page file,
+ * NOT here — a sticky element pins until the bottom of its containing
+ * block. That wrapper is deliberately short (this section, the band and
+ * the spec), because a sticky element with no wrapper takes <main> as its
+ * containing block and stays pinned behind every later section to the end
+ * of the page, showing through anything transparent. Read the note there
+ * before changing this section's height.
  *
  * What ends it is the next section simply arriving. ProductBand and every
  * section after it sit at z-index 36+ against this one's 35, in ordinary

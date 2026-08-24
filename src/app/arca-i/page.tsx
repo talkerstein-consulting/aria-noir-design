@@ -41,9 +41,30 @@ export default function ArcaOnePage() {
         <ProductOpening />
         <ProductAriaNoir />
         <ProductShoot />
-        <ProductMeaning />
-        <ProductBand />
-        <ProductSpec />
+        {/* This wrapper is the sticky Arca definition's LEASH.
+            ProductMeaning is `sticky top-0`, and a sticky element stays
+            pinned to the bottom of its containing block — which, with no
+            wrapper, was <main>, i.e. the rest of the page. It therefore sat
+            behind every later section forever, and showed through the one
+            section that is deliberately transparent: the closing block,
+            which has no background of its own because the white beneath it
+            is meant to be the iris. That is what exposed the Latin plate
+            under the closing heading.
+
+            Bounding it here lets it pin through the band and the spec —
+            long enough for both to have covered it completely — and then
+            release while it is still hidden, so nothing is behind the
+            closing block but the page's own black.
+
+            `relative` with no z-index is load-bearing: it makes this a
+            containing block WITHOUT making it a stacking context, so the
+            z-indices of the three sections inside still compare against
+            the rest of the page rather than being trapped in here. */}
+        <div className="relative">
+          <ProductMeaning />
+          <ProductBand />
+          <ProductSpec />
+        </div>
         <ProductOffering />
         <ProductVariations />
         <ProductReferences />
