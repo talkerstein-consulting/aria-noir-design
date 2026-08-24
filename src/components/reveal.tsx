@@ -9,8 +9,24 @@ import {
   type ReactNode,
 } from "react";
 
-/** Per-word stagger, in ms — matches the CTA's per-letter step in feel. */
-const STEP_MS = 60;
+/** Per-word stagger, in ms. Deliberately short: the stagger is multiplied
+ *  by the word count, so it is what actually decides when a heading
+ *  FINISHES. At 60ms a twelve-word heading spent 660ms staggering before
+ *  its last word even began to move, which is what made long headings
+ *  arrive late however fast the individual words travelled. */
+const STEP_MS = 26;
+
+/** Where a reveal commits, as a multiple of viewport height measured to the
+ *  element's TOP.
+ *
+ *  Above 1 on purpose — this fires while the element is still BELOW the
+ *  fold, so the animation is already running by the time it is first
+ *  visible. The brief is that text is fully displayed by the time it
+ *  reaches the middle of the screen: an element entering at the bottom
+ *  edge only travels half a viewport to get there, so a reveal that waits
+ *  for it to be on screen has already lost. Starting 25% of a viewport
+ *  early buys that distance back. */
+const COMMIT_AT = 1.25;
 
 /**
  * Reveals run off THREE independent triggers, deliberately overlapping.
@@ -53,11 +69,10 @@ function reveal(el: Element) {
   if (pending.size === 0) stopListening();
 }
 
-/** Slightly inset at the foot so a plate commits once it is properly in,
- *  not the instant its first pixel clips the bottom edge. */
+/** Commits while the element is still short of the fold — see COMMIT_AT. */
 function isOnScreen(el: Element) {
   const r = el.getBoundingClientRect();
-  return r.top < window.innerHeight * 0.92 && r.bottom > 0;
+  return r.top < window.innerHeight * COMMIT_AT && r.bottom > 0;
 }
 
 function sweep() {
@@ -87,7 +102,12 @@ function observe(el: Element) {
       (entries) => {
         for (const e of entries) if (e.isIntersecting) reveal(e.target);
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.01 },
+      /* Positive bottom margin GROWS the root box downward past the fold,
+         so the observer reports an intersection before the element is
+         actually visible — the IO equivalent of COMMIT_AT. It was negative
+         before, which did the exact opposite and held the reveal back
+         until the element was already 8% inside the viewport. */
+      { rootMargin: "0px 0px 25% 0px", threshold: 0.01 },
     );
     observer.observe(el);
   }

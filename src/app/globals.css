@@ -257,15 +257,24 @@ html.light-scroll body::after {
 html.reveal-ready [data-reveal]:not(.is-revealed) .reveal-word > span {
   transform: translateY(140%);
 }
+/* 0.45s, down from 0.75s. Combined with the shorter per-word step in
+   reveal.tsx, a twelve-word heading now completes in ~0.74s instead of
+   ~1.41s — inside the time it takes that heading to travel from where it
+   commits (a quarter-viewport below the fold) to the middle of the
+   screen at any ordinary scroll speed. */
 html.reveal-ready [data-reveal] .reveal-word > span {
-  transition: transform 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   transition-delay: var(--d, 0ms);
 }
 html.reveal-ready .reveal-plate:not(.is-revealed) {
   clip-path: inset(50% 0 50% 0);
 }
+/* Brought down from 1.15s alongside the text. The two share a trigger, so
+   leaving the plate long would have had headings landing in 0.45s next to
+   images still wiping open a second later — one motion vocabulary is the
+   whole point of these two using the same curve family. */
 html.reveal-ready .reveal-plate {
-  transition: clip-path 1.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: clip-path 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--d, 0ms);
 }
 
