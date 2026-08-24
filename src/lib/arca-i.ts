@@ -113,18 +113,17 @@ export const spec = {
         "Every edge is finished by hand after cutting. It's slower. It's also the only way the edge actually looks the way acetate is supposed to look.",
     },
   ],
+  /* Four plates only, one per subject — bridge, temple hinge, temple face,
+     nose. The fuller macro set doubled up on the same detail from adjacent
+     angles (inner-left / inner-left-2, inner-right / -2 / -full), which read
+     as a contact sheet rather than a specification. spec-macro-bridge and
+     spec-macro-ltemple are deliberately out: both repeat a subject already
+     covered here. */
   macro: [
-    { src: `${P}/spec-macro-bridge.jpg`, alt: "Macro detail of the keyhole bridge" },
     { src: `${P}/spec-macro-keyhole.jpg`, alt: "Macro of the keyhole bridge, artsy light" },
-    { src: `${P}/spec-macro-ltemple.jpg`, alt: "Macro detail of the left temple" },
     { src: `${P}/spec-macro-inner-left.jpg`, alt: "Macro of the inner left temple detail" },
-    { src: `${P}/spec-macro-inner-left-2.jpg`, alt: "Macro of the inner left temple detail, alternate angle" },
     { src: `${P}/spec-macro-rtemple.jpg`, alt: "Macro detail of the right temple" },
-    { src: `${P}/spec-macro-inner-right.jpg`, alt: "Macro of the inner right temple detail" },
-    { src: `${P}/spec-macro-inner-right-2.jpg`, alt: "Macro of the inner right temple detail, alternate angle" },
-    { src: `${P}/spec-macro-inner-right-full.jpg`, alt: "Macro of the right temple, full detail" },
     { src: `${P}/spec-macro-nose.jpg`, alt: "Macro of the bridge at nose level, front on" },
-    { src: `${P}/spec-macro-keyhole-wear.jpg`, alt: "Macro of the keyhole bridge, showing wear and tear" },
   ],
 };
 

@@ -22,6 +22,15 @@ export function ProductOffering() {
         </p>
 
         <RevealPlate className="relative aspect-[3/2] w-full touch-none overflow-hidden">
+          {/* The frame is black and so is the page. This halo gives it
+              somewhere to sit — a pool of light the object stands in,
+              rather than a cut-out floating on nothing. Two stops: a warm
+              gold core at very low alpha, fading to nothing well inside
+              the plate edge so it never shows a seam against the section. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 [background:radial-gradient(58%_58%_at_50%_46%,rgba(198,166,100,0.16)_0%,rgba(198,166,100,0.06)_38%,rgba(0,0,0,0)_72%)]"
+          />
           <ProductModel />
         </RevealPlate>
 

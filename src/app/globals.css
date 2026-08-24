@@ -25,6 +25,101 @@ body {
   font-size: 14px;
 }
 
+/* ── Global grain ─────────────────────────────────────────────────────
+   One fixed film layer over the whole site, so the dark sections stop
+   reading as flat #000 and the gradients (the meaning section's bleed,
+   the white-dot handoff) lose their banding.
+
+   Fixed rather than tiled per-section: the grain must NOT travel with the
+   scroll, or it stops being film and starts being texture painted onto
+   the content. Generated with feTurbulence inline so it costs no request
+   and no decode.
+
+   Normal blending, not overlay/soft-light — both of those resolve to
+   nothing over pure black, which is most of this site.
+
+   The tile is drawn at 200px and painted at 200px, 1:1. Downscaling a
+   noise tile (the earlier 160→72) averages neighbouring pixels and turns
+   grain into a soft haze, which is why it read as almost nothing.
+
+   MOTION: the layer is oversized by 200px on every side and animated with
+   `transform`, never `background-position`. Transform is composited on the
+   GPU, so the grain can flicker at ~14fps over a full-bleed video without
+   forcing a repaint of the page under it; the oversize is what keeps the
+   translation from dragging an empty edge into view. `steps(1, end)`
+   makes each keyframe SNAP rather than tween — film grain jumps between
+   frames, it does not slide. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -200px;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  will-change: transform;
+  animation: grain-drift 0.7s steps(1, end) infinite;
+}
+
+/* Ten stops, all well under the 200px oversize. The offsets are irregular
+   on purpose — an even walk reads as a pattern sliding, which is exactly
+   the thing film grain never does. */
+@keyframes grain-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  10% {
+    transform: translate3d(-27px, -41px, 0);
+  }
+  20% {
+    transform: translate3d(-63px, 19px, 0);
+  }
+  30% {
+    transform: translate3d(31px, -55px, 0);
+  }
+  40% {
+    transform: translate3d(-49px, 63px, 0);
+  }
+  50% {
+    transform: translate3d(57px, 25px, 0);
+  }
+  60% {
+    transform: translate3d(-13px, -67px, 0);
+  }
+  70% {
+    transform: translate3d(69px, -29px, 0);
+  }
+  80% {
+    transform: translate3d(-71px, 47px, 0);
+  }
+  90% {
+    transform: translate3d(21px, 71px, 0);
+  }
+}
+
+/* The light half of the page needs the grain darker, not lighter — the
+   same layer at the same alpha would wash out against --paper. */
+html.light-scroll body::after {
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+}
+
+/* Flickering noise is a genuine problem for photosensitivity and for
+   motion sensitivity both, so this drops the movement entirely rather
+   than slowing it — and eases the alpha back, since a still layer at
+   full strength reads heavier than a moving one. */
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    animation: none;
+    opacity: 0.07;
+  }
+  html.light-scroll body::after {
+    opacity: 0.1;
+  }
+}
+
 /* ── CTA: underline only, no fills ────────────────────────────────────
    Replaces the rounded/bordered/filled buttons across every section.
    Bold, spaced-out label sitting close over a single continuous rule.

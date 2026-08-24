@@ -7,16 +7,21 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  * specification. One line of type, bottom-left, over the widest plate in
  * the set — the page needs somewhere to stop talking.
  *
- * Pulled up over the meaning section with a negative top margin, so this
- * plate physically slides over that section's lower half as the page
- * scrolls rather than simply following it — the "acetate, cut and
- * polished" line lands as the next thing covering the last, not the next
- * thing after it. A top-edge shadow sells the plate as sitting above the
- * section beneath it rather than just abutting it.
+ * This is the section that ENDS the pinned "Arca" definition before it —
+ * not by any margin or scroll trick, but simply by outranking it. That
+ * section is `sticky` at z-index 35 and stays put forever; this one is in
+ * ordinary flow at z-index 37, so it scrolls up the page as normal and
+ * passes over the top of it. The negative margin this section used to
+ * carry is gone: with a genuinely pinned section behind it, overlapping
+ * is the default behaviour rather than something to be arranged.
+ *
+ * `bg-ink` is therefore load-bearing, not decoration — without it the
+ * pinned definition would read straight through this plate's letterboxing.
+ * The top-edge shadow sells the plate as sitting above what it covers.
  */
 export function ProductBand() {
   return (
-    <section className="relative z-[37] -mt-[18vh] h-[70svh] min-h-[420px] overflow-hidden bg-ink shadow-[0_-40px_60px_-20px_rgba(0,0,0,0.6)] sm:-mt-[26vh] sm:h-[85svh]">
+    <section className="relative z-[37] h-[70svh] min-h-[420px] overflow-hidden bg-ink shadow-[0_-40px_60px_-20px_rgba(0,0,0,0.6)] sm:h-[85svh]">
       <RevealPlate className="absolute inset-0">
         <Image
           src={detail.image}

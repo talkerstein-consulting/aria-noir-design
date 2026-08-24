@@ -1,7 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AtelierSection } from "./atelier-section";
 import { CollectionsSection } from "./collections-section";
 import { GridSection } from "./grid-section";
@@ -9,26 +8,17 @@ import { WhiteDotOverlay } from "./white-dot-overlay";
 import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
 import { SiteNav } from "./site-nav";
-import { CtaLink } from "@/components/cta-link";
-import { opening, sectionTwo, product } from "@/lib/content";
+import { opening, sectionTwo } from "@/lib/content";
 import {
   F,
   FRAMES_PER_VH,
   RUNWAY_VH,
   EXIT_VH,
-  MODEL_Y_OFF,
-  PRODUCT_RISE_VH,
   VIDEO_REST_SCALE,
   VIDEO_REST_LIFT_VH,
   H2_GAP_VH,
 } from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
-import type { ModelDrive } from "./model-scene";
-
-const ModelScene = dynamic(
-  () => import("./model-scene").then((m) => m.ModelScene),
-  { ssr: false },
-);
 
 /* ---------- opening ----------
    One rAF loop writing straight to the DOM. Nothing goes through React state
@@ -63,8 +53,6 @@ const NAV_CENTER_Y = 40; // px from top
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-const easeInOutCubic = (t: number) =>
-  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 /** The JS equivalent of cubic-bezier(0.83, 0, 0.17, 1). */
 const easeInOutQuint = (t: number) =>
   t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
@@ -102,14 +90,6 @@ export function Experience() {
   const logoWrap = useRef<HTMLDivElement>(null);
   const logoMark = useRef<HTMLImageElement>(null);
   const headGroup = useRef<HTMLDivElement>(null);
-  const modelWrap = useRef<HTMLDivElement>(null);
-  const productWrap = useRef<HTMLDivElement>(null);
-
-  const drive = useRef<ModelDrive>({ rotY: 0, posY: MODEL_Y_OFF });
-  const invalidateRef = useRef<(() => void) | null>(null);
-  const onInvalidateReady = useCallback((fn: () => void) => {
-    invalidateRef.current = fn;
-  }, []);
 
   /* ---------- opening: one rAF loop, direct DOM writes ---------- */
   useEffect(() => {
@@ -198,20 +178,18 @@ export function Experience() {
       const headIn = clamp01(
         (frame - F.h2Start) / (F.videoShrinkEnd - F.h2Start),
       );
+      /* The heading used to hold until F.productStart, because the ARCA I
+         block was what replaced it. With that block gone it leaves WITH the
+         video instead — same two frames — so the section ends as one motion
+         rather than the type outliving the thing it was captioning. */
       const headOut = clamp01(
-        (frame - F.productStart) / (F.h2FadeEnd - F.productStart),
+        (frame - F.modelStart) / (F.modelEntryEnd - F.modelStart),
       );
+      /* The model and the ARCA I block are both gone from this page, but
+         F.modelStart still times the video's exit — so `entry` stays,
+         driving the video off screen on its own. */
       const entry = easeOutCubic(
         clamp01((frame - F.modelStart) / (F.modelEntryEnd - F.modelStart)),
-      );
-      const mp = clamp01((frame - F.modelStart) / (F.modelEnd - F.modelStart));
-      const prodIn = clamp01(
-        (frame - F.productStart) / (F.productFull - F.productStart),
-      );
-      const shift = easeInOutCubic(
-        clamp01(
-          (frame - F.sceneShiftStart) / (F.sceneShiftEnd - F.sceneShiftStart),
-        ),
       );
 
       /* ---- video ---- */
@@ -239,21 +217,6 @@ export function Experience() {
         const heroW = Math.min(HERO_LOGO_W, window.innerWidth * 0.72);
         logoMark.current.style.width = `${heroW - logoP * (heroW - NAV_LOGO_W)}px`;
       }
-
-      /* ---- ARCA I: rises in, then scrolls up and off ---- */
-      if (productWrap.current) {
-        productWrap.current.style.opacity = String(prodIn);
-        const riseVh = (1 - easeOutCubic(prodIn)) * PRODUCT_RISE_VH;
-        productWrap.current.style.transform = `translateY(${riseVh - shift * 120}vh)`;
-      }
-
-      /* ---- model travels up with the scene ---- */
-      if (modelWrap.current) {
-        modelWrap.current.style.transform = `translateY(${-shift * 120}vh)`;
-      }
-      drive.current.posY = MODEL_Y_OFF * (1 - entry);
-      drive.current.rotY = mp * Math.PI * 2;
-      invalidateRef.current?.();
     };
 
     onScroll();
@@ -393,31 +356,6 @@ export function Experience() {
             </p>
           ))}
         </div>
-      </div>
-
-      {/* ---------- 3D model ---------- */}
-      <div ref={modelWrap} className="pointer-events-none fixed inset-0 z-20">
-        <ModelScene drive={drive} onInvalidateReady={onInvalidateReady} />
-      </div>
-
-      {/* ---------- ARCA I block ---------- */}
-      <div
-        ref={productWrap}
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex flex-col items-center gap-4 px-8 pb-16 text-center will-change-transform"
-        style={{ opacity: 0, transform: `translateY(${PRODUCT_RISE_VH}vh)` }}
-      >
-        <h2 className="font-display text-5xl tracking-tight text-paper sm:text-7xl">
-          {product.heading}
-        </h2>
-        <p className="font-ui text-xs tracking-[0.25em] text-gold uppercase">
-          {product.subheading}
-        </p>
-        <p className="max-w-xl font-ui text-sm leading-relaxed text-paper/70">
-          {product.body}
-        </p>
-        <CtaLink href="#acquire" className="pointer-events-auto mt-2">
-          {product.cta}
-        </CtaLink>
       </div>
 
       <main className="relative">

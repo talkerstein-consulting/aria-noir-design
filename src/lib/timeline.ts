@@ -12,9 +12,13 @@
  */
 
 export const FRAMES_PER_VH = 100;
-/* Ends 20 frames after sceneShiftEnd — just enough to land the handoff
-   without leaving a dead stretch of empty scrolling. */
-export const RUNWAY_VH = 640;
+/* The home page's choreography now ends at F.modelEntryEnd (380) — the
+   frame the video finishes leaving — because the 3D model and the ARCA I
+   block that used to run to frame 620 have both been removed from it. The
+   runway is sized to that beat plus 40 frames to land the handoff; leaving
+   it at the old 640 would have stranded ~2.5 viewports of empty black
+   between the video exiting and the collections section arriving. */
+export const RUNWAY_VH = 420;
 
 /** One vertical rhythm for every flow section, so the gaps between them read
  *  as a single system rather than per-section guesses. */
