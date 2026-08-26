@@ -35,6 +35,24 @@
   color: var(--fg-primary);
   transition: color var(--dur-fast) ease;
 }
+/* Tailwind v4 resets `button` to `cursor: default` — a deliberate change
+   from v3, on the reasoning that a native button is not a link. That is
+   defensible for a form control inside a page of text and wrong for this
+   site: the header's Menu control, the footer's sitemap tabs and the
+   newsletter's submit are buttons, they are the primary things on their
+   band, and a word with a rule under it is already only barely announcing
+   itself as an object. Losing the pointer takes away the last cue that it
+   can be pressed at all.
+
+   Declared on every interactive recipe rather than on `button` globally,
+   so the rule follows the OBJECTS and a disabled control can still opt
+   out. */
+.cta,
+.link-quiet,
+.field-submit {
+  cursor: pointer;
+}
+
 .cta:hover,
 .cta:focus-visible {
   color: var(--fg-accent);

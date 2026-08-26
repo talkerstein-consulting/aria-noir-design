@@ -276,15 +276,44 @@ html.lenis {
    Two states, set from the ground the page declares beneath the band.
    `dark` is the default and the fallback, because the site is ink for most
    of its length and an undeclared section should fail safe to legible. */
+/* The header declares a GROUND, not a colour.
+
+   It used to set `color` alone, which is only half the contract and the
+   half that does not reach the things inside it. Every recipe on this site
+   resolves `--fg-*` rather than inheriting — that indirection is the whole
+   reason a CTA does not need to be told which half of the page it is on —
+   so a header that only flipped `color` left its own two controls reading
+   the BODY's dark ramp no matter what was underneath the band. Over the
+   white iris that is white type on white: the nav did not fade, it
+   disappeared, and it took the one control that reopens the menu with it.
+
+   Same declarations as `.on-ink` / `.on-paper`, because that is what these
+   two states are — the header is a section like any other, it just works
+   out its ground by looking rather than by being told. */
 .site-nav {
-  color: var(--paper);
+  color: var(--text-primary-dark);
+  --fg-primary: var(--text-primary-dark);
+  --fg-secondary: var(--text-secondary-dark);
+  --fg-tertiary: var(--text-tertiary-dark);
+  --fg-quiet: var(--text-quiet-dark);
+  --fg-accent: var(--text-accent-dark);
+  --fg-rule: var(--rule-dark);
   transition:
     color var(--dur-fast) var(--ease-out),
     opacity 0.7s var(--ease-out);
 }
 .site-nav[data-tone="light"] {
-  color: var(--ink);
+  color: var(--text-primary-light);
+  --fg-primary: var(--text-primary-light);
+  --fg-secondary: var(--text-secondary-light);
+  --fg-tertiary: var(--text-tertiary-light);
+  --fg-quiet: var(--text-quiet-light);
+  --fg-accent: var(--text-accent-light);
+  --fg-rule: var(--rule-light);
 }
+/* The wordmark is an inline SVG painted with `currentColor`, so it follows
+   the ground for free — but only because the rule above sets `color` as
+   well as the tokens. Both, not either. */
 
 
 /* ── Return-visit wipe ────────────────────────────────────────────────

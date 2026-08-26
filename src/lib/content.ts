@@ -59,29 +59,27 @@ export const atelier = {
 export const collections = {
   preheader: "The Collections",
   heading: [
-    { text: "Three houses,", italic: true },
+    { text: "Six houses,", italic: true },
     { text: "ONE HAND.", italic: false },
   ],
-  items: [
-    {
-      name: "ARCA I",
-      meta: "01 — Block acetate",
-      image: "/images/arca-i/object-front.jpg",
-      /** The only collection panel with a page of its own, so far. */
-      href: "/arca-i",
-      cta: "View ARCA I",
-    },
-    {
-      name: "PATRIARCA",
-      meta: "02 — Titanium",
-      image: "/images/plate-09-patriarca.jpg",
-    },
-    {
-      name: "AHAVA",
-      meta: "03 — Solid gold",
-      image: "/images/plate-10-ahava.jpg",
-    },
-  ],
+  /**
+   * The panels themselves are built from `houses` in lib/navigation — see
+   * collections-section.tsx. ALL SIX of them, in the order they were cut.
+   *
+   * They used to be three hand-written objects here, and they had drifted
+   * badly: the heading said three houses when the bench cuts six,
+   * PATRIARCA was labelled "Titanium" and AHAVA "Solid gold". Neither is
+   * true — every house is acetate, and the gold is the hardware set into
+   * it. That is not a typo, it is the home page describing a different
+   * company's catalogue on the one screen most readers will ever see.
+   *
+   * Copy that restates a fact the catalogue already holds will always end
+   * up disagreeing with it, so the names, the materials and the
+   * destinations are read rather than written. Nothing about the set is
+   * decided here any more, which is why there is no list left in this
+   * file: "six houses" is not an editorial choice, it is how many there
+   * are.
+   */
 };
 
 export const gallery = {
