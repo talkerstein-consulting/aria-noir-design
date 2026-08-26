@@ -100,6 +100,15 @@ export function Experience() {
     let done = false;
     const start = performance.now();
 
+    /* Return visit: the opening has already been seen this session, so it
+       is skipped entirely and the black wipe in the markup below covers
+       the handover instead. Set before paint by the boot script in
+       layout.tsx — reading it here rather than from state is the whole
+       point, since state would arrive a frame too late to stop the
+       counter from showing. */
+    const revisit =
+      document.documentElement.classList.contains("revisit");
+
     /* rAF is paused in background tabs and throttled hard under low-power /
        heavy load. Without this, a starved loop would never reach OPENING_MS
        and the scroll lock below would never lift — leaving the visitor stuck
@@ -112,6 +121,11 @@ export function Experience() {
       setLive(true);
       document.body.style.overflow = "";
     };
+    if (revisit) {
+      finish();
+      return;
+    }
+
     const failsafe = window.setTimeout(finish, OPENING_MS + 500);
 
     const tick = (now: number) => {
@@ -230,6 +244,14 @@ export function Experience() {
 
   return (
     <>
+      {/* ---------- return-visit wipe ----------
+          Inert on a first load: the CSS keeps it out of the document
+          unless <html> carries `revisit`, so the opening choreography
+          owns the screen alone. On every load after that it is the whole
+          transition — one black panel already covering the viewport,
+          travelling up and off. */}
+      <div className="opening-wipe" aria-hidden />
+
       {/* ---------- video ---------- */}
       <div
         className={`pointer-events-none fixed inset-0 flex items-center justify-center ${

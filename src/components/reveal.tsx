@@ -150,7 +150,9 @@ function useReveal<T extends Element>() {
   return ref;
 }
 
-type Segment = { text: string; italic?: boolean };
+/** A run of a heading set in one style. Exported because the content
+ *  modules now type their own mixed roman/italic headings against it. */
+export type Segment = { text: string; italic?: boolean };
 
 type RevealTextProps = {
   /** Rendered element — the caller owns the semantics (h1/h2/p/…). */

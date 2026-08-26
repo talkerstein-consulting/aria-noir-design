@@ -53,7 +53,9 @@ export function FinaleSection() {
          Giving this section bg-paper would put a hard horizontal edge at the
          section boundary, cutting the black off in a straight line instead of
          letting the circle be the only transition. */
-      className="relative z-[38] overflow-hidden px-6 pt-[29vh] pb-32 text-ink sm:px-10 sm:pb-48"
+      /* `on-paper` declares the ground: it is what the type recipes read,
+         and it is what the fixed nav probes to know it must go dark here. */
+      className="on-paper relative z-[38] overflow-hidden px-6 pt-[29vh] pb-32 text-ink sm:px-10 sm:pb-48"
     >
       {/* ---- quote zone: the trail's full extent ---- */}
       <div className="relative">

@@ -1,0 +1,381 @@
+/* ══ ARIA NOIR — INTERACTION SYSTEM ═══════════════════════════════════
+   Every interactive thing on this site is one of THREE objects. There
+   are no buttons: no fills, no borders, no pills, no radii. An action
+   is a word with a rule under it, and the rule is what moves.
+
+     1. .cta          the primary action — label + sweeping rule
+     2. .link-quiet   nav, footer, list links — colour shift only
+     3. .field        the one input (footer newsletter) — a baseline
+
+   All three read `--fg-*` from the section's `.on-ink` / `.on-paper`
+   ground, so a CTA does not need to be told which half of the page it
+   is on. That is what `variant="dark"` used to do by hand.
+
+   HOVER IS NOT THE ONLY STATE. :focus-visible is treated as a
+   first-class state throughout — the build had none, and a gold-on-
+   black underline that only appears for a mouse is not navigable. */
+
+/* ── 1. The CTA ──────────────────────────────────────────────────────
+   Bold spaced label sitting close over a single continuous rule. On
+   hover the accent rule sweeps the full width left to right while the
+   glyphs lift and swap, each letter a beat behind the last (`--d`, set
+   per index in cta-link.tsx), so the word reads as a wave rather than
+   a jump-cut. */
+.cta {
+  --cut: var(
+    --track-eyebrow
+  ); /* letter-spacing; also the trailing gap trimmed off the rule */
+  position: relative;
+  display: inline-flex;
+  font-family: var(--font-ui-stack);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: var(--cut);
+  text-transform: uppercase;
+  color: var(--fg-primary);
+  transition: color var(--dur-fast) ease;
+}
+.cta:hover,
+.cta:focus-visible {
+  color: var(--fg-accent);
+}
+.cta:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+
+/* The rule lives here, spanning the whole label. `right: var(--cut)`
+   trims the trailing letter-spacing so the line stops under the last
+   glyph rather than floating past it. */
+.cta-chars {
+  position: relative;
+  display: inline-flex;
+  padding-bottom: var(--cta-gap);
+}
+.cta-chars::before,
+.cta-chars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: var(--cut);
+  bottom: 0;
+  height: var(--rule-weight);
+}
+.cta-chars::before {
+  background: currentColor;
+  opacity: 0.45;
+}
+.cta-chars::after {
+  background: var(--fg-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-inout);
+}
+.cta:hover .cta-chars::after,
+.cta:focus-visible .cta-chars::after {
+  transform: scaleX(1);
+}
+
+.cta-char {
+  display: inline-block;
+}
+/* position:relative so the stacked duplicate resolves `top:100%`
+   against the clip box itself. */
+.cta-char-clip {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2;
+}
+.cta-char-line {
+  display: block;
+  transition: transform var(--dur-base) var(--ease-inout);
+  transition-delay: var(--d);
+}
+.cta-char-line + .cta-char-line {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+.cta:hover .cta-char-line,
+.cta:focus-visible .cta-char-line {
+  transform: translateY(-100%);
+}
+
+/* Current page, in the menu stack. Not a new colour and not a new
+   underline — it simply holds the CTA's own accent rule permanently
+   swept, so "you are here" is said in the object's existing language
+   rather than in a second one invented for it. The glyphs do NOT lift:
+   the lift is the answer to a pointer, and a word that arrives already
+   shuffled has nothing left to do on hover. */
+.cta--here .cta-chars::after {
+  transform: scaleX(1);
+}
+
+/* ── Bare CTA — the wave without the rule ────────────────────────────
+   The header chrome and the menu stack. In both places the CTA is the
+   only object on its ground, so the rule is not separating it from
+   anything; it is a line drawn under the site's own furniture, and six
+   of them stacked down the middle of the menu read as a form. The lift
+   and the colour shift remain, which is the affordance doing its job.
+   `--cut` is zeroed off the trailing edge only, so nothing reflows. */
+.cta--bare .cta-chars {
+  padding-bottom: 0;
+}
+.cta--bare .cta-chars::before,
+.cta--bare .cta-chars::after {
+  display: none;
+}
+
+/* ── The flip ────────────────────────────────────────────────────────
+   MENU → CLOSE → MENU, and the second arrow is the same motion as the
+   first.
+
+   The naive version is a boolean: hold the lift open while the panel is
+   up, drop it when the panel closes. That gives you a swap on the way in
+   and a REWIND on the way out — CLOSE sinks back down and MENU comes
+   back from above, which reads as an undo rather than as the control
+   changing its mind. A toggle should feel identical in both directions,
+   because the reader is doing the identical thing.
+
+   So the flip always travels the same way: the label lifts, and once it
+   has landed the component silently re-stacks — the word that just
+   arrived becomes the top line, the word that just left becomes the new
+   bottom line — with transitions off for that one frame. The next click
+   lifts again, upward, from rest. There is no "back".
+
+   AT REST THE LOWER LINE IS THE SAME WORD. That is what keeps hover
+   ordinary: a pointer over MENU gets the house's standard glyph
+   shuffle — the letters lift and swap into a duplicate of themselves —
+   exactly as every other CTA on the site does. The word only ever
+   changes when the control is actually pressed. A hover that previewed
+   CLOSE would be the button announcing a state change for a gesture
+   that does not cause one.
+
+   The other word is dealt onto the lower line at the START of a click,
+   during the same suppressed frame that returns the label to rest, and
+   is dealt away again when the flip lands. `is-flipping` holds the
+   hover lift off for exactly that window — otherwise a pointer resting
+   on the control (already lifted, already showing the duplicate) would
+   have the incoming word appear underneath it with no travel at all. */
+.cta--flip.is-flipping:hover .cta-char-line,
+.cta--flip.is-flipping:focus-visible .cta-char-line {
+  transform: none;
+}
+.cta--flip.is-lifted .cta-char-line,
+.cta--flip.is-lifted:hover .cta-char-line,
+.cta--flip.is-lifted:focus-visible .cta-char-line {
+  transform: translateY(-100%);
+}
+/* The arm and the re-stack frames. Without this the label animates its
+   way back to rest and you watch the whole thing slide at speed. */
+.cta--flip.is-instant .cta-char-line {
+  transition: none;
+}
+
+/* Current page, in a bare stack. With no rule to hold swept, "you are
+   here" is said in the accent colour instead — still the object's own
+   vocabulary, still exactly one of them on the page. */
+.cta--bare.cta--here {
+  color: var(--fg-accent);
+}
+
+/* Secondary CTA: same mechanics, quieter voice. For the second action
+   in a section, where two full-weight CTAs would fight. */
+.cta--quiet {
+  font-weight: 500;
+  font-size: var(--text-eyebrow);
+  color: var(--fg-tertiary);
+}
+
+/* ── Chrome voice ────────────────────────────────────────────────────
+   The header's two controls. They are `--quiet` for SIZE — the eyebrow
+   step, which is what keeps the header's proportions — but they are not
+   quiet in weight or tone: they are the only two words in the band and
+   they should read as firmly as the wordmark between them. Bold, and
+   full-strength foreground rather than tertiary. */
+.cta--strong {
+  font-weight: 700;
+  color: var(--fg-primary);
+}
+
+/* ── Legacy ground overrides ─────────────────────────────────────────
+   `.cta--dark` is what the `variant="dark"` prop maps to. It is now
+   just a ground declaration — identical to putting `.on-paper` on the
+   section — kept because the closing block sets its ground on the CTA
+   rather than on its wrapper. */
+.cta--dark {
+  --fg-primary: var(--text-primary-light);
+  --fg-accent: var(--text-accent-light);
+  --fg-tertiary: var(--text-tertiary-light);
+}
+
+/* ── 2. Quiet links ──────────────────────────────────────────────────
+   Footer columns, legal line, socials, nav. No rule, no motion beyond
+   colour — these are wayfinding, not invitations, and giving them the
+   CTA's wave would flatten the difference between "read this" and
+   "buy this". */
+.link-quiet {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-sm);
+  color: var(--fg-secondary);
+  transition: color var(--dur-fast) ease;
+}
+.link-quiet:hover,
+.link-quiet:focus-visible {
+  color: var(--fg-primary);
+}
+.link-quiet--accent:hover,
+.link-quiet--accent:focus-visible {
+  color: var(--fg-accent);
+}
+.link-quiet--micro {
+  font-size: var(--text-eyebrow);
+  color: var(--fg-quiet);
+}
+
+/* Everything focusable gets the same ring. Offset, hairline, accent —
+   it is the underline rule doing a lap around the word. */
+.link-quiet:focus-visible,
+.field:focus-visible,
+.field-submit:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── 3. The field ────────────────────────────────────────────────────
+   One input on the site. It is a baseline with type on it — the
+   underline the CTA uses, standing still. */
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  transition: border-color var(--dur-fast) ease;
+}
+.field-row:focus-within {
+  border-bottom-color: var(--fg-accent);
+}
+.field {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-sm);
+  color: var(--fg-primary);
+}
+.field::placeholder {
+  color: var(--fg-quiet);
+}
+.field:focus {
+  outline: none; /* the row's rule is the focus affordance */
+}
+.field-submit {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-sm);
+  color: var(--fg-primary);
+  transition:
+    color var(--dur-fast) ease,
+    transform var(--dur-fast) var(--ease-out);
+}
+.field-submit:hover,
+.field-submit:focus-visible {
+  color: var(--fg-accent);
+  transform: translateX(3px); /* the arrow leans into the direction it means */
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────
+   Colour still changes — that is information, not decoration. Only the
+   travel is dropped. */
+@media (prefers-reduced-motion: reduce) {
+  .cta-chars::after,
+  .cta-char-line,
+  .field-submit {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
+  .field-submit:hover,
+  .field-submit:focus-visible {
+    transform: none;
+  }
+}
+
+/* ── The turntable stage ─────────────────────────────────────────────
+   Two small pieces of state the rAF loop drives through attributes and
+   a class, because writing a style per item per frame across nine items
+   would be nine layout reads the loop does not need.
+
+   Every name is in the DOM. The loop only says WHICH — so the page has
+   nine readable house names in its markup for a crawler and for anyone
+   whose WebGL never starts, and exactly one of them on screen. */
+.stage-name-item {
+  display: none;
+}
+.stage-name[data-idx="0"] .stage-name-item[data-i="0"],
+.stage-name[data-idx="1"] .stage-name-item[data-i="1"],
+.stage-name[data-idx="2"] .stage-name-item[data-i="2"],
+.stage-name[data-idx="3"] .stage-name-item[data-i="3"],
+.stage-name[data-idx="4"] .stage-name-item[data-i="4"],
+.stage-name[data-idx="5"] .stage-name-item[data-i="5"],
+.stage-name[data-idx="6"] .stage-name-item[data-i="6"],
+.stage-name[data-idx="7"] .stage-name-item[data-i="7"],
+.stage-name[data-idx="8"] .stage-name-item[data-i="8"] {
+  display: block;
+}
+
+/* The stepper. A ring per house, filled for the one you are on — the
+   same hairline-and-gold vocabulary the rest of the site uses, at the
+   smallest size it survives. */
+.stage-step {
+  width: 7px;
+  height: 7px;
+  border: var(--rule-weight) solid var(--fg-primary);
+  border-radius: 50%;
+  opacity: 0.4;
+  position: relative;
+  transition:
+    opacity var(--dur-slow) ease,
+    border-color var(--dur-slow) ease;
+}
+.stage-step::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  background: var(--fg-accent);
+  transform: scale(0);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.stage-step.is-on {
+  opacity: 1;
+  border-color: var(--fg-accent);
+}
+.stage-step.is-on::after {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-step,
+  .stage-step::after {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* The turntable's scroll length. One unit per house plus one for the
+   intro; the section's own height is what paces a turn, and progress is
+   normalised against it, so this is a comfort dial rather than a
+   correctness one.
+
+   115vh a turn is right with a wheel under your hand. On a phone it is
+   six and a half screens of thumb per frame, which turns an index into a
+   chore — so the unit drops and the whole sequence gets shorter. */
+.model-stage {
+  height: calc(var(--stage-units) * 115vh + 100vh);
+}
+@media (max-width: 767px) {
+  .model-stage {
+    height: calc(var(--stage-units) * 78vh + 100vh);
+  }
+}

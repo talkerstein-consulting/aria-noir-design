@@ -1,0 +1,222 @@
+/* ══ ARIA NOIR — TYPE & LAYOUT RECIPES ════════════════════════════════
+   The class strings that were being retyped section to section, named
+   once. Each of these existed already, verbatim, in three to eleven
+   places; the only change is that it now lives in one.
+
+   COLOUR IS NOT BAKED IN. Every recipe inherits `color`, because half
+   these sections run on --ink and half on --paper. Set the ground with
+   `.on-ink` / `.on-paper` on the section, then the recipes resolve
+   themselves. That is the whole trick that lets the same heading class
+   work on both sides of the white iris. */
+
+/* ── Ground ──────────────────────────────────────────────────────────
+   Declaring the ground once per section is what makes every recipe
+   below portable. `--fg-*` are the indirection layer; the recipes only
+   ever read these, never the raw ramp. */
+.on-ink {
+  color: var(--text-primary-dark);
+  --fg-primary: var(--text-primary-dark);
+  --fg-secondary: var(--text-secondary-dark);
+  --fg-tertiary: var(--text-tertiary-dark);
+  --fg-quiet: var(--text-quiet-dark);
+  --fg-accent: var(--text-accent-dark);
+  --fg-rule: var(--rule-dark);
+}
+.on-paper {
+  color: var(--text-primary-light);
+  --fg-primary: var(--text-primary-light);
+  --fg-secondary: var(--text-secondary-light);
+  --fg-tertiary: var(--text-tertiary-light);
+  --fg-quiet: var(--text-quiet-light);
+  --fg-accent: var(--text-accent-light);
+  --fg-rule: var(--rule-light);
+}
+/* The body is dark ground, so anything not inside a declared section
+   still resolves rather than falling back to nothing. */
+body {
+  --fg-primary: var(--text-primary-dark);
+  --fg-secondary: var(--text-secondary-dark);
+  --fg-tertiary: var(--text-tertiary-dark);
+  --fg-quiet: var(--text-quiet-dark);
+  --fg-accent: var(--text-accent-dark);
+  --fg-rule: var(--rule-dark);
+}
+
+/* ── Display ─────────────────────────────────────────────────────────
+   Fluid, so one class replaces each `text-5xl sm:text-7xl md:text-8xl`
+   chain. Four steps, and they are far apart on purpose. */
+.t-display-hero,
+.t-display-xl,
+.t-display-lg,
+.t-display-md,
+.t-display-xs {
+  font-family: var(--font-display-stack);
+  letter-spacing: var(--track-display);
+  color: var(--fg-primary);
+  text-wrap: balance;
+}
+/* Product hero only. Display leading keeps tightening as type grows —
+   at this size the name is set solid and then some. */
+.t-display-hero {
+  font-size: var(--display-hero);
+  line-height: var(--leading-display-hero);
+}
+.t-display-xl {
+  font-size: var(--display-xl);
+  line-height: var(--leading-display-xl);
+}
+.t-display-lg {
+  font-size: var(--display-lg);
+  line-height: var(--leading-display-lg);
+}
+.t-display-md {
+  font-size: var(--display-md);
+  line-height: var(--leading-display-md);
+}
+
+/* The bottom of the display scale. Unlike `t-quote` it is NOT italic as a
+   whole — it exists for lines that mix roman and italic per word, which a
+   blanket font-style would flatten. */
+.t-display-xs {
+  font-size: var(--display-xs);
+  line-height: var(--leading-display-xs);
+}
+
+/* The italic serif aside — used where the page speaks in its own voice
+   rather than describing a product. Never set in Manrope. */
+.t-quote {
+  font-family: var(--font-display-stack);
+  font-size: var(--display-sm);
+  line-height: var(--leading-display-quote);
+  font-style: italic;
+  color: var(--fg-primary);
+  text-wrap: balance;
+}
+
+/* ── Eyebrow ─────────────────────────────────────────────────────────
+   The most-repeated object on the site: 11px Manrope, 0.35em, upper,
+   gold. It is the label that opens nearly every section. */
+.t-eyebrow {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--fg-accent);
+}
+/* The quieter variant, for when an eyebrow sits next to gold already
+   spent elsewhere in the section and a second gold would compete. */
+.t-eyebrow--quiet {
+  color: var(--fg-tertiary);
+}
+
+/* ── Body ────────────────────────────────────────────────────────────
+   Manrope, generous leading, secondary weight, and ALWAYS measured —
+   the max-width is part of the recipe, not an afterthought at the call
+   site, which is why body copy never runs edge to edge here. */
+.t-body {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body);
+  letter-spacing: var(--track-body);
+  color: var(--fg-secondary);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+@media (min-width: 640px) {
+  .t-body {
+    font-size: var(--text-body);
+  }
+}
+/* The lede that opens the light half — one step up, and it is the only
+   place body type is allowed to grow. */
+.t-body--lede {
+  font-size: var(--text-body);
+}
+@media (min-width: 640px) {
+  .t-body--lede {
+    font-size: var(--text-body-lg);
+  }
+}
+.t-body--tight {
+  max-width: var(--measure-tight);
+}
+.t-body--wide {
+  max-width: var(--measure-wide);
+}
+
+/* ── Small print ─────────────────────────────────────────────────────*/
+.t-caption {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-caption);
+  line-height: var(--leading-body);
+  color: var(--fg-quiet);
+  max-width: var(--measure-tight);
+  text-wrap: pretty;
+}
+.t-label {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+}
+.t-micro {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  color: var(--fg-quiet);
+}
+/* Prices, spec figures, frame counts — anything numeric that must not
+   jitter as it changes. */
+.t-figure {
+  font-family: var(--font-ui-stack);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--display-md);
+  color: var(--fg-primary);
+}
+
+/* ── Section shell ───────────────────────────────────────────────────
+   The vertical rhythm and page gutter, as one class instead of
+   `px-6 sm:px-10 py-32 sm:py-48` retyped per section. */
+.section {
+  padding-inline: var(--gutter);
+  padding-block: var(--section-pad);
+}
+@media (min-width: 640px) {
+  .section {
+    padding-inline: var(--gutter-wide);
+    padding-block: var(--section-pad-wide);
+  }
+}
+.section--flush {
+  padding-block: 0;
+}
+
+/* Vertical stacks. The gap steps are the same four the build already
+   uses; naming them stops the drift between gap-5, gap-6 and gap-7 that
+   reads as sloppiness at these type sizes. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-md);
+}
+.stack--sm {
+  gap: var(--stack-sm);
+}
+.stack--lg {
+  gap: var(--stack-lg);
+}
+.stack--xl {
+  gap: var(--stack-xl);
+}
+.stack--2xl {
+  gap: var(--stack-2xl);
+}
+
+/* A hairline. Every rule on this site is 1px at ramp opacity — there
+   are no heavier borders anywhere, and there should not be. */
+.hairline {
+  border: 0;
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}

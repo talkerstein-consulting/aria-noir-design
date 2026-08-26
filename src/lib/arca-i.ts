@@ -7,20 +7,44 @@
  * narrative. Plates live in public/images/arca-i/ and are named for what
  * they show, not for where they sit, so a section can be re-ordered without
  * renaming files.
+ *
+ * The exports here are typed against lib/product.ts — the shape every
+ * product page reads. That file is what lets ARCA II reuse these sections
+ * rather than fork them.
  */
+
+import type {
+  AriaNoir,
+  Close,
+  Detail,
+  Hero,
+  Meaning,
+  Offering,
+  Opening,
+  References,
+  Shoot,
+  Spec,
+  Variations,
+  Worn,
+} from "./product";
 
 const P = "/images/arca-i";
 
-export const hero = {
+export const hero: Hero = {
   eyebrow: "The First Vessel",
   name: "ARCA I",
-  line: "The ark. The vessel. The first name in the house's bloodline.",
+  /** Mixed treatment, matching the atelier masthead: italic lowercase
+   *  against roman caps. */
+  line: [
+    { text: "The ark. The vessel.", italic: true },
+    { text: "THE FIRST NAME IN THE HOUSE'S BLOODLINE.", italic: false },
+  ],
   image: `${P}/hero-arca.jpg`,
   alt: "ARCA I, amber-lit portrait, layered foreground — the campaign's climax frame",
-  meta: ["K Black · Z White · Proceso Brown · 309 Blue", "Hand-cut acetate", "Enter the Registry"],
+  video: "/video/arca-i-hero.mp4",
 };
 
-export const structure = {
+export const structure: Opening = {
   preheader: "The Structure",
   heading: "This building decided, decades ago, exactly how it feels about light.",
   body: [
@@ -33,9 +57,14 @@ export const structure = {
   ],
 };
 
-export const ariaNoir = {
+export const ariaNoir: AriaNoir = {
   preheader: "Aria / Noir",
-  heading: "Every house needs two people to carry it before it can carry anything else.",
+  /** Mixed treatment, matching the atelier masthead: italic lowercase
+   *  against roman caps. */
+  heading: [
+    { text: "Every house needs two people to carry it", italic: true },
+    { text: "BEFORE IT CAN CARRY ANYTHING ELSE.", italic: false },
+  ],
   body: [
     "Hers is Aria — a single voice, unaccompanied, asked to hold a room's attention alone. His is Noir — the color a shadow keeps even at noon, in a hallway the sun never fully reaches.",
     "The house gave them these names, and they carry them exactly the way this building carries its concrete — as fact, not costume.",
@@ -46,7 +75,7 @@ export const ariaNoir = {
   ],
 };
 
-export const shoot = {
+export const shoot: Shoot = {
   preheader: "The Shoot",
   heading: "We shot at the hour the concrete does its best work.",
   body: [
@@ -64,7 +93,7 @@ export const shoot = {
   },
 };
 
-export const meaning = {
+export const meaning: Meaning = {
   image: `${P}/meaning-longcoat.jpg`,
   alt: "Long coat, bespoke shot at the building's door",
   eyebrow: "Arca",
@@ -73,13 +102,13 @@ export const meaning = {
     "It is the first name in the house's bloodline. Ahava, Monarca, Matriarca, Patriarca — all descend from this root. Before a sovereign, a mother, or a father, there was only the vessel that got everyone there.",
 };
 
-export const detail = {
+export const detail: Detail = {
   image: `${P}/detail-ribbon-dress.jpg`,
   alt: "Black ribbon dress portrait, close",
   line: "Acetate, cut and polished the way concrete is poured and finished — one material, shaped once, standing on its own terms.",
 };
 
-export const spec = {
+export const spec: Spec = {
   preheader: "The Specs",
   heading: "What it's made of.",
   rows: [
@@ -127,7 +156,7 @@ export const spec = {
   ],
 };
 
-export const offering = {
+export const offering: Offering = {
   preheader: "The Offering",
   name: "ARCA I",
   tagline: "The first vessel. The house's founding model.",
@@ -136,11 +165,11 @@ export const offering = {
   cta: "Enter the Registry",
   registryNote:
     "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever. This is where your house record begins.",
+  /* The only house with a turntable in the pool. */
+  view: { kind: "model" },
 };
 
-type Colorway = { name: string; swatch: string; image?: string; alt?: string };
-
-export const variations = {
+export const variations: Variations = {
   preheader: "The Variations",
   heading: "Four colorways. One building. Each one found the corner of the structure that already agreed with it.",
   colorways: [
@@ -148,15 +177,15 @@ export const variations = {
     { name: "Z White", swatch: "#e8e5df" },
     { name: "Proceso Brown", swatch: "#4a3626" },
     { name: "309 Blue", swatch: "#1f2c3d" },
-  ] satisfies Colorway[] as Colorway[],
+  ],
 };
 
-export const references = {
+export const references: References = {
   label: "References",
   names: ["Whistler", "La Tour", "Hopper", "Atget"],
 };
 
-export const worn = {
+export const worn: Worn = {
   preheader: "Worn",
   heading: [
     { text: "Every house", italic: true },
@@ -188,7 +217,7 @@ export const worn = {
   ],
 };
 
-export const close = {
+export const close: Close = {
   heading: "Worn by those the city never sees.",
   body: "This is the first door into the house. There are others.",
   cta: "Enter the Registry",

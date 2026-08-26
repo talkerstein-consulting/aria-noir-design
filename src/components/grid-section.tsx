@@ -6,7 +6,7 @@ import { gallery } from "@/lib/content";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 import { SECTION_PAD } from "@/lib/timeline";
 import { CtaLink } from "@/components/cta-link";
-import { RevealText, RevealPlate } from "@/components/reveal";
+import { RevealText, RevealPlate, type Segment } from "@/components/reveal";
 
 /** All columns reach their final position at this progress — together. */
 const SETTLE_AT = 0.68;
@@ -22,7 +22,29 @@ const EPS = 0.0002;
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-export function GridSection() {
+type GridContent = {
+  preheader: string;
+  /** Plain, or segments where the heading mixes roman and italic. */
+  heading: string | readonly Segment[];
+  cta: string;
+  columns: readonly (readonly string[])[];
+};
+
+type GridSectionProps = {
+  /** Defaults to the home page's gallery. The lookbook passes its own set. */
+  content?: GridContent;
+  /** Where the CTA goes. */
+  href?: string;
+  /** WhiteDotOverlay anchors its handoff to this id, so a page running its
+   *  own iris must give this section an id that page's overlay names. */
+  id?: string;
+};
+
+export function GridSection({
+  content = gallery,
+  href = "#gallery",
+  id = "gallery",
+}: GridSectionProps = {}) {
   const wrap = useRef<HTMLDivElement>(null);
   const cols = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -76,36 +98,44 @@ export function GridSection() {
     <section
       ref={wrap}
       /* WhiteDotOverlay anchors its handoff to this section's extent */
-      id="gallery"
+      id={id}
       /* deliberately deeper side margins than the rest of the page — the
          curtain wants more air either side than a standard gutter gives */
-      className={`relative z-[37] bg-ink px-8 sm:px-20 lg:px-40 ${SECTION_PAD}`}
+      className={`relative z-[37] bg-ink px-6 sm:px-20 lg:px-40 ${SECTION_PAD}`}
     >
       {/* preheader + heading + CTA */}
       <div className="mx-auto mb-24 flex max-w-4xl flex-col items-center gap-6 text-center sm:mb-32">
         <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
-          {gallery.preheader}
+          {content.preheader}
         </p>
         <RevealText
           as="h2"
-          text={gallery.heading}
+          text={content.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl"
         />
-        <CtaLink href="#gallery" className="mt-4">
-          {gallery.cta}
+        <CtaLink href={href} className="mt-4">
+          {content.cta}
         </CtaLink>
       </div>
 
       {/* 3-column curtain — equal photo counts, so it always rests aligned;
           the only difference between columns is how fast they fall */}
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-10 gap-y-16 sm:grid-cols-3 sm:gap-x-14 lg:gap-x-20">
-        {gallery.columns.map((col, i) => (
+      {/* THREE columns at every width. It was `grid-cols-2` below sm, which
+          quietly broke the whole object: the curtain is three vertical
+          stacks, so a two-column grid wrapped the third stack onto a second
+          row — two columns side by side and an orphan hanging underneath,
+          each still translating at its own speed. A curtain with a piece
+          fallen off it. Narrower tiles are the correct trade. */}
+      <div className="mx-auto grid max-w-6xl grid-cols-3 gap-x-3 sm:gap-x-14 lg:gap-x-20">
+        {content.columns.map((col, i) => (
           <div
             key={i}
             ref={(el) => {
               cols.current[i] = el;
             }}
-            className="flex flex-col gap-10 will-change-transform sm:gap-14 lg:gap-20"
+            /* the in-column gap tracks the tile width, or a phone reads as
+               three sparse ribbons rather than one dense curtain */
+            className="flex flex-col gap-3 will-change-transform sm:gap-14 lg:gap-20"
             style={{ transform: `translateY(${TRAVEL_VH[i]}vh)` }}
           >
             {col.map((src, j) => (
@@ -118,7 +148,7 @@ export function GridSection() {
                   src={src}
                   alt=""
                   fill
-                  sizes="(min-width: 640px) 30vw, 45vw"
+                  sizes="30vw"
                   /* crop in slightly: several plates run bright right to
                      the edge, which reads as a pale border around the tile */
                   className="scale-[1.06] object-cover"

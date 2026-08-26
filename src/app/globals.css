@@ -1,27 +1,12 @@
 @import "tailwindcss";
-
-:root {
-  --ink: #000000;
-  --paper: #ffffff;
-  --gold: #c6a664;
-  /* --gold is only ~2:1 on paper. This is the variant for gold TEXT on the
-     light closing sections; keep --gold for fills and for text on ink. */
-  --gold-on-light: #6f5622;
-}
-
-@theme inline {
-  --color-ink: var(--ink);
-  --color-paper: var(--paper);
-  --color-gold: var(--gold);
-  --color-gold-on-light: var(--gold-on-light);
-  --font-display: var(--font-display);
-  --font-ui: var(--font-ui);
-}
+@import "../styles/tokens.css";
+@import "../styles/typography.css";
+@import "../styles/interactions.css";
 
 body {
   background: var(--ink);
   color: var(--paper);
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display-stack);
   font-size: 14px;
 }
 
@@ -120,104 +105,6 @@ html.light-scroll body::after {
   }
 }
 
-/* ── CTA: underline only, no fills ────────────────────────────────────
-   Replaces the rounded/bordered/filled buttons across every section.
-   Bold, spaced-out label sitting close over a single continuous rule.
-
-   On hover the gold rule sweeps the full width left to right while the
-   glyphs lift and swap — each letter a beat behind the last via `--d`
-   (set per index in cta-link.tsx), so the word reads as a wave.
-
-   `.cta-link--dark` is for the closing section, on --paper rather than --ink. */
-.cta-link {
-  --cut: 0.32em; /* letter-spacing; also the trailing gap trimmed off the rule */
-  position: relative;
-  display: inline-flex;
-  font-family: var(--font-ui), sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: var(--cut);
-  text-transform: uppercase;
-  color: var(--paper);
-  transition: color 0.3s ease;
-}
-.cta-link:hover {
-  color: var(--gold);
-}
-.cta-link--dark {
-  color: var(--ink);
-}
-.cta-link--dark:hover {
-  color: var(--gold-on-light);
-}
-
-/* The rule lives here, spanning the whole label. `right: var(--cut)` trims
-   the trailing letter-spacing so the line stops under the last glyph
-   rather than floating past it. */
-.cta-link-chars {
-  position: relative;
-  display: inline-flex;
-  padding-bottom: 6px;
-}
-.cta-link-chars::before,
-.cta-link-chars::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: var(--cut);
-  bottom: 0;
-  height: 1px;
-}
-.cta-link-chars::before {
-  background: currentColor;
-  opacity: 0.45;
-}
-.cta-link-chars::after {
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-}
-.cta-link--dark .cta-link-chars::after {
-  background: var(--gold-on-light);
-}
-.cta-link:hover .cta-link-chars::after {
-  transform: scaleX(1);
-}
-
-.cta-link-char {
-  display: inline-block;
-}
-/* position:relative so the stacked duplicate resolves `top:100%` against the
-   clip box itself. */
-.cta-link-char-clip {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  height: 1.2em;
-  line-height: 1.2;
-}
-.cta-link-char-line {
-  display: block;
-  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-  transition-delay: var(--d);
-}
-.cta-link-char-line + .cta-link-char-line {
-  position: absolute;
-  top: 100%;
-  left: 0;
-}
-.cta-link:hover .cta-link-char-line {
-  transform: translateY(-100%);
-}
-@media (prefers-reduced-motion: reduce) {
-  .cta-link-chars::after,
-  .cta-link-char-line {
-    transition-duration: 0.01ms;
-    transition-delay: 0ms;
-  }
-}
-
 /* ── Scroll reveals ───────────────────────────────────────────────────
    Two motions, one gate. Both are *opt-in only once JS is confirmed
    running*: the `reveal-ready` class is set on <html> by the reveal
@@ -263,7 +150,7 @@ html.reveal-ready [data-reveal]:not(.is-revealed) .reveal-word > span {
    commits (a quarter-viewport below the fold) to the middle of the
    screen at any ordinary scroll speed. */
 html.reveal-ready [data-reveal] .reveal-word > span {
-  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform var(--dur-base) var(--ease-inout);
   transition-delay: var(--d, 0ms);
 }
 html.reveal-ready .reveal-plate:not(.is-revealed) {
@@ -274,7 +161,7 @@ html.reveal-ready .reveal-plate:not(.is-revealed) {
    images still wiping open a second later — one motion vocabulary is the
    whole point of these two using the same curve family. */
 html.reveal-ready .reveal-plate {
-  transition: clip-path 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: clip-path var(--dur-reveal) var(--ease-out);
   transition-delay: var(--d, 0ms);
 }
 
@@ -306,7 +193,7 @@ html.reveal-ready .reveal-plate {
   }
 }
 .arca-rise {
-  animation: arca-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: arca-rise var(--dur-scene) var(--ease-out) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .arca-rise {
@@ -381,3 +268,62 @@ html.lenis {
   overflow: clip;
 }
 
+/* ── Nav tone ─────────────────────────────────────────────────────────
+   Replaces `mix-blend-difference` on the header. See site-nav.tsx for why
+   the blend had to go: difference maps a mid-grey backdrop to mid-grey
+   type, which is the one result that cannot be read at all.
+
+   Two states, set from the ground the page declares beneath the band.
+   `dark` is the default and the fallback, because the site is ink for most
+   of its length and an undeclared section should fail safe to legible. */
+.site-nav {
+  color: var(--paper);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    opacity 0.7s var(--ease-out);
+}
+.site-nav[data-tone="light"] {
+  color: var(--ink);
+}
+
+
+/* ── Return-visit wipe ────────────────────────────────────────────────
+   The counter-and-expanding-video opening runs once per session. Every
+   load after it is covered by this instead: a black panel that is already
+   over the viewport at first paint and leaves upward, so the page is
+   never seen assembling itself but nobody sits through the full sequence
+   twice.
+
+   `display: none` by default is load-bearing — on a first load the panel
+   must not exist at all, or it would sit on top of the choreography it is
+   meant to replace. */
+.opening-wipe {
+  display: none;
+}
+html.revisit .opening-wipe {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--ink);
+  pointer-events: none;
+  transform-origin: top;
+  animation: opening-wipe-up 0.72s var(--ease-inout-strong) forwards;
+}
+@keyframes opening-wipe-up {
+  /* Holds for a beat first: leaving immediately means the wipe is already
+     gone before a slower connection has painted anything behind it, which
+     is the exact flash of half-built page it exists to hide. */
+  0%,
+  22% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.revisit .opening-wipe {
+    animation-duration: 0.01s;
+  }
+}

@@ -44,3 +44,15 @@ next-env.d.ts
 # raw source assets — not part of the deployed site, far too large to track
 /Final Assets/
 /Prior Models-20260817T221702Z-1-001/
+
+# Source assets, not site assets.
+# `3d models/` is 873MB of Blender project files — the ORIGINALS the
+# turntable meshes are exported from. The web-ready glTF that the site
+# actually loads is committed (public/models/houses); the .blend set is a
+# working directory, and scripts/export-models.mjs is the reproducible path
+# from one to the other.
+/3d models/
+
+# Downloaded bundles: the reference deploy the turntable was lifted from
+# (34MB) and a design-system export. Neither is built from this repo.
+/*.zip

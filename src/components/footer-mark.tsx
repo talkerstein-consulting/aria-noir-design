@@ -65,7 +65,13 @@ export function FooterMark() {
   return (
     <div
       ref={ref}
-      className="mt-24 aspect-[1320/309] w-full text-ink [&_svg]:h-full [&_svg]:w-full"
+      /* The colour comes from the ground, not from a hardcoded token. The
+         fetched SVG's `white` is rewritten to `currentColor` above, so this
+         one declaration is what decides whether the mark is drawn in ink or
+         in paper — and it was `text-ink` until the footer learned to be
+         black, at which point it was a black wordmark on a black footer:
+         three hundred pixels of nothing closing every page on the site. */
+      className="mt-24 aspect-[1320/309] w-full text-[var(--fg-primary)] [&_svg]:h-full [&_svg]:w-full"
       role="img"
       aria-label="Aria Noir"
       {...(markup ? { dangerouslySetInnerHTML: { __html: markup } } : {})}

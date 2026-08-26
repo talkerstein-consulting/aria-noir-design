@@ -3,18 +3,19 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { WhiteDotOverlay } from "@/components/white-dot-overlay";
-import { ProductHero } from "@/components/arca-i/product-hero";
-import { ProductOpening } from "@/components/arca-i/product-opening";
-import { ProductAriaNoir } from "@/components/arca-i/product-aria-noir";
-import { ProductShoot } from "@/components/arca-i/product-shoot";
-import { ProductMeaning } from "@/components/arca-i/product-meaning";
-import { ProductBand } from "@/components/arca-i/product-band";
-import { ProductSpec } from "@/components/arca-i/product-spec";
-import { ProductOffering } from "@/components/arca-i/product-offering";
-import { ProductVariations } from "@/components/arca-i/product-variations";
-import { ProductReferences } from "@/components/arca-i/product-references";
-import { ProductWorn } from "@/components/arca-i/product-worn";
-import { ProductClose } from "@/components/arca-i/product-close";
+import { ProductHero } from "@/components/product/product-hero";
+import { ProductOpening } from "@/components/product/product-opening";
+import { ProductAriaNoir } from "@/components/product/product-aria-noir";
+import { ProductShoot } from "@/components/product/product-shoot";
+import { ProductMeaning } from "@/components/product/product-meaning";
+import { ProductBand } from "@/components/product/product-band";
+import { ProductSpec } from "@/components/product/product-spec";
+import { ProductOffering } from "@/components/product/product-offering";
+import { ProductVariations } from "@/components/product/product-variations";
+import { ProductReferences } from "@/components/product/product-references";
+import { ProductWorn } from "@/components/product/product-worn";
+import { ProductClose } from "@/components/product/product-close";
+import * as arca from "@/lib/arca-i";
 
 export const metadata: Metadata = {
   title: "ARCA I — Aria Noir",
@@ -26,7 +27,9 @@ export const metadata: Metadata = {
  * ARCA I product page — built from the home page's own modules (fixed nav,
  * sticky two-column study, curtain grid, white-dot handoff, shared footer)
  * so the two surfaces read as one site rather than one site and a template.
- * Content follows the approved "ARCA I - Product Page Story" copy deck.
+ * Content follows the approved "ARCA I - Product Page Story" copy deck, and
+ * lives entirely in lib/arca-i.ts — the sections themselves are shared with
+ * ARCA II and hold no copy of their own.
  *
  * The dark→light handoff is anchored to the curtain section, matching how
  * the landing page hands over to its own closing block.
@@ -37,10 +40,10 @@ export default function ArcaOnePage() {
       <SmoothScroll />
       <SiteNav />
       <main className="relative">
-        <ProductHero />
-        <ProductOpening />
-        <ProductAriaNoir />
-        <ProductShoot />
+        <ProductHero hero={arca.hero} />
+        <ProductOpening structure={arca.structure} />
+        <ProductAriaNoir ariaNoir={arca.ariaNoir} />
+        <ProductShoot shoot={arca.shoot} />
         {/* This wrapper is the sticky Arca definition's LEASH.
             ProductMeaning is `sticky top-0`, and a sticky element stays
             pinned to the bottom of its containing block — which, with no
@@ -61,16 +64,16 @@ export default function ArcaOnePage() {
             z-indices of the three sections inside still compare against
             the rest of the page rather than being trapped in here. */}
         <div className="relative">
-          <ProductMeaning />
-          <ProductBand />
-          <ProductSpec />
+          <ProductMeaning meaning={arca.meaning} />
+          <ProductBand detail={arca.detail} />
+          <ProductSpec spec={arca.spec} />
         </div>
-        <ProductOffering />
-        <ProductVariations />
-        <ProductReferences />
-        <ProductWorn />
+        <ProductOffering offering={arca.offering} />
+        <ProductVariations variations={arca.variations} />
+        <ProductReferences references={arca.references} />
+        <ProductWorn worn={arca.worn} />
         <WhiteDotOverlay anchorId="worn" />
-        <ProductClose />
+        <ProductClose close={arca.close} />
       </main>
       <SiteFooter />
     </>

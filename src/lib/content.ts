@@ -7,7 +7,10 @@ export const opening = {
 
 export const nav = {
   left: "Menu",
-  right: "Log in",
+  /* "Access", not "Log in". The account surface is a door the house opens
+     for people who already own something; "log in" is what a dashboard
+     says. */
+  right: "Access",
 };
 
 export const sectionTwo = {
@@ -142,20 +145,26 @@ export const typo = {
 };
 
 export const footer = {
-  columns: [
-    {
-      title: "Collections",
-      links: ["Matriarca", "Patriarca", "Ahava", "The Archive"],
-    },
-    { title: "Studio", links: ["About", "Atelier", "Journal", "Contact"] },
-    {
-      title: "Client",
-      links: ["Book a fitting", "Repairs", "Shipping", "Returns"],
-    },
-  ],
+  /* The link columns used to live here as bare strings, all rendered with
+     `href="#"`. They are routes, not copy, so they moved to lib/navigation
+     as `sitemap` — where a link has somewhere to go. */
   newsletterLabel: "Stay in touch with the studio",
   newsletterPlaceholder: "Email address",
-  socials: ["Instagram", "Pinterest", "LinkedIn"],
+  /* One, because one is what the house has. Pinterest and LinkedIn were
+     here as `href="#"` alongside it — the same furniture the link columns
+     were, and just as dead. Add them back the day there is an account to
+     point at. */
+  socials: [
+    {
+      label: "Instagram",
+      href: "https://www.instagram.com/ARIANOIR_OFFICIAL/",
+    },
+  ],
   legal: "© 2026 Aria Noir. All rights reserved.",
-  legalLinks: ["Privacy", "Terms", "Cookies"],
+  legalLinks: [
+    { label: "Privacy", href: "/policies/privacy" },
+    { label: "Terms", href: "/policies/terms" },
+    /* No cookie page exists, and the site sets no cookies to write one
+       about. It was in this list because footers usually have three. */
+  ],
 };
