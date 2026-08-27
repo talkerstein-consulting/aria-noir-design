@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { CtaLink, CtaButton } from "@/components/cta-link";
 import { CartTable } from "@/components/shop/cart-table";
 import { ACCOUNT_URL } from "@/lib/navigation";
@@ -24,16 +23,23 @@ import { useBag } from "@/lib/cart";
 export function RoomView() {
   const { signedIn, set } = useSession();
   const { count } = useBag();
-  const params = useSearchParams();
 
   /* Coming back from the auth flow. Shopify's redirect lands here with
      `?welcome=1`, which is the one moment this origin learns the outcome —
-     see lib/session for why that is a hint about a word and not a
-     credential. */
-  const welcomed = params.get(RETURN_PARAM) === "1";
+     see lib/session for why that is a hint about a word, not a credential.
+     
+     Read from `window.location` inside an effect rather than with
+     `useSearchParams`. That hook opts the whole route out of static
+     prerendering unless it is wrapped in a Suspense boundary, and it
+     failed the production build for exactly that reason — but the query
+     is not needed to RENDER anything here. It sets a flag, once, after
+     mount. Suspending a page over a value nothing renders would be
+     paying for a boundary to hold a place nobody is standing in. */
   useEffect(() => {
+    const welcomed =
+      new URLSearchParams(window.location.search).get(RETURN_PARAM) === "1";
     if (welcomed) set(true);
-  }, [welcomed, set]);
+  }, [set]);
 
   return (
     <>
