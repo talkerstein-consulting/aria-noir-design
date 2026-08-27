@@ -1,134 +1,112 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { sitemap } from "@/lib/navigation";
 
 /**
- * The footer's sitemap, as tabs.
+ * The footer's sitemap. One markup, two objects.
  *
- * Four columns of links is the default footer shape and it is the wrong
- * one here for a specific reason: this footer already carries a newsletter
- * field, a socials row, a legal line and a three-hundred-pixel wordmark. On
- * a phone all of that stacks, and four more columns turn the end of every
- * page into a screen and a half of link list that nobody scrolls to the
- * bottom of. Tabs collapse it to one group at a time — the same links, one
- * fifth of the height, and the group names stay visible so nothing is
- * hidden, only deferred.
+ *   phone   — an FAQ. Four group names stacked down the page, each a rule
+ *             with a word on it; tapping one opens its links and closes
+ *             whichever was open. Nothing is more than one tap deep and the
+ *             footer stays about a screen instead of a screen and a half.
  *
- * ---- The tabs are the CTA's rule, not a control ----
+ *   desktop — four columns, spread across the whole span beside the desk.
+ *             There is nothing to open: every link is already visible,
+ *             because the width to show them is right there and hiding a
+ *             four-word list behind a click on a 1500px screen is an
+ *             interaction charging rent for space it is not saving.
  *
- * There is no pill, no fill and no radius. A tab is a word with a rule
- * under it and the selected one holds the rule lit in accent — which is
- * exactly what `.cta--here` already means in the menu overlay ("you are
- * here"), so the footer is not inventing a fourth interactive object. It
- * is the third one, reused.
+ * ---- Why CSS decides, and JS only follows ----
  *
- * ---- Every link is in the DOM at all times ----
+ * The open/closed state is a `data-open` attribute and the columns are a
+ * media query. That ordering matters: the server renders the accordion
+ * shape, and on a wide screen the stylesheet has already opened everything
+ * before a single line of JS runs — no flash of four collapsed groups, and
+ * no layout that depends on hydration finishing.
  *
- * The hidden panels are `hidden` via an attribute, not unmounted. A
- * sitemap that only renders a quarter of itself is a sitemap that a
- * crawler reads a quarter of, which defeats the point of having one in the
- * footer. This is also why the tabs are a real ARIA tablist with arrow-key
- * roving focus rather than six buttons and some state: a keyboard user
- * should reach the whole map, and `Home`/`End` should do what they do
- * everywhere else.
+ * What JS does after mount is narrower: it asks whether this is the wide
+ * layout and, if so, stops the headers claiming to be buttons. A control
+ * that says `aria-expanded="false"` over a list that is plainly visible is
+ * worse than no control, and that is exactly what a media-query-only
+ * version would announce to a screen reader.
+ *
+ * Every link is in the DOM in both shapes — collapsed, not absent. A
+ * sitemap that renders a quarter of itself is one a crawler reads a
+ * quarter of, which defeats the point of putting it in the footer.
  */
 export function SitemapTabs() {
-  const [active, setActive] = useState(0);
-  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  /** Which group is open on the phone. One at a time, FAQ-style. */
+  const [open, setOpen] = useState(0);
 
-  /* Roving focus. Arrow keys move between tabs and SELECT as they go —
-     correct for tabs whose panels are already in the document, since
-     nothing is fetched or computed by switching. */
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const last = sitemap.length - 1;
-    let next: number | null = null;
-    if (e.key === "ArrowRight") next = active === last ? 0 : active + 1;
-    else if (e.key === "ArrowLeft") next = active === 0 ? last : active - 1;
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = last;
-    if (next === null) return;
-    e.preventDefault();
-    setActive(next);
-    tabs.current[next]?.focus();
-  };
+  /* Starts false so the server and the first client render agree — the
+     stylesheet is what makes the wide layout correct on paint, and this
+     only catches the semantics up afterwards. */
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px)");
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   return (
-    <div className="flex flex-col gap-8">
-      <div
-        role="tablist"
-        aria-label="Sitemap"
-        onKeyDown={onKeyDown}
-        className="flex flex-wrap gap-x-6 gap-y-3"
-      >
-        {sitemap.map((group, i) => {
-          const on = i === active;
-          return (
-            <button
-              key={group.title}
-              ref={(node) => {
-                tabs.current[i] = node;
-              }}
-              type="button"
-              role="tab"
-              id={`sitemap-tab-${i}`}
-              aria-selected={on}
-              aria-controls={`sitemap-panel-${i}`}
-              /* Only the selected tab is in the tab order; the arrow keys
-                 are how you reach the others. That is the tablist
-                 contract, and it is why Tab out of here lands on the first
-                 link rather than walking four buttons first. */
-              tabIndex={on ? 0 : -1}
-              onClick={() => setActive(i)}
-              className={`cta cta--quiet cta--strong ${on ? "cta--here" : ""}`}
-            >
-              <span className="cta-chars">
-                <span className="cta-char">
-                  <span className="cta-char-clip">
-                    <span className="cta-char-line">{group.title}</span>
-                    <span className="cta-char-line" aria-hidden="true">
-                      {group.title}
-                    </span>
-                  </span>
-                </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
+    <div className="sitemap flex flex-col gap-0 sm:flex-row sm:justify-between sm:gap-10">
       {sitemap.map((group, i) => (
-        <ul
+        <div
           key={group.title}
-          role="tabpanel"
-          id={`sitemap-panel-${i}`}
-          aria-labelledby={`sitemap-tab-${i}`}
-          hidden={i !== active}
-          /* Two columns on a phone: these are one or two words each, and a
-             single column of five short links is a lot of vertical for very
-             little ink. */
-          className="grid grid-cols-2 gap-x-6 gap-y-2.5 sm:flex sm:flex-col"
+          className="sitemap-group"
+          data-open={i === open}
         >
-          {group.links.map((link) => (
-            <li key={link.href}>
-              {link.external ? (
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link-quiet"
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <Link href={link.href} className="link-quiet">
-                  {link.label}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
+          {wide ? (
+            <p className="t-eyebrow sitemap-head">{group.title}</p>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setOpen(i === open ? -1 : i)}
+              aria-expanded={i === open}
+              aria-controls={`sitemap-panel-${i}`}
+              className="t-eyebrow sitemap-head sitemap-head--button"
+            >
+              {group.title}
+              {/* A rule that becomes a cross. No chevron: the site has no
+                  icon language, and a plus rotating to an x is the same
+                  hairline the whole page is drawn with. */}
+              <span aria-hidden className="sitemap-sign" />
+            </button>
+          )}
+
+          {/* The grid wrapper is not decoration. `grid-template-rows: 0fr
+              → 1fr` is what opens a list of unknown height without
+              measuring it in JS, and it only sizes the FIRST row — so the
+              thing being collapsed has to be a SINGLE child. Putting the
+              rows on the <ul> itself left every <li> after the first in an
+              auto row, and a "closed" group still stood 92px tall. */}
+          <div id={`sitemap-panel-${i}`} className="sitemap-panel">
+            <ul className="sitemap-list">
+              {group.links.map((link) => (
+                <li key={link.href}>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="link-quiet"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.href} className="link-quiet">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       ))}
     </div>
   );

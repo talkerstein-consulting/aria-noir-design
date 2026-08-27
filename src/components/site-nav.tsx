@@ -6,7 +6,8 @@ import { nav } from "@/lib/content";
 import { AriaWordmark } from "@/components/aria-wordmark";
 import { SiteMenu } from "@/components/site-menu";
 import { CtaLink, CtaButton } from "@/components/cta-link";
-import { ACCOUNT_URL, menu } from "@/lib/navigation";
+import { menu } from "@/lib/navigation";
+import { useSession } from "@/lib/session";
 
 type SiteNavProps = {
   /**
@@ -54,6 +55,7 @@ const PROBE_X = [0.12, 0.5, 0.88];
  * forgets to declare a ground fails safe to the legible option.
  */
 export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
+  const { signedIn } = useSession();
   const ref = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -156,15 +158,24 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
           voice is already the eyebrow size and weight, which is the same
           step `t-label` sat at, so the header keeps its proportions and
           gains the rule and the glyph wave. */}
+        {/* One control, two words. ACCESS to a stranger, ROOM to someone
+            who has been through the door — the destination is the same
+            errand either way, so it is the same control rather than a
+            second one appearing beside it.
+
+            There is deliberately no bag control here. A running cart total
+            in the chrome is a shop shouting about its own till on every
+            page, and this header spends itself on three words and a
+            wordmark. The bag is in the Room, with everything else that
+            belongs to one person. */}
         <CtaLink
-          href={ACCOUNT_URL}
-          external
+          href={signedIn ? "/room" : "/access"}
           tone="quiet"
           bare
           strong
           className="justify-self-start"
         >
-          {nav.right}
+          {signedIn ? nav.room : nav.right}
         </CtaLink>
 
         {showMark ? (

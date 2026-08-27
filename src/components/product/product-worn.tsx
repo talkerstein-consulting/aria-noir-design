@@ -26,7 +26,23 @@ const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
  * The home page's curtain grid, carrying the ARCA I campaign frames. Also
  * the anchor the white-dot handoff measures against, hence the id.
  */
-export function ProductWorn({ worn }: { worn: Worn }) {
+/**
+ * `buyHref` is where the offer actually goes.
+ *
+ * These CTAs pointed at `#acquire`, the closing block at the foot of the
+ * page — whose own CTA also pointed at `#acquire`. Three offers to acquire
+ * the frame, every one of which scrolled you to a fourth offer to acquire
+ * the frame. The page could not sell anything because the site had nowhere
+ * to sell it. `/shop/<slug>` is that place now, so the page hands the
+ * reader to it.
+ */
+export function ProductWorn({
+  worn,
+  buyHref,
+}: {
+  worn: Worn;
+  buyHref: string;
+}) {
   const wrap = useRef<HTMLDivElement>(null);
   const cols = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -90,7 +106,7 @@ export function ProductWorn({ worn }: { worn: Worn }) {
           text={worn.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl"
         />
-        <CtaLink href="#acquire" className="mt-4">
+        <CtaLink href={buyHref} className="mt-4">
           {worn.cta}
         </CtaLink>
       </div>

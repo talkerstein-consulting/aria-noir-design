@@ -19,7 +19,23 @@ import { RevealText } from "@/components/reveal";
  * below. Within that zone it sits above the type, so plates pass over the
  * letterforms rather than under them.
  */
-export function ProductClose({ close }: { close: Close }) {
+/**
+ * `buyHref` is where the offer actually goes.
+ *
+ * These CTAs pointed at `#acquire`, the closing block at the foot of the
+ * page — whose own CTA also pointed at `#acquire`. Three offers to acquire
+ * the frame, every one of which scrolled you to a fourth offer to acquire
+ * the frame. The page could not sell anything because the site had nowhere
+ * to sell it. `/shop/<slug>` is that place now, so the page hands the
+ * reader to it.
+ */
+export function ProductClose({
+  close,
+  buyHref,
+}: {
+  close: Close;
+  buyHref: string;
+}) {
   return (
     <section
       id="acquire"
@@ -43,7 +59,7 @@ export function ProductClose({ close }: { close: Close }) {
         <p className="relative z-30 max-w-xl font-ui text-base leading-relaxed text-pretty text-ink/65 sm:text-lg">
           {close.body}
         </p>
-        <CtaLink href="#acquire" variant="dark" className="relative z-30 mt-4">
+        <CtaLink href={buyHref} variant="dark" className="relative z-30 mt-4">
           {close.cta}
         </CtaLink>
       </div>

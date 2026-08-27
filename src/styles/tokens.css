@@ -48,6 +48,12 @@
   /* --font-display / --font-ui are injected by next/font in layout.tsx */
   --font-display-stack: var(--font-display), Georgia, "Times New Roman", serif;
   --font-ui-stack: var(--font-ui), ui-sans-serif, system-ui, sans-serif;
+  /* Header chrome only — see the note in layout.tsx. The fallbacks are
+     all monospace on purpose: if the webfont never arrives, the control
+     must still have a fixed advance width or the label swap starts
+     jittering again on exactly the connections least able to afford it. */
+  --font-mono-stack: var(--font-mono), ui-monospace, "SF Mono", Menlo,
+    Consolas, monospace;
 
   /* ── Type: the display scale ─────────────────────────────────────
      Fluid, so the sm:/md: step-ups scattered through the build

@@ -31,9 +31,9 @@ export function CollectionsSection() {
     meta: `${house.index} — ${house.material}`,
     image: house.plate ?? undefined,
     swatch: house.swatch,
-    /* A house with no page of its own still sends the reader somewhere:
-       the index, where it is one card among six. A panel that fills the
-       screen and does nothing is the section's largest dead end. */
+    /* The house's own page where there is one; the index otherwise. NOT
+       the buy page — that sits after the story, and a home page panel is
+       the furthest point from a checkout on the whole site. */
     href: house.href ?? "/eyewear",
     cta: house.href ? `View ${house.name}` : "See it on the index",
   }));

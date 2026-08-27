@@ -8,7 +8,14 @@
  * words on the header are copy; where they GO lives here.
  */
 
-/** Shopify hosts the account surface; we link out rather than rebuild it. */
+/**
+ * Where the credential step happens.
+ *
+ * No longer linked from the chrome — `/access` is the branded sign-in and
+ * this is what it hands off to. Kept as one constant because it is the only
+ * thing on the site that knows the account host, and the day that moves it
+ * should move here.
+ */
 export const ACCOUNT_URL = "https://account.arianoir.com";
 
 export type MenuLink = { label: string; href: string; external?: boolean };
@@ -68,64 +75,6 @@ export const menu = {
 } as const;
 
 /**
- * The footer's sitemap.
- *
- * Every href here is a route that exists. The footer used to carry three
- * columns of bare strings — "Atelier", "Journal", "Book a fitting", "The
- * Archive" — every one of them rendered as `href="#"`, which is four
- * columns of furniture describing a site that was never built. A footer is
- * where a reader goes when the page they are on has run out of answers, so
- * it is the last place to put a link that goes nowhere.
- *
- * Grouped by WHY someone is looking rather than by what the thing is: the
- * frames, the house behind them, the desk that helps after a purchase, and
- * the small print. The houses without a page of their own are deliberately
- * absent — they are on the index, and a footer link to a 404 is the same
- * broken promise the strings were.
- */
-export type SitemapGroup = {
-  title: string;
-  links: readonly MenuLink[];
-};
-
-export const sitemap: readonly SitemapGroup[] = [
-  {
-    title: "Eyewear",
-    links: [
-      { label: "All frames", href: "/eyewear" },
-      { label: "ARCA I", href: "/arca-i" },
-      { label: "ARCA II", href: "/arca-ii" },
-      { label: "Lookbook SS26", href: "/lookbook/ss26" },
-    ],
-  },
-  {
-    title: "The House",
-    links: [
-      { label: "About", href: "/house/about" },
-      { label: "Process", href: "/house/process" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Client",
-    links: [
-      { label: "Fit & Care", href: "/care" },
-      { label: "Shipping", href: "/policies/shipping" },
-      { label: "Returns", href: "/policies/returns" },
-      { label: "Warranty", href: "/policies/warranty" },
-      { label: "Account", href: ACCOUNT_URL, external: true },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Terms", href: "/policies/terms" },
-      { label: "Privacy", href: "/policies/privacy" },
-    ],
-  },
-];
-
-/**
  * The six frame houses, as the live catalogue actually holds them.
  *
  * `plate` is null where the house has no photograph in the pool yet —
@@ -158,9 +107,16 @@ export type House = {
   plate: string | null;
   /** Acetate swatch, for the houses with no plate in hand. */
   swatch?: string;
-  /** A page of its own, where one exists. Null houses render as panels
-   *  rather than links — the catalogue detail on the card is the whole
-   *  answer until the photography lands. */
+  /**
+   * The house's EDITORIAL page, where one exists — the long argument, the
+   * campaign film, the shoot. Null for the four houses that have not been
+   * written yet.
+   *
+   * This is no longer "does the house have a page": every house has a buy
+   * page at `/shop/<slug>`, templated from this catalogue. Prefer
+   * `shopPath(house)` for "where does a reader go to get one", and use
+   * this only where the offer is specifically to READ about it.
+   */
   href: string | null;
   note: string;
   /**
@@ -185,6 +141,19 @@ export type House = {
 /** Read off the list, never typed twice. */
 export function colorwayCount(house: House) {
   return house.colorwayNames.length;
+}
+
+/**
+ * Where a reader goes to buy this house, once they have read its page.
+ *
+ * Every house has one — the page is a template over this catalogue — but
+ * only the story pages link to it. The funnel is index → story → buy, and
+ * the four houses with no story yet have a buy page nothing points at. That
+ * is deliberate: they become reachable when they are argued for, not when
+ * the template happens to cover them.
+ */
+export function shopPath(house: House) {
+  return `/shop/${house.slug}`;
 }
 
 export const houses: readonly House[] = [
@@ -234,9 +203,13 @@ export const houses: readonly House[] = [
     index: "03",
     material: "Acetate · Signature",
     models: 1,
+    /* "Dark Tortoise", not "Black" — the .blend is filed as AHAVA-Black
+       and the store sells it as Dark Tortoise. Where the bench and the
+       shop disagree about a name, the shop wins: it is the one a customer
+       will read on their receipt. */
     colorwayNames: [
       "Noir",
-      "Black",
+      "Dark Tortoise",
       "Caramel Stripe",
       "Root Beer Float",
       "Tutti Frutti",
@@ -304,5 +277,72 @@ export const houses: readonly House[] = [
     model: "/models/houses/monarca-monarca-noir.glb",
     ground: "/images/arca-i/object-shadow.jpg",
     note: "Seven colourways, including the Velvet Rose the house prices as a premium acetate.",
+  },
+];
+
+/**
+ * The footer's sitemap.
+ *
+ * Declared AFTER `houses` because it reads from it — the Eyewear group is
+ * generated from the catalogue rather than hand-listed, so a new house
+ * appears in the footer the moment it appears in the shop.
+ *
+ * Every href here is a route that exists. The footer used to carry three
+ * columns of bare strings — "Atelier", "Journal", "Book a fitting", "The
+ * Archive" — every one of them rendered as `href="#"`, which is four
+ * columns of furniture describing a site that was never built. A footer is
+ * where a reader goes when the page they are on has run out of answers, so
+ * it is the last place to put a link that goes nowhere.
+ *
+ * Grouped by WHY someone is looking rather than by what the thing is: the
+ * frames, the house behind them, the desk that helps after a purchase, and
+ * the small print. The houses without a page of their own are deliberately
+ * absent — they are on the index, and a footer link to a 404 is the same
+ * broken promise the strings were.
+ */
+export type SitemapGroup = {
+  title: string;
+  links: readonly MenuLink[];
+};
+
+export const sitemap: readonly SitemapGroup[] = [
+  {
+    title: "Eyewear",
+    links: [
+      { label: "All frames", href: "/eyewear" },
+      /* The houses that have a page, in catalogue order. Their buy pages
+         are deliberately absent: the shop sits after the story, and a
+         footer link is the one place a reader has not been argued to. */
+      ...houses
+        .filter((house) => house.href)
+        .map((house) => ({ label: house.name, href: house.href as string })),
+      { label: "Lookbook SS26", href: "/lookbook/ss26" },
+    ],
+  },
+  {
+    title: "The House",
+    links: [
+      { label: "About", href: "/house/about" },
+      { label: "Process", href: "/house/process" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Client",
+    links: [
+      { label: "Fit & Care", href: "/care" },
+      { label: "Shipping", href: "/policies/shipping" },
+      { label: "Returns", href: "/policies/returns" },
+      { label: "Warranty", href: "/policies/warranty" },
+      { label: "Access", href: "/access" },
+      { label: "The Room", href: "/room" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms", href: "/policies/terms" },
+      { label: "Privacy", href: "/policies/privacy" },
+    ],
   },
 ];

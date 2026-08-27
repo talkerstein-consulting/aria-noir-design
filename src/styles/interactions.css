@@ -214,8 +214,20 @@
    they should read as firmly as the wordmark between them. Bold, and
    full-strength foreground rather than tertiary. */
 .cta--strong {
-  font-weight: 700;
+  font-family: var(--font-mono-stack);
+  font-weight: 500;
   color: var(--fg-primary);
+  /* Mono is wider per glyph than Manrope at the same size, and these two
+     words sit either side of the wordmark — a step down keeps the band's
+     proportions where they were. The tracking comes off `--cut` for the
+     same reason: a monospace is already spaced, and the eyebrow's 0.35em
+     on top of it reads as gaps rather than as letter-spacing. */
+  font-size: 0.66rem;
+  /* Wide. These are three short words carrying the whole header, and
+     spacing them is what turns a label into a mark — the same move the
+     eyebrows make at 0.35em, held a touch tighter because a monospace is
+     already spaced before any tracking is added. */
+  letter-spacing: 0.32em;
 }
 
 /* ── Legacy ground overrides ─────────────────────────────────────────
@@ -396,4 +408,174 @@
   .model-stage {
     height: calc(var(--stage-units) * 78vh + 100vh);
   }
+}
+
+
+/* ── 4. The footer sitemap ───────────────────────────────────────────
+   An FAQ on a phone, four spread columns on a desktop, from one set of
+   markup. The media query is the whole switch: the wide layout is
+   correct at first paint, before hydration, so nothing is ever seen
+   collapsed on a screen that has room for it. */
+
+.sitemap-group {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+
+.sitemap-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 0;
+  text-align: left;
+  color: var(--fg-primary);
+}
+.sitemap-head--button {
+  cursor: pointer;
+  transition: color var(--dur-fast) ease;
+}
+.sitemap-head--button:hover,
+.sitemap-head--button:focus-visible {
+  color: var(--fg-accent);
+}
+.sitemap-head--button:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+
+/* The affordance: a hairline that gains a second stroke when closed, so
+   the control is a + that opens into a −. Same weight as every other
+   rule on the site, because it is one. */
+.sitemap-sign {
+  position: relative;
+  display: block;
+  width: 0.7rem;
+  height: var(--rule-weight);
+  background: currentColor;
+  flex: none;
+}
+.sitemap-sign::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  transform: rotate(90deg);
+  transition: transform var(--dur-base) var(--ease-inout);
+}
+.sitemap-group[data-open="true"] .sitemap-sign::after {
+  /* Rotated flat onto its sibling — the + has become a −. */
+  transform: rotate(0deg);
+}
+
+.sitemap-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--dur-base) var(--ease-inout);
+}
+.sitemap-group[data-open="true"] .sitemap-panel {
+  grid-template-rows: 1fr;
+}
+/* The single child the row collapses. `min-height: 0` is what lets a grid
+   item shrink below its content at all, and the overflow is what stops the
+   links spilling out of a zero-height row mid-transition. */
+.sitemap-list {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0.65rem;
+  overflow: hidden;
+}
+/* The closing gap hangs off the LAST LINK, not off the list.
+   Padding on the collapsing item is part of its box rather than its
+   content, so `min-height: 0` cannot shrink past it and every closed
+   group stood 18px tall — four hairlines with a sliver of nothing under
+   each. On a child it is content, and content is what gets clipped. */
+.sitemap-list > li:last-child {
+  padding-bottom: 1.15rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sitemap-panel,
+  .sitemap-sign::after {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* ── The wide layout ─────────────────────────────────────────────────
+   Four columns, no disclosure, no rules across the top — at this width
+   the grid itself is what says these are a set, and four hairlines is
+   just fencing. Declared AFTER the phone rules so it wins on order
+   rather than on specificity. */
+@media (min-width: 640px) {
+  .sitemap-group {
+    border-top: 0;
+  }
+  .sitemap-head {
+    padding: 0 0 1.1rem;
+  }
+  .sitemap-panel,
+  .sitemap-group[data-open="false"] .sitemap-panel {
+    display: block;
+    overflow: visible;
+  }
+  .sitemap-list {
+    overflow: visible;
+  }
+  .sitemap-list > li:last-child {
+    padding-bottom: 0;
+  }
+}
+
+/* ── 5. The swatch ───────────────────────────────────────────────────
+   The buy page's colourway control. Square, hairline, no radius — the
+   fourth interactive object on the site and the only one that is not a
+   word, because a colour cannot be written down. It still answers with
+   the same rule the other three use: a hairline that goes gold.
+
+   The chip is inset by the border rather than filling the box, so the
+   rule reads as a mount around the acetate rather than an outline on
+   it. */
+.swatch {
+  display: block;
+  padding: 3px;
+  border: var(--rule-weight) solid var(--fg-rule);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) ease;
+}
+.swatch:hover:not(:disabled) {
+  border-color: var(--fg-accent);
+}
+.swatch[data-on="true"] {
+  border-color: var(--fg-accent);
+}
+.swatch:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+.swatch-chip {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+/* Out of the workshop: struck through, dimmed, and not a target. Shown
+   rather than hidden — the catalogue copy says the colourway exists, and
+   removing it here would make the two disagree. */
+.swatch[data-out="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+  position: relative;
+}
+.swatch[data-out="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    transparent calc(50% - 0.5px),
+    var(--fg-primary) calc(50% - 0.5px),
+    var(--fg-primary) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
 }

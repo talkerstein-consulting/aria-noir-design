@@ -106,13 +106,9 @@ export default function Contact12() {
               <h3 className="t-display-xs mt-4">{route.title}</h3>
               <p className="t-body t-body--tight mt-3">{route.description}</p>
               <div className="mt-auto pt-8">
-                {/* `as const` narrows each route to its own literal shape,
-                    so only the one route that carries `external` has the
-                    key at all. */}
-                <CtaLink
-                  href={route.href}
-                  external={"external" in route ? route.external : undefined}
-                >
+                {/* Every route is internal now — Access is a page on this
+                    site rather than a jump to the account host. */}
+                <CtaLink href={route.href}>
                   {route.cta}
                 </CtaLink>
               </div>

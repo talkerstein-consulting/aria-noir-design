@@ -30,6 +30,7 @@ import type {
   Variations,
   Worn,
 } from "./product";
+import { swatchFor } from "./shop";
 
 const P = "/images/arca-ii";
 
@@ -166,18 +167,21 @@ export const offering: Offering = {
   name: "ARCA II",
   tagline: "The second cut. One shape, and the widest colour run the house holds.",
   price: "$125",
-  /* NOTE: Noir and Pixie Dust are the two names the catalogue records
-     (lib/navigation.ts). The other six are placeholders standing in until
-     the house confirms the run — swap the strings here and the swatches in
-     `variations` below, and nothing else needs touching. */
+  /* The real run, read off the 3D source set — see `colorwayNames` in
+     lib/navigation, which is where the names now live for every house.
+     Six of these were placeholders (Cognac, Havana, Smoke, Ash, Bordeaux,
+     Ivory) invented before the bench had been asked; the buy page at
+     /shop/arca-ii was showing the true eight while this page showed the
+     invented ones, which is the two halves of the site disagreeing about
+     what the house sells. */
   colorways: [
     "Noir",
-    "Cognac",
-    "Havana",
-    "Smoke",
-    "Ash",
-    "Bordeaux",
-    "Ivory",
+    "Dark Tortoise",
+    "Caramel Stripe",
+    "Root Beer Float",
+    "Tutti Frutti",
+    "Dreamy Rose",
+    "Velvet Rose",
     "Pixie Dust",
   ],
   cta: "Enter the Registry",
@@ -196,17 +200,21 @@ export const variations: Variations = {
   heading: "Eight colourways, and one room dark enough that the difference between them is a matter of how each one gives light back.",
   /* Only the Noir has a still in the pool; the rest carry a swatch and a
      name, the same treatment the eyewear index uses for houses whose
-     photography has not landed. See the NOTE in `offering` — six of these
-     names are placeholders. */
+     photography has not landed.
+
+     The hexes come from SWATCHES in lib/shop so this page and the buy page
+     cannot show the same acetate in two different colours. They are still
+     approximations — nobody has measured the material — but they are one
+     approximation rather than two. */
   colorways: [
-    { name: "Noir", swatch: "#0b0b0c", image: `${P}/object-front.jpg`, alt: "Noir — laid on concrete, front on" },
-    { name: "Cognac", swatch: "#6b4a2f" },
-    { name: "Havana", swatch: "#4a3120" },
-    { name: "Smoke", swatch: "#3b3a38" },
-    { name: "Ash", swatch: "#6e6c67" },
-    { name: "Bordeaux", swatch: "#3d1d24" },
-    { name: "Ivory", swatch: "#ded8cb" },
-    { name: "Pixie Dust", swatch: "#b9a48f" },
+    { name: "Noir", swatch: swatchFor("Noir"), image: `${P}/object-front.jpg`, alt: "Noir — laid on concrete, front on" },
+    { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise") },
+    { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe") },
+    { name: "Root Beer Float", swatch: swatchFor("Root Beer Float") },
+    { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti") },
+    { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose") },
+    { name: "Velvet Rose", swatch: swatchFor("Velvet Rose") },
+    { name: "Pixie Dust", swatch: swatchFor("Pixie Dust") },
   ],
 };
 

@@ -34,6 +34,10 @@ export const metadata: Metadata = {
  * The dark→light handoff is anchored to the curtain section, matching how
  * the landing page hands over to its own closing block.
  */
+/** Every offer on this page lands on the buy page, which is the only
+ *  surface that can actually take an order. */
+const BUY = "/shop/arca-i";
+
 export default function ArcaOnePage() {
   return (
     <>
@@ -68,12 +72,12 @@ export default function ArcaOnePage() {
           <ProductBand detail={arca.detail} />
           <ProductSpec spec={arca.spec} />
         </div>
-        <ProductOffering offering={arca.offering} />
+        <ProductOffering offering={arca.offering} buyHref={BUY} />
         <ProductVariations variations={arca.variations} />
         <ProductReferences references={arca.references} />
-        <ProductWorn worn={arca.worn} />
+        <ProductWorn worn={arca.worn} buyHref={BUY} />
         <WhiteDotOverlay anchorId="worn" />
-        <ProductClose close={arca.close} />
+        <ProductClose close={arca.close} buyHref={BUY} />
       </main>
       <SiteFooter />
     </>

@@ -125,13 +125,76 @@ const smooth = (t: number) => {
   return c * c * (3 - 2 * c);
 };
 
-/** Centre the model and scale it so its bounding sphere is unit radius, so
- *  a frame exported at millimetre scale and one exported at metre scale
- *  arrive on the stage the same size. */
+/**
+ * Centre the model on its own MASS, and scale it to unit radius.
+ *
+ * ---- Why the bounding box is the wrong centre for a frame ----
+ *
+ * A pair of glasses is a small dense front with two long thin temples
+ * trailing behind it. Its bounding box therefore extends a long way back,
+ * and the box's centre lands somewhere in the empty air between the arms —
+ * behind the frame, not in it. Spinning about that point swings the front
+ * through a wide arc: the lenses sweep across the screen and back while the
+ * temple tips barely move, which reads as the object being carried past the
+ * camera rather than turning on a stand.
+ *
+ * So the pivot is the centroid of the actual VERTICES. Geometry is where
+ * the object is, and for this shape most of it is in the front — which puts
+ * the axis through the bridge, roughly where a hand would hold it. The
+ * frame now turns in place.
+ *
+ * The scale still comes off the bounding SPHERE, because that is the radius
+ * the object sweeps and the thing the camera has to frame; only the pivot
+ * moved.
+ */
+function centroid(obj: THREE.Object3D) {
+  const sum = new THREE.Vector3();
+  let count = 0;
+  const v = new THREE.Vector3();
+
+  obj.updateWorldMatrix(true, true);
+  obj.traverse((node) => {
+    const mesh = node as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const pos = mesh.geometry?.getAttribute("position");
+    if (!pos) return;
+    /* Sampled, not exhaustive. These meshes run to six figures of vertices
+       and the centroid of every 24th is the same point to several decimals
+       — this runs once per model, but it runs on the main thread while the
+       first frame is trying to paint. */
+    const step = Math.max(1, Math.floor(pos.count / 4096));
+    for (let i = 0; i < pos.count; i += step) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+      sum.add(v);
+      count += 1;
+    }
+  });
+
+  return count ? sum.divideScalar(count) : new THREE.Vector3();
+}
+
 function normalize(obj: THREE.Object3D) {
+  obj.position.sub(centroid(obj));
+
+  /* Radius measured from the NEW ORIGIN, corner by corner.
+     `Box3.getBoundingSphere` centres its sphere on the BOX, which was the
+     right answer while the pivot was the box centre and is the wrong one
+     now: with the pivot moved forward into the frame, the temple tips are
+     further from the axis than half a diagonal, and a sphere sized off the
+     box would let them swing outside the frustum halfway through a turn. */
   const box = new THREE.Box3().setFromObject(obj);
-  obj.position.sub(box.getCenter(new THREE.Vector3()));
-  const radius = box.getBoundingSphere(new THREE.Sphere()).radius || 1;
+  const radius =
+    Math.max(
+      Math.hypot(box.min.x, box.min.y, box.min.z),
+      Math.hypot(box.min.x, box.min.y, box.max.z),
+      Math.hypot(box.min.x, box.max.y, box.min.z),
+      Math.hypot(box.min.x, box.max.y, box.max.z),
+      Math.hypot(box.max.x, box.min.y, box.min.z),
+      Math.hypot(box.max.x, box.min.y, box.max.z),
+      Math.hypot(box.max.x, box.max.y, box.min.z),
+      Math.hypot(box.max.x, box.max.y, box.max.z),
+    ) || 1;
+
   const wrap = new THREE.Group();
   wrap.add(obj);
   wrap.scale.setScalar(1 / radius);

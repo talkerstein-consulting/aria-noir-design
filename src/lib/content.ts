@@ -11,6 +11,9 @@ export const nav = {
      for people who already own something; "log in" is what a dashboard
      says. */
   right: "Access",
+  /* The same control, once the reader has been through the door. Same
+     length as ACCESS, so the header's fixed column count holds. */
+  room: "Room",
 };
 
 export const sectionTwo = {

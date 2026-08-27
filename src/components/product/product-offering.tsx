@@ -14,7 +14,24 @@ import { ProductModel } from "@/components/product/product-model";
  * halo behind it is what keeps a black frame from floating on a black page
  * either way.
  */
-export function ProductOffering({ offering }: { offering: Offering }) {
+/**
+ * `buyHref` is where the offer actually goes.
+ *
+ * These CTAs pointed at `#acquire`, the closing block at the foot of the
+ * page — whose own CTA also pointed at `#acquire`. Three offers to acquire
+ * the frame, every one of which scrolled you to a fourth offer to acquire
+ * the frame. The page could not sell anything because the site had nowhere
+ * to sell it. `/shop/<slug>` is that place now, so the page hands the
+ * reader to it.
+ */
+export function ProductOffering({
+  offering,
+  buyHref,
+}: {
+  offering: Offering;
+  /** See the note above the component. */
+  buyHref: string;
+}) {
   return (
     <section
       id="offering"
@@ -67,7 +84,7 @@ export function ProductOffering({ offering }: { offering: Offering }) {
           Available in {offering.colorways.join(" · ")}
         </p>
 
-        <CtaLink href="#acquire">{offering.cta}</CtaLink>
+        <CtaLink href={buyHref}>{offering.cta}</CtaLink>
 
         <p className="max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/40">
           {offering.registryNote}

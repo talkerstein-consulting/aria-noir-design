@@ -15,10 +15,13 @@ import { RevealPlate, RevealText } from "@/components/reveal";
  * honest gap reads as a house with six names; four plates and two holes
  * reads as a broken page.
  *
- * Only the houses with a page behind them are links — ARCA I and ARCA II
+ * Only the houses with a story behind them are links — ARCA I and ARCA II
  * today. The rest carry their catalogue detail on the card and stop there.
- * A card that looks clickable and lands on a 404 is a worse answer than a
- * card that doesn't pretend.
+ *
+ * They are NOT linked to their buy page, though one exists for all six.
+ * The buy page sits after the story, not beside it: a card that jumped a
+ * reader straight to a price has skipped the only part of the site that
+ * explains the price.
  *
  * The index numerals are information, not ornament: they are the order the
  * houses were cut in, which is why the grid does not re-sort by price.

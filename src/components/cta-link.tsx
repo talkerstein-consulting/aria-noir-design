@@ -108,43 +108,62 @@ function classes(
 function CtaChars({
   children,
   alt,
+  columns,
 }: {
   children: string;
   alt?: string;
+  /**
+   * Reserve this many glyph columns whatever the label currently says.
+   *
+   * A flipping control renders one word at a time, so its width was the
+   * width of whichever word was showing — MENU is four columns, CLOSE is
+   * five. The button is right-aligned, so the right edge held and the
+   * LETTERS jumped eight pixels sideways the instant the flip armed, then
+   * back again when it landed. The travel is meant to be vertical; a
+   * horizontal shove underneath it is the one thing that makes a swap read
+   * as a re-render.
+   *
+   * Holding the wider word's column count at all times makes the control a
+   * fixed object that the labels move through.
+   */
+  columns?: number;
 }): ReactNode {
   const top = Array.from(children);
   const bottom = Array.from(alt ?? children);
-  /* The two words are rarely the same length. Iterating the longer one and
-     padding the shorter with a non-breaking space keeps every column
-     present, so MENU→CLOSE grows its fifth letter out of the lift instead
-     of the control changing width halfway through it. */
-  const len = Math.max(top.length, bottom.length);
+  const len = Math.max(columns ?? 0, top.length, bottom.length);
+
+  /* Padding goes at the START, not the end. This control is pinned to the
+     right of the header, so the meaningful edge is the last glyph — pad
+     the short word in front and MENU's U sits exactly where CLOSE's E
+     does. Trailing padding would hold the box still and float the word
+     away from the edge it is aligned to, which is the same jitter wearing
+     a different hat. */
+  const glyph = (word: string[], i: number) => {
+    const ch = word[i - (len - word.length)];
+    return !ch || ch === " " ? " " : ch;
+  };
 
   return (
     <span className="cta-chars">
-      {Array.from({ length: len }, (_, i) => {
-        const glyph = (ch: string | undefined) =>
-          !ch || ch === " " ? " " : ch;
-        return (
-          <span
-            key={i}
-            className="cta-char"
-            style={{ "--d": `${i * STEP_MS}ms` } as CSSProperties}
-          >
-            <span className="cta-char-clip">
-              <span className="cta-char-line">{glyph(top[i])}</span>
-              {/* Always hidden from the a11y tree, even when it carries a
-                  different word: the swap is a visual state of one control,
-                  and `aria-expanded` is what actually says which way it is
-                  pointing. Exposing both lines would name the button
-                  "MENUCLOSE". */}
-              <span className="cta-char-line" aria-hidden="true">
-                {glyph(bottom[i])}
-              </span>
+      {Array.from({ length: len }, (_, i) => (
+        <span
+          key={i}
+          className="cta-char"
+          style={{ "--d": `${i * STEP_MS}ms` } as CSSProperties}
+        >
+          <span className="cta-char-clip">
+            <span className="cta-char-line">{glyph(top, i)}</span>
+            {/* Always hidden from the a11y tree, even when it carries a
+                different word: the swap is a visual state of one control,
+                and `aria-expanded` is what actually says which way it is
+                pointing. Exposing both lines would name the button
+                "MENUCLOSE". */}
+            <span className="cta-char-line" aria-hidden="true">
+              {glyph(bottom, i)}
             </span>
           </span>
-        );
-      })}
+        </span>
+      ))}
     </span>
   );
 }
@@ -314,6 +333,12 @@ export function CtaButton({
   /* ── land → idle, once the cleared transform has been painted ── */
   useAfterPaint(phase === "land", () => setPhase("idle"));
 
+  /* Reserved for the life of the control, not just during a flip — see
+     CtaChars. Both rest states are this wide. */
+  const columns = alt
+    ? Math.max(children.length, alt.length)
+    : undefined;
+
   const flip = alt
     ? [
         "cta--flip",
@@ -337,7 +362,7 @@ export function CtaButton({
       {/* Without `alt` the two lines are never anything but `children`, and
           reading them out of state would just make an ordinary CTA's label
           stale the first time a caller changed it. */}
-      <CtaChars alt={alt ? lines[1] : undefined}>
+      <CtaChars alt={alt ? lines[1] : undefined} columns={columns}>
         {alt ? lines[0] : children}
       </CtaChars>
     </button>

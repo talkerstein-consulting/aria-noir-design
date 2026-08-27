@@ -33,8 +33,8 @@ export function SiteFooter({
             the thing they came down here to READ, and folding it into tabs
             keeps the whole footer to about one screen on a phone instead
             of a screen and a half of link list. */}
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[minmax(0,20rem)_1fr] lg:gap-24">
-          <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-14 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
+          <div className="flex flex-col gap-4 lg:w-[19rem] lg:shrink-0">
             <p className="t-label">{footer.newsletterLabel}</p>
             <form className="field-row">
               <label htmlFor="footer-email" className="sr-only">
@@ -69,7 +69,14 @@ export function SiteFooter({
             </div>
           </div>
 
-          <SitemapTabs />
+          {/* The map takes the rest of the span rather than a fixed column.
+              It was sharing a two-column grid with the desk, which parked
+              four short link lists in the right half and left a third of
+              the footer empty — a footer being narrow in the one place
+              there is nothing competing for the width. */}
+          <div className="lg:min-w-0 lg:flex-1">
+            <SitemapTabs />
+          </div>
         </div>
 
         {/* legal line sits ABOVE the mark, so ARIA closes the page alone */}

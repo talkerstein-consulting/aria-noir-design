@@ -11,7 +11,6 @@
  * layout never needs touching.
  */
 
-import { ACCOUNT_URL } from "@/lib/navigation";
 
 const P = "/images/arca-i";
 
@@ -432,8 +431,7 @@ export const contact = {
         description:
           "Orders, addresses and anything already paid for. The shop side lives on its own surface.",
         cta: "Sign in",
-        href: ACCOUNT_URL,
-        external: true,
+        href: "/access",
       },
     ],
   },

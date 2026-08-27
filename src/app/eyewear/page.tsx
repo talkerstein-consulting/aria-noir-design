@@ -45,6 +45,9 @@ export default function EyewearPage() {
     image: house.ground ?? house.plate ?? undefined,
     swatch: house.swatch,
     model: house.model,
+    /* The STORY page, where there is one — the buy page comes after it,
+       not instead of it. Four houses have no page yet and carry no CTA
+       rather than being sent somewhere that skips the argument. */
     href: house.href ?? undefined,
     cta: house.href ? `View ${house.name}` : undefined,
   }));

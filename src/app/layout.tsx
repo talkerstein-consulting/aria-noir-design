@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Libre_Bodoni, Manrope } from "next/font/google";
+import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
 import "./globals.css";
 
 const libreBodoni = Libre_Bodoni({
@@ -13,6 +13,26 @@ const manrope = Manrope({
   variable: "--font-ui",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+});
+
+/**
+ * The header chrome only — Access, Menu and Close. Nothing else on the site
+ * is set in it.
+ *
+ * A monospace is the correct face for a control that swaps its own label:
+ * every glyph has the same advance, so MENU and CLOSE occupy exactly the
+ * same width and the box cannot change size when the word does. The
+ * proportional face made that impossible to fully solve — a reserved column
+ * still has to be reserved at SOME width, and an "n" is not an "o".
+ *
+ * It also happens to be the right voice. These two words are chrome: they
+ * label the machine rather than speak for the house, and a mono face is
+ * how a control says "I am an instrument" next to a Bodoni wordmark.
+ */
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -55,7 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${libreBodoni.variable} ${manrope.variable} h-full antialiased`}
+      className={`${libreBodoni.variable} ${manrope.variable} ${plexMono.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />

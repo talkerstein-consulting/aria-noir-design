@@ -59,6 +59,20 @@ export function WhiteDotOverlay({ anchorId = "gallery" }: { anchorId?: string })
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      /* And put the flag back.
+         `light-scroll` says "the iris has landed and the viewport is white
+         right now". It is written to <html>, which outlives this component,
+         so leaving it set on unmount hands every page navigated to
+         afterwards a lie about its own ground — and the header believes it
+         over anything it can see, because the iris is pointer-events:none
+         and this flag is the only way to know about it.
+
+         The symptom was a black page with a black header: scroll into the
+         home page's white finale, open the menu, go anywhere, and the nav
+         is ink type on ink for the rest of the session. Easiest to hit on a
+         phone, where the menu is how you navigate and the finale is the
+         last thing before the footer. */
+      document.documentElement.classList.remove("light-scroll");
     };
   }, [anchorId]);
 
