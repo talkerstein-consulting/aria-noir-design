@@ -21,7 +21,7 @@ import {
 } from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
 import { whenAssetsReady } from "@/lib/preload";
-import { privateAccess, sequenceUrls } from "@/lib/content";
+import { privateAccess } from "@/lib/content";
 
 /**
  * The scrubbed film, loaded on demand.
@@ -178,11 +178,11 @@ export function Experience() {
 
     /* The counter now waits on the page. The hero film is the one that
        matters most — it is what the box expands into — but everything the
-       document declared is included, plus the scrub sequence further down —
-       61 stills totalling 256KB, which no markup above would otherwise make
-       anyone wait for and which decide whether that section has a picture
-       in it when a reader arrives. */
-    whenAssetsReady({ files: sequenceUrls(privateAccess.frames) }).then(() => {
+       document declared is included, plus the glb the private-access
+       section lights, which no markup above would otherwise make anyone
+       wait for and which decides whether that section has an object in it
+       when a reader arrives. */
+    whenAssetsReady({ files: [privateAccess.model] }).then(() => {
       ready = true;
     });
 

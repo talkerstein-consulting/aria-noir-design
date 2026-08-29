@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
-import FrameScrub from "@/components/frame-scrub";
+import { useCallback, useRef, useSyncExternalStore } from "react";
+import { useScrollProgress } from "@/hooks/use-scroll-progress";
+import { AccessModel, setAccessProgress } from "@/components/access-model";
 import { privateAccess } from "@/lib/content";
 import { CtaLink } from "@/components/cta-link";
 import { RevealText } from "@/components/reveal";
@@ -50,6 +51,10 @@ const TOP_VH = 7;
 /** The stage on a wide screen: a band across most of the window. */
 const STAGE_VH = 72;
 
+/** How much scroll the section is given. One screen of it is the sticky
+ *  stage standing still; the rest is the lamp's travel. */
+const SECTION_VH = 520;
+
 /**
  * The stage on a phone: a 4:5 portrait plate, 1080×1350 in the shape the
  * house's stills are cut to.
@@ -91,13 +96,15 @@ const SMALL = "(max-width: 767px)";
  * five screens of scroll is a frame every 7vh of travel, which on a turn
  * this slow is more than the eye asks for.
  */
-const SAMPLE = {
-  /* Zoomed into the portrait plate, not fitted inside it. */
-  small: { fit: "cover" },
-  large: { fit: "cover" },
-} as const;
-
 export function PrivateAccessSection() {
+  /* The scroll the lamp is spent over. Five screens: one is the sticky
+     stage holding still, the other four are the light crossing the frame.
+     The white iris opens over the last of them — see the note in
+     experience.tsx — so the page turns light while the lamp is still
+     moving, which is the handover rather than a collision. */
+  const wrap = useRef<HTMLElement>(null);
+  useScrollProgress(wrap, setAccessProgress);
+
   /* Read once, at mount, through the store React gives for exactly this:
      no state written from an effect, and a server render that matches the
      client's first paint because both start from the desktop branch. */
@@ -135,92 +142,29 @@ export function PrivateAccessSection() {
     () => STAGE_VH / 100,
   );
 
-  const sample = small ? SAMPLE.small : SAMPLE.large;
   const stage = small ? portrait : STAGE_VH / 100;
 
   return (
-    <section id="private-access" className="relative z-[36] bg-ink">
-      <div className="relative">
-      <FrameScrub
-        /* Full bleed at EVERY width, and the film held high in the screen.
+    <section
+      id="private-access"
+      ref={wrap}
+      className="relative z-[36] bg-ink"
+      style={{ height: `${SECTION_VH}vh` }}
+    >
+      <div className="relative h-full">
+      {/* The stage: one screen, held, with the frame in it. The section's
+          height is what the scroll is spent on — see SECTION_VH. */}
+      <div className="sticky top-0 h-screen overflow-hidden">
+        <div
+          className="absolute inset-x-0"
+          style={{ top: `${TOP_VH}vh`, height: `${stage * 100}vh` }}
+        >
+          <AccessModel />
+        </div>
+      </div>
 
-           The stage's own wrapper carries a gutter (`px-4 sm:px-8`) and a
-           max width — furniture for a component sitting IN a page, and this
-           one is the page for as long as it holds the screen. Both are
-           overridden on the sticky child, where they live.
-
-           `!` on the padding is load-bearing: the wrapper sets it at two
-           breakpoints, and an unflagged `px-0` loses to its `sm:px-8` on a
-           desktop window — which is exactly how this came to be full width
-           on a phone and inset on a laptop. Important beats both.
-
-           `justify-start` with a small top offset lifts the film off centre.
-           Centred, the frame sat behind the type; up here the object has the
-           top two-thirds and the words have the floor. */
-        /* pt-[7vh] is TOP_VH, written out. Tailwind scans source TEXT for
-           class names, so a template literal here compiles to no rule at
-           all and the film silently sits back in the middle — the two have
-           to be kept in step by hand. */
-        className="[&>div]:!px-0 [&>div]:justify-start [&>div]:pt-[7vh]"
-        /* A pre-extracted still sequence, not the clip — see `frames` in
-           lib/content for why, and for how to regenerate it. */
-        src={privateAccess.frames.src}
-        count={privateAccess.frames.count}
-        pad={privateAccess.frames.pad}
-        start={privateAccess.frames.start}
-        /* The film's own black, not the page's.
-        
-           `contain` letterboxes a 1280×704 clip inside a taller stage, and
-           those bars are painted in this colour — so anything but the black
-           the frame was rendered against draws two pale bands across the
-           top and bottom of the shot. Pure black matches the clip, and the
-           stage then disappears into the section around it. */
-        background="#000000"
-        accent="#c6a664"
-        variant="blend"
-        /* Wide screens fill the box; narrow ones fit inside it.
-
-           `cover` on a phone crops a 16:9 clip into a portrait stage hard
-           enough that only the bridge of the frame survives — the object
-           being teased goes off both edges. `contain` shows the whole frame
-           and letterboxes instead, which used to be the worse trade because
-           the bars and the film were two different blacks. They are not any
-           more: the stage is painted #000 and the clip's black measures
-           rgb(3,3,3), a difference no screen resolves. */
-        fit={sample.fit}
-        height={stage}
-        /* Uncapped in practice: the stage takes the window's width, and the
-           number is only here because the prop demands one. */
-        width={4000}
-        /* Square. A rounded stage reads as a card, and this section is a
-           window rather than a component. */
-        borderRadius={0}
-        /* Four screens of scroll for one five-second turn — the film moves
-           at about a fifteenth of real time, which is the pace the rest of
-           the page's sticky work runs at and slow enough that the frame
-           reads as being turned rather than played.
-
-           The white iris opens over the last screen of this, by design: the
-           section is anchored to it (WhiteDotOverlay, DOT_START_VH), so the
-           page turns light WHILE the frame is still turning rather than
-           after a black gap. A tail was added here once to keep the two
-           apart and taken out again — the overlap is the handover, not a
-           collision. */
-        scrollLength={4.2}
-        /* No frame counter. It is an instrument reading, and this is the
-           one section on the page that is meant to feel like a door. */
-        showCounter={false}
-        /* Off, both of them. They are the other half of why this did not
-           blend: the component paints grain and a vignette over the whole
-           STAGE, so the box was lighter and noisier than the page around
-           it — a rectangle drawn in film effects. The clip is a clean
-           render on black and wants nothing added to it. */
-        vignette={0}
-        grain={0}
-      />
-
-      {/* The words and the two edges, pinned over the film for the length of
-          the scrub. */}
+      {/* The words and the two edges, pinned over the frame for the length
+          of the section. */}
       <div className="pointer-events-none absolute inset-0">
         {/* Lower than it was, but not against the edge: on a phone the block
             is a three-line heading, three lines of body and the CTA, and at
