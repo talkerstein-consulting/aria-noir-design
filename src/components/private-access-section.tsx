@@ -50,8 +50,6 @@ const STAGE_VH = 72;
 export function PrivateAccessSection() {
   return (
     <section id="private-access" className="relative z-[36] bg-ink">
-      {/* The scrub and its type, as one block. The TAIL below is deliberately
-          outside it. */}
       <div className="relative">
       <FrameScrub
         /* Full bleed at EVERY width, and the film held high in the screen.
@@ -115,7 +113,14 @@ export function PrivateAccessSection() {
         /* Four screens of scroll for one five-second turn — the film moves
            at about a fifteenth of real time, which is the pace the rest of
            the page's sticky work runs at and slow enough that the frame
-           reads as being turned rather than played. */
+           reads as being turned rather than played.
+
+           The white iris opens over the last screen of this, by design: the
+           section is anchored to it (WhiteDotOverlay, DOT_START_VH), so the
+           page turns light WHILE the frame is still turning rather than
+           after a black gap. A tail was added here once to keep the two
+           apart and taken out again — the overlap is the handover, not a
+           collision. */
         scrollLength={4.2}
         /* No frame counter. It is an instrument reading, and this is the
            one section on the page that is meant to feel like a door. */
@@ -174,17 +179,6 @@ export function PrivateAccessSection() {
       </div>
       </div>
 
-      {/* ---- the tail: one black screen the film does not have to share ----
-
-          The white iris is anchored to the BOTTOM of this section and opens
-          1.05 screens before it (DOT_START_VH). The scrub's runway used to
-          run to that same bottom edge, so the wipe covered the last fifth of
-          the turn — the film was still moving when the page went white, and
-          the longer the scrub got the more of it was eaten.
-
-          This is the room the handoff needs: plain ink, no sticky child, no
-          type. The film finishes above it, then the page turns over it. */}
-      <div aria-hidden className="h-[125vh]" />
     </section>
   );
 }
