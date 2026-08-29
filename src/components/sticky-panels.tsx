@@ -68,8 +68,36 @@ export type PanelItem = {
   cta?: string;
 };
 
+/**
+ * Where a panel's name sits, and what the plate is dimmed with.
+ *
+ * `center` is the collections treatment: the name in the middle of the
+ * screen over a plate tinted evenly, because those plates are campaign
+ * photographs with room in the middle and the name is the subject.
+ *
+ * `foot` is for plates that ARE the product — the colourway stage, where
+ * the frame is centred and filling the screen and an even tint over it is
+ * a veil across the thing being sold. The name goes under it instead, on a
+ * gradient that only touches the bottom of the frame.
+ */
+export type LabelPlacement = "center" | "foot";
+
 type StickyPanelsProps = {
   items: readonly PanelItem[];
+  /** See LabelPlacement. Defaults to the collections treatment. */
+  labels?: LabelPlacement;
+  /**
+   * Hold the stage inside the page's gutter instead of letting it run to
+   * the edges of the screen.
+   *
+   * The mechanism is identical either way — the plate still grows, the
+   * panels still slide over one another, the timing is untouched. What
+   * changes is what the stage is: full bleed it is the page, taking the
+   * screen over; inset it is an object ON the page, with the site's own
+   * black around it. The colourway stage wants the second, because it is
+   * one section of a product story rather than the reason the page exists.
+   */
+  inset?: boolean;
   /** The heading that the first plate grows out of and swallows. */
   preheader?: string;
   heading?: React.ReactNode;
@@ -110,6 +138,8 @@ export function StickyPanels({
   items,
   preheader,
   heading,
+  labels: placement = "center",
+  inset = false,
   id,
   className = "",
 }: StickyPanelsProps) {
@@ -162,7 +192,16 @@ export function StickyPanels({
       className={`relative z-[35] bg-ink ${className}`}
       style={{ height: `${heightVh}vh` }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden">
+      <div
+        className={`sticky top-0 h-screen ${
+          inset ? "p-5 sm:p-12 lg:p-16" : "overflow-hidden"
+        }`}
+      >
+        {/* When the stage is inset, the CLIP moves in here with it: the
+            panels slide in from the right and have to be cut off at the
+            frame's edge, not the screen's, or the next colourway is
+            visible in the margin before it arrives. */}
+        <div className={inset ? "relative h-full w-full overflow-hidden" : "contents"}>
         {/* preheader + heading — rides above the plate and is swallowed by it */}
         {preheader || heading ? (
           <div
@@ -187,17 +226,20 @@ export function StickyPanels({
         <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div
             ref={plate}
-            className="relative h-screen w-screen origin-center overflow-hidden will-change-transform"
+            /* h-full rather than h-screen: the same box either way when
+               the stage is full bleed, and the framed box when it is not. */
+            className="relative h-full w-full origin-center overflow-hidden will-change-transform"
             style={{
               transform: `translateY(${PLATE_REST_Y_VH}vh) scale(${PLATE_START_SCALE})`,
             }}
           >
-            <Ground item={first} />
+            <Ground item={first} placement={placement} />
             <Label
               refCb={(el) => {
                 labels.current[0] = el;
               }}
               item={first}
+              placement={placement}
             />
           </div>
         </div>
@@ -212,15 +254,17 @@ export function StickyPanels({
             className="absolute inset-0 will-change-transform"
             style={{ zIndex: 21 + i, transform: "translateX(100%)" }}
           >
-            <Ground item={item} />
+            <Ground item={item} placement={placement} />
             <Label
               refCb={(el) => {
                 labels.current[i + 1] = el;
               }}
               item={item}
+              placement={placement}
             />
           </div>
         ))}
+        </div>
       </div>
     </section>
   );
@@ -228,7 +272,13 @@ export function StickyPanels({
 
 /** The panel's surface: a photograph where one exists, and the house's own
  *  acetate otherwise. Never a borrowed plate. */
-function Ground({ item }: { item: PanelItem }) {
+function Ground({
+  item,
+  placement,
+}: {
+  item: PanelItem;
+  placement: LabelPlacement;
+}) {
   if (!item.image) {
     return (
       <div
@@ -248,7 +298,11 @@ function Ground({ item }: { item: PanelItem }) {
         sizes="100vw"
         className="object-cover"
       />
-      <div className={`absolute inset-0 ${TINT}`} />
+      {/* A foot label needs no veil over the plate — the gradient under
+          its own type is the whole of the dimming. */}
+      {placement === "center" ? (
+        <div className={`absolute inset-0 ${TINT}`} />
+      ) : null}
     </>
   );
 }
@@ -256,11 +310,14 @@ function Ground({ item }: { item: PanelItem }) {
 function Label({
   refCb,
   item,
+  placement,
 }: {
   refCb: (el: HTMLDivElement | null) => void;
   item: PanelItem;
+  placement: LabelPlacement;
 }) {
   const { meta, name, href, cta } = item;
+  const foot = placement === "foot";
   return (
     <div
       ref={refCb}
@@ -268,31 +325,65 @@ function Label({
          (see onProgress) — a label still at opacity 0 mid-slide would
          otherwise keep a full-screen link over the stage and swallow clicks
          meant for the panel on top of it. */
-      className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-3"
+      className="pointer-events-none absolute inset-0"
       style={{ opacity: 0 }}
     >
-      <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
-        {meta}
-      </p>
-      {href ? (
-        <Link href={href} className="transition-opacity hover:opacity-80">
+      {/* The gradient belongs to the LABEL, not the plate: it exists to seat
+          the type, so it is only as tall as the type needs and it is absent
+          entirely when the name is centred.
+
+          It sits at z-0 with the content lifted to z-10 above it, NOT at
+          -z-10. Negative z only stays behind its own siblings while this
+          label is a stacking context, and it stops being one the moment its
+          opacity finishes animating to 1 — at which point the scrim drops
+          behind the panel's photograph and the type is left sitting on bare
+          concrete. Which is exactly what it did. */}
+      {foot ? (
+        <div
+          aria-hidden
+          /* Weighted to the bottom third rather than a plain half-height
+             ramp: the gold eyebrow is the palest thing in the label and it
+             sits highest, so it is the line that decides how far up the
+             ink has to reach. */
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-3/5 bg-gradient-to-t from-ink from-15% via-ink/75 via-45% to-transparent"
+        />
+      ) : null}
+
+      <div
+        /* A foot label is centred on the plate's own axis, not pushed into
+           the left corner: the frame in these photographs is centred, and a
+           caption hanging off one side of it reads as two things on a page
+           rather than one thing and its name. */
+        className={`relative z-10 flex h-full w-full flex-col gap-3 ${
+          foot
+            ? "items-center justify-end px-6 pb-16 text-center sm:px-10 sm:pb-20"
+            : "items-center justify-center"
+        }`}
+      >
+        <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+          {meta}
+        </p>
+        {href ? (
+          <Link href={href} className="transition-opacity hover:opacity-80">
+            <h3 className="font-display text-6xl tracking-tight text-paper sm:text-8xl">
+              {name}
+            </h3>
+          </Link>
+        ) : (
           <h3 className="font-display text-6xl tracking-tight text-paper sm:text-8xl">
             {name}
           </h3>
-        </Link>
-      ) : (
-        <h3 className="font-display text-6xl tracking-tight text-paper sm:text-8xl">
-          {name}
-        </h3>
-      )}
-      {href && cta ? (
-        /* mt-6 rather than leaning on the stack's gap: a CTA needs more air
-           above it than a caption does, or the rule-less label and the
-           action underneath it read as one three-line block. */
-        <CtaLink href={href} className="mt-6">
-          {cta}
-        </CtaLink>
-      ) : null}
+        )}
+        {href && cta ? (
+          /* mt-6 rather than leaning on the stack's gap: a CTA needs more
+             air above it than a caption does, or the rule-less label and
+             the action underneath it read as one three-line block. */
+          <CtaLink href={href} className="mt-6">
+            {cta}
+          </CtaLink>
+        ) : null}
+
+      </div>
     </div>
   );
 }

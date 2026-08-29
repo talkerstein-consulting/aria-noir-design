@@ -105,6 +105,19 @@ export type House = {
   colorwayNames: readonly string[];
   from: number;
   plate: string | null;
+  /**
+   * A photograph PER COLOURWAY, keyed by the names in `colorwayNames`.
+   *
+   * `plate` is the house's one card picture; this is the run, shot colour
+   * by colour. Where it exists every surface that names a colourway can
+   * show that colour instead of standing in the house's default acetate —
+   * which is the difference between a buy page for a frame and a buy page
+   * for the colour you actually chose.
+   *
+   * ARCA I is the only house with the set so far. A house without it keeps
+   * showing `plate`, and nothing anywhere has to know the difference.
+   */
+  colorwayPlates?: Readonly<Record<string, string>>;
   /** Acetate swatch, for the houses with no plate in hand. */
   swatch?: string;
   /**
@@ -168,7 +181,16 @@ export const houses: readonly House[] = [
        held in exactly one colour, which is why they are named as pairs. */
     colorwayNames: ["Z White", "K Black", "Proceso Brown", "309 Blue"],
     from: 100,
-    plate: "/images/arca-i/object-front.jpg",
+    /* The house's card picture is the K Black still from the colourway
+       shoot, which is the most recent and best-lit frame in the pool — the
+       old object-front plate predates it. */
+    plate: "/images/arca-i/variants/k-black-main.jpg",
+    colorwayPlates: {
+      "Z White": "/images/arca-i/variants/z-white-main.jpg",
+      "K Black": "/images/arca-i/variants/k-black-main.jpg",
+      "Proceso Brown": "/images/arca-i/variants/proceso-brown-main.jpg",
+      "309 Blue": "/images/arca-i/variants/309-blue-main.jpg",
+    },
     model: "/models/houses/arca-i-z-white.glb",
     ground: "/images/arca-i/object-lightshaft.jpg",
     note: "The founding model, and the only house cut in four distinct shapes — Z White, K Black, Proceso Brown and 309 Blue.",
@@ -192,6 +214,15 @@ export const houses: readonly House[] = [
     ],
     from: 125,
     plate: "/images/arca-ii/object-front.jpg",
+    /* One entry, because one colourway has been shot. The buy page reads
+       this first and falls back to `plate` for the other seven, so the
+       picker stays honest: choosing Noir shows Noir, and choosing Pixie
+       Dust shows the house rather than a photograph of the wrong acetate
+       captioned with the right name. The day the run is shot this becomes
+       eight lines and nothing else changes. */
+    colorwayPlates: {
+      Noir: "/images/arca-ii/object-front.jpg",
+    },
     model: "/models/houses/arca-ii-noir.glb",
     ground: "/images/arca-ii/detail-lightfall.jpg",
     note: "The second cut, and the widest colourway run in the house — eight, from Noir to Pixie Dust.",

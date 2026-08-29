@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { House } from "@/lib/navigation";
 import { priceOf, shopHref, stockFor, swatchFor } from "@/lib/shop";
 import { useBag } from "@/lib/cart";
@@ -34,15 +35,33 @@ import { CtaLink } from "@/components/cta-link";
  * exists. MATRIARCA's Black Wood is the one this currently applies to, and
  * the storefront agrees — that is where the flag comes from.
  */
-export function ColourwayPicker({ house }: { house: House }) {
+export function ColourwayPicker({
+  house,
+  onChoose,
+}: {
+  house: House;
+  /** Told whenever the acetate changes, so the plate beside the picker can
+   *  show the colour being chosen. Optional: the picker is complete on its
+   *  own and does not care whether anyone is listening. */
+  onChoose?: (colourway: string) => void;
+}) {
   /* The STORE's list, not the catalogue's. `colorwayNames` is what the
      house makes; this is what it currently sells, and a picker is an offer
      — offering a colourway the storefront has never heard of is a link to
      a 404 dressed as a product. */
   const stock = stockFor(house);
+  const asked = useSearchParams().get("colourway");
   const [chosen, setChosen] = useState(
-    (stock.find((e) => e.available) ?? stock[0])?.colorway ?? "",
+    (stock.find((e) => e.colorway === asked && e.available) ??
+      stock.find((e) => e.available) ??
+      stock[0])?.colorway ?? "",
   );
+  /* Announce the opening position too, not only the changes — the first
+     thing shown has to agree with the first thing selected. */
+  useEffect(() => {
+    if (chosen) onChoose?.(chosen);
+  }, [chosen, onChoose]);
+
   const entry = stock.find((e) => e.colorway === chosen);
   const available = entry?.available === true;
   const { add } = useBag();

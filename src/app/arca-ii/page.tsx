@@ -62,9 +62,20 @@ export default function ArcaTwoPage() {
         <div className="relative">
           <ProductMeaning meaning={arca.meaning} />
           <ProductBand detail={arca.detail} />
+          {/* The offer sits directly under the band's line, the same order
+              ARCA I runs: the band makes a claim about the material, the
+              offer is the object that claim is about, and the
+              specification follows both — the argument, the thing, then
+              the numbers.
+
+              It lives inside the sticky leash rather than after it, which
+              is safe only because this section carries an explicit z-index
+              of 36 and an opaque background. That is exactly what the
+              leash demands of anything passing over the pinned plate; read
+              the note above before moving it. */}
+          <ProductOffering offering={arca.offering} buyHref={BUY} />
           <ProductSpec spec={arca.spec} />
         </div>
-        <ProductOffering offering={arca.offering} buyHref={BUY} />
         <ProductVariations variations={arca.variations} />
         <ProductReferences references={arca.references} />
         <ProductWorn worn={arca.worn} buyHref={BUY} />

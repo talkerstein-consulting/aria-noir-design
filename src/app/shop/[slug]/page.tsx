@@ -6,9 +6,8 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { CtaLink } from "@/components/cta-link";
-import { RevealPlate, RevealText } from "@/components/reveal";
 import { SpecRows } from "@/components/product/spec-rows";
-import { ColourwayPicker } from "@/components/shop/colourway-picker";
+import { BuyHero } from "@/components/shop/buy-hero";
 import { houses, colorwayCount } from "@/lib/navigation";
 import { SHOP_ALL_URL, houseBySlug, priceOf, swatchFor } from "@/lib/shop";
 
@@ -82,66 +81,10 @@ export default async function ShopHousePage({
       <main className="relative">
         {/* ---- the whole transaction, above the fold ---- */}
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
-          <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
-            <RevealPlate className="relative aspect-[4/5] overflow-hidden bg-ink lg:sticky lg:top-28">
-              {house.plate ? (
-                <Image
-                  src={house.plate}
-                  alt={`${house.name} — ${house.material}`}
-                  fill
-                  sizes="(min-width: 1024px) 55vw, 100vw"
-                  priority
-                  className="object-cover"
-                />
-              ) : (
-                /* No photograph yet. The house's own acetate rather than a
-                   borrowed plate — the same bargain the index grid strikes,
-                   and the more important one here, where the picture is
-                   what someone is deciding on. */
-                <div
-                  className="flex h-full w-full items-end p-6"
-                  style={{
-                    background: `linear-gradient(160deg, ${house.swatch ?? swatchFor(house.colorwayNames[0])} 0%, var(--ink) 82%)`,
-                  }}
-                >
-                  <span className="t-micro">Photography in progress</span>
-                </div>
-              )}
-            </RevealPlate>
-
-            <div className="stack">
-              <p className="t-eyebrow">
-                {house.index} — {house.material}
-              </p>
-              <RevealText
-                as="h1"
-                text={house.name}
-                className="t-display-lg"
-              />
-              <p className="t-body t-body--lede mt-2">{house.note}</p>
-
-              <div className="mt-10">
-                <ColourwayPicker house={house} />
-              </div>
-
-              {/* The way back out to everything else. A product page whose
-                  only exits are five more pairs of glasses is a smaller
-                  shop than the one that exists. */}
-              <div className="hairline mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 pt-8">
-                <CtaLink href={SHOP_ALL_URL} external tone="quiet">
-                  Shop all
-                </CtaLink>
-                <CtaLink href="/eyewear" tone="quiet">
-                  All six houses
-                </CtaLink>
-                {house.href ? (
-                  <CtaLink href={house.href} tone="quiet">
-                    {`Read the ${house.name} story`}
-                  </CtaLink>
-                ) : null}
-              </div>
-            </div>
-          </div>
+          {/* Plate and picker are one client component: the chosen
+              colourway decides both, and a server page cannot hold that
+              between them. See BuyHero. */}
+          <BuyHero house={house} />
         </section>
 
         {/* ---- the detail, in the order it is checked ---- */}

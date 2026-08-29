@@ -12,7 +12,6 @@ import { ProductBand } from "@/components/product/product-band";
 import { ProductSpec } from "@/components/product/product-spec";
 import { ProductOffering } from "@/components/product/product-offering";
 import { ProductVariations } from "@/components/product/product-variations";
-import { ProductReferences } from "@/components/product/product-references";
 import { ProductWorn } from "@/components/product/product-worn";
 import { ProductClose } from "@/components/product/product-close";
 import * as arca from "@/lib/arca-i";
@@ -70,11 +69,29 @@ export default function ArcaOnePage() {
         <div className="relative">
           <ProductMeaning meaning={arca.meaning} />
           <ProductBand detail={arca.detail} />
+          {/* The turntable sits directly under the band's line — "acetate,
+              cut and polished the way concrete is poured and finished, one
+              material, shaped once" — because that sentence is a claim
+              about a SHAPE, and the object that can be turned is the only
+              thing on the page able to answer it. Read the line, then hold
+              the thing it describes. The specification follows both, which
+              is the right order: the argument, the evidence, then the
+              numbers.
+
+              It lives inside the sticky leash (see the note above) rather
+              than after it. That is safe here and required reading before
+              moving it again: this section carries an explicit z-index of
+              36 and an opaque background, which is exactly what the leash
+              demands of anything that passes over the pinned plate. */}
+          <ProductOffering offering={arca.offering} buyHref={BUY} />
           <ProductSpec spec={arca.spec} />
         </div>
-        <ProductOffering offering={arca.offering} buyHref={BUY} />
         <ProductVariations variations={arca.variations} />
-        <ProductReferences references={arca.references} />
+        {/* No References band on this page. ARCA II still runs one — the
+            component and its data are per-house, and this house's list
+            (Whistler, La Tour, Hopper, Atget) was four names between the
+            colourway stage and the registry with nothing asked of the
+            reader in between. */}
         <ProductWorn worn={arca.worn} buyHref={BUY} />
         <WhiteDotOverlay anchorId="worn" />
         <ProductClose close={arca.close} buyHref={BUY} />

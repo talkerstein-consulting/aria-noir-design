@@ -33,6 +33,13 @@ export type Hero = {
   alt: string;
   /** Campaign film. Omit and the hero renders the still alone. */
   video?: string;
+  /**
+   * What is held under the film until it can actually play. Defaults to
+   * `image`, which is a different photograph from the one the film opens
+   * on — so the hero visibly CUT when the video took over. A frame pulled
+   * from the film itself makes the handover invisible.
+   */
+  poster?: string;
 };
 
 export type Opening = {
@@ -80,12 +87,20 @@ export type Spec = {
   macro: readonly Plate[];
 };
 
+/**
+ * The offer, reduced to the three things it actually needs: what the frame
+ * is called, the one action, and the note about the register.
+ *
+ * It used to carry a price, a tagline and the colourway list as well. All
+ * three were saying something a better surface already says — the buy page
+ * prices each colourway separately (the run is not one number), the
+ * variations stage now names every colour at full bleed, and the tagline
+ * repeated the hero. What is left is an offer rather than a summary of the
+ * page above it.
+ */
 export type Offering = {
   preheader: string;
   name: string;
-  tagline: string;
-  price: string;
-  colorways: readonly string[];
   cta: string;
   registryNote: string;
   /**
@@ -102,6 +117,13 @@ export type Colorway = {
   swatch: string;
   image?: string;
   alt?: string;
+  /**
+   * Where this colourway is bought. Present only where the house has a buy
+   * page — the panel keeps its plate and its name either way, and simply
+   * shows no action when there is nowhere to send anyone.
+   */
+  href?: string;
+  cta?: string;
 };
 
 export type Variations = {

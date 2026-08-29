@@ -31,9 +31,11 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  * element beats an auto-z sibling regardless of source order); without the
  * background this section would show through it.
  *
- * The gradient lives INSIDE the text column (bleeding right, past its own
- * edge) rather than as a separate overlay, so it is set off against the
- * plate as one unit.
+ * The gradient is a section-level overlay rather than something inside the
+ * text column: the column is now centred on the page's own container (see
+ * the note on it), and a scrim that travelled with it would start a couple
+ * of hundred pixels in from the left edge on a wide screen, leaving a
+ * bright strip of the plate showing down the side of the page.
  */
 export function ProductMeaning({ meaning }: { meaning: Meaning }) {
   return (
@@ -52,25 +54,49 @@ export function ProductMeaning({ meaning }: { meaning: Meaning }) {
         />
       </RevealPlate>
 
-      {/* The column no longer needs its own `sticky` — the section around it
-          is the thing that pins now, so this just fills it. */}
-      <div className="relative z-10 flex h-full w-full flex-col justify-center gap-5 px-6 py-20 sm:w-3/5 sm:px-10 sm:py-28 lg:w-1/2">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/70 to-transparent sm:inset-y-0 sm:right-auto sm:left-0 sm:w-[140%] sm:bg-gradient-to-r sm:from-ink sm:via-ink/80 sm:from-40% sm:to-transparent"
-        />
-        <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase italic">
-          {meaning.eyebrow}
-        </p>
-        <RevealText
-          as="h2"
-          text={meaning.heading}
-          className="max-w-xl font-display text-3xl leading-[1.1] tracking-tight text-balance text-paper italic sm:text-5xl"
-        />
-        <p className="max-w-[52ch] font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base">
-          {meaning.body}
-        </p>
+      {/* The scrim is the SECTION's now, not the column's. It has to start
+          at the true left edge of the viewport whatever the column does,
+          and the column no longer starts there — see the note below. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-t from-ink via-ink/70 to-transparent sm:inset-y-0 sm:right-auto sm:left-0 sm:w-[85%] sm:bg-gradient-to-r sm:from-ink sm:from-40% sm:via-ink/80 sm:to-transparent"
+      />
+
+      {/* Aligned to the page's own column, not to the gutter.
+          
+          The text used to start at the section's padding — 24px, 40px at
+          sm — while every other section on this page puts its content in a
+          centred `max-w-7xl`, whose left edge on a wide screen is a couple
+          of hundred pixels further in. So the one section that is
+          full-bleed by design was also the one section whose type did not
+          line up with anything above or below it, and on a wide monitor
+          that reads as the paragraph having slid off the page.
+
+          Same container, same gutter, same left edge as its neighbours.
+          The gutter is on the flex wrapper and the `max-w-7xl` inside it,
+          which is the order `.section` uses — the other way round adds the
+          padding INSIDE the container and lands the type 40px further in
+          than every section it is meant to line up with. The COLUMN's width
+          is capped rather than set as a fraction of the section, so the
+          measure holds while the container does the aligning. */}
+      <div className="relative z-10 flex h-full items-center px-6 sm:px-10">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
+          <div className="flex flex-col gap-5 sm:max-w-[58%] lg:max-w-[48%]">
+            <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase italic">
+              {meaning.eyebrow}
+            </p>
+            <RevealText
+              as="h2"
+              text={meaning.heading}
+              className="font-display text-3xl leading-[1.1] tracking-tight text-balance text-paper italic sm:text-5xl"
+            />
+            <p className="max-w-[52ch] font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base">
+              {meaning.body}
+            </p>
+          </div>
+        </div>
       </div>
+
     </section>
   );
 }

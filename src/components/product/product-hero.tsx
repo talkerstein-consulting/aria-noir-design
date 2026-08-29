@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Hero } from "@/lib/product";
 import { RevealText } from "@/components/reveal";
 import { HeroName } from "./hero-name";
+import { HeroFilm } from "./hero-film";
 
 /**
  * Full-bleed opening plate. The film carries the fold; type is centred and
@@ -10,8 +11,10 @@ import { HeroName } from "./hero-name";
  *
  * The film runs alone for a beat before anything is written over it: the
  * whole overlay — scrim included — is held back by ENTER_MS so the opening
- * frame is read as film first and as a title card second. The still is the
- * poster, so the first paint is the same image the page used to ship.
+ * frame is read as film first and as a title card second. Under the film
+ * sits its own first frame as a still, and the film fades up over it once
+ * it is actually rolling — see HeroFilm — so the opening is one continuous
+ * picture rather than a plate that gets replaced.
  *
  * A house without a campaign film gets the still on its own and the same
  * hold. Nothing else changes — the beat belongs to the type, not to the
@@ -23,16 +26,11 @@ export function ProductHero({ hero }: { hero: Hero }) {
   return (
     <section className="on-ink relative flex min-h-svh flex-col justify-end overflow-hidden bg-ink">
       {hero.video ? (
-        <video
-          className="absolute inset-0 h-full w-full object-cover object-[50%_30%]"
+        <HeroFilm
           src={hero.video}
-          poster={hero.image}
-          aria-label={hero.alt}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
+          poster={hero.poster ?? hero.image}
+          alt={hero.alt}
+          className="object-cover object-[50%_30%]"
         />
       ) : (
         <Image

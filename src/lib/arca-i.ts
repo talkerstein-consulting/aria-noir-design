@@ -21,7 +21,6 @@ import type {
   Meaning,
   Offering,
   Opening,
-  References,
   Shoot,
   Spec,
   Variations,
@@ -42,6 +41,9 @@ export const hero: Hero = {
   image: `${P}/hero-arca.jpg`,
   alt: "ARCA I, amber-lit portrait, layered foreground — the campaign's climax frame",
   video: "/video/arca-i-hero.mp4",
+  /** Frame 0 of the film above, so the still and the first frame of the
+   *  footage are the same picture. */
+  poster: `${P}/hero-poster.jpg`,
 };
 
 export const structure: Opening = {
@@ -145,13 +147,16 @@ export const spec: Spec = {
   /* Four plates only, one per subject — bridge, temple hinge, temple face,
      nose. The fuller macro set doubled up on the same detail from adjacent
      angles (inner-left / inner-left-2, inner-right / -2 / -full), which read
-     as a contact sheet rather than a specification. spec-macro-bridge and
-     spec-macro-ltemple are deliberately out: both repeat a subject already
-     covered here. */
+     as a contact sheet rather than a specification. spec-macro-bridge,
+     spec-macro-rtemple and spec-macro-ltemple are all deliberately out:
+     each repeats a subject already covered here. The temple is carried by
+     the inner-right frame, which is the one that shows the hinge — the
+     part the sheet makes its longest claim about — with the house mark and
+     the CE stamp on the arm behind it. */
   macro: [
     { src: `${P}/spec-macro-keyhole.jpg`, alt: "Macro of the keyhole bridge, artsy light" },
     { src: `${P}/spec-macro-inner-left.jpg`, alt: "Macro of the inner left temple detail" },
-    { src: `${P}/spec-macro-rtemple.jpg`, alt: "Macro detail of the right temple" },
+    { src: `${P}/spec-macro-inner-right.jpg`, alt: "Macro of the inner right temple: the hinge, the house mark and the CE stamp" },
     { src: `${P}/spec-macro-nose.jpg`, alt: "Macro of the bridge at nose level, front on" },
   ],
 };
@@ -159,30 +164,64 @@ export const spec: Spec = {
 export const offering: Offering = {
   preheader: "The Offering",
   name: "ARCA I",
-  tagline: "The first vessel. The house's founding model.",
-  price: "$100",
-  colorways: ["K Black", "Z White", "Proceso Brown", "309 Blue"],
   cta: "Enter the Registry",
   registryNote:
-    "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever. This is where your house record begins.",
+    "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
   /* The only house with a turntable in the pool. */
   view: { kind: "model" },
 };
 
+/** The colourway still-life set. Shot against the same brutalist ground as
+ *  the campaign, so the four read as one series rather than four product
+ *  shots. Each is now a full-bleed panel on the sticky stage, so it is one
+ *  plate per colour rather than a card and a gallery behind it.
+ *
+ *  `href` is the buy page with the colourway already chosen — the whole
+ *  point of naming a colour at full bleed is that the reader can act on
+ *  THAT one, and landing them on the house's default acetate makes them
+ *  find it again by hand.
+ */
+const V = `${P}/variants`;
+const buyColour = (name: string) =>
+  `/shop/arca-i?colourway=${encodeURIComponent(name)}`;
+
 export const variations: Variations = {
   preheader: "The Variations",
-  heading: "Four colorways. One building. Each one found the corner of the structure that already agreed with it.",
+  heading: "Four colorways. One building.",
   colorways: [
-    { name: "K Black", swatch: "#0b0b0c", image: `${P}/variation-kblack-side.jpg`, alt: "K Black — side profile" },
-    { name: "Z White", swatch: "#e8e5df" },
-    { name: "Proceso Brown", swatch: "#4a3626" },
-    { name: "309 Blue", swatch: "#1f2c3d" },
+    {
+      name: "K Black",
+      swatch: "#0b0b0c",
+      image: `${V}/k-black-main.jpg`,
+      alt: "K Black — front on, against poured concrete",
+      href: buyColour("K Black"),
+      cta: "Acquire K Black",
+    },
+    {
+      name: "Z White",
+      swatch: "#e8e5df",
+      image: `${V}/z-white-main.jpg`,
+      alt: "Z White — front on, against poured concrete",
+      href: buyColour("Z White"),
+      cta: "Acquire Z White",
+    },
+    {
+      name: "Proceso Brown",
+      swatch: "#4a3626",
+      image: `${V}/proceso-brown-main.jpg`,
+      alt: "Proceso Brown — front on, against poured concrete",
+      href: buyColour("Proceso Brown"),
+      cta: "Acquire Proceso Brown",
+    },
+    {
+      name: "309 Blue",
+      swatch: "#1f2c3d",
+      image: `${V}/309-blue-main.jpg`,
+      alt: "309 Blue — front on, against poured concrete",
+      href: buyColour("309 Blue"),
+      cta: "Acquire 309 Blue",
+    },
   ],
-};
-
-export const references: References = {
-  label: "References",
-  names: ["Whistler", "La Tour", "Hopper", "Atget"],
 };
 
 export const worn: Worn = {

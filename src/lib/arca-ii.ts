@@ -165,28 +165,9 @@ export const spec: Spec = {
 export const offering: Offering = {
   preheader: "The Offering",
   name: "ARCA II",
-  tagline: "The second cut. One shape, and the widest colour run the house holds.",
-  price: "$125",
-  /* The real run, read off the 3D source set — see `colorwayNames` in
-     lib/navigation, which is where the names now live for every house.
-     Six of these were placeholders (Cognac, Havana, Smoke, Ash, Bordeaux,
-     Ivory) invented before the bench had been asked; the buy page at
-     /shop/arca-ii was showing the true eight while this page showed the
-     invented ones, which is the two halves of the site disagreeing about
-     what the house sells. */
-  colorways: [
-    "Noir",
-    "Dark Tortoise",
-    "Caramel Stripe",
-    "Root Beer Float",
-    "Tutti Frutti",
-    "Dreamy Rose",
-    "Velvet Rose",
-    "Pixie Dust",
-  ],
   cta: "Enter the Registry",
   registryNote:
-    "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever. This is where your house record begins.",
+    "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
   /* No turntable for this cut — the still life stands in. */
   view: {
     kind: "plate",
@@ -195,26 +176,35 @@ export const offering: Offering = {
   },
 };
 
+/** Every colourway lands on the buy page with that acetate already chosen
+ *  — the same handover ARCA I makes. A colour named at full bleed that
+ *  drops the reader on the house's default is a colour they then have to
+ *  find again by hand. */
+const buyColour = (name: string) =>
+  `/shop/arca-ii?colourway=${encodeURIComponent(name)}`;
+
 export const variations: Variations = {
   preheader: "The Variations",
   heading: "Eight colourways, and one room dark enough that the difference between them is a matter of how each one gives light back.",
   /* Only the Noir has a still in the pool; the rest carry a swatch and a
      name, the same treatment the eyewear index uses for houses whose
-     photography has not landed.
+     photography has not landed. On the stage that swatch becomes the
+     panel's whole ground — the acetate itself, at full bleed, rather than a
+     borrowed photograph of a frame this house does not make.
 
      The hexes come from SWATCHES in lib/shop so this page and the buy page
      cannot show the same acetate in two different colours. They are still
      approximations — nobody has measured the material — but they are one
      approximation rather than two. */
   colorways: [
-    { name: "Noir", swatch: swatchFor("Noir"), image: `${P}/object-front.jpg`, alt: "Noir — laid on concrete, front on" },
-    { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise") },
-    { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe") },
-    { name: "Root Beer Float", swatch: swatchFor("Root Beer Float") },
-    { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti") },
-    { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose") },
-    { name: "Velvet Rose", swatch: swatchFor("Velvet Rose") },
-    { name: "Pixie Dust", swatch: swatchFor("Pixie Dust") },
+    { name: "Noir", swatch: swatchFor("Noir"), image: `${P}/object-front.jpg`, alt: "Noir — laid on concrete, front on", href: buyColour("Noir"), cta: "Acquire Noir" },
+    { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise"), href: buyColour("Dark Tortoise"), cta: "Acquire Dark Tortoise" },
+    { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe"), href: buyColour("Caramel Stripe"), cta: "Acquire Caramel Stripe" },
+    { name: "Root Beer Float", swatch: swatchFor("Root Beer Float"), href: buyColour("Root Beer Float"), cta: "Acquire Root Beer Float" },
+    { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti"), href: buyColour("Tutti Frutti"), cta: "Acquire Tutti Frutti" },
+    { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose"), href: buyColour("Dreamy Rose"), cta: "Acquire Dreamy Rose" },
+    { name: "Velvet Rose", swatch: swatchFor("Velvet Rose"), href: buyColour("Velvet Rose"), cta: "Acquire Velvet Rose" },
+    { name: "Pixie Dust", swatch: swatchFor("Pixie Dust"), href: buyColour("Pixie Dust"), cta: "Acquire Pixie Dust" },
   ],
 };
 

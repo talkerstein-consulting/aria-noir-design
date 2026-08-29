@@ -1,18 +1,29 @@
 import Image from "next/image";
 import type { Offering } from "@/lib/product";
-import { SECTION_PAD } from "@/lib/timeline";
 import { CtaLink } from "@/components/cta-link";
-import { RevealText, RevealPlate } from "@/components/reveal";
+import { RevealText } from "@/components/reveal";
 import { ProductModel } from "@/components/product/product-model";
+import { ConcreteField } from "@/components/vectors/ConcreteField";
 
 /**
- * "The Offering" — static, centered, no scroll-triggered dissolve, no amber
- * accent rule. Copy stays plain and factual: number, colorways, one action.
- * Where there is a turntable — ARCA I's K Black, dragable, slow auto-spin —
- * it carries whatever warmth the section needs, standing in for a product
- * photograph. Where there is not, a still life does the same job, and the
- * halo behind it is what keeps a black frame from floating on a black page
- * either way.
+ * "The Offering" — a full-screen stage for the object, with the offer set
+ * low over it.
+ *
+ * It was a centred stack in a 3:2 plate, and once the price, the tagline
+ * and the colourway list came off it there was not enough left to hold the
+ * middle of a section: a small frame floating in a large dark box, a name
+ * and a link. The frame is the argument here, so it gets the screen, and
+ * the three things still being said sit at the foot of it — the same
+ * treatment the colourway panels use, which is what makes the two read as
+ * the same page rather than two centring habits.
+ *
+ * The type is left-aligned at the page's gutter rather than centred: the
+ * object is dead centre and stays there, and a centred stack under it
+ * would put words across the frame's own shadow at every window height.
+ *
+ * The halo is now sized to the screen rather than to a plate. It is doing
+ * the same job it always did — a black frame on a black page has nowhere
+ * to sit — just at the scale the stage is.
  */
 /**
  * `buyHref` is where the offer actually goes.
@@ -35,61 +46,88 @@ export function ProductOffering({
   return (
     <section
       id="offering"
-      className={`relative z-[36] bg-ink px-6 sm:px-10 ${SECTION_PAD}`}
+      className="relative z-[36] flex min-h-svh flex-col justify-end overflow-hidden bg-ink"
     >
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-12 text-center sm:gap-16">
-        <p className="font-ui text-[11px] tracking-[0.35em] text-paper/50 uppercase">
-          {offering.preheader}
-        </p>
+      {/* The architecture the object stands in. Behind the halo and behind
+          the frame, fading out before the type — see ConcreteField. Only
+          where the object is the turntable: a still life already arrives
+          with a building in it. */}
+      {offering.view.kind === "model" ? <ConcreteField /> : null}
 
-        <RevealPlate className="relative aspect-[3/2] w-full touch-none overflow-hidden">
-          {/* The frame is black and so is the page. This halo gives it
-              somewhere to sit — a pool of light the object stands in,
-              rather than a cut-out floating on nothing. Two stops: a warm
-              gold core at very low alpha, fading to nothing well inside
-              the plate edge so it never shows a seam against the section. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 [background:radial-gradient(58%_58%_at_50%_46%,rgba(198,166,100,0.16)_0%,rgba(198,166,100,0.06)_38%,rgba(0,0,0,0)_72%)]"
+      {/* The ground the object stands on, rather than a cut-out floating on
+          nothing.
+
+          Broad and flat, not a pool. It was a tight warm core at 18% — a
+          spotlight, which is exactly the reading the scene's own rig has
+          just been taken off. This is the same idea under an overcast sky:
+          a wide, weak lift across most of the frame, barely warm, with no
+          discernible centre to point at. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 [background:radial-gradient(78%_74%_at_50%_42%,rgba(198,166,100,0.09)_0%,rgba(198,166,100,0.05)_45%,rgba(0,0,0,0)_84%)]"
+      />
+
+      {/* The object, and — where it is the turntable — its own Rotate
+          control, which ProductModel carries rather than this section: the
+          label belongs to the thing that turns, not to the offer around
+          it. */}
+      <div className="absolute inset-0">
+        {offering.view.kind === "model" ? (
+          <ProductModel />
+        ) : (
+          <Image
+            src={offering.view.image}
+            alt={offering.view.alt}
+            fill
+            sizes="100vw"
+            /* contain, not cover: this is a still life of one object, and
+               cropping a product shot to fill a screen cuts the temples
+               off the frame being sold. */
+            className="object-contain p-10 sm:p-20"
           />
-          {offering.view.kind === "model" ? (
-            <ProductModel />
-          ) : (
-            <Image
-              src={offering.view.image}
-              alt={offering.view.alt}
-              fill
-              sizes="(min-width: 768px) 56rem, 100vw"
-              className="object-contain"
-            />
-          )}
-        </RevealPlate>
+        )}
+      </div>
 
-        <div className="flex flex-col items-center gap-4">
+      {/* Seats the type. Same mechanic as the colourway panels: only as
+          tall as the words need, and nothing over the object itself. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink from-20% via-ink/70 via-55% to-transparent"
+      />
+
+      {/* Centred under the object, on its axis.
+
+          It sat in the bottom-left corner while the frame hung dead centre
+          above it, which is a composition with two subjects and no
+          relationship between them. On the centre line the name reads as
+          this object's caption and the CTA as the action for it.
+
+          Still transparent to the pointer except where it is an actual
+          control: the block spans the full width of the section and paints
+          after the viewer, so left alone it swallows drags aimed at the
+          frame. */}
+      <div className="pointer-events-none relative px-6 pb-16 sm:px-10 sm:pb-20">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-3 text-center">
+          <p className="font-ui text-[11px] tracking-[0.35em] text-paper/50 uppercase">
+            {offering.preheader}
+          </p>
+
           <RevealText
             as="h2"
             text={offering.name}
-            className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl"
+            className="font-display text-6xl leading-[1.02] tracking-tight text-paper sm:text-8xl"
           />
-          <p className="max-w-md font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base">
-            {offering.tagline}
+
+          <CtaLink href={buyHref} className="pointer-events-auto mt-6">
+            {offering.cta}
+          </CtaLink>
+
+          <p className="mt-6 max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/40">
+            {offering.registryNote}
           </p>
         </div>
-
-        <p className="font-ui text-3xl tabular-nums text-paper sm:text-4xl">
-          {offering.price}
-        </p>
-
-        <p className="font-ui text-[11px] tracking-[0.25em] text-paper/50 uppercase">
-          Available in {offering.colorways.join(" · ")}
-        </p>
-
-        <CtaLink href={buyHref}>{offering.cta}</CtaLink>
-
-        <p className="max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/40">
-          {offering.registryNote}
-        </p>
       </div>
+
     </section>
   );
 }
