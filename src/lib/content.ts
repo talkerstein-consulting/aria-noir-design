@@ -164,19 +164,45 @@ export const newsletter = {
  * the last stretch of black on the page — the right ground for the one
  * offer the house makes that is not for everybody.
  */
+/** Every file in a `{i}` sequence, expanded. The loader waits on these, so
+ *  the film is already decoded by the time anyone scrolls to it. */
+export function sequenceUrls(seq: {
+  src: string;
+  count: number;
+  pad: number;
+  start: number;
+}): string[] {
+  return Array.from({ length: seq.count }, (_, i) =>
+    seq.src.replace("{i}", String(seq.start + i).padStart(seq.pad, "0")),
+  );
+}
+
 export const privateAccess = {
   heading: "The next edition isn't for everyone.",
   body:
     "Private access to unreleased frames, limited editions, and first releases — before they enter the collection.",
   cta: "Request private access",
   href: "/contact",
-  /** Scrubbed frame by frame against the scroll: a five-second turntable of
-   *  the frame on black, 121 frames at 24fps. The right film for this
-   *  section precisely because it shows the OBJECT and nothing around it —
-   *  no room, no model, no context to place it in. What is being offered is
-   *  a look at something before anyone else, and this is what that looks
-   *  like. */
-  video: "/video/private-access-scrub.mp4",
+  /**
+   * The turntable, as a FRAME SEQUENCE rather than a video.
+   *
+   * It began as the mp4 and the stage sampled it at runtime — seeking the
+   * video once per frame, which costs a few hundred milliseconds each and
+   * left a percentage counting up where the film should be. Extracted ahead
+   * of time it is 61 webp stills that the browser decodes as ordinary
+   * images, in parallel, with no seek loop and no bank of canvases: 256KB
+   * for the set against 728KB for the clip, because a mostly-black frame
+   * compresses to about four kilobytes.
+   *
+   * Regenerate with ffmpeg after replacing the source clip:
+   *   ffmpeg -i public/video/private-access-scrub.mp4    *     -vf "select='not(mod(n,2))',scale=900:-2" -fps_mode passthrough    *     -c:v libwebp -q:v 74 -f image2 public/frames/private-access/f-%03d.webp
+   */
+  frames: {
+    src: "/frames/private-access/f-{i}.webp",
+    count: 61,
+    pad: 3,
+    start: 1,
+  },
 };
 
 export const footer = {

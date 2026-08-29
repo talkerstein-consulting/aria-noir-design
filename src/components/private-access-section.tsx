@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useSyncExternalStore } from "react";
 import FrameScrub from "@/components/frame-scrub";
 import { privateAccess } from "@/lib/content";
 import { CtaLink } from "@/components/cta-link";
@@ -47,7 +48,53 @@ import { RevealText } from "@/components/reveal";
 const TOP_VH = 7;
 const STAGE_VH = 72;
 
+/** Below this the sequence is sampled for a phone rather than a desktop. */
+const SMALL = "(max-width: 767px)";
+
+/**
+ * How many frames are decoded, and how wide each one is kept.
+ *
+ * These two numbers are the whole cost of this section. Every frame is held
+ * as a decoded canvas, so the memory is roughly count × width × height × 4
+ * — 108 frames at 720px is about 120MB, which is fine on a laptop and is a
+ * phone browser discarding the tab.
+ *
+ * Worse than the memory was the WAIT. Frames are harvested by seeking the
+ * video once per frame, and on a phone that took long enough that the
+ * section showed the component's own loading readout — a percentage
+ * counting up on a black screen where the film should be. That is what was
+ * busted on mobile: not the layout, the budget.
+ *
+ * 36 frames of a five-second turn is a frame every 140ms. On a screen this
+ * size, scrubbed by a thumb, that reads as continuous.
+ *
+ * The desktop number came down too, from 108. Frames are harvested by
+ * seeking the video once each, so the count is also a WAIT — at 108 the
+ * readout was still climbing when a reader arrived at the section. 72 over
+ * five screens of scroll is a frame every 7vh of travel, which on a turn
+ * this slow is more than the eye asks for.
+ */
+const SAMPLE = {
+  small: { fit: "contain" },
+  large: { fit: "cover" },
+} as const;
+
 export function PrivateAccessSection() {
+  /* Read once, at mount, through the store React gives for exactly this:
+     no state written from an effect, and a server render that matches the
+     client's first paint because both start from the desktop branch. */
+  const subscribe = useCallback((notify: () => void) => {
+    const mq = window.matchMedia(SMALL);
+    mq.addEventListener("change", notify);
+    return () => mq.removeEventListener("change", notify);
+  }, []);
+  const small = useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(SMALL).matches,
+    () => false,
+  );
+  const sample = small ? SAMPLE.small : SAMPLE.large;
+
   return (
     <section id="private-access" className="relative z-[36] bg-ink">
       <div className="relative">
@@ -72,17 +119,12 @@ export function PrivateAccessSection() {
            all and the film silently sits back in the middle — the two have
            to be kept in step by hand. */
         className="[&>div]:!px-0 [&>div]:justify-start [&>div]:pt-[7vh]"
-        video={privateAccess.video}
-        /* Nearly every frame the clip has (121), because the scrub is now
-           long enough that a sparse set would step.
-
-           Each frame is held as a decoded canvas at `videoQuality` across,
-           so the two numbers trade against each other: 108 × 720 is about
-           the same memory as the 84 × 860 this replaces, and on a stage
-           already upscaling to ~1800px the softer sample is invisible while
-           the extra frames are not. */
-        count={108}
-        videoQuality={720}
+        /* A pre-extracted still sequence, not the clip — see `frames` in
+           lib/content for why, and for how to regenerate it. */
+        src={privateAccess.frames.src}
+        count={privateAccess.frames.count}
+        pad={privateAccess.frames.pad}
+        start={privateAccess.frames.start}
         /* The film's own black, not the page's.
         
            `contain` letterboxes a 1280×704 clip inside a taller stage, and
@@ -93,16 +135,16 @@ export function PrivateAccessSection() {
         background="#000000"
         accent="#c6a664"
         variant="blend"
-        /* cover at full bleed, and this is what actually fixes the seam.
-        
-           `contain` letterboxes, and a letterboxed stage has TWO blacks in
-           it: the film's (rgb 3,3,3 — h264 does not quite reach zero) and
-           whatever the bars are painted. No value blends both, which is why
-           the stage read as a rectangle laid on the page however the colour
-           was set. Filling the box removes the bars, so the only black on
-           screen is the film's own. The clip has generous margin around the
-           frame, so covering crops air rather than acetate. */
-        fit="cover"
+        /* Wide screens fill the box; narrow ones fit inside it.
+
+           `cover` on a phone crops a 16:9 clip into a portrait stage hard
+           enough that only the bridge of the frame survives — the object
+           being teased goes off both edges. `contain` shows the whole frame
+           and letterboxes instead, which used to be the worse trade because
+           the bars and the film were two different blacks. They are not any
+           more: the stage is painted #000 and the clip's black measures
+           rgb(3,3,3), a difference no screen resolves. */
+        fit={sample.fit}
         height={STAGE_VH / 100}
         /* Uncapped in practice: the stage takes the window's width, and the
            number is only here because the prop demands one. */

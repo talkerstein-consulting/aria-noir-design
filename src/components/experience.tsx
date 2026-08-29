@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AtelierSection } from "./atelier-section";
 import { CollectionsSection } from "./collections-section";
 import { GridSection } from "./grid-section";
-import { PrivateAccessSection } from "./private-access-section";
+import dynamic from "next/dynamic";
 import { WhiteDotOverlay } from "./white-dot-overlay";
 import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
@@ -21,7 +21,23 @@ import {
 } from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
 import { whenAssetsReady } from "@/lib/preload";
-import { privateAccess } from "@/lib/content";
+import { privateAccess, sequenceUrls } from "@/lib/content";
+
+/**
+ * The scrubbed film, loaded on demand.
+ *
+ * It is the heaviest thing on this page after the hero — a canvas engine
+ * that decodes a video into frames — and it sits below four full sections.
+ * Nobody has seen it by the time the home page has to be interactive, so
+ * none of it belongs in the first payload. `ssr: false` because it is a
+ * canvas that measures the window: there is nothing for the server to
+ * render but a hole the same size.
+ */
+const PrivateAccessSection = dynamic(
+  () =>
+    import("./private-access-section").then((m) => m.PrivateAccessSection),
+  { ssr: false, loading: () => <div className="h-[520vh] bg-ink" /> },
+);
 
 /* ---------- opening ----------
    One rAF loop writing straight to the DOM. Nothing goes through React state
@@ -162,9 +178,11 @@ export function Experience() {
 
     /* The counter now waits on the page. The hero film is the one that
        matters most — it is what the box expands into — but everything the
-       document declared is included, plus the scrubbed clip further down,
-       which no markup above would otherwise make anyone wait for. */
-    whenAssetsReady({ files: [privateAccess.video] }).then(() => {
+       document declared is included, plus the scrub sequence further down —
+       61 stills totalling 256KB, which no markup above would otherwise make
+       anyone wait for and which decide whether that section has a picture
+       in it when a reader arrives. */
+    whenAssetsReady({ files: sequenceUrls(privateAccess.frames) }).then(() => {
       ready = true;
     });
 

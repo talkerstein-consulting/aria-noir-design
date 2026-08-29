@@ -1,3 +1,20 @@
+/* Vendored from the reactbits registry:
+ *   npx shadcn@latest add @reactbits-starter/frame-scrub-tw
+ *
+ * EDITED LOCALLY — re-running that command overwrites this file and loses
+ * the change. What differs from the registry version:
+ *
+ *   • the canvas backing store is capped at 1.25× on screens under 768px
+ *     (search "capped harder"), because a phone repainting a 1100px-wide
+ *     canvas per scroll frame is where this section's jank came from.
+ *
+ * The component also ships five compositing variants, a procedural stand-in
+ * sequence and two frame-naming schemes that this site never reaches. They
+ * are dead weight rather than a bug, and removing them is a rewrite of
+ * someone else's module — so they stay, and PrivateAccessSection is loaded
+ * on demand instead (see next/dynamic there) to keep the whole thing off
+ * the home page's first payload.
+ */
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -811,7 +828,13 @@ export const FrameScrub = ({
 
     const resize = () => {
       const box = cv.getBoundingClientRect();
-      const dpr = Math.min(2, view.devicePixelRatio || 1);
+      /* Capped harder on small screens. A phone reports dpr 2–3, so the
+         backing store for a full-width stage is 750–1100px of canvas being
+         repainted on every scroll frame — for a dark, soft film where the
+         difference is invisible and the jank is not. Local edit to the
+         vendored component; see the note at the head of the file. */
+      const dense = view.matchMedia?.("(max-width: 767px)").matches ?? false;
+      const dpr = Math.min(dense ? 1.25 : 2, view.devicePixelRatio || 1);
       const w = Math.max(1, Math.round(box.width));
       const h = Math.max(1, Math.round(box.height));
       if (
