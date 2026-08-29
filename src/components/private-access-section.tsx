@@ -46,7 +46,24 @@ import { RevealText } from "@/components/reveal";
  * own edge showing.
  */
 const TOP_VH = 7;
+
+/** The stage on a wide screen: a band across most of the window. */
 const STAGE_VH = 72;
+
+/**
+ * The stage on a phone: a 4:5 portrait plate, 1080×1350 in the shape the
+ * house's stills are cut to.
+ *
+ * A landscape band on a portrait screen either crops the frame down to its
+ * bridge (cover) or floats it small in the middle of a lot of black
+ * (contain). A portrait plate is the shape the picture wants on that
+ * screen, and `cover` into it is a genuine zoom rather than a compromise —
+ * the frame arrives at the size a phone can actually read it at.
+ *
+ * Its height therefore follows the WIDTH, not the viewport: 100vw × 5/4,
+ * expressed as the fraction of viewport height the stage prop takes.
+ */
+const PORTRAIT_AR = 1350 / 1080;
 
 /** Below this the sequence is sampled for a phone rather than a desktop. */
 const SMALL = "(max-width: 767px)";
@@ -75,7 +92,8 @@ const SMALL = "(max-width: 767px)";
  * this slow is more than the eye asks for.
  */
 const SAMPLE = {
-  small: { fit: "contain" },
+  /* Zoomed into the portrait plate, not fitted inside it. */
+  small: { fit: "cover" },
   large: { fit: "cover" },
 } as const;
 
@@ -93,7 +111,32 @@ export function PrivateAccessSection() {
     () => window.matchMedia(SMALL).matches,
     () => false,
   );
+
+  /* The phone stage is sized off the window's WIDTH, so it has to be
+     recomputed when the window changes — a rotation is a different plate,
+     not a stretched one. Rounded to three places because the snapshot is
+     compared by value: an unrounded ratio would report a new number on
+     every resize pixel and re-render for nothing. */
+  const resize = useCallback((notify: () => void) => {
+    window.addEventListener("resize", notify);
+    window.addEventListener("orientationchange", notify);
+    return () => {
+      window.removeEventListener("resize", notify);
+      window.removeEventListener("orientationchange", notify);
+    };
+  }, []);
+  const portrait = useSyncExternalStore(
+    resize,
+    () =>
+      Math.round(
+        Math.min(0.94, (window.innerWidth * PORTRAIT_AR) / window.innerHeight) *
+          1000,
+      ) / 1000,
+    () => STAGE_VH / 100,
+  );
+
   const sample = small ? SAMPLE.small : SAMPLE.large;
+  const stage = small ? portrait : STAGE_VH / 100;
 
   return (
     <section id="private-access" className="relative z-[36] bg-ink">
@@ -145,7 +188,7 @@ export function PrivateAccessSection() {
            more: the stage is painted #000 and the clip's black measures
            rgb(3,3,3), a difference no screen resolves. */
         fit={sample.fit}
-        height={STAGE_VH / 100}
+        height={stage}
         /* Uncapped in practice: the stage takes the window's width, and the
            number is only here because the prop demands one. */
         width={4000}
@@ -194,7 +237,7 @@ export function PrivateAccessSection() {
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0"
-            style={{ top: `${TOP_VH}vh`, height: `${STAGE_VH}vh` }}
+            style={{ top: `${TOP_VH}vh`, height: `${stage * 100}vh` }}
           >
             <div className="absolute inset-x-0 top-0 h-[30%] bg-gradient-to-b from-ink from-2% via-ink/55 via-45% to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-t from-ink from-2% via-ink/60 via-45% to-transparent" />
