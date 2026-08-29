@@ -5,8 +5,6 @@ import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-const MODEL_URL = "/models/arca-i-k-black.glb";
-
 /** Three quarters: enough yaw to read the temple and the hinge, and a
  *  little pitch — NOSE UP, seen from just under the brow line, which is the
  *  angle every colourway plate is shot at. A frame photographed from above
@@ -65,8 +63,8 @@ function turn(by: number) {
  * the camera is nailed down and the OBJECT rotates, on one axis, from one
  * number. There is nothing left that can tip it over.
  */
-function Model() {
-  const { scene } = useGLTF(MODEL_URL);
+function Model({ src }: { src: string }) {
+  const { scene } = useGLTF(src);
   const group = useRef<THREE.Group>(null);
   const viewport = useThree((s) => s.viewport);
 
@@ -209,7 +207,7 @@ function Model() {
   );
 }
 
-export function ProductModel() {
+export function ProductModel({ src }: { src: string }) {
   const dragging = useRef<{ id: number; x: number } | null>(null);
   /* Whether the pointer is over the object rather than merely somewhere in
      the section. Drives the cursor, and nothing else — see `near()`. */
@@ -307,7 +305,7 @@ export function ProductModel() {
           <directionalLight position={[2, 5, 4]} intensity={0.3} />
           <directionalLight position={[-4, 2, 3]} intensity={0.2} />
           <Suspense fallback={null}>
-            <Model />
+            <Model src={src} />
             {/* A white sky, built as one enormous soft source overhead and
                 large low-intensity panels all round.
 
@@ -344,4 +342,6 @@ export function ProductModel() {
   );
 }
 
-useGLTF.preload(MODEL_URL);
+/* No module-level `useGLTF.preload` any more: which frame this viewer shows
+   is now a prop, and a module cannot know it. drei caches per URL on first
+   use, which is what the second visit reads from. */

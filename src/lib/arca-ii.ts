@@ -168,12 +168,11 @@ export const offering: Offering = {
   cta: "Enter the Registry",
   registryNote:
     "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
-  /* No turntable for this cut — the still life stands in. */
-  view: {
-    kind: "plate",
-    image: `${P}/offering-frame.jpg`,
-    alt: "ARCA II, three-quarter still life on concrete",
-  },
+  /* The Noir, turning. This cut HAS an export — scripts/export-models.mjs
+     ran the whole `3d models/` set, and arca-ii-noir.glb has been sitting
+     in public/models/houses since — the page just never asked for it and
+     showed a still life instead. */
+  view: { kind: "model", src: "/models/houses/arca-ii-noir.glb" },
 };
 
 /** Every colourway lands on the buy page with that acetate already chosen

@@ -73,7 +73,7 @@ export function ProductOffering({
           it. */}
       <div className="absolute inset-0">
         {offering.view.kind === "model" ? (
-          <ProductModel />
+          <ProductModel src={offering.view.src} />
         ) : (
           <Image
             src={offering.view.image}

@@ -167,8 +167,10 @@ export const offering: Offering = {
   cta: "Enter the Registry",
   registryNote:
     "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
-  /* The only house with a turntable in the pool. */
-  view: { kind: "model" },
+  /* The house's own cut, at full mesh resolution — this page is where
+     someone is deciding, so it gets the heavier file rather than the
+     index's export. */
+  view: { kind: "model", src: "/models/arca-i-k-black.glb" },
 };
 
 /** The colourway still-life set. Shot against the same brutalist ground as

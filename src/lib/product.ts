@@ -104,12 +104,18 @@ export type Offering = {
   cta: string;
   registryNote: string;
   /**
-   * What stands in for a product photograph. `model` is the turntable glb
-   * — one house has one, and it is not something to fake for the others.
-   * A plate is the honest fallback, and reads as a still life rather than
-   * as a viewer that refuses to spin.
+   * What stands in for a product photograph.
+   *
+   * `model` is a turntable glb, named here rather than hardcoded in the
+   * viewer: every house's Blender source has been through
+   * scripts/export-models.mjs, so which frame turns is a filename and not
+   * a component. A plate is the honest fallback for a house whose export
+   * has not been run, and reads as a still life rather than as a viewer
+   * that refuses to spin.
    */
-  view: { kind: "model" } | { kind: "plate"; image: string; alt: string };
+  view:
+    | { kind: "model"; src: string }
+    | { kind: "plate"; image: string; alt: string };
 };
 
 export type Colorway = {
