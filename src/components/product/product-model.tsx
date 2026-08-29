@@ -14,7 +14,11 @@ import * as THREE from "three";
  *
  *  The PITCH is fixed forever — only the yaw is ever touched. */
 const PITCH = -0.1;
-const REST_YAW = 0.62;
+/** Exported because the buy page's opening has to CANCEL it: the frame is
+ *  shown square to the reader on arrival and turns into three quarters as
+ *  it travels. A hand-copied 0.62 in the other file would be a second
+ *  source of truth for the same angle. */
+export const REST_YAW = 0.62;
 
 /** How quickly the frame catches up with where it has been sent. Eased
  *  rather than snapped: the object has weight, and a frame that teleports
@@ -52,6 +56,34 @@ function turn(by: number) {
 }
 
 /**
+ * Send the frame back to its display angle.
+ *
+ * The drag is free — a reader can spin the frame to the back of its own
+ * temple — but the page's opening ends at a known heading, and arriving
+ * there facing wherever it was last shoved is the object looking abandoned
+ * rather than presented. `at` is left alone so the return is EASED by the
+ * same loop that eases everything else.
+ */
+export function resetTurn() {
+  drive.to = 0;
+}
+
+/**
+ * Warm the cache for a set of glbs.
+ *
+ * `useGLTF` SUSPENDS while it fetches, and the boundary around the viewer
+ * falls back to null — so switching colourway tore the whole scene down,
+ * lights and environment included, and rebuilt it a moment later. That is
+ * the glitch: not the frame changing colour, but the stage going out and
+ * coming back around it. A file already in the cache resolves without
+ * suspending, so the swap happens inside one frame and the fade is the
+ * only thing anyone sees.
+ */
+export function preloadModels(srcs: readonly string[]) {
+  for (const src of srcs) useGLTF.preload(src);
+}
+
+/**
  * The K Black glb, at rest on three quarters, turned only by hand and only
  * about its own vertical axis.
  *
@@ -63,10 +95,33 @@ function turn(by: number) {
  * the camera is nailed down and the OBJECT rotates, on one axis, from one
  * number. There is nothing left that can tip it over.
  */
-function Model({ src }: { src: string }) {
+function Model({
+  src,
+  yaw,
+  zoom,
+  onReady,
+}: {
+  src: string;
+  yaw?: React.RefObject<number>;
+  zoom?: React.RefObject<number>;
+  onReady?: () => void;
+}) {
   const { scene } = useGLTF(src);
   const group = useRef<THREE.Group>(null);
   const viewport = useThree((s) => s.viewport);
+
+  /* Loaded, centred, and about to be drawn.
+
+     `useGLTF` SUSPENDS, so this component does not exist at all until the
+     glb is in — which makes its first effect the honest moment to tell the
+     page the frame has arrived. The caller fades the stage in on it. What
+     it replaces was a fixed timeout: the stage went opaque 90ms after the
+     colourway changed whether or not there was anything in it, so a cold
+     load showed an empty ground for as long as the fetch took and then the
+     frame appeared at full strength, with no transition at all. */
+  useEffect(() => {
+    onReady?.();
+  }, [scene, onReady]);
 
   /* ---- Where the frame turns about ----
    *
@@ -88,6 +143,22 @@ function Model({ src }: { src: string }) {
    * Measuring without mutating is idempotent however many times it runs.
    */
   const { offset, radius } = useMemo(() => {
+    /* ---- Measure from a KNOWN position, not from wherever it was left ----
+     *
+     * `useGLTF` caches by URL and hands every caller the same scene object,
+     * and `<primitive position={offset}>` below writes onto that object. So
+     * the offset this computes is applied to the very thing it is computed
+     * from, and the second time a colourway is shown the box has already
+     * been moved: it measures as centred, the offset collapses to zero, and
+     * the frame snaps back to pivoting on its own origin — which the glb
+     * puts at the FRONT of the lenses, not the middle of the object. That
+     * is the jump seen when swapping to another acetate and back.
+     *
+     * Zeroing first makes the measurement independent of what any previous
+     * mount did to the scene. It is a mutation, but an idempotent one, and
+     * the render below immediately writes the real offset back. */
+    scene.position.set(0, 0, 0);
+
     const box = new THREE.Box3().setFromObject(scene);
     const sphere = new THREE.Sphere();
     const center = new THREE.Vector3();
@@ -130,6 +201,11 @@ function Model({ src }: { src: string }) {
        * is 0.14 across, not in the scaled-up units it is drawn at.
        */
       if (mesh.name.startsWith("Lens")) {
+        /* Once per lens, not once per swap. The scene is shared and cached,
+           so this traversal runs again every time the reader comes back to
+           a colourway — and each run was building a fresh material and
+           dropping the last one on the floor. */
+        if (mesh.material instanceof THREE.MeshPhysicalMaterial) return;
         mesh.material = new THREE.MeshPhysicalMaterial({
           /* Cool and very slightly blue, the cast an optical coating has. */
           color: "#aebcc9",
@@ -197,7 +273,22 @@ function Model({ src }: { src: string }) {
   useFrame((_, delta) => {
     if (!group.current) return;
     drive.at += (drive.to - drive.at) * Math.min(1, delta * EASE);
-    group.current.rotation.set(PITCH, REST_YAW + drive.at, 0);
+    /* `yaw` is a scroll-driven BIAS, added rather than assigned: the drag
+       still owns `drive`, and the two compose instead of fighting. It is
+       read from a ref because it changes every frame — as a prop it would
+       re-render the tree sixty times a second to move a number React does
+       not draw. */
+    group.current.rotation.set(PITCH, REST_YAW + drive.at + (yaw?.current ?? 0), 0);
+    /* Enlargement happens HERE, in the scene, and never as a CSS scale on
+       the container.
+    
+       react-three-fiber sizes the drawing buffer from the container's
+       measured rect, and a measured rect includes ancestor transforms — so
+       scaling the element that holds the canvas feeds the canvas's own
+       size back into the measurement and the element grows without bound.
+       It reached fifteen million pixels across before this was moved into
+       the scene. Scaling the object leaves the layout alone entirely. */
+    group.current.scale.setScalar(scale * (zoom?.current ?? 1));
   });
 
   return (
@@ -207,7 +298,25 @@ function Model({ src }: { src: string }) {
   );
 }
 
-export function ProductModel({ src }: { src: string }) {
+export function ProductModel({
+  src,
+  yaw,
+  zoom,
+  onReady,
+}: {
+  src: string;
+  /** Extra yaw, in radians, driven from outside per frame. The buy page's
+   *  opening turns the frame as it travels from the middle of the screen
+   *  into its slot; every other caller leaves this alone. */
+  yaw?: React.RefObject<number>;
+  /** Multiplies the frame's size in the SCENE, per frame. The buy page's
+   *  opening holds it large in the middle of the screen and lets it settle
+   *  to 1 as it lands. Never do this with a CSS transform — see useFrame. */
+  zoom?: React.RefObject<number>;
+  /** Called once the glb is loaded and the frame is about to be drawn.
+   *  Callers that fade the viewer in wait on this rather than on a timer. */
+  onReady?: () => void;
+}) {
   const dragging = useRef<{ id: number; x: number } | null>(null);
   /* Whether the pointer is over the object rather than merely somewhere in
      the section. Drives the cursor, and nothing else — see `near()`. */
@@ -305,7 +414,7 @@ export function ProductModel({ src }: { src: string }) {
           <directionalLight position={[2, 5, 4]} intensity={0.3} />
           <directionalLight position={[-4, 2, 3]} intensity={0.2} />
           <Suspense fallback={null}>
-            <Model src={src} />
+            <Model src={src} yaw={yaw} zoom={zoom} onReady={onReady} />
             {/* A white sky, built as one enormous soft source overhead and
                 large low-intensity panels all round.
 

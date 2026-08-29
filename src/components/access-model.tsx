@@ -26,16 +26,39 @@ import { privateAccess } from "@/lib/content";
  *  words are changed in the same place. */
 const MODEL_URL = privateAccess.model;
 
-/** How far the key light travels, in model radii, left to right. */
-const SWEEP = 2.6;
-/** How high it hangs over the frame. */
-const LAMP_Y = 1.15;
-/** And how far in front, so the sweep rakes the face rather than the top. */
-const LAMP_Z = 0.85;
+/**
+ * The lamp's travel, in world units, left to right.
+ *
+ * The frame is fitted to about 3.5 units across, so this starts and ends
+ * well outside it: the light enters from off-frame, crosses, and leaves —
+ * rather than sliding about inside the picture.
+ */
+const SWEEP = 5.4;
+/**
+ * The dark end and the lit end.
+ *
+ * The section opens on almost nothing — the lamp is off to one side and
+ * turned nearly out, so the first thing in view is a shape you can barely
+ * confirm is a pair of glasses. Scrolling brings the light across AND up:
+ * by the far side the frame is plainly lit. Two variables, one scroll
+ * value, and the reader is what raises the light.
+ *
+ * DARK is the fraction of full brightness at rest. Not zero: a section
+ * someone lands in the middle of should never be a blank screen, and the
+ * ambient floor below is doing the same job from underneath.
+ */
+const DARK = 0.05;
+const PANEL_I = 7;
+const AMBIENT_MIN = 0.06;
+const AMBIENT_MAX = 1.05;
 
-/** A quarter turn of drift across the whole section — enough that the
- *  object is not a photograph, far too little to read as a turntable. */
-const DRIFT = 0.42;
+/** Smoothstep: no sudden start, no sudden stop. */
+const ease = (t: number) => t * t * (3 - 2 * t);
+
+/** How high it hangs over the frame. */
+const LAMP_Y = 0.62;
+/** And how far in front, so it rakes the face rather than the top edge. */
+const LAMP_Z = 2.7;
 
 /** Where the frame sits at rest: three quarters, nose up, the angle the
  *  colourway plates are shot at. */
@@ -56,10 +79,71 @@ export function setAccessProgress(p: number) {
   drive.p = p;
 }
 
+/**
+ * The lamp: a broad soft panel that crosses the frame, not a bulb.
+ *
+ * A point light is a bare filament — it draws a hard specular dot that
+ * slides along an edge, which on polished acetate reads as a glint rather
+ * than as weather. This is a Lightformer: an actual rectangle of light in
+ * the environment map, so what the frame reflects is a soft-edged panel
+ * the width of the object. Overcast, and moving.
+ *
+ * It lives inside <Environment>, which is what makes the reflection real
+ * rather than just illumination — and why that environment has to be
+ * re-rendered every frame (`frames={Infinity}` on it). At 256px that is a
+ * cheap render target and the only per-frame GPU cost in the section.
+ */
+function SweepLight() {
+  const panel = useRef<THREE.Mesh>(null);
+  const base = useMemo(() => new THREE.Color("#fff6ea"), []);
+
+  useFrame(() => {
+    const mesh = panel.current;
+    if (!mesh) return;
+    const p = drive.p;
+
+    /* Across, left to right. */
+    mesh.position.set((p - 0.5) * SWEEP, LAMP_Y, LAMP_Z);
+
+    /* And up. Lightformer bakes `intensity` into the material colour once,
+       in a layout effect, so brightness is animated by writing that colour
+       directly — the prop is left at 1 and this is the real value.
+       
+       Brightness is capped where it is because the reflection is a PANEL:
+       push it and the rim it crosses goes to near-white, which reads as a
+       white frame rather than a black one being lit. */
+    const k = PANEL_I * (DARK + (1 - DARK) * ease(p));
+    (mesh.material as THREE.MeshBasicMaterial).color.copy(base).multiplyScalar(k);
+  });
+
+  return (
+    <Lightformer
+      ref={panel}
+      form="rect"
+      intensity={1}
+      /* Wide and tall enough to wrap the frame's edges rather than pick
+         out one of them. */
+      scale={[5.2, 3, 1]}
+      color="#fff6ea"
+    />
+  );
+}
+
+/** The floor under the dark, raised on the same scroll as the lamp. */
+function Lift() {
+  const amb = useRef<THREE.AmbientLight>(null);
+  useFrame(() => {
+    if (amb.current) {
+      amb.current.intensity =
+        AMBIENT_MIN + (AMBIENT_MAX - AMBIENT_MIN) * ease(drive.p);
+    }
+  });
+  return <ambientLight ref={amb} intensity={AMBIENT_MIN} />;
+}
+
 function Frame() {
   const { scene } = useGLTF(MODEL_URL);
   const group = useRef<THREE.Group>(null);
-  const key = useRef<THREE.PointLight>(null);
   const viewport = useThree((s) => s.viewport);
 
   /* Measured, not mutated — see the long note in product-model.tsx. The
@@ -95,13 +179,17 @@ function Frame() {
       }
 
       const mat = mesh.material as THREE.MeshStandardMaterial;
-      /* Polished enough to hold a moving highlight. A black frame is read
-         off its reflections, so the environment below matters more here
-         than any of the lamps. */
+      /* Softer than the product turntable's acetate, and deliberately.
+      
+         At 0.28 the surface is a mirror: it reflected the light panel as a
+         PANEL — a hard white shape sitting on the rim, which reads as a
+         white frame rather than a black one being lit. Rougher, the same
+         panel arrives as a gradient across the acetate, which is what an
+         overcast source looks like on a polished black object. */
       if (typeof mat.roughness === "number") {
-        mat.roughness = Math.min(mat.roughness, 0.28);
+        mat.roughness = Math.max(0.42, Math.min(mat.roughness, 0.5));
       }
-      mat.envMapIntensity = 1.15;
+      mat.envMapIntensity = 1.7;
       mat.needsUpdate = true;
     });
 
@@ -110,31 +198,19 @@ function Frame() {
 
   const scale = (Math.min(viewport.width, viewport.height) * 0.95) / (radius * 2);
 
-  useFrame(() => {
-    const p = drive.p;
-    if (group.current) {
-      group.current.rotation.set(PITCH, REST_YAW + (p - 0.5) * DRIFT, 0);
-    }
-    if (key.current) {
-      /* The lamp crosses from one side to the other and dips closest at the
-         middle of the section, so the brightest moment is the one the
-         reader is most likely to be sitting in. */
-      const across = (p - 0.5) * SWEEP;
-      const dip = 1 - Math.cos(p * Math.PI * 2) * 0.18;
-      key.current.position.set(across, LAMP_Y * dip, LAMP_Z);
-      /* Falls off with distance, so the sweep reads as a lamp passing over
-         rather than a slider changing a value. */
-      key.current.intensity = 5.5 - Math.abs(p - 0.5) * 2.2;
-    }
-  });
+  /* THE FRAME DOES NOT MOVE. Only the lamp does — see SweepLight.
+
+     That is the whole idea and it is easy to lose: a little drift was in
+     here at first, and the moment the object turns as well, the light stops
+     being the subject and it reads as a turntable that happens to be lit.
+     Held still, the only thing changing on screen is which part of the
+     acetate is catching. */
 
   return (
     <>
-      <group ref={group} scale={scale}>
+      <group ref={group} scale={scale} rotation={[PITCH, REST_YAW, 0]}>
         <primitive object={object} />
       </group>
-      {/* The one light that moves. Everything else is fill. */}
-      <pointLight ref={key} color="#fff6e6" distance={9} decay={1.6} />
     </>
   );
 }
@@ -147,12 +223,10 @@ export function AccessModel() {
       gl={{ antialias: true, alpha: true }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.05;
+        gl.toneMappingExposure = 1.35;
       }}
     >
-      {/* Barely there. The frame has to be able to fall back into the dark
-          at the ends of the sweep, or the lamp has nothing to reveal. */}
-      <ambientLight intensity={0.18} />
+      <Lift />
       <Suspense fallback={null}>
         <Frame />
         {/* Three dim panels, and they are what makes a BLACK object visible
@@ -162,10 +236,22 @@ export function AccessModel() {
             there. Kept low and cold so the moving key is the only warm
             thing in the scene, which is what lets it read as a lamp
             crossing rather than the exposure changing. */}
-        <Environment resolution={256}>
-          <Lightformer intensity={0.9} position={[0, 4, 1]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 6, 1]} color="#ffffff" />
-          <Lightformer intensity={1.4} position={[-5, 0, -2]} scale={[3, 7, 1]} color="#cddcec" />
-          <Lightformer intensity={1.1} position={[5, 0, -2]} scale={[3, 7, 1]} color="#ffffff" />
+        {/* An overcast sky, and one panel of it walking across the frame.
+
+            `frames={Infinity}` is what lets the moving panel be part of the
+            reflected world rather than a light shining on it: the map is
+            re-rendered every frame, which is the whole reason the sweep
+            shows up in the acetate's edges instead of only in its shading.
+
+            The static panels are dim against the moving one on purpose —
+            enough to keep the frame present between passes, not so much
+            that the sweep is a rounding error on top of them. That was the
+            first version's mistake in the other direction. */}
+        <Environment resolution={256} frames={Infinity}>
+          <Lightformer intensity={1.9} position={[0, 4, 1]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 6, 1]} color="#ffffff" />
+          <Lightformer intensity={1.5} position={[-5, 0, -2]} scale={[3, 7, 1]} color="#cddcec" />
+          <Lightformer intensity={1.4} position={[5, 0, -2]} scale={[3, 7, 1]} color="#ffffff" />
+          <SweepLight />
         </Environment>
       </Suspense>
     </Canvas>

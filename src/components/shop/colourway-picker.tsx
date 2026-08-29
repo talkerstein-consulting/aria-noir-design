@@ -1,31 +1,36 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { useSearchParams } from "next/navigation";
 import type { House } from "@/lib/navigation";
-import { priceOf, shopHref, stockFor, swatchFor } from "@/lib/shop";
-import { useBag } from "@/lib/cart";
-import { CtaButton } from "@/components/cta-link";
-import { CtaLink } from "@/components/cta-link";
+import {
+  MACRO_ZOOM,
+  defaultColorway,
+  focalOrigin,
+  macroFor,
+  stockFor,
+  swatchFor,
+} from "@/lib/shop";
 
 /**
- * Pick a colourway, then buy it.
+ * Pick a colourway.
  *
- * The only stateful thing on the buy page, and it holds exactly one value:
- * which acetate. The cut and the specification are the same whichever one
- * you pick — but the PRICE is not, and neither is the stock. On the
- * storefront each colourway is its own product with its own price, so this
- * reads both from the synced catalogue rather than assuming a run is
- * uniform.
+ * This used to own the price and the buy button as well. It no longer does:
+ * the panel around it lays those out in the order a buyer reads them —
+ * name, description, price, rule, colour, quantity, buy — and a component
+ * that held three of those would be deciding that order from the inside.
+ * What is left is one job: which acetate.
  *
- * ---- Swatches, not thumbnails ----
+ * ---- Thumbnails where there is a photograph, swatches where there is not
  *
- * Most of these colourways have no photograph. Rather than show four
- * pictures and two grey boxes, every colourway is a swatch: a square of the
- * acetate with its name beside it, which is what a bench hands you anyway.
- * It degrades to nothing, it is honest about being an approximation (see
- * SWATCHES in lib/shop), and it means the row is one object rather than a
- * gallery with holes in it.
+ * A thumbnail is a claim about what the acetate looks like, so it is only
+ * ever a macro OF that colourway. ARCA I has the shoot and gets pictures;
+ * the other five keep the flat swatch, which is visibly an approximation
+ * rather than a photograph of the wrong frame under the right name. Both
+ * render at the same size in the same row, so a mixed house would still
+ * read as one control — see SWATCHES in lib/shop for what the hexes claim.
  *
  * ---- Out of the workshop ----
  *
@@ -40,9 +45,8 @@ export function ColourwayPicker({
   onChoose,
 }: {
   house: House;
-  /** Told whenever the acetate changes, so the plate beside the picker can
-   *  show the colour being chosen. Optional: the picker is complete on its
-   *  own and does not care whether anyone is listening. */
+  /** Told whenever the acetate changes, so the column of photographs beside
+   *  the picker can re-shoot itself and the price can follow. */
   onChoose?: (colourway: string) => void;
 }) {
   /* The STORE's list, not the catalogue's. `colorwayNames` is what the
@@ -51,109 +55,82 @@ export function ColourwayPicker({
      a 404 dressed as a product. */
   const stock = stockFor(house);
   const asked = useSearchParams().get("colourway");
-  const [chosen, setChosen] = useState(
-    (stock.find((e) => e.colorway === asked && e.available) ??
-      stock.find((e) => e.available) ??
-      stock[0])?.colorway ?? "",
-  );
+  /* The same rule the panel and the turntable use, not a second copy of
+     it: the frame that opens the page turning has to be the frame this
+     control says is selected. */
+  const [chosen, setChosen] = useState(() => defaultColorway(house, asked));
   /* Announce the opening position too, not only the changes — the first
      thing shown has to agree with the first thing selected. */
   useEffect(() => {
     if (chosen) onChoose?.(chosen);
   }, [chosen, onChoose]);
 
-  const entry = stock.find((e) => e.colorway === chosen);
-  const available = entry?.available === true;
-  const { add } = useBag();
-  const [added, setAdded] = useState(false);
-
   return (
     <div className="stack stack--sm">
       <div className="flex items-baseline justify-between gap-6">
         <p className="t-eyebrow">Colourway</p>
         {/* The chosen name is repeated here rather than only under its
-            swatch. At six or eight across, the label under the selected
+            thumbnail. At six or eight across, the label under the selected
             square is easy to lose, and the reader is about to spend money
             on the strength of it. */}
         <p className="t-label text-[var(--fg-primary)]">{chosen}</p>
       </div>
 
       <ul
-        className="mt-2 flex flex-wrap gap-3"
+        className="mt-3 flex flex-wrap gap-3"
         role="radiogroup"
         aria-label="Colourway"
       >
         {stock.map(({ colorway: name, available: inStock }) => {
           const on = name === chosen;
+          const macro = macroFor(house, name);
           return (
             <li key={name}>
               <button
                 type="button"
                 role="radio"
                 aria-checked={on}
-                aria-label={
-                  inStock ? name : `${name} — out of the workshop`
-                }
+                aria-label={inStock ? name : `${name} — out of the workshop`}
                 disabled={!inStock}
                 onClick={() => setChosen(name)}
                 title={name}
-                className="swatch"
+                className="swatch swatch--thumb"
                 data-on={on}
                 data-out={!inStock}
               >
-                <span
-                  aria-hidden
-                  className="swatch-chip"
-                  style={{ background: swatchFor(name) }}
-                />
+                {macro ? (
+                  <Image
+                    src={macro.src}
+                    alt=""
+                    fill
+                    sizes="160px"
+                    className="swatch-shot"
+                    /* Only a macro that needs AIMING is magnified. The
+                       supplied crops are already square and already on the
+                       acetate, so they render at their own scale; a wide
+                       shot of a whole frame gets scaled up and pointed at
+                       the colour. See Macro in lib/navigation. */
+                    style={
+                      (macro.position
+                        ? {
+                            "--focal": focalOrigin(macro.position),
+                            "--zoom": MACRO_ZOOM,
+                          }
+                        : undefined) as CSSProperties | undefined
+                    }
+                  />
+                ) : (
+                  <span
+                    aria-hidden
+                    className="swatch-chip"
+                    style={{ background: swatchFor(name) }}
+                  />
+                )}
               </button>
             </li>
           );
         })}
       </ul>
-
-      <div className="mt-8 flex flex-col gap-3">
-        <div className="flex items-baseline justify-between gap-6">
-          {/* Priced per colourway. The run is not one price: AHAVA's Dark
-              Tortoise is $225 against $200 for its siblings. */}
-          <p className="t-display-xs tabular-nums">{priceOf(house, chosen)}</p>
-          <p className="t-caption">
-            {available ? "Ships in 3–5 days" : "Out of the workshop"}
-          </p>
-        </div>
-
-        {available ? (
-          <div className="mt-2 flex flex-wrap items-center gap-x-10 gap-y-4">
-            {/* Two ways out, and they are genuinely different errands.
-                The bag is for someone buying a second frame; the direct
-                link is for someone who came to buy this one and is done. */}
-            <CtaButton
-              onClick={() => {
-                add(house.slug, chosen);
-                setAdded(true);
-                window.setTimeout(() => setAdded(false), 2200);
-              }}
-              alt="In the bag"
-              swapped={added}
-            >
-              Add to bag
-            </CtaButton>
-            <CtaLink href={shopHref(house, chosen)} external tone="quiet">
-              Buy it now
-            </CtaLink>
-            <CtaLink href="/room" tone="quiet">
-              The bag
-            </CtaLink>
-            <CtaLink href="/contact" tone="quiet">
-              Ask about fit
-            </CtaLink>
-          </div>
-        ) : (
-          <div className="mt-2 flex flex-wrap items-center gap-x-10 gap-y-4">
-            <CtaLink href="/contact">Ask when it returns</CtaLink>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

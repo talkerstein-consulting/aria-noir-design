@@ -56,3 +56,21 @@ next-env.d.ts
 # Downloaded bundles: the reference deploy the turntable was lifted from
 # (34MB) and a design-system export. Neither is built from this repo.
 /*.zip
+
+# Pasted into lib/navigation.ts by hand; the script prints it, the catalogue owns it.
+scripts/colourway-wiring.generated.txt
+
+# The storefront scrape: 379MB of saved HTML, product JSON and full-size
+# photography, some single files 19MB. Same bargain as `3d models/` above —
+# these are the ORIGINALS, and what the site serves is derived from them by
+# scripts/import-colourway-photography.mjs into public/images/<house>/variants
+# at web weight, which IS committed. Re-fetch with scripts/scrape_arianoir.py
+# and reshape with scripts/group_colorways.py.
+/scrape/
+
+# The supplied 234px macro crops, before they were placed under
+# public/images/arca-i/thumbnails. Source, not site asset.
+/color thumbnails/
+
+# Scratch capture left at the repo root; nothing references it.
+/scrub video.mp4

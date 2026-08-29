@@ -217,17 +217,21 @@
   font-family: var(--font-mono-stack);
   font-weight: 500;
   color: var(--fg-primary);
-  /* Mono is wider per glyph than Manrope at the same size, and these two
-     words sit either side of the wordmark — a step down keeps the band's
-     proportions where they were. The tracking comes off `--cut` for the
-     same reason: a monospace is already spaced, and the eyebrow's 0.35em
-     on top of it reads as gaps rather than as letter-spacing. */
-  font-size: 0.66rem;
-  /* Wide. These are three short words carrying the whole header, and
-     spacing them is what turns a label into a mark — the same move the
-     eyebrows make at 0.35em, held a touch tighter because a monospace is
-     already spaced before any tracking is added. */
-  letter-spacing: 0.32em;
+  /* At the standard CTA step — the same 0.95rem every other action on the
+     site is set at — rather than the 0.66rem this used to take.
+     
+     The old size came from a fair argument: mono is wider per glyph than
+     Manrope, so matching Manrope's size makes these two words physically
+     bigger than a CTA of the same nominal size. But they are the only
+     controls in the chrome, they sit either side of the wordmark, and at
+     eleven-ish pixels they read as a caption on the header rather than as
+     the two things in it you can press. Bigger is the correct trade: the
+     band can carry the width because the words are short. */
+  font-size: 0.95rem;
+  /* Wide, but tightened from 0.32em now that the type is half again as
+     big: tracking is a proportion of the size, so the gaps grew with it
+     and the words started to come apart into letters. */
+  letter-spacing: 0.24em;
 }
 
 /* ── Legacy ground overrides ─────────────────────────────────────────
@@ -578,4 +582,607 @@
     var(--fg-primary) calc(50% + 0.5px),
     transparent calc(50% + 0.5px)
   );
+}
+
+/* ── 6. The buy panel ────────────────────────────────────────────────
+   The sticky half of the buy page: the price, the colourway thumbnails,
+   the quantity, the detail tabs. Everything here answers with the same
+   rule the rest of the site uses — a hairline that goes gold — so a
+   control that is a picture and a control that is a word still read as
+   the same family of object. */
+
+/* The price is set in the BODY face, not the display serif, and one step
+   above the description it sits under. The two are one statement — this
+   is the thing, this is what it costs — and a serif price would make it a
+   second headline arguing with the first. */
+.buy-price {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-body);
+  color: var(--fg-primary);
+}
+
+/* ── The colourway thumbnail ──
+   The swatch, grown to hold a photograph. Same mount, same gold rule; a
+   macro crop of the acetate where the run has been shot, and the flat
+   chip where it has not. Both sit in the same box so a house that is half
+   photographed still reads as one row rather than two controls. */
+.swatch--thumb {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  overflow: hidden;
+}
+.swatch--thumb .swatch-chip {
+  width: 100%;
+  height: 100%;
+}
+
+/* The selected colourway carries a heavier stroke as well as a gold one —
+   at five across, colour alone is a weak signal on a row where every
+   square is a different colour by definition. Drawn as an INSET shadow on
+   top of the 1px border rather than by growing the border: a thicker
+   border would resize the mount and shuffle the row sideways every time
+   the selection moved. */
+.swatch[data-on="true"] {
+  border-color: var(--fg-accent);
+  box-shadow: inset 0 0 0 calc(var(--rule-weight) * 2) var(--fg-accent);
+}
+
+/* Unmagnified by default, because the supplied crops are already square
+   and already sitting on the acetate. A house whose only picture is a wide
+   shot of a whole frame sets `--zoom` and `--focal` instead, and is scaled
+   up and pointed at the colour — see Macro in lib/navigation. */
+.swatch-shot {
+  object-fit: cover;
+  inset: 3px;
+  width: auto;
+  height: auto;
+  transform: scale(var(--zoom, 1));
+  transform-origin: var(--focal, 50% 50%);
+  transition: transform var(--dur-slow) ease;
+}
+.swatch--thumb:hover:not(:disabled) .swatch-shot {
+  transform: scale(calc(var(--zoom, 1) * 1.06));
+}
+
+/* ── The quantity stepper ──
+   One hairline box holding minus, a number and plus. The native spinner
+   is hidden: two arrows the browser drew in its own idiom are the one
+   control on this page that would not belong to it. */
+.qty {
+  display: inline-flex;
+  align-items: stretch;
+  border: var(--rule-weight) solid var(--fg-rule);
+  transition: border-color var(--dur-fast) ease;
+}
+/* No hover state on the box itself. Lighting the whole rule when the
+   pointer is anywhere over it says "this control is live"; what a buyer
+   needs to know is which of the three cells they are about to press. Each
+   cell answers for itself, and the box stays quiet. */
+.qty-step {
+  display: grid;
+  transition:
+    color var(--dur-fast) ease,
+    background-color var(--dur-fast) ease;
+  place-items: center;
+  width: 2.5rem;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body);
+  line-height: 1;
+  color: var(--fg-tertiary);
+  cursor: pointer;
+}
+.qty-step:hover:not(:disabled) {
+  color: var(--fg-accent);
+  background: color-mix(in srgb, var(--fg-accent) 12%, transparent);
+}
+.qty-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.qty-step:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: calc(var(--focus-offset) * -1);
+}
+.qty-field {
+  width: 2.75rem;
+  padding: 0.6rem 0;
+  background: transparent;
+  border: 0;
+  border-left: var(--rule-weight) solid var(--fg-rule);
+  border-right: var(--rule-weight) solid var(--fg-rule);
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--fg-primary);
+  transition:
+    color var(--dur-fast) ease,
+    background-color var(--dur-fast) ease;
+}
+/* The middle cell is a cell too: hovering the number lights the number,
+   not its neighbours. */
+.qty-field:hover {
+  color: var(--fg-accent);
+  background: color-mix(in srgb, var(--fg-accent) 12%, transparent);
+}
+.qty-field:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: calc(var(--focus-offset) * -1);
+}
+/* The browser's own arrows, removed in both engines. */
+.qty-field::-webkit-outer-spin-button,
+.qty-field::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.qty-field {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ── The opening ──
+   The first screen of the buy page: the name centred over the turntable,
+   before the page admits to being a shop. The block reserves the scroll
+   distance the choreography runs over; the inner element is what actually
+   moves, so the reserved height never changes underneath it. */
+.buy-opening {
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  /* The name sits in the upper third, not dead centre: the frame is pulled
+     to the middle of the SCREEN, and two things centred on the same point
+     is the name hidden behind a canvas. */
+  padding-top: 8vh;
+  height: 78vh;
+  text-align: center;
+  /* The frame is pulled into the middle of the screen from BELOW this
+     block, so nothing here may sit on top of it. */
+  pointer-events: none;
+}
+.buy-opening-title {
+  /* Above the turntable. The slot below paints its own ground, and DOM
+     order would otherwise put a black square over the house's name. */
+  position: relative;
+  z-index: 2;
+  will-change: transform, opacity;
+}
+
+/* The turntable's ground.
+
+   A very dark grey gradient rather than the flat ink the photographs sit
+   on, because a black object on black is a silhouette — the frame needs
+   something behind it for its edges to be read against. It is pitched to
+   the concrete in the shots below it, lit from where they are lit, so that
+   when the opening lands and this square becomes the first picture in the
+   column the ground does not change under it.
+
+   It is a SEPARATE element from the slot, and that is structural rather
+   than tidiness: the slot holds the WebGL canvas, whose drawing buffer is
+   sized from its container's measured rect. Scaling that container feeds
+   the canvas's size back into its own measurement and it grows without
+   bound. The grey is a plain div, so it can be scaled from the full screen
+   down onto the slot while the canvas inside is never touched. */
+.buy-ground {
+  position: absolute;
+  inset: 0;
+  /* Behind the canvas, and -1 rather than 0.
+  
+     A positive z-index on the canvas's wrapper was not enough to lift it
+     clear: the grey still painted over the frame and the opening rendered
+     as an empty grey screen. Pushing the ground behind its own parent's
+     content is what actually orders the two. It cannot escape the slot
+     while doing so, because `.buy-model` carries `will-change: transform`
+     and that already makes it a stacking context. */
+  z-index: -1;
+  /* Top-left, because the grey is now driven as an explicit rectangle:
+     the loop computes where its edges must be and derives the transform
+     from that, which only composes cleanly from a corner. */
+  transform-origin: 0 0;
+  will-change: transform;
+  background:
+    radial-gradient(
+      118% 88% at 50% 34%,
+      #2b2d32 0%,
+      #191a1e 46%,
+      #101113 74%,
+      var(--ink) 100%
+    );
+}
+
+/* The canvas: bigger than the square it sits in, centred on it, and never
+   resized.
+
+   A frame can only be drawn as large as its canvas, so an opening that
+   shows it large needs the buffer to be large from the start. Its SIZE is
+   set inline from CANVAS_OVERSIZE in buy-hero, so the number the zoom
+   arithmetic uses and the number the layout uses are the same number.
+
+   `pointer-events: none` because this box now overhangs the square on
+   every side and would otherwise swallow clicks meant for the panel — and
+   because the canvas was already eating the wheel, so a reader whose
+   cursor sat over the frame on load could not scroll the page at all. The
+   cost is drag-to-rotate on this page; the opening turns the frame itself,
+   and scrolling is not optional. */
+.buy-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity var(--dur-base) ease;
+}
+/* Oversized at every width.
+
+   It was desktop-only while the page could still scroll sideways: on a
+   375px screen a canvas 2.3x the square hung 189px past the edge and
+   bought a horizontal scrollbar. `.buy-page` now clips that axis, so the
+   overhang is contained and the phone gets the same large frame the
+   desktop does — which matters more there, where the square is the whole
+   width of the screen and a frame drawn inside 86% of it looks like a
+   thumbnail. */
+.buy-stage {
+  width: calc(var(--canvas-oversize, 1) * 100%);
+  height: calc(var(--canvas-oversize, 1) * 100%);
+}
+
+/* The opening puts a deliberately oversized canvas and a full-bleed grey
+   on the page, and either can reach past the right edge on some widths.
+   `clip` rather than `hidden`: hidden would make this a scroll container
+   and the offer panel's `position: sticky` would stop working against the
+   page. */
+.buy-page {
+  overflow-x: clip;
+}
+
+/* ── The buy layout ──
+   Three children in one grid: the frame, the offer, the photographs — in
+   that order in the markup, which is the order a phone reads them. The
+   offer comes SECOND on a small screen because scrolling past a column of
+   photography to find the price is the shop hiding its own till.
+
+   At the width the opening plays, the frame and the photographs go back
+   into one column with the offer beside them spanning both rows. */
+.buy-grid {
+  row-gap: 3rem;
+}
+@media (min-width: 1024px) {
+  .buy-grid {
+    /* minmax(0, 1fr), not 1fr. A bare `1fr` is minmax(AUTO, 1fr), so a
+       child wider than its share pushes the track out — the quantity
+       stepper and the buy button on one row gave the offer a min-content
+       of 605px, which it took by shrinking the frame's column to 595.
+       Two columns asked to be equal have to be told they may shrink. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 5rem;
+    /* The frame and the first photograph sit as close as two photographs
+       do — the turntable is the first picture in that column, not a
+       separate section above it. */
+    row-gap: var(--stack-sm);
+  }
+  .buy-grid-model {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  /* Stretched to the full height of both rows, with the OFFER sticking
+     inside it.
+
+     Making the grid item itself sticky looked equivalent and was not: a
+     sticky box is bounded by its containing block, and with `items-start`
+     that box is only as tall as the offer. It held at 192px down the
+     column and then got shoved up in the last stretch — once the space
+     left below it was shorter than the offer, there was nowhere left to
+     stick. Stretching the item and sticking its child gives the offer the
+     whole column to hold still in, and it releases only at the true end of
+     the section. */
+  .buy-grid-panel {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: stretch;
+  }
+  .buy-panel-inner {
+    position: sticky;
+    /* The section's own top padding — see the note in buy-hero. */
+    top: var(--section-pad-wide);
+  }
+  .buy-grid-photos {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+/* Both halves of the choreography are promoted for the same reason: they
+   are transformed every frame while a WebGL canvas is drawing beside them,
+   and a repaint of either would be a repaint of that. */
+.buy-model {
+  will-change: transform;
+}
+
+/* The offer is promoted ONLY at the width that actually transforms it.
+
+   `will-change: transform` makes an element the containing block for any
+   `position: fixed` inside it, and the buy control pins with `fixed` on a
+   phone — so an unconditional promotion here quietly re-anchored the pin
+   to the offer instead of the viewport, and the control came to rest
+   somewhere off screen. Below 1024px the panel is never transformed at
+   all, so there was nothing to promote it for. */
+@media (min-width: 1024px) {
+  .buy-panel-inner {
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buy-opening {
+    height: auto;
+    padding-block: 4rem;
+  }
+  .buy-opening-title,
+  .buy-model,
+  .buy-ground,
+  .buy-panel-inner {
+    will-change: auto;
+  }
+}
+
+/* The colourway, sitting under the house name.
+
+   Set in the UI face rather than the display serif: the h1 is the house,
+   and a second serif line the same size underneath reads as a two-line
+   title rather than as a name and its variant. Uppercase at the label's
+   tracking keeps it in the same voice as the picker that changes it. */
+.buy-colourway {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-lg);
+  font-weight: 400;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+}
+
+/* ── The buy button ──
+   The one control on the site that is a rectangle rather than a word with
+   a rule under it. Everything else here offers to take you somewhere; this
+   takes money, and it has to look pressable from across the panel. Same
+   hairline, same gold on hover — it is the house's rule drawn around four
+   sides instead of one. */
+.btn-outline {
+  /* inline-flex, not block: this class is worn BY `.cta` on the buy page,
+     and the glyph wave inside it lays its letters out as flex columns.
+     Centring here is what keeps the label in the middle of the box now
+     that the box is wider than the word. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 2rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  background: transparent;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--fg-primary);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease,
+    background-color var(--dur-fast) ease;
+}
+.btn-outline:hover:not(:disabled),
+.btn-outline:focus-visible:not(:disabled) {
+  border-color: var(--fg-accent);
+  color: var(--fg-accent);
+}
+.btn-outline:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+.btn-outline:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── The detail accordion ──
+   Four questions, one open. The row is the whole width so the target is
+   the line rather than the word, which is what makes it read as a list
+   that opens rather than four links that happen to be stacked. */
+.faq-row {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+.faq-row:last-child {
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1.35rem 0;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--dur-fast) ease;
+}
+.faq-q:hover,
+.faq-q[aria-expanded="true"] {
+  color: var(--fg-primary);
+}
+.faq-q:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+
+/* The mark is two rules crossed; the vertical one collapses on open, so a
+   plus becomes a minus by rotating rather than by being swapped out. */
+.faq-mark {
+  position: relative;
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.faq-mark::before,
+.faq-mark::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto 0;
+  height: var(--rule-weight);
+  background: currentColor;
+  transition: transform var(--dur-fast) ease;
+}
+.faq-mark::after {
+  transform: rotate(90deg);
+}
+.faq-mark[data-on="true"]::after {
+  transform: rotate(0deg);
+}
+
+/* Collapsed with a grid row rather than max-height: the panel animates to
+   its OWN height, so a four-line answer and a one-line answer both open at
+   the same speed and neither is clipped or left with dead space. */
+.faq-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-base) ease;
+}
+.faq-panel[data-on="true"] {
+  grid-template-rows: 1fr;
+}
+.faq-panel-inner {
+  overflow: hidden;
+}
+.faq-panel[data-on="true"] .faq-panel-inner {
+  padding-bottom: 1.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-panel {
+    transition: none;
+  }
+}
+
+/* ── The cross-sell card ──
+   Name only, at full foreground rather than the muted label grey the rest
+   of the small type uses. It is the only writing on the card, so nothing
+   is competing with it and there is no reason for it to whisper. */
+/* The card's own focus ring, in the house gold. Without this the link
+   falls through to the user agent's ring, whose colour on this build
+   resolves to WHITE — the one stroke on the page that belongs to no
+   design decision, and which lingers after the pointer has left. */
+.card-link:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+.card-link:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.card-name {
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--fg-primary);
+}
+
+/* ── The buy control, and where it comes to rest ──
+
+   ONE control, in one place in the markup: the quantity and the button,
+   under the colourway picker, where the offer has always put them. On a
+   phone they scroll up with the page and then stop at the foot of the
+   screen and stay put for the rest of it — the pin is switched in
+   buy-hero, which is where the note on why sticky cannot do this lives.
+
+   What was here before was `.buy-bar`: a SECOND copy of the control fixed
+   to the foot of the screen, translated 110% out of frame and slid back in
+   once the real one had scrolled off the top. It arrived from somewhere,
+   which is motion the page never earned — the control had not moved, the
+   reader had. Nothing here moves. */
+.buy-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+/* The pinned state.
+
+   Position, bottom, left and width are all written by the pin, because
+   they are measurements — the row keeps the exact width and left edge it
+   had in the offer, so what stops at the foot of the screen is
+   recognisably the row that was scrolling a moment ago rather than a
+   full-bleed bar that replaced it.
+
+   What the stylesheet owns is the part that is a decision rather than a
+   measurement: it needs to sit ABOVE the photographs it now covers, and it
+   needs ground of its own to stay legible over them — an outline button on
+   a lens is a rectangle nobody can read. The scrim is bled back out to the
+   page gutters so it reads as a band across the screen rather than a
+   floating tile, while the controls inside keep the offer's own width. */
+.buy-row[data-pinned] {
+  z-index: 40;
+  padding-block: 0.85rem;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+/* Gone, once the film has been scrolled past.
+
+   The ONE thing on this control that moves, and it moves for a reason the
+   others did not have: it is leaving under the edge it has been sitting
+   on, which is where it came from and where it will come back from. An
+   element that vanishes at the bottom of the screen has gone somewhere; an
+   element that blinks off has been deleted.
+
+   Pointer events go with it — a control sliding out is a control that must
+   stop taking taps before it has finished leaving. */
+.buy-row[data-pinned][data-gone] {
+  transform: translateY(115%);
+  pointer-events: none;
+}
+/* The ground, as a pseudo-element rather than a background on the row.
+
+   The row's left and width are written by the pin and are the offer's, to
+   the pixel; bleeding the scrim to the page edges with negative margins
+   would fight those two numbers, since a fixed box given left, width AND
+   margins is over-constrained and the browser resolves it by moving the
+   box. A layer behind it has no such argument to lose: it reaches the
+   gutters on both sides while the controls keep the column they were in. */
+.buy-row[data-pinned]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  inset-inline: calc(-1 * var(--gutter));
+  z-index: -1;
+  background: color-mix(in srgb, var(--ink) 92%, transparent);
+  backdrop-filter: blur(14px);
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+
+/* Reduced motion takes the slide and keeps the leaving: the control still
+   goes away after the film, it just is not shown travelling there. */
+@media (prefers-reduced-motion: reduce) {
+  .buy-row[data-pinned] {
+    transition: none;
+  }
+}
+
+/* On a wide screen the offer is a sticky column of its own and the control
+   inside it never leaves the screen, so there is nothing to pin. */
+@media (min-width: 1024px) {
+  .buy-row[data-pinned] {
+    position: static !important;
+    width: auto !important;
+    padding-block: 0;
+  }
+  .buy-row[data-pinned]::before {
+    display: none;
+  }
 }

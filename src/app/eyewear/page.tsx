@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ModelStage } from "@/components/eyewear/model-stage";
 import { HouseGrid } from "@/components/page/house-grid";
-import { houses } from "@/lib/navigation";
+import { houses, shopPath } from "@/lib/navigation";
 import { eyewear } from "@/lib/pages";
 
 export const metadata: Metadata = {
@@ -45,11 +45,21 @@ export default function EyewearPage() {
     image: house.ground ?? house.plate ?? undefined,
     swatch: house.swatch,
     model: house.model,
-    /* The STORY page, where there is one — the buy page comes after it,
-       not instead of it. Four houses have no page yet and carry no CTA
-       rather than being sent somewhere that skips the argument. */
-    href: house.href ?? undefined,
-    cta: house.href ? `View ${house.name}` : undefined,
+    /* The STORY page where there is one — the buy page comes after it,
+       not instead of it — and the BUY page where there is not.
+
+       The same rule the grid below runs on, and it has to be the same
+       rule: the stage and the grid are two views of one catalogue on one
+       screen, and a house that is a dead end in the turntable and a link
+       thirty lines further down is the page disagreeing with itself. Four
+       houses used to carry no CTA at all here, which meant four of the six
+       frames could not be reached from anywhere on the site.
+
+       The verb changes with the destination, because the destinations are
+       different offers: `View` is an invitation to read, `Acquire` is the
+       one the rest of the site already uses for a price. */
+    href: house.href ?? shopPath(house),
+    cta: house.href ? `View ${house.name}` : `Acquire ${house.name}`,
   }));
 
   return (

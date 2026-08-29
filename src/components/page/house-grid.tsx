@@ -1,7 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { houses, colorwayCount, type House } from "@/lib/navigation";
+import {
+  houses,
+  colorwayCount,
+  shopPath,
+  type House,
+} from "@/lib/navigation";
 import { RevealPlate, RevealText } from "@/components/reveal";
 
 /**
@@ -15,13 +20,22 @@ import { RevealPlate, RevealText } from "@/components/reveal";
  * honest gap reads as a house with six names; four plates and two holes
  * reads as a broken page.
  *
- * Only the houses with a story behind them are links — ARCA I and ARCA II
- * today. The rest carry their catalogue detail on the card and stop there.
+ * ---- Every card is a link, and where it goes depends on what exists ----
  *
- * They are NOT linked to their buy page, though one exists for all six.
- * The buy page sits after the story, not beside it: a card that jumped a
- * reader straight to a price has skipped the only part of the site that
- * explains the price.
+ * A house with a STORY goes to the story: the buy page sits after the
+ * argument, not beside it, and a card that jumped a reader straight to a
+ * price would skip the only part of the site that explains the price.
+ * ARCA I and ARCA II today.
+ *
+ * A house with no story yet goes to its BUY page. That is a change: those
+ * four cards used to be plain divs, so four of the six frames the house
+ * makes could not be reached from anywhere on the site — the page existed,
+ * fully built, and nothing pointed at it. A dead end on the index is not
+ * withholding the argument, it is withholding the product. The rule was
+ * always "never skip the story", and there is no story to skip here.
+ *
+ * The day one of the four is written, adding its `href` moves that card
+ * from the buy page to the story with no edit here.
  *
  * The index numerals are information, not ornament: they are the order the
  * houses were cut in, which is why the grid does not re-sort by price.
@@ -89,18 +103,14 @@ export function HouseGrid() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
         {houses.map((house, i) => {
           const card: ReactNode = <Card house={house} i={i} />;
-          return house.href ? (
+          return (
             <Link
               key={house.slug}
-              href={house.href}
+              href={house.href ?? shopPath(house)}
               className="group flex flex-col gap-5"
             >
               {card}
             </Link>
-          ) : (
-            <div key={house.slug} className="flex flex-col gap-5">
-              {card}
-            </div>
           );
         })}
       </div>

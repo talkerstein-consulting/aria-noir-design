@@ -153,3 +153,116 @@ export function formatPrice(cents: number) {
 export function houseBySlug(slug: string) {
   return houses.find((h) => h.slug === slug);
 }
+
+/**
+ * The collection this house is sold in, for the buy page's preheader.
+ *
+ * The storefront files every frame under a collection of the house's own
+ * name — `arca-i`, `monarca` — which would print the h1 twice, once small
+ * and once large. The collection worth naming is the one that distinguishes
+ * this from the rest of the shop, and the store's own split is eyewear
+ * against apparel. All six houses are the former, which is why this is one
+ * label rather than a lookup — the day the site sells the alpaca knitwear
+ * the storefront already carries, it becomes a field on the catalogue.
+ */
+export const COLLECTION_LABEL = "Eyewear";
+
+/**
+ * The left column: the chosen colourway, and nothing else.
+ *
+ * It used to append the house's own editorial set after the colourway's
+ * frames, which meant scrolling past 309 Blue landed you on a hinge macro
+ * of a different acetate. A buy page's photographs are evidence about the
+ * thing being bought, so a picture of another colour is not a bonus
+ * picture — it is the wrong one.
+ *
+ * A house with no shoot for this colour still falls back to its single
+ * plate, which is the house rather than the colourway; that is the last
+ * honest picture available, and the panel says which colour is chosen
+ * regardless. Where even that is missing the caller renders the acetate.
+ */
+export function galleryFor(house: House, colorway?: string): readonly string[] {
+  const perColour = colorway ? house.colorwayGallery?.[colorway] : undefined;
+  if (perColour?.length) return perColour;
+  const shot = colorway ? house.colorwayPlates?.[colorway] : undefined;
+  if (shot) return [shot];
+  /* No photograph of THIS colour. A house that has a colourway set at all
+     shows nothing rather than a sibling's picture; one that has none has
+     never claimed to be showing a colourway, so its plate still stands. */
+  if (house.colorwayPlates || house.colorwayGallery) return [];
+  return house.plate ? [house.plate] : [];
+}
+
+/** The macro crop for a colourway's thumbnail — the photograph AND where
+ *  in it the acetate sits. Undefined where that colour has not been
+ *  photographed and the flat swatch has to stand in. */
+export function macroFor(house: House, colorway: string) {
+  return house.colorwayMacros?.[colorway];
+}
+
+/**
+ * How far a colourway thumbnail is magnified. One number, here, because
+ * the CSS that scales the image and the arithmetic that aims it have to
+ * agree — see focalOrigin.
+ *
+ * 4, not 2.6: at 2.6 the visible square is about 200px of the source, and
+ * the temple bar is only ~150px deep, so blurred concrete came in above and
+ * below it and every colourway averaged out grey. This is why the picker
+ * asks next/image for a 384px file rather than a 96px one — a thumbnail
+ * magnified four times needs the pixels to survive it.
+ */
+export const MACRO_ZOOM = 4;
+
+/**
+ * Turn "where the acetate is in the photograph" into a `transform-origin`.
+ *
+ * The two are NOT the same percentage, which is the whole reason this
+ * exists. A Macro's `position` is measured off the source file, the honest
+ * place to measure it. But transform-origin is resolved against the
+ * rendered BOX, and two things sit in between:
+ *
+ *  1. `object-fit: cover` fitting a 16:9 source into a square crops the
+ *     sides away — only the middle 56.25% of the image's width survives,
+ *     so source x 25% is box x 5.6%. Height is untouched, so y passes
+ *     through unchanged.
+ *  2. transform-origin names the point that STAYS PUT under a scale, not
+ *     the point that ends up in the middle. To land the acetate in the
+ *     centre of the thumbnail, the origin has to be solved for:
+ *     centre = O + (focal − O) × zoom.
+ *
+ * Getting either wrong is not a visible error — it is a thumbnail quietly
+ * showing blurred concrete, which is exactly what these were doing before.
+ */
+const COVER_VISIBLE_WIDTH = 56.25; /* 16:9 into 1:1 */
+const COVER_LEFT_EDGE = 21.875;
+
+export function focalOrigin(position = "50% 50%", zoom = MACRO_ZOOM) {
+  const [sx, sy] = position
+    .split(/\s+/)
+    .map((n) => Number.parseFloat(n));
+  const boxX = ((sx - COVER_LEFT_EDGE) / COVER_VISIBLE_WIDTH) * 100;
+  const solve = (p: number) => (zoom * p - 50) / (zoom - 1);
+  return `${solve(boxX).toFixed(1)}% ${solve(sy).toFixed(1)}%`;
+}
+
+/**
+ * Which colourway a page opens on, and the ONE place that decides it.
+ *
+ * The panel, the picker, the price and the turntable all need this answer
+ * and they have to give the same one — a page that opens on a black frame
+ * captioned "309 Blue" is broken in the most visible way available. It was
+ * previously computed twice, once here and once in the picker, from the
+ * same rule; this is that rule, named.
+ */
+export function defaultColorway(house: House, asked?: string | null) {
+  const stock = stockFor(house);
+  const wanted = stock.find((e) => e.colorway === asked && e.available);
+  const hero = stock.find((e) => e.colorway === house.heroColorway && e.available);
+  return (wanted ?? hero ?? stock.find((e) => e.available) ?? stock[0])?.colorway ?? "";
+}
+
+/** The turntable for a colourway, falling back to the house's own glb. A
+ *  house with neither shows no viewer at all rather than another cut. */
+export function modelFor(house: House, colorway?: string | null) {
+  return (colorway ? house.colorwayModels?.[colorway] : undefined) ?? house.model;
+}
