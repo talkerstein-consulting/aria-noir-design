@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import ImageTrail from "./ImageTrail";
-import { finale, typo } from "@/lib/content";
-import { CtaLink } from "@/components/cta-link";
+import { finale, newsletter } from "@/lib/content";
 import { RevealText } from "@/components/reveal";
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
@@ -84,20 +83,53 @@ export function FinaleSection() {
         </blockquote>
       </div>
 
-      {/* ---- CTA: outside the quote zone, so the trail never covers it ---- */}
-      <div className="relative z-30 mx-auto mt-24 flex max-w-3xl flex-col items-center gap-7 text-center sm:mt-32">
+      {/* ---- the desk: outside the quote zone, so the trail never covers it ----
+
+          This was a commission pitch — a heading, a paragraph about private
+          fittings and eleven days on the bench, and a CTA that scrolled to
+          itself. The argument for a commission is made properly on
+          /contact, where there is a form that can take one; at the foot of
+          the home page it asked a reader who has just finished LOOKING to
+          make a decision. An address is the smaller and likelier thing to
+          ask for here, and the field is the same one the footer carries, so
+          the page ends on the house's own furniture rather than a second
+          version of it. */}
+      <div className="relative z-30 mx-auto mt-24 flex max-w-2xl flex-col items-center gap-6 text-center sm:mt-32">
         <RevealText
           as="h2"
-          text={typo.heading}
+          text={newsletter.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-ink sm:text-7xl md:text-8xl"
         />
         <p className="max-w-xl font-ui text-base leading-relaxed text-ink/65 sm:text-lg">
-          {typo.body}
+          {newsletter.body}
         </p>
-        <CtaLink href="#commission" variant="dark" className="mt-4">
-          {typo.cta}
-        </CtaLink>
+
+        <form className="field-row mt-4 w-full max-w-md">
+          <label htmlFor="finale-email" className="sr-only">
+            {newsletter.label}
+          </label>
+          <input
+            id="finale-email"
+            name="email"
+            type="email"
+            required
+            placeholder={newsletter.label}
+            className="field"
+          />
+          <button
+            type="submit"
+            aria-label={newsletter.cta}
+            className="field-submit"
+          >
+            &#8594;
+          </button>
+        </form>
+
+        <p className="font-ui text-xs tracking-[0.02em] text-ink/45">
+          {newsletter.note}
+        </p>
       </div>
+
     </section>
   );
 }

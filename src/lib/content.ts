@@ -138,11 +138,45 @@ export const finale = {
   ],
 };
 
-export const typo = {
-  heading: "Commission a frame that outlives you.",
+/**
+ * The closing block, which used to be a commission pitch — "Commission a
+ * frame that outlives you", a private fitting, eleven days on the bench.
+ *
+ * It is a newsletter intake now. The commission argument is made properly
+ * on /contact, where there is a form that can actually take it; repeating
+ * the offer at the foot of the home page asked for a decision from a reader
+ * who has just finished looking rather than started. An address is the
+ * smaller, likelier thing to ask for at the end of a page.
+ */
+export const newsletter = {
+  heading: "Word from the bench.",
   body:
-    "Every commission begins with a private fitting. We measure the face, discuss the house, and hold the bench for eleven days. Nothing leaves the studio until it is right.",
-  cta: "Begin a commission",
+    "One letter when a house is finished, a run opens, or a date is set for the bench. Nothing else, and never often.",
+  label: "Email address",
+  cta: "Subscribe",
+  note: "A few times a year. Leave whenever you like.",
+};
+
+/**
+ * The private-access module, on the scrubbed film.
+ *
+ * It sits after the gallery and before the dark-to-light handoff, which is
+ * the last stretch of black on the page — the right ground for the one
+ * offer the house makes that is not for everybody.
+ */
+export const privateAccess = {
+  heading: "The next edition isn't for everyone.",
+  body:
+    "Private access to unreleased frames, limited editions, and first releases — before they enter the collection.",
+  cta: "Request private access",
+  href: "/contact",
+  /** Scrubbed frame by frame against the scroll: a five-second turntable of
+   *  the frame on black, 121 frames at 24fps. The right film for this
+   *  section precisely because it shows the OBJECT and nothing around it —
+   *  no room, no model, no context to place it in. What is being offered is
+   *  a look at something before anyone else, and this is what that looks
+   *  like. */
+  video: "/video/private-access-scrub.mp4",
 };
 
 export const footer = {

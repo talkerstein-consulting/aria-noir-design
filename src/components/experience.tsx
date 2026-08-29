@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AtelierSection } from "./atelier-section";
 import { CollectionsSection } from "./collections-section";
 import { GridSection } from "./grid-section";
+import { PrivateAccessSection } from "./private-access-section";
 import { WhiteDotOverlay } from "./white-dot-overlay";
 import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
@@ -19,6 +20,8 @@ import {
   H2_GAP_VH,
 } from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
+import { whenAssetsReady } from "@/lib/preload";
+import { privateAccess } from "@/lib/content";
 
 /* ---------- opening ----------
    One rAF loop writing straight to the DOM. Nothing goes through React state
@@ -34,6 +37,30 @@ const GROW_END_AT = 0.55; // counter fraction where the mini box is complete
 const GROW_MS = 300; // dot → mini
 const FULL_MS = 520; // mini → full bleed
 const OPENING_MS = COUNT_MS + FULL_MS;
+
+/**
+ * Where the counter waits for the page.
+ *
+ * The readout is no longer a pure animation: it climbs on time until this
+ * fraction and then HOLDS there until the assets are in — see lib/preload.
+ * The last few percent are the handover itself, so they cannot be spent
+ * before the thing being handed over exists.
+ *
+ * 0.9 rather than 0.99 on purpose. A bar that sticks at 99 reads as broken;
+ * one that pauses at 90 reads as still working, which is the truth.
+ */
+const HOLD_AT = 0.9;
+
+/**
+ * The ceiling on all of it.
+ *
+ * Waiting for assets means the loader's length is now decided by the
+ * NETWORK, and a network can simply never answer. Past this, the page opens
+ * regardless and whatever has not arrived arrives late — a page assembling
+ * itself is a bad first impression, a loading screen that never ends is a
+ * lost visitor.
+ */
+const MAX_WAIT_MS = 9000;
 
 const GROW_START_MS = COUNT_MS * GROW_END_AT - GROW_MS;
 const DOT_MS = COUNT_MS * DOT_AT;
@@ -98,6 +125,13 @@ export function Experience() {
 
     let raf = 0;
     let done = false;
+    /* Set when the page's own assets are in. A ref, not state: it is read
+       inside the rAF loop, and a re-render per change would be a re-render
+       for something nothing renders. */
+    let ready = false;
+    /* Time spent waiting at HOLD_AT, subtracted from the clock so the
+       counter resumes where it paused instead of jumping to catch up. */
+    let held = 0;
     const start = performance.now();
 
     /* Return visit: the opening has already been seen this session, so it
@@ -126,11 +160,32 @@ export function Experience() {
       return;
     }
 
-    const failsafe = window.setTimeout(finish, OPENING_MS + 500);
+    /* The counter now waits on the page. The hero film is the one that
+       matters most — it is what the box expands into — but everything the
+       document declared is included, plus the scrubbed clip further down,
+       which no markup above would otherwise make anyone wait for. */
+    whenAssetsReady({ files: [privateAccess.video] }).then(() => {
+      ready = true;
+    });
+
+    /* Two failsafes, because there are now two ways to hang: a starved rAF
+       (the old one — background tabs and low-power throttling never reach
+       OPENING_MS) and a network that never finishes. */
+    const failsafe = window.setTimeout(finish, MAX_WAIT_MS);
 
     const tick = (now: number) => {
       if (done) return;
-      const ms = now - start;
+      const ms = now - start - held;
+
+      /* Hold the readout at HOLD_AT while the page is still loading by
+         freezing the clock rather than the number: everything downstream is
+         a function of `ms`, so one subtraction pauses the whole opening —
+         counter, dot and box together — and releases it in step. */
+      if (!ready && ms > COUNT_MS * HOLD_AT) {
+        held += ms - COUNT_MS * HOLD_AT;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
 
       const cp = clamp01(ms / COUNT_MS);
       const pct = cp * 100;
@@ -386,7 +441,14 @@ export function Experience() {
         <CollectionsSection />
         <AtelierSection />
         <GridSection />
-        <WhiteDotOverlay />
+        {/* The last black on the page, and the one offer that is not for
+            everybody. */}
+        <PrivateAccessSection />
+        {/* The dark→light handoff moved with it: the iris is anchored to
+            the END of whatever section precedes the closing block, and that
+            is no longer the gallery. Anchored by id rather than by position
+            so the two cannot drift apart silently. */}
+        <WhiteDotOverlay anchorId="private-access" />
         <FinaleSection />
       </main>
       <SiteFooter />
