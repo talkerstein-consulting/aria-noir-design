@@ -37,11 +37,14 @@ export type MenuLink = { label: string; href: string; external?: boolean };
  * difference between "read this" and "this exists".
  */
 export const menu = {
-  /* Six destinations, and ARCA I is deliberately not among them. It is a
-     frame, not a section — putting the one house that happens to have a
-     page beside Eyewear and The House would tell a reader it is a peer of
-     those, and would look stranger still the day a second house ships.
-     It lives where its five siblings live: on the eyewear index. */
+  /* Seven entries: six destinations and the bag. The count above finally
+     matches the list — it said seven while this held six.
+
+     ARCA I is deliberately not among them. It is a frame, not a section —
+     putting the one house that happens to have a page beside Eyewear and
+     The House would tell a reader it is a peer of those, and would look
+     stranger still the day a second house ships. It lives where its five
+     siblings live: on the eyewear index. */
   primary: [
     { label: "Home", href: "/" },
     { label: "Eyewear", href: "/eyewear" },
@@ -49,6 +52,12 @@ export const menu = {
     { label: "The House", href: "/house/about" },
     { label: "Process", href: "/house/process" },
     { label: "Contact", href: "/contact" },
+    /* The bag, and the only reason the menu carries a utility beside six
+       destinations: this site deliberately has no cart control in its
+       header, so without this line the only route to the bag is a footer
+       link under "Client" — which is where someone looks for a policy, not
+       for the thing they are holding. */
+    { label: "Bag", href: "/bag" },
   ] satisfies readonly MenuLink[],
 
   secondary: [

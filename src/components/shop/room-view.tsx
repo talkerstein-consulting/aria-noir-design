@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { CtaLink, CtaButton } from "@/components/cta-link";
-import { CartTable } from "@/components/shop/cart-table";
 import { ACCOUNT_URL } from "@/lib/navigation";
 import { useSession, RETURN_PARAM, SIGN_OUT_URL } from "@/lib/session";
 import { useBag } from "@/lib/cart";
@@ -55,10 +54,24 @@ export function RoomView() {
         </p>
       </div>
 
-      {/* ---- the bag ---- */}
+      {/* ---- the bag, which is no longer here ----
+
+          It has its own page and its own place in the menu. Rendering it
+          again here would mean two bags on the site: two things to keep in
+          step, and two answers to "where is my bag" — which is the one
+          question a shop may not have two answers to. */}
       <section className="mb-20">
-        <h2 className="t-eyebrow mb-8">The Bag</h2>
-        <CartTable />
+        <h2 className="t-eyebrow mb-6">The Bag</h2>
+        <p className="t-body t-body--tight max-w-xl">
+          {count
+            ? `${count} ${count === 1 ? "piece" : "pieces"} waiting. Nothing is held for long — the workshop cuts to order.`
+            : "Empty for now."}
+        </p>
+        <div className="mt-8">
+          <CtaLink href="/bag">
+            {count ? "Open the bag" : "See the frames"}
+          </CtaLink>
+        </div>
       </section>
 
       {/* ---- the desk ---- */}

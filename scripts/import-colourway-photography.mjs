@@ -38,7 +38,12 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 
-const SRC = path.join("scrape", "arianoir", "models", "eyewear");
+/* Both categories the scrape splits products into. Apparel is one model
+   with five colourways and lands in `public/images/apparel/` alongside the
+   houses — the shape of the data is identical, so the only thing that
+   differs is which folder it comes out of. */
+const CATEGORIES = ["eyewear", "apparel"];
+const SRC_ROOT = path.join("scrape", "arianoir", "models");
 const OUT = path.join("public", "images");
 
 /** Hand-curated; see the header. */
@@ -71,14 +76,19 @@ const titleCase = (s) =>
     .join(" ");
 
 async function main() {
-  const houses = (await readdir(SRC, { withFileTypes: true }))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .filter((h) => !SKIP.has(h));
+  const houses = [];
+  for (const category of CATEGORIES) {
+    const dir = path.join(SRC_ROOT, category);
+    if (!existsSync(dir)) continue;
+    for (const d of await readdir(dir, { withFileTypes: true })) {
+      if (d.isDirectory() && !SKIP.has(d.name)) houses.push([category, d.name]);
+    }
+  }
 
   const wiring = [];
 
-  for (const house of houses) {
+  for (const [category, house] of houses) {
+    const SRC = path.join(SRC_ROOT, category);
     const model = JSON.parse(
       await readFileText(path.join(SRC, house, "model.json")),
     );

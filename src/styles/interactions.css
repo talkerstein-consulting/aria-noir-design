@@ -923,6 +923,31 @@
   }
 }
 
+/* Photographs first on a phone, then the offer.
+
+   The markup order — frame, offer, photographs — was written so that the
+   offer came SECOND on a small screen: the turntable was the picture at
+   the top, and scrolling past a whole column of photography to find the
+   price is the shop hiding its own till.
+
+   The turntable is gone below 1024px, so "second" became "first", and the
+   page opened on a wall of type with no picture of the product anywhere on
+   it. A product page that does not show the product is the worse of the
+   two failures — and the till is no longer buried by fixing it, because
+   the buy control pins itself to the foot of the screen the moment the
+   real one leaves the top. */
+@media (max-width: 1023px) {
+  .buy-grid {
+    grid-template-rows: auto auto;
+  }
+  .buy-grid-photos {
+    grid-row: 1;
+  }
+  .buy-grid-panel {
+    grid-row: 2;
+  }
+}
+
 /* No opening on a phone, so nothing to reserve room for.
 
    The block's 78vh is scroll budget for a choreography that does not run

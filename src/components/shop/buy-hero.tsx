@@ -159,7 +159,35 @@ export function BuyHero({ house }: { house: House }) {
   const { add } = useBag();
 
   const images = galleryFor(house, chosen ?? undefined);
-  const model = modelFor(house, chosen);
+  const modelSrc = modelFor(house, chosen);
+
+  /* ---- The turntable is a DESKTOP object ----
+
+     A phone gets the photographs and the offer, and no 3D at all. The
+     opening choreography was already switched off there, which left a
+     WebGL canvas and a multi-megabyte glb being downloaded and drawn so
+     that a still frame could sit above the pictures — paid for by the
+     device least able to afford either.
+
+     `null` until measured, and measured in a LAYOUT effect: the server and
+     the first client paint both render no model, and a wide screen mounts
+     it before the browser paints, so there is no flash and no hydration
+     mismatch. Doing this with `useSyncExternalStore` (as private-access
+     does) would render the desktop branch once during hydration — which on
+     a phone means mounting the canvas and starting the glb fetch before
+     unmounting it again, which is the whole cost this avoids. */
+  const [wide, setWide] = useState<boolean | null>(null);
+  useLayoutEffect(() => {
+    const q = window.matchMedia("(min-width: 1024px)");
+    const read = () => setWide(q.matches);
+    read();
+    q.addEventListener("change", read);
+    return () => q.removeEventListener("change", read);
+  }, []);
+
+  /* Everything downstream reads this, so one check gates the canvas, the
+     opening title, the preload and the choreography together. */
+  const model = wide ? modelSrc : null;
   const acetate = swatchFor(chosen ?? house.colorwayNames[0]);
 
   const addToBag = () => {
@@ -643,15 +671,20 @@ export function BuyHero({ house }: { house: House }) {
   /* Every cut of this house, fetched up front. The run is four small
      Draco-compressed files and the reader is being invited to click
      between them, so paying for them once on arrival is cheaper than
-     tearing the scene down on each swap. */
+     tearing the scene down on each swap.
+     
+     Only where there is a turntable to feed. On a phone there is none, and
+     prefetching four meshes for a canvas that will never mount is the
+     largest download on the page bought for nothing. */
   useEffect(() => {
+    if (!wide) return;
     const all = house.colorwayModels
       ? Object.values(house.colorwayModels)
       : house.model
         ? [house.model]
         : [];
     preloadModels(all);
-  }, [house]);
+  }, [house, wide]);
 
   /* A new acetate is a new glb, and it arrives whenever it arrives. Fading
      the canvas out and back covers the swap — without it the frame either
