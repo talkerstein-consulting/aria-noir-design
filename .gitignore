@@ -39,7 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.netlify/
 
 # raw source assets — not part of the deployed site, far too large to track
 /Final Assets/
