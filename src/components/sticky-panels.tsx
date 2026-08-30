@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { usePanelSnap } from "@/hooks/use-panel-snap";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CtaLink } from "@/components/cta-link";
@@ -67,28 +66,43 @@ const TAIL_VH = 32; // the last panel holds before the section releases
 
 /** The phone's beats.
  *
- *  `PANEL_VH + BETWEEN_VH` is 65 — a panel costs about two thirds of a
- *  screen, which is comfortably inside one swipe rather than exactly one
- *  screen. A full screen per panel sounds right and is not: a thumb flick
- *  carries one to three screens of momentum, so pricing a panel AT a screen
- *  means an ordinary swipe overshoots by one or two and the reader arrives
- *  somewhere they did not aim for. Under-pricing it means a swipe lands on
- *  the next panel or, at worst, the one after — and the snap decides which,
- *  rather than the flick.
+ *  ---- What is shortened, and what deliberately is not ----
  *
- *  The slide itself is 26 of that 65, so 60% of every panel's budget is a
- *  dead-still hold. That is what makes the composition read as a cut rather
- *  than as something being scrubbed.
+ *  The PANELS are shortened, modestly: 65vh against the desktop's 77. A
+ *  thumb flick carries one to three screens of momentum, so a panel priced
+ *  at or above a screen means an ordinary swipe overshoots by one or two.
+ *  Under-pricing it slightly means a swipe covers about one panel and the
+ *  reader stays where they aimed. The slide itself is 26 of that 65, so
+ *  60% of every panel's budget is a dead-still hold — which is what makes
+ *  the composition read as a cut rather than as something being scrubbed.
  *
- *  These are the numbers to tune first if the feel is wrong on a real
- *  device; nothing else in this file needs to move with them. */
+ *  The PLATE ENTRANCE is not. It was cut to 44vh in the first pass at this
+ *  and that was the mistake: the plate growing from 22% to full bleed is
+ *  the section introducing itself, and at 44vh against the desktop's 102
+ *  the page appeared to accelerate into the colourways — the one beat that
+ *  should feel unhurried, taken at more than double speed. It is 76 now:
+ *  shorter than the desktop, because a phone reaching this section has
+ *  already scrolled a long way to get here, but no longer a rush.
+ *
+ *  The saving that matters is in the DEAD beats — the lead-in and the tail,
+ *  26 and 32 on a desktop and 8 apiece here. Those are pauses with nothing
+ *  on screen to justify them at this size.
+ *
+ *  Four colourways: 3.68 screens against the desktop's 4.97.
+ *
+ *  There is no snapping. It was tried, on the reasoning that a swipe should
+ *  never rest mid-slide, and `mandatory` snapping does that by taking the
+ *  scroll away — its first point sits at the plate-full position, so simply
+ *  entering the track pulled the reader forward into it. The hold above is
+ *  the honest way to get the same result: make the mid-slide state brief
+ *  and the composed state long, and let the reader stop where they like. */
 const NARROW = {
-  LEAD_VH: 6,
-  PLATE_VH: 44,
+  LEAD_VH: 8,
+  PLATE_VH: 76,
   AFTER_PLATE_VH: 20,
   PANEL_VH: 26,
   BETWEEN_VH: 39,
-  TAIL_VH: 6,
+  TAIL_VH: 8,
 };
 
 /** Where the heading group sits, phone only.
@@ -155,21 +169,6 @@ type StickyPanelsProps = {
    * one section of a product story rather than the reason the page exists.
    */
   inset?: boolean;
-  /**
-   * Make a phone's swipe come to rest on a panel rather than between two.
-   *
-   * OFF by default, and off is the important half of that. Snapping suits a
-   * stage the reader is meant to STUDY — the colourways, where each panel
-   * is a frame being compared against the last and a half-arrived one is
-   * just a smear. It does not suit a stage the reader is passing THROUGH.
-   * The home page's collections is the second kind: it is the page's first
-   * move after the opening, and taking the scroll away from someone who has
-   * only just started reading makes the site feel like it is steering.
-   *
-   * So the product page asks for it and the home page does not. See
-   * use-panel-snap for why it is a phone-only question at all.
-   */
-  snap?: boolean;
   /** The heading that the first plate grows out of and swallows. */
   preheader?: string;
   heading?: React.ReactNode;
@@ -221,18 +220,13 @@ function useTiming(count: number, narrow: boolean) {
     const zones: [number, number][] = [
       [f(b.LEAD_VH), f(b.LEAD_VH + b.PLATE_VH)],
     ];
-    /* Where each panel has finished arriving, in scrolled vh from the top of
-       the track. These are the only places a phone should ever come to rest,
-       and they are handed to the snap in use-panel-snap. */
-    const holds: number[] = [f(b.LEAD_VH + b.PLATE_VH)];
     let cursor = b.LEAD_VH + b.PLATE_VH + b.AFTER_PLATE_VH;
     for (let i = 0; i < slides; i += 1) {
       zones.push([f(cursor), f(cursor + b.PANEL_VH)]);
-      holds.push(f(cursor + b.PANEL_VH));
       cursor += b.PANEL_VH + b.BETWEEN_VH;
     }
 
-    return { heightVh: scroll + 100, zones, holds };
+    return { heightVh: scroll + 100, zones };
   }, [count, narrow]);
 }
 
@@ -242,7 +236,6 @@ export function StickyPanels({
   heading,
   labels: placement = "center",
   inset = false,
-  snap = false,
   id,
   className = "",
 }: StickyPanelsProps) {
@@ -252,12 +245,10 @@ export function StickyPanels({
   const panels = useRef<(HTMLDivElement | null)[]>([]);
   const labels = useRef<(HTMLDivElement | null)[]>([]);
 
-  /* The phone's beats apply to every stage — they are what stops a swipe
-     landing mid-slide. The SNAP is opt-in on top of them, because it is the
-     part that takes the scroll away from the reader. */
+  /* The phone gets its own beats — see NARROW — and nothing else. There is
+     deliberately no snapping here; see the note above `useTiming`. */
   const narrow = useNarrow();
-  const { heightVh, zones, holds } = useTiming(items.length, narrow);
-  usePanelSnap(wrap, holds, narrow && snap);
+  const { heightVh, zones } = useTiming(items.length, narrow);
 
   /* `zones` is memoised on the panel count, so this identity only changes
      when the number of panels does — which is the one case the scroll

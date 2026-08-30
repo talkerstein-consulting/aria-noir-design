@@ -45,12 +45,6 @@ export function ProductVariations({ variations }: { variations: Variations }) {
          the whole plate — would put type across the lenses of the thing
          being sold and a veil over the acetate whose colour is the point. */
       labels="foot"
-      /* A phone's swipe comes to rest on a colourway, never between two.
-         This stage is a comparison — each panel is a cut being read against
-         the last — and half of one sliding across the other is the one
-         state it has nothing to say in. The home page's collections
-         deliberately does NOT ask for this; see the prop's note. */
-      snap
       /* Held inside the page's gutter rather than run to the edges. The
          home page's stage IS the home page and earns the full screen; this
          one is a section of a product story, and the black around it is
