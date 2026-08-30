@@ -118,7 +118,13 @@ export function ProductOffering({
             className="font-display text-6xl leading-[1.02] tracking-tight text-paper sm:text-8xl"
           />
 
-          <CtaLink href={buyHref} className="pointer-events-auto mt-6">
+          <CtaLink
+            href={buyHref}
+            /* Filled and inverted below 1024px — see .cta--filled. This is the
+               page's offer, and on a phone a word with a rule under it is
+               indistinguishable from the label above it. */
+            className="cta--filled pointer-events-auto mt-6"
+          >
             {offering.cta}
           </CtaLink>
 

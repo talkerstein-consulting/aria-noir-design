@@ -243,6 +243,13 @@
   --fg-primary: var(--text-primary-light);
   --fg-accent: var(--text-accent-light);
   --fg-tertiary: var(--text-tertiary-light);
+  /* The ground has to come with the foreground.
+  
+     This declaration is what `.on-paper` would have said, and it was
+     missing the one token the filled CTA inverts against — so on a phone
+     the closing block's button painted ink on ink and disappeared. A
+     ground declaration that names only foregrounds is not a ground. */
+  --ground: var(--paper);
 }
 
 /* ── 2. Quiet links ──────────────────────────────────────────────────
@@ -916,6 +923,25 @@
   }
 }
 
+/* No opening on a phone, so nothing to reserve room for.
+
+   The block's 78vh is scroll budget for a choreography that does not run
+   below 1024px — see the `narrow` branch in buy-hero. Left at full height
+   it is most of a screen of black between the house name and its first
+   photograph, which on a phone is the whole first impression. */
+@media (max-width: 1023px) {
+  .buy-opening {
+    height: auto;
+    padding-top: 0;
+    padding-bottom: 2.5rem;
+  }
+  .buy-opening-title,
+  .buy-model,
+  .buy-ground {
+    will-change: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .buy-opening {
     height: auto;
@@ -1226,4 +1252,64 @@
    handle along with everything else. */
 .buy-stage .model-grab {
   display: none;
+}
+
+/* ── The filled CTA, phones only ──
+
+   The site's rule is that there are no buttons: an action is a word with a
+   rule under it. That reads on a desktop, where a cursor can hover a word
+   and the rule answers. On a phone there is no hover, no cursor, and the
+   letter-wave never plays — so the primary action on the page is a line of
+   small caps that looks exactly like the small caps above it, and the one
+   thing a thumb is looking for is the thing hardest to find.
+
+   So the registry CTA — and only that one, the page's actual offer —
+   becomes a solid block below 1024px, painted in the section's foreground
+   with the section's own ground as its text. Inverted rather than tinted:
+   it borrows the two colours already on screen instead of introducing a
+   third, which is why it can sit on ink and on paper without being told
+   which it is on.
+
+   Everything the rule did is removed rather than layered over: the
+   underline, the accent sweep and the hover colour all belong to a word,
+   not to a block. The letter flip stays — it is the same object, and on
+   the desktop side of this breakpoint nothing here applies at all. */
+@media (max-width: 1023px) {
+  .cta--filled {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1.05rem 1.5rem;
+    background: var(--fg-primary);
+    color: var(--ground);
+    transition:
+      background var(--dur-fast) ease,
+      color var(--dur-fast) ease;
+  }
+
+  /* The rule and its sweep are the word's affordance. A filled block does
+     not need to announce that it is pressable, and a line under type that
+     is already inside a solid rectangle reads as an underline in a button
+     — which is a different, wronger thing. */
+  .cta--filled .cta-chars {
+    padding-bottom: 0;
+  }
+  .cta--filled .cta-chars::before,
+  .cta--filled .cta-chars::after {
+    display: none;
+  }
+
+  /* Hover is a desktop state and this is the phone rule, but a stylus, a
+     trackpad on a small window, or a long-press can still produce it.
+     Accent-on-fill would be gold on white; holding the inversion keeps the
+     contrast the fill was chosen for. */
+  .cta--filled:hover,
+  .cta--filled:focus-visible {
+    color: var(--ground);
+  }
+  .cta--filled:focus-visible {
+    outline: var(--rule-weight) solid var(--fg-accent);
+    outline-offset: calc(var(--focus-offset) + 2px);
+  }
 }

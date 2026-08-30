@@ -207,6 +207,10 @@ export function BuyHero({ house }: { house: House }) {
     const narrow = window.matchMedia("(max-width: 1023px)");
 
     let last = -1;
+    /* Whether the landed state has already been written. Without it the
+       phone branch would rewrite the same six inline styles sixty times a
+       second for the whole page. */
+    let settled = false;
     /* Baselines in PAGE coordinates, measured once while nothing is
        transformed. Everything below is arithmetic on these plus the scroll,
        and never a live measurement.
@@ -286,6 +290,28 @@ export function BuyHero({ house }: { house: House }) {
          or not the preference is set, so that flipping it mid-session
          lands on the next frame. */
       if (reduced.matches) return;
+
+      /* ---- And so does a phone ----
+
+         The opening was a reduced version of itself below 1024px: no
+         sideways travel and no sliding offer, but still the grey closing
+         from the full screen onto the square and the frame settling into
+         it. That is a screen and a half of scrolling spent before the page
+         admits to being a shop, on the device with the least screen to
+         spend and no cursor to make the object feel worth turning.
+
+         So on a phone there is no mechanic at all — the name, then the
+         picture, then the offer, in that order down the page. `settle()`
+         is the landed state written once; the guard above it means this
+         costs one media-query read per frame and nothing else. */
+      if (narrow.matches) {
+        if (!settled) {
+          settle();
+          settled = true;
+        }
+        return;
+      }
+      settled = false;
 
       /* A phone has no second column to travel into, so the frame does not
          travel sideways and the offer does not slide in from anywhere — it

@@ -21,6 +21,10 @@
   --fg-quiet: var(--text-quiet-dark);
   --fg-accent: var(--text-accent-dark);
   --fg-rule: var(--rule-dark);
+  /* The ground ITSELF, not a foreground on it. Only one recipe reads this
+     — the filled CTA, which inverts — and it needs the colour the section
+     is painted, which nothing else here carries. */
+  --ground: var(--ink);
 }
 .on-paper {
   color: var(--text-primary-light);
@@ -30,6 +34,7 @@
   --fg-quiet: var(--text-quiet-light);
   --fg-accent: var(--text-accent-light);
   --fg-rule: var(--rule-light);
+  --ground: var(--paper);
 }
 /* The body is dark ground, so anything not inside a declared section
    still resolves rather than falling back to nothing. */
@@ -40,6 +45,7 @@ body {
   --fg-quiet: var(--text-quiet-dark);
   --fg-accent: var(--text-accent-dark);
   --fg-rule: var(--rule-dark);
+  --ground: var(--ink);
 }
 
 /* ── Display ─────────────────────────────────────────────────────────

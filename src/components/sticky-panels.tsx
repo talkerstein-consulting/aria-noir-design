@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { usePanelSnap } from "@/hooks/use-panel-snap";
 import Link from "next/link";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CtaLink } from "@/components/cta-link";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
@@ -36,13 +37,59 @@ import { useScrollProgress } from "@/hooks/use-scroll-progress";
  */
 
 /* All in vh of SCROLLED distance (i.e. section height minus the one screen
-   the sticky child is holding). */
+   the sticky child is holding).
+   
+   ---- Two sets of beats, and the phone's are not just smaller ----
+   
+   The desktop beats are written for a wheel, which delivers scroll in small
+   continuous increments: a 64vh panel is a comfortable turn of a wheel and
+   the slide is legible the whole way through. A thumb does not do that. A
+   swipe arrives as one shove plus momentum, roughly a screen at a time, so
+   the same 64vh window means every release lands mid-slide — a panel
+   frozen halfway across the stage, which is the one state this composition
+   never wants to be seen in.
+   
+   So the phone's beats are not the desktop's scaled down. They are built on
+   a different unit: ONE PANEL PER SCREEN, with the slide packed into the
+   front of that screen and the rest of it a hold. A swipe therefore moves
+   exactly one panel and ends on a held frame, and the mid-slide state
+   exists for the fraction of the gesture where the thumb is still moving.
+   
+   The section also gets dramatically shorter, which is the other half of
+   the complaint: four colourways cost five screens of scrolling on a phone
+   under the desktop beats, and this page had twenty-two screens in it. */
 const LEAD_VH = 26; // before the plate starts to grow
 const PLATE_VH = 102; // the plate, 22% → full bleed
 const AFTER_PLATE_VH = 19; // the plate holds, filled, before 02 arrives
 const PANEL_VH = 64; // each slide-in
 const BETWEEN_VH = 13; // a beat between one panel and the next
 const TAIL_VH = 32; // the last panel holds before the section releases
+
+/** The phone's beats.
+ *
+ *  `PANEL_VH + BETWEEN_VH` is 65 — a panel costs about two thirds of a
+ *  screen, which is comfortably inside one swipe rather than exactly one
+ *  screen. A full screen per panel sounds right and is not: a thumb flick
+ *  carries one to three screens of momentum, so pricing a panel AT a screen
+ *  means an ordinary swipe overshoots by one or two and the reader arrives
+ *  somewhere they did not aim for. Under-pricing it means a swipe lands on
+ *  the next panel or, at worst, the one after — and the snap decides which,
+ *  rather than the flick.
+ *
+ *  The slide itself is 26 of that 65, so 60% of every panel's budget is a
+ *  dead-still hold. That is what makes the composition read as a cut rather
+ *  than as something being scrubbed.
+ *
+ *  These are the numbers to tune first if the feel is wrong on a real
+ *  device; nothing else in this file needs to move with them. */
+const NARROW = {
+  LEAD_VH: 6,
+  PLATE_VH: 44,
+  AFTER_PLATE_VH: 20,
+  PANEL_VH: 26,
+  BETWEEN_VH: 39,
+  TAIL_VH: 6,
+};
 
 const PLATE_START_SCALE = 0.22; // 22vw × 22vh
 const PLATE_REST_Y_VH = 24; // sits LOW, beneath the heading
@@ -106,32 +153,62 @@ type StickyPanelsProps = {
   className?: string;
 };
 
+/** Whether the phone's beats apply.
+ *
+ *  A hook rather than a CSS media query because the numbers it selects are
+ *  arithmetic, not style: they set the section's HEIGHT and the scroll
+ *  fractions every panel is timed against, and neither can be expressed in
+ *  a stylesheet. Read on mount and kept current, so rotating a phone into
+ *  landscape re-times the stage rather than leaving it on the wrong beats. */
+function useNarrow() {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const q = window.matchMedia("(max-width: 1023px)");
+    const read = () => setNarrow(q.matches);
+    read();
+    q.addEventListener("change", read);
+    return () => q.removeEventListener("change", read);
+  }, []);
+  return narrow;
+}
+
 /** The section's height and every panel's in/out point, derived from the
  *  beats above and the number of panels. */
-function useTiming(count: number) {
+function useTiming(count: number, narrow: boolean) {
   return useMemo(() => {
+    const b = narrow
+      ? NARROW
+      : { LEAD_VH, PLATE_VH, AFTER_PLATE_VH, PANEL_VH, BETWEEN_VH, TAIL_VH };
+
     const slides = Math.max(0, count - 1);
     const scroll =
-      LEAD_VH +
-      PLATE_VH +
+      b.LEAD_VH +
+      b.PLATE_VH +
       (slides > 0
-        ? AFTER_PLATE_VH + slides * PANEL_VH + (slides - 1) * BETWEEN_VH
+        ? b.AFTER_PLATE_VH + slides * b.PANEL_VH + (slides - 1) * b.BETWEEN_VH
         : 0) +
-      TAIL_VH;
+      b.TAIL_VH;
 
     /* Progress is measured across the scrolled distance, not the section
        box — the sticky child holds one screen that never scrolls past. */
     const f = (vh: number) => vh / scroll;
 
-    const zones: [number, number][] = [[f(LEAD_VH), f(LEAD_VH + PLATE_VH)]];
-    let cursor = LEAD_VH + PLATE_VH + AFTER_PLATE_VH;
+    const zones: [number, number][] = [
+      [f(b.LEAD_VH), f(b.LEAD_VH + b.PLATE_VH)],
+    ];
+    /* Where each panel has finished arriving, in scrolled vh from the top of
+       the track. These are the only places a phone should ever come to rest,
+       and they are handed to the snap in use-panel-snap. */
+    const holds: number[] = [f(b.LEAD_VH + b.PLATE_VH)];
+    let cursor = b.LEAD_VH + b.PLATE_VH + b.AFTER_PLATE_VH;
     for (let i = 0; i < slides; i += 1) {
-      zones.push([f(cursor), f(cursor + PANEL_VH)]);
-      cursor += PANEL_VH + BETWEEN_VH;
+      zones.push([f(cursor), f(cursor + b.PANEL_VH)]);
+      holds.push(f(cursor + b.PANEL_VH));
+      cursor += b.PANEL_VH + b.BETWEEN_VH;
     }
 
-    return { heightVh: scroll + 100, zones };
-  }, [count]);
+    return { heightVh: scroll + 100, zones, holds };
+  }, [count, narrow]);
 }
 
 export function StickyPanels({
@@ -149,7 +226,11 @@ export function StickyPanels({
   const panels = useRef<(HTMLDivElement | null)[]>([]);
   const labels = useRef<(HTMLDivElement | null)[]>([]);
 
-  const { heightVh, zones } = useTiming(items.length);
+  /* One panel per screen on a phone, and a snap that guarantees a swipe
+     ends on one. See NARROW above and use-panel-snap. */
+  const narrow = useNarrow();
+  const { heightVh, zones, holds } = useTiming(items.length, narrow);
+  usePanelSnap(wrap, holds, narrow);
 
   /* `zones` is memoised on the panel count, so this identity only changes
      when the number of panels does — which is the one case the scroll

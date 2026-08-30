@@ -59,7 +59,11 @@ export function ProductClose({
         <p className="relative z-30 max-w-xl font-ui text-base leading-relaxed text-pretty text-ink/65 sm:text-lg">
           {close.body}
         </p>
-        <CtaLink href={buyHref} variant="dark" className="relative z-30 mt-4">
+        <CtaLink
+          href={buyHref}
+          variant="dark"
+          className="cta--filled relative z-30 mt-4"
+        >
           {close.cta}
         </CtaLink>
       </div>

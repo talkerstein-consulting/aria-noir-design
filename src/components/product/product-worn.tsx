@@ -106,7 +106,7 @@ export function ProductWorn({
           text={worn.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl"
         />
-        <CtaLink href={buyHref} className="mt-4">
+        <CtaLink href={buyHref} className="cta--filled mt-4">
           {worn.cta}
         </CtaLink>
       </div>
