@@ -56,6 +56,28 @@ const STAGE_VH = 72;
 const SECTION_VH = 520;
 
 /**
+ * The same section on a phone.
+ *
+ * 520vh is 4.2 screens of lamp travel, which on a wheel is a slow reveal
+ * and on a thumb is six or seven swipes to get the light across one frame.
+ * The sequence is the same length either way — what changes is how much
+ * scrolling it is spread over, and a phone has no reason to spend four
+ * screens on it.
+ *
+ * 300 leaves the sticky screen intact and gives the lamp two screens rather
+ * than four. Against the 36 frames a phone samples, that is a frame every
+ * 5.6vh of travel — FINER than the desktop's 7vh over 72 frames, so the
+ * turn does not get coarser for being shorter.
+ *
+ * The white iris is safe here and it is worth saying why: it is anchored to
+ * this section but measured back from its BOTTOM (DOT_START_VH / DOT_END_VH
+ * in lib/timeline), so it keeps its place in the last screen of the section
+ * however tall the section is. Shortening moves the iris up with it rather
+ * than out of alignment.
+ */
+const NARROW_SECTION_VH = 300;
+
+/**
  * The stage on a phone: a 4:5 portrait plate, 1080×1350 in the shape the
  * house's stills are cut to.
  *
@@ -149,7 +171,7 @@ export function PrivateAccessSection() {
       id="private-access"
       ref={wrap}
       className="relative z-[36] bg-ink"
-      style={{ height: `${SECTION_VH}vh` }}
+      style={{ height: `${small ? NARROW_SECTION_VH : SECTION_VH}vh` }}
     >
       <div className="relative h-full">
       {/* The stage: one screen, held, with the frame in it. The section's
