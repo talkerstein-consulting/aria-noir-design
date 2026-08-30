@@ -837,6 +837,32 @@ export function BuyHero({ house }: { house: House }) {
           </div>
         </div>
 
+        {/* ---- the lead photograph, phones only ----
+
+            One picture above the offer, and the rest of the column below
+            it. With the turntable gone from phones the page had no image
+            before the name and the price; with the WHOLE column moved
+            above them it had six, and the colourways and the buy button
+            were most of a page away.
+
+            It is a second element rather than a reordering because the
+            column is one flow item and a grid cannot lift a single child
+            out of it. The same file, so the browser fetches it once, and
+            the copy in the column below is hidden at this width — see
+            `.buy-grid-lead`. */}
+        {images.length ? (
+          <div className="buy-grid-lead relative aspect-square overflow-hidden bg-ink">
+            <Image
+              src={images[0]}
+              alt={`${house.name}${chosen ? ` — ${chosen}` : ""}, ${house.material}`}
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover"
+            />
+          </div>
+        ) : null}
+
         {/* ---- the photographs ---- */}
         <div className="buy-grid-photos stack stack--sm">
           {images.length ? (

@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { CtaLink } from "@/components/cta-link";
 import { useBag, subtotal, checkoutHref } from "@/lib/cart";
-import { formatPrice, swatchFor, SHOP_ALL_URL } from "@/lib/shop";
+import { formatPrice, priceOf, swatchFor, SHOP_ALL_URL } from "@/lib/shop";
+import { houses, shopPath } from "@/lib/navigation";
 
 /**
  * The bag's contents.
@@ -27,12 +29,62 @@ export function CartTable() {
     return <p className="t-caption">Opening the bag…</p>;
   }
 
+  /* ---- Empty, with somewhere to go ----
+  
+     An empty bag used to be one line and two links, which is a dead end
+     dressed as a page: the reader is told they have nothing and then asked
+     to navigate their way out of it. The frames themselves are a better
+     answer than a link to a list of them — so the house shows what it
+     makes, here, at the moment someone has nothing.
+  
+     Six cards rather than the whole catalogue. This is a bag, not the
+     index; it is offering a way back in, not asking anyone to choose from
+     thirty-six things while standing at their own till. */
   if (!resolved.length) {
     return (
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">The bag is empty.</p>
-        <div className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/eyewear">See the frames</CtaLink>
+        <p className="t-body t-body--tight mt-2 max-w-xl text-[var(--fg-tertiary)]">
+          Six houses, cut from block acetate. Every one of them is made to
+          order.
+        </p>
+
+        <ul className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3">
+          {houses.map((house) => (
+            <li key={house.slug}>
+              <Link
+                href={house.href ?? shopPath(house)}
+                className="card-link group flex flex-col gap-3"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
+                  {house.plate ? (
+                    <Image
+                      src={house.plate}
+                      alt={`${house.name} — ${house.material}`}
+                      fill
+                      sizes="(min-width: 640px) 30vw, 45vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full"
+                      style={{
+                        background: `linear-gradient(160deg, ${house.swatch ?? swatchFor(house.colorwayNames[0])} 0%, var(--ink) 82%)`,
+                      }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <h3 className="card-name">{house.name}</h3>
+                  <p className="t-caption mt-1">from {priceOf(house)}</p>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4">
+          <CtaLink href="/eyewear">See all the frames</CtaLink>
           <CtaLink href={SHOP_ALL_URL} external tone="quiet">
             Shop all
           </CtaLink>

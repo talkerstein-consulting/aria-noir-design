@@ -2,38 +2,45 @@
 
 import { useEffect } from "react";
 import { CtaLink, CtaButton } from "@/components/cta-link";
+import { CartTable } from "@/components/shop/cart-table";
 import { ACCOUNT_URL } from "@/lib/navigation";
 import { useSession, RETURN_PARAM, SIGN_OUT_URL } from "@/lib/session";
 import { useBag } from "@/lib/cart";
 
 /**
- * The Room's contents.
+ * The bag, and the desk under it.
  *
- * Two halves, in the order they matter to the person standing in it: the
- * bag, which is business unfinished on this device, and the desk — orders,
- * addresses, sign-out — which lives on Shopify because that is where the
- * orders are.
+ * This was RoomView, and the Room is gone. Its two halves were never one
+ * errand: the bag is business unfinished on this device, and the desk —
+ * orders, addresses, sign-out — is business that lives on Shopify. What
+ * kept them together was a page called The Room, which was a name for the
+ * pairing rather than a reason for it.
+ *
+ * They are still on one page, because a shop with a bag page AND a desk
+ * page has two half-pages. What changed is which one the page is called
+ * after and which one leads: the bag is the thing someone came here to
+ * deal with, and the desk is what they need afterwards.
  *
  * The bag shows whether or not anyone has signed in. A guest with three
  * frames in their bag being asked to authenticate before they can look at
  * their own bag is a shop putting a lock on the inside of its own door;
  * the permalink checkout does not need an account either.
  */
-export function RoomView() {
+export function BagView() {
   const { signedIn, set } = useSession();
   const { count } = useBag();
 
   /* Coming back from the auth flow. Shopify's redirect lands here with
      `?welcome=1`, which is the one moment this origin learns the outcome —
      see lib/session for why that is a hint about a word, not a credential.
-     
+
      Read from `window.location` inside an effect rather than with
      `useSearchParams`. That hook opts the whole route out of static
      prerendering unless it is wrapped in a Suspense boundary, and it
      failed the production build for exactly that reason — but the query
      is not needed to RENDER anything here. It sets a flag, once, after
-     mount. Suspending a page over a value nothing renders would be
-     paying for a boundary to hold a place nobody is standing in. */
+     mount. Suspending a page over a value nothing renders would be paying
+     for a boundary to hold a place nobody is standing in. */
   useEffect(() => {
     const welcomed =
       new URLSearchParams(window.location.search).get(RETURN_PARAM) === "1";
@@ -43,9 +50,9 @@ export function RoomView() {
   return (
     <>
       <div className="stack stack--sm mb-16">
-        <p className="t-eyebrow">The Room</p>
+        <p className="t-eyebrow">The Bag</p>
         <h1 className="t-display-lg">
-          {signedIn ? "Welcome back." : "Your bag, and your bench."}
+          {signedIn ? "Welcome back." : "What you are holding."}
         </h1>
         <p className="t-body t-body--lede mt-2">
           {count
@@ -54,28 +61,10 @@ export function RoomView() {
         </p>
       </div>
 
-      {/* ---- the bag, which is no longer here ----
-
-          It has its own page and its own place in the menu. Rendering it
-          again here would mean two bags on the site: two things to keep in
-          step, and two answers to "where is my bag" — which is the one
-          question a shop may not have two answers to. */}
-      <section className="mb-20">
-        <h2 className="t-eyebrow mb-6">The Bag</h2>
-        <p className="t-body t-body--tight max-w-xl">
-          {count
-            ? `${count} ${count === 1 ? "piece" : "pieces"} waiting. Nothing is held for long — the workshop cuts to order.`
-            : "Empty for now."}
-        </p>
-        <div className="mt-8">
-          <CtaLink href="/bag">
-            {count ? "Open the bag" : "See the frames"}
-          </CtaLink>
-        </div>
-      </section>
+      <CartTable />
 
       {/* ---- the desk ---- */}
-      <section className="hairline pt-10">
+      <section className="hairline mt-20 pt-10">
         <h2 className="t-eyebrow mb-6">The Desk</h2>
         {signedIn ? (
           <>
@@ -89,7 +78,7 @@ export function RoomView() {
               </CtaLink>
               {/* Signs out of Shopify, which ends the thing that actually
                   matters, and drops the local hint on the way so the header
-                  does not keep saying Room. */}
+                  does not keep saying Bag. */}
               <CtaLink href={SIGN_OUT_URL} external tone="quiet">
                 Sign out
               </CtaLink>

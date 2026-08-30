@@ -158,24 +158,23 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
           voice is already the eyebrow size and weight, which is the same
           step `t-label` sat at, so the header keeps its proportions and
           gains the rule and the glyph wave. */}
-        {/* One control, two words. ACCESS to a stranger, ROOM to someone
+        {/* One control, two words. ACCESS to a stranger, BAG to someone
             who has been through the door — the destination is the same
             errand either way, so it is the same control rather than a
             second one appearing beside it.
 
-            There is deliberately no bag control here. A running cart total
-            in the chrome is a shop shouting about its own till on every
-            page, and this header spends itself on three words and a
-            wordmark. The bag is in the Room, with everything else that
-            belongs to one person. */}
+            No COUNT on it, which is the part worth keeping: a running cart
+            total in the chrome is a shop shouting about its own till on
+            every page, and this header spends itself on three words and a
+            wordmark. The word is a door, not a tally. */}
         <CtaLink
-          href={signedIn ? "/room" : "/access"}
+          href={signedIn ? "/bag" : "/access"}
           tone="quiet"
           bare
           strong
           className="justify-self-start"
         >
-          {signedIn ? nav.room : nav.right}
+          {signedIn ? nav.bag : nav.right}
         </CtaLink>
 
         {showMark ? (

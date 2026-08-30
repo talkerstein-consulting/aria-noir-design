@@ -7,9 +7,9 @@ import { redirect } from "next/navigation";
  * on the internet guesses, it was live on this site, and a 404 at that
  * address is the shop appearing to have lost the thing they were holding.
  *
- * It pointed at `/room` while the bag was a section of that page. The bag
- * has its own address now, so this points at the bag itself rather than at
- * the page the bag used to be inside.
+ * It pointed at `/room` while the bag was a section of that page. That page
+ * no longer exists and the bag has its own address, so this is now the only
+ * redirect the shop needs.
  */
 export default function CartPage() {
   redirect("/bag");

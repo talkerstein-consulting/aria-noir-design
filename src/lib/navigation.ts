@@ -759,7 +759,7 @@ export const sitemap: readonly SitemapGroup[] = [
       { label: "Returns", href: "/policies/returns" },
       { label: "Warranty", href: "/policies/warranty" },
       { label: "Access", href: "/access" },
-      { label: "The Room", href: "/room" },
+      { label: "The Bag", href: "/bag" },
     ],
   },
   {

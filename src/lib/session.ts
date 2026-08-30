@@ -16,7 +16,7 @@ import { ACCOUNT_URL } from "@/lib/navigation";
  *
  * ---- What it is ----
  *
- * A UI mirror, so the header can say Room instead of Access to someone who
+ * A UI mirror, so the header can say Bag instead of Access to someone who
  * has signed in. It is set when the customer comes back from the auth flow
  * on `RETURN_PARAM`, which is the one moment this origin learns anything
  * about the outcome. Treat it exactly as what it is: a hint about which
@@ -24,14 +24,19 @@ import { ACCOUNT_URL } from "@/lib/navigation";
  * they are done.
  *
  * If it is stale — signed out on Shopify, still flagged here — the worst
- * case is a header that says Room and a Room page whose links bounce the
- * reader through sign-in again. That is a mildly wasted click, not a leak,
+ * case is a header that says Bag and a desk whose links bounce the reader
+ * through sign-in again. That is a mildly wasted click, not a leak,
  * because there was never anything behind this flag to leak.
  */
 
-const KEY = "aria-noir:room";
+/* Renamed from `aria-noir:room` when the Room was removed. A stored flag
+   under the old key is simply not found, so anyone carrying one is shown
+   ACCESS until their next sign-in — a wasted click for existing visitors
+   and nothing more, since the flag never guarded anything. Worth it to
+   leave no trace of a route that no longer exists. */
+const KEY = "aria-noir:bag";
 
-/** Point Shopify's post-auth redirect at `/room?welcome=1`. */
+/** Point Shopify's post-auth redirect at `/bag?welcome=1`. */
 export const RETURN_PARAM = "welcome";
 
 /** Where the credential step happens, with the address pre-filled. */
@@ -45,10 +50,10 @@ export function signInHref(email?: string) {
 export const SIGN_OUT_URL = new URL("/logout", ACCOUNT_URL).toString();
 
 function subscribe(onChange: () => void) {
-  window.addEventListener("aria-noir:room", onChange);
+  window.addEventListener(KEY, onChange);
   window.addEventListener("storage", onChange);
   return () => {
-    window.removeEventListener("aria-noir:room", onChange);
+    window.removeEventListener(KEY, onChange);
     window.removeEventListener("storage", onChange);
   };
 }
@@ -74,7 +79,7 @@ export function useSession() {
     } catch {
       /* Storage refused; the header just keeps saying Access. */
     }
-    window.dispatchEvent(new Event("aria-noir:room"));
+    window.dispatchEvent(new Event(KEY));
   }, []);
 
   return { signedIn, set };

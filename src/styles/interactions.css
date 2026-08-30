@@ -938,13 +938,29 @@
    real one leaves the top. */
 @media (max-width: 1023px) {
   .buy-grid {
-    grid-template-rows: auto auto;
+    grid-template-rows: auto auto auto;
   }
-  .buy-grid-photos {
+  .buy-grid-lead {
     grid-row: 1;
   }
   .buy-grid-panel {
     grid-row: 2;
+  }
+  .buy-grid-photos {
+    grid-row: 3;
+  }
+  /* The lead is a copy of this column's first picture, so the original
+     stands down at this width rather than appearing twice. */
+  .buy-grid-photos > *:first-child {
+    display: none;
+  }
+}
+
+/* No lead on a wide screen: the turntable is the picture above the offer
+   there, and the column keeps all of its own photographs. */
+@media (min-width: 1024px) {
+  .buy-grid-lead {
+    display: none;
   }
 }
 

@@ -11,9 +11,10 @@ export const nav = {
      for people who already own something; "log in" is what a dashboard
      says. */
   right: "Access",
-  /* The same control, once the reader has been through the door. Same
-     length as ACCESS, so the header's fixed column count holds. */
-  room: "Room",
+  /* The same control, once the reader has been through the door. Shorter
+     than ACCESS, which the header's fixed column count is fine with — the
+     three columns are sized by the grid, not by this word. */
+  bag: "Bag",
 };
 
 export const sectionTwo = {
