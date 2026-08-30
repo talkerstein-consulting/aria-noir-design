@@ -21,6 +21,7 @@ import {
 } from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
 import { whenAssetsReady } from "@/lib/preload";
+import { kickPlay } from "@/lib/autoplay";
 import { privateAccess } from "@/lib/content";
 
 /**
@@ -76,7 +77,18 @@ const HOLD_AT = 0.9;
  * itself is a bad first impression, a loading screen that never ends is a
  * lost visitor.
  */
-const MAX_WAIT_MS = 9000;
+const MAX_WAIT_MS = 16000;
+
+/* 9000 before, and it was the binding constraint on the whole loader rather
+   than the last-resort ceiling it is written as: the per-asset waits in
+   lib/preload run to 8s each and are wrapped again at 16s, so anything that
+   was genuinely still downloading lost to this timer every time. The loader
+   spent its life pretending to wait.
+   
+   It can afford to be a real ceiling now. The hero film was a 42MB master
+   and is 4.2MB — see scripts/compress-video.mjs — so the thing this was
+   quietly cutting short is now something a slow connection can actually
+   finish inside the ceiling. */
 
 const GROW_START_MS = COUNT_MS * GROW_END_AT - GROW_MS;
 const DOT_MS = COUNT_MS * DOT_AT;
@@ -336,7 +348,12 @@ export function Experience() {
           className="h-screen w-screen origin-center overflow-hidden will-change-transform"
           style={{ transform: "scale(0)" }}
         >
+          {/* `autoPlay` is a request the browser may decline — Low Power
+              Mode, Data Saver, a tab that opened in the background. This
+              film is the page's opening image, so it is asked directly as
+              well, and asked again if the answer changes. See lib/autoplay. */}
           <video
+            ref={kickPlay}
             className="h-full w-full object-cover"
             src="/video/hero-bg.mp4"
             autoPlay

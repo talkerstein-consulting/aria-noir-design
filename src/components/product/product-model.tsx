@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
 /** Three quarters: enough yaw to read the temple and the hinge, and a
@@ -318,9 +318,6 @@ export function ProductModel({
   onReady?: () => void;
 }) {
   const dragging = useRef<{ id: number; x: number } | null>(null);
-  /* Whether the pointer is over the object rather than merely somewhere in
-     the section. Drives the cursor, and nothing else — see `near()`. */
-  const [near, setNear] = useState(false);
 
   /* A module binding outlives this component, so the frame starts where it
      was left otherwise — at whatever angle the last visitor dragged it to,
@@ -339,26 +336,12 @@ export function ProductModel({
   }, []);
 
   const onMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    /* ---- Is the pointer on the object? ----
-     *
-     * The canvas fills a whole screen and the frame occupies the middle
-     * fifth of it, so a cursor that changed across the entire section was
-     * promising a drag over acres of empty black. The model is centred and
-     * fitted to a known fraction of the viewport (see `scale`), which means
-     * its extent can simply be computed rather than picked at with a
-     * raycast — cheaper, and it does not flicker between the temples where
-     * a raycast finds nothing to hit. */
-    const box = e.currentTarget.getBoundingClientRect();
-    const dx = Math.abs(e.clientX - (box.left + box.width / 2));
-    const dy = Math.abs(e.clientY - (box.top + box.height / 2));
-    const reach = Math.min(box.width, box.height) * 0.5;
-    /* Wider than tall, like the object. */
-    setNear(dx < reach * 1.15 && dy < reach * 0.5);
-
     const d = dragging.current;
     if (!d || d.id !== e.pointerId) return;
     /* Only the horizontal component is read. Vertical movement during a
-       drag is not a gesture this object has — which is the whole point. */
+       drag is not a gesture this object has — which is the whole point,
+       and on a phone it is what leaves the page free to scroll under a
+       finger that started somewhere other than the frame. */
     turn((e.clientX - d.x) * DRAG);
     d.x = e.clientX;
   }, []);
@@ -367,27 +350,9 @@ export function ProductModel({
     if (dragging.current?.id === e.pointerId) dragging.current = null;
   }, []);
 
-  const onLeave = useCallback(() => setNear(false), []);
-
   return (
-    <div className="relative h-full w-full">
-      <div
-        /* The cursor IS the left/right indicator — and it is the ONLY one,
-           now that the word came off. `ew-resize` is the pointer every
-           desktop already reads as "this moves along the horizontal axis",
-           which is exactly the gesture this object has and the only gesture
-           it has, so the affordance and the constraint are one statement.
-
-           It appears over the object and nowhere else. A cursor that
-           changes the moment you enter the section is offering a drag on a
-           screenful of empty black. */
-        className={`h-full w-full touch-none ${near ? "cursor-ew-resize" : ""}`}
-        onPointerDown={onDown}
-        onPointerMove={onMove}
-        onPointerUp={onUp}
-        onPointerCancel={onUp}
-        onPointerLeave={onLeave}
-      >
+    <div className="model-stage-box relative h-full w-full">
+      <div className="pointer-events-none h-full w-full">
         <Canvas
           dpr={[1, 2]}
           /* Dead-on, y=0, and it never moves again: the model is recentred
@@ -441,6 +406,35 @@ export function ProductModel({
           </Suspense>
         </Canvas>
       </div>
+
+      {/* ---- The handle, which is the OBJECT and not the canvas ----
+
+          The gesture used to live on a box the full size of the canvas,
+          carrying `touch-none`. On a desktop that only meant the cursor
+          logic had to work out whether the pointer was over the frame; on a
+          phone it meant a whole screen of empty black that refused to
+          scroll. `touch-action: none` is read when a gesture BEGINS, so it
+          cannot be decided per-touch from inside a move handler — the area
+          has to be the right size before a finger lands on it.
+
+          So it is its own element, sized to the object rather than to the
+          stage, and everything else is `pointer-events: none`. The page
+          scrolls off the black exactly as it does off any other section,
+          and the frame turns where the frame is.
+
+          The size is the same rule the cursor already used: the model is
+          fitted to 86% of the SMALLER viewport dimension, so its extent is
+          a fraction of `min(width, height)` — wider than tall, like the
+          object. Container query units are that `min()`, in CSS, which is
+          why this is a stylesheet rule and not a measured box: no observer,
+          no re-render, and it is correct on the first frame. */}
+      <div
+        className="model-grab"
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+      />
 
       {/* No label. The stage carried a centred "Rotate" under the object and
           it is gone: the cursor already says it, over the object, at the

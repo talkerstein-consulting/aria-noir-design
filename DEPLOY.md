@@ -26,23 +26,29 @@ npx netlify-cli deploy --build --prod
 
 ## Worth knowing before you ship
 
-**The hero video is the whole payload.** `public/video/hero-bg.mp4` is
-**31.5 MB** at ~16.8 Mbps — roughly 4× heavier than it needs to be, and it
-is fetched on first paint. It is the single biggest thing you can fix:
+**The films are compressed, and there is a script for it.** This section
+used to say the hero was 31.5 MB at ~16.8 Mbps and hand you an ffmpeg
+command. That work is done:
+
+| file | before | after |
+|---|---|---|
+| `public/video/arca-i-hero.mp4` | 42.1 MB @ 20.6 Mbps | **4.2 MB @ 2.0 Mbps** |
+| `public/video/hero-bg.mp4` | 4.9 MB | **4.8 MB** |
+
+The masters live in `video source/`, which is gitignored, and the encode is
+`scripts/compress-video.mjs` — CRF 24, `preset slow`, audio dropped (every
+film here plays muted), `+faststart` so playback can begin before the
+download finishes. Add a new film by dropping the master in `video source/`
+and running:
 
 ```bash
-ffmpeg -i public/video/hero-bg.mp4 -c:v libx264 -profile:v high -crf 24 \
-  -preset slow -vf scale=1920:-2 -movflags +faststart -an \
-  public/video/hero-bg-opt.mp4
+node scripts/compress-video.mjs
 ```
 
-That should land near 4–6 MB with no visible loss at this size (`-an` drops
-the audio track, which is unused). Swap the filename in
-`src/components/experience.tsx`.
-
-Also in `public/`: two GLB models (~3.3 MB each). Only `ARCA.glb` is used
-now — `AHAVA.glb` became unused when the closing 3D model was removed, so it
-can be deleted unless you plan to bring it back.
+This matters beyond bandwidth: the home page's loader WAITS on the hero
+film (`lib/preload`), and at 20 Mbps nothing could finish inside a ceiling
+worth showing, so the loader gave up every time and handed over to a hero
+that had not arrived.
 
 **Git size.** The video is committed, so the repository carries it in history
 (`.git` is ~36 MB). That is under GitHub's limits and will push fine, but if

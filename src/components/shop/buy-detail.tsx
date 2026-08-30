@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { kickPlay } from "@/lib/autoplay";
 import { useState } from "react";
 import { CtaLink } from "@/components/cta-link";
 
@@ -122,6 +123,7 @@ export function BuyDetail({
       <div className="buy-film relative aspect-[4/5] overflow-hidden bg-ink">
         {video ? (
           <video
+            ref={kickPlay}
             className="h-full w-full object-cover"
             src={video}
             poster={poster}

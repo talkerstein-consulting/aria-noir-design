@@ -74,3 +74,10 @@ scripts/colourway-wiring.generated.txt
 
 # Scratch capture left at the repo root; nothing references it.
 /scrub video.mp4
+
+# The film masters. Same bargain as `3d models/` and `scrape/`: these are the
+# ORIGINALS — one of them a 42MB, 20 Mbps, 1080p master with an audio track
+# on a clip that only ever plays muted — and what the site serves is derived
+# from them by scripts/compress-video.mjs into public/video at web weight,
+# which IS committed.
+/video source/

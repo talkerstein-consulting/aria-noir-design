@@ -1186,3 +1186,44 @@
     display: none;
   }
 }
+
+/* ── The turntable's handle ──
+
+   The area a reader may drag the frame by, and it is the size of the FRAME
+   rather than the size of the canvas.
+
+   `touch-action` is read by the browser when a gesture begins, so it cannot
+   be decided per-touch inside a move handler — the box has to already be
+   the right size when a finger lands. The old arrangement put `touch-none`
+   on a wrapper the full size of the stage, which on a desktop only cost
+   some cursor arithmetic and on a phone meant a screenful of empty black
+   that refused to scroll.
+
+   The size is the rule the viewer already fits by: the model is scaled to
+   86% of the SMALLER of the two viewport dimensions, so its extent is a
+   fraction of `min(width, height)` — and wider than tall, like the object.
+   Container query units give exactly that `min()` in CSS, so the handle
+   tracks the frame with no observer, no state and no first-frame error. */
+.model-stage-box {
+  container-type: size;
+}
+.model-grab {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* 1.15 and 0.5 of the fitted diameter — the same two numbers the cursor
+     test used when it was doing this arithmetic by hand. */
+  width: min(115cqw, 115cqh);
+  height: min(50cqw, 50cqh);
+  transform: translate(-50%, -50%);
+  touch-action: none;
+  cursor: ew-resize;
+  z-index: 2;
+}
+
+/* A stage whose canvas is deliberately inert — the buy page's opening turns
+   the frame itself and cannot afford the reader stopping it — refuses the
+   handle along with everything else. */
+.buy-stage .model-grab {
+  display: none;
+}

@@ -17,7 +17,9 @@
  *
  *   every <video> in the DOM — held to `canplaythrough`, i.e. enough buffered
  *      to run start to finish at the current rate. `readyState` is checked
- *      first because a video that was already ready fires no event.
+ *      first because a video that was already ready fires no event. The
+ *      element is also ASKED TO PLAY here, so that "ready" means the film is
+ *      actually rolling behind the loader rather than merely downloaded.
  *
  *   named files — anything fetched later by a component rather than declared
  *      in markup. The scroll-scrubbed clip is the case in point: it is pulled
@@ -31,7 +33,14 @@
  * timeout. The caller keeps a hard ceiling of its own on top of that.
  */
 
-/** Longest any single asset may hold the loader. */
+import { kickPlay } from "@/lib/autoplay";
+
+/** Longest any single asset may hold the loader.
+ *
+ *  This is a real wait now that the films are web weight — the hero was a
+ *  42MB, 20 Mbps master and no ceiling worth having could cover it, so the
+ *  loader gave up on it every time and handed over to a hero that had not
+ *  arrived. See scripts/compress-video.mjs. */
 const PER_ASSET_MS = 8000;
 
 /** Resolves with `false` if the promise has not settled in time. */
@@ -55,10 +64,25 @@ function documentLoaded(): Promise<void> {
   });
 }
 
+/** HAVE_ENOUGH_DATA — the browser believes it can play to the end without
+ *  stopping to buffer. This is what `canplaythrough` means, and it is the
+ *  bar the loader is supposed to be holding assets to.
+ *
+ *  It was 3 (HAVE_FUTURE_DATA) — "enough to start" — which is a different
+ *  and much weaker promise: a couple of buffered seconds resolved the wait,
+ *  the loader lifted, and the film stalled a moment later in front of the
+ *  reader. The doc comment above said canplaythrough the whole time; only
+ *  the number disagreed. */
+const HAVE_ENOUGH_DATA = 4;
+
 function videoReady(el: HTMLVideoElement): Promise<void> {
-  /* HAVE_FUTURE_DATA or better means it is already playable; such an element
-     will never fire the event we would otherwise be waiting for. */
-  if (el.readyState >= 3) return Promise.resolve();
+  /* Asked to play as well as waited on. A film that is buffered but paused
+     behind an autoplay policy is not ready in any sense the reader cares
+     about, and the loader is the one moment on the page where a play()
+     rejection can still be recovered from silently. */
+  kickPlay(el);
+
+  if (el.readyState >= HAVE_ENOUGH_DATA) return Promise.resolve();
   return new Promise((resolve) => {
     const done = () => resolve();
     el.addEventListener("canplaythrough", done, { once: true });

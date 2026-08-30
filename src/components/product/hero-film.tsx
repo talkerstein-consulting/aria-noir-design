@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useState } from "react";
+import { kickPlay } from "@/lib/autoplay";
 
 /**
  * The hero's film, and the still it is held behind until it can play.
@@ -37,8 +38,15 @@ export function HeroFilm({
   /* Autoplay that already fired before hydration emits no `playing` event
      for React to hear, so the element is asked directly the moment it
      attaches — a ref callback rather than an effect, since it is a question
-     about the DOM node and it has the node. */
+     about the DOM node and it has the node.
+
+     And where autoplay did NOT fire — Low Power Mode, Data Saver, a
+     background tab — `kickPlay` asks for it and keeps asking on the
+     occasions the answer can change. Without it this component's contract
+     ("the film fades up once it is genuinely playing") resolves to "the
+     poster stays forever", silently. */
   const attach = useCallback((v: HTMLVideoElement | null) => {
+    kickPlay(v);
     if (v && !v.paused && v.readyState >= 3) setRolling(true);
   }, []);
 
