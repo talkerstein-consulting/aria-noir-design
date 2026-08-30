@@ -82,19 +82,14 @@ function Card({ house, i }: { house: House; i: number }) {
             ? `One cut · ${colorwayCount(house)} colourways`
             : `${house.models} cuts · ${colorwayCount(house)} colourways`}
         </p>
-        {/* No colourway names here.
-
-            They used to be listed in full, and the reason given was that
-            "until each house has a page of its own this line is the only
-            place on the site they appear". That has stopped being true:
-            every colourway is now named, priced and linked on the house
-            index, and each house has a buy page where the picker shows the
-            acetate itself.
-
-            So the line was doing the one thing an index should not — six
-            cards each carrying seven or eight names, which is fifty words
-            of variant in a grid whose job is to tell you the house exists.
-            The count above still says how deep the range goes. */}
+        {/* The colourways by NAME, not just how many there are. A count is
+            the one fact about a colourway range that tells a reader nothing
+            — "six colourways" is true of every house on the page. Noir,
+            Caramel Stripe and Pixie Dust are the actual product, and this
+            is the grid a reader browses them from. */}
+        <p className="t-caption text-[var(--fg-quiet)]">
+          {house.colorwayNames.join(" · ")}
+        </p>
         <p className="t-body t-body--tight mt-2">{house.note}</p>
       </div>
     </>

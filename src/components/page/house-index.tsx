@@ -2,14 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { houses, colorwayCount, shopPath } from "@/lib/navigation";
 import { apparel } from "@/lib/apparel";
-import { CATALOGUE } from "@/lib/catalogue";
-import {
-  formatPrice,
-  shopHref,
-  swatchFor,
-  SHOP_URL,
-  SHOP_ALL_URL,
-} from "@/lib/shop";
+import { formatPrice, priceOf, SHOP_ALL_URL } from "@/lib/shop";
 import { CtaLink } from "@/components/cta-link";
 
 /**
@@ -28,77 +21,27 @@ import { CtaLink } from "@/components/cta-link";
  * drift from the list under it. Small enough to simply SHOW. A house this size does not need a filtered
  * grid, and one would be furniture around a list that fits on a page.
  *
- * ---- Every colourway, not every collection ----
+ * ---- Collections, not variants ----
  *
- * The eyewear index already lists the six houses; a second list of the same
- * six would be a duplicate wearing a different heading. This goes one level
- * further down and names the PRODUCTS — each colourway, its price, and
- * whether the workshop currently has it — because that is the level at
- * which "all the products" is a true statement and the level nothing else
- * on the site shows.
+ * Every colourway was listed here — named, priced, linked, thirty-six rows
+ * of them — and it is deliberately not any more. At this level the reader
+ * is deciding WHICH THING, and a wall of Caramel Stripe and Pixie Dust is
+ * an answer to a question they have not asked yet. Each card carries the
+ * two facts that help them choose instead: how deep the range goes, and
+ * what it opens at. The colourways are named on the eyewear grid and shown
+ * as acetate on each buy page, which are the two places someone browsing
+ * them is actually standing.
  *
- * Stock and price come from `lib/catalogue`, which is synced from the live
+ * This is still not the eyewear index. That page lists the six houses; this
+ * one lists everything the house makes, apparel included — which is the
+ * part that was missing, since the garment appeared nowhere on the site at
+ * all.
+ *
+ * Opening prices come from `lib/catalogue`, synced from the live
  * storefront, so this page cannot quote a price the shop has moved off. The
  * apparel comes from `lib/apparel`, which exists because the sync script
  * reads eyewear collections only — see that file.
  */
-
-/** A colourway's line: name, price, and the one fact that changes. */
-function Row({
-  name,
-  price,
-  available,
-  href,
-  swatch,
-  external,
-}: {
-  name: string;
-  price: string;
-  available: boolean;
-  href: string;
-  swatch: string;
-  external?: boolean;
-}) {
-  const body = (
-    <>
-      <span
-        aria-hidden
-        className="size-3 shrink-0 rounded-full"
-        style={{ background: swatch }}
-      />
-      <span className="min-w-0 flex-1 truncate">{name}</span>
-      {/* Struck rather than hidden. "We make this, not right now" is a
-          different sentence from "we do not make this", and the catalogue
-          is the one place that distinction is worth the ink. */}
-      <span
-        className={`tabular-nums ${available ? "" : "text-[var(--fg-quiet)] line-through"}`}
-      >
-        {price}
-      </span>
-    </>
-  );
-
-  const shape =
-    "house-index-row flex items-center gap-4 py-3 text-[var(--fg-secondary)]";
-
-  return external ? (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-      className={`${shape} transition-colors hover:text-[var(--fg-primary)]`}
-    >
-      {body}
-    </a>
-  ) : (
-    <Link
-      href={href}
-      className={`${shape} transition-colors hover:text-[var(--fg-primary)]`}
-    >
-      {body}
-    </Link>
-  );
-}
 
 export function HouseIndex() {
   const totalProducts =
@@ -116,77 +59,57 @@ export function HouseIndex() {
               page now. */}
           <h1 className="t-display-lg">Everything we make.</h1>
           <p className="t-body t-body--lede mt-2 max-w-2xl">
-            {totalCollections} collections, {totalProducts} pieces. Eyewear
-            cut from block acetate, and one garment knitted in Peru.
+            {totalCollections} collections, {totalProducts} pieces. Eyewear cut
+            from block acetate, and one garment knitted in Peru.
           </p>
         </div>
 
         <div className="house-index grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-          {houses.map((house) => {
-            const stock = CATALOGUE[house.slug] ?? [];
-            return (
-              <div key={house.slug} className="flex flex-col gap-4">
-                <Link
-                  href={house.href ?? shopPath(house)}
-                  className="group flex flex-col gap-3"
-                >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-ink">
-                    {house.plate ? (
-                      <Image
-                        src={house.plate}
-                        alt={`${house.name} — ${house.material}`}
-                        fill
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <div
-                        className="h-full w-full"
-                        style={{
-                          background: `linear-gradient(160deg, ${house.swatch ?? "#2a2a2a"} 0%, var(--ink) 82%)`,
-                        }}
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="t-display-xs">{house.name}</h2>
-                    <p className="t-label mt-1">
-                      {house.index} — {house.material}
-                    </p>
-                  </div>
-                </Link>
-
-                {/* The products themselves. A house the storefront does not
-                    carry falls back to the names it is cut in, so the list
-                    is never empty for a house that exists. */}
-                <div className="hairline pt-3">
-                  {stock.length
-                    ? stock.map((e) => (
-                        <Row
-                          key={e.colorway}
-                          name={e.colorway}
-                          price={formatPrice(e.cents)}
-                          available={e.available}
-                          href={shopHref(house, e.colorway)}
-                          external
-                          /* The acetate itself, from the same table the
-                             colourway picker reads — not a photograph,
-                             which at this size would be a grey dot. */
-                          swatch={swatchFor(e.colorway)}
-                        />
-                      ))
-                    : house.colorwayNames.map((n) => (
-                        <p
-                          key={n}
-                          className="house-index-row py-3 text-[var(--fg-quiet)]"
-                        >
-                          {n}
-                        </p>
-                      ))}
+          {houses.map((house) => (
+            <div key={house.slug} className="flex flex-col gap-4">
+              <Link
+                href={house.href ?? shopPath(house)}
+                className="group flex flex-col gap-3"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
+                  {house.plate ? (
+                    <Image
+                      src={house.plate}
+                      alt={`${house.name} — ${house.material}`}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full"
+                      style={{
+                        background: `linear-gradient(160deg, ${house.swatch ?? "#2a2a2a"} 0%, var(--ink) 82%)`,
+                      }}
+                    />
+                  )}
                 </div>
+                <div>
+                  <h2 className="t-display-xs">{house.name}</h2>
+                  <p className="t-label mt-1">
+                    {house.index} — {house.material}
+                  </p>
+                </div>
+              </Link>
+
+              {/* How deep the range goes and what it opens at — not the
+                    colourways themselves. See the note at the top of this
+                    file for why they are not listed here. */}
+              <div className="hairline flex items-baseline justify-between gap-4 pt-3">
+                <p className="t-caption">
+                  {house.models === 1
+                    ? `One cut · ${colorwayCount(house)} colourways`
+                    : `${house.models} cuts · ${colorwayCount(house)} colourways`}
+                </p>
+                <p className="t-caption tabular-nums">from {priceOf(house)}</p>
               </div>
-            );
-          })}
+            </div>
+          ))}
 
           {/* ---- the apparel ---- */}
           {apparel.map((line) => (
@@ -209,20 +132,13 @@ export function HouseIndex() {
                 </div>
               </div>
 
-              <div className="hairline pt-3">
-                {line.colourways.map((c) => (
-                  <Row
-                    key={c.name}
-                    name={c.name}
-                    price={formatPrice(c.cents)}
-                    available={c.available}
-                    href={`${SHOP_URL}/products/${c.handle}`}
-                    external
-                    swatch={c.swatch}
-                  />
-                ))}
-                <p className="t-caption mt-4">
-                  {line.sizes.join(" · ")}
+              <div className="hairline flex items-baseline justify-between gap-4 pt-3">
+                <p className="t-caption">
+                  One cut · {line.colourways.length} colourways ·{" "}
+                  {line.sizes.length} sizes
+                </p>
+                <p className="t-caption tabular-nums">
+                  from {formatPrice(line.colourways[0]?.cents ?? 0)}
                 </p>
               </div>
             </div>
