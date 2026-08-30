@@ -155,6 +155,21 @@ type StickyPanelsProps = {
    * one section of a product story rather than the reason the page exists.
    */
   inset?: boolean;
+  /**
+   * Make a phone's swipe come to rest on a panel rather than between two.
+   *
+   * OFF by default, and off is the important half of that. Snapping suits a
+   * stage the reader is meant to STUDY — the colourways, where each panel
+   * is a frame being compared against the last and a half-arrived one is
+   * just a smear. It does not suit a stage the reader is passing THROUGH.
+   * The home page's collections is the second kind: it is the page's first
+   * move after the opening, and taking the scroll away from someone who has
+   * only just started reading makes the site feel like it is steering.
+   *
+   * So the product page asks for it and the home page does not. See
+   * use-panel-snap for why it is a phone-only question at all.
+   */
+  snap?: boolean;
   /** The heading that the first plate grows out of and swallows. */
   preheader?: string;
   heading?: React.ReactNode;
@@ -227,6 +242,7 @@ export function StickyPanels({
   heading,
   labels: placement = "center",
   inset = false,
+  snap = false,
   id,
   className = "",
 }: StickyPanelsProps) {
@@ -236,11 +252,12 @@ export function StickyPanels({
   const panels = useRef<(HTMLDivElement | null)[]>([]);
   const labels = useRef<(HTMLDivElement | null)[]>([]);
 
-  /* One panel per screen on a phone, and a snap that guarantees a swipe
-     ends on one. See NARROW above and use-panel-snap. */
+  /* The phone's beats apply to every stage — they are what stops a swipe
+     landing mid-slide. The SNAP is opt-in on top of them, because it is the
+     part that takes the scroll away from the reader. */
   const narrow = useNarrow();
   const { heightVh, zones, holds } = useTiming(items.length, narrow);
-  usePanelSnap(wrap, holds, narrow);
+  usePanelSnap(wrap, holds, narrow && snap);
 
   /* `zones` is memoised on the panel count, so this identity only changes
      when the number of panels does — which is the one case the scroll
