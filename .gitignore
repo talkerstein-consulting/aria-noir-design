@@ -80,3 +80,9 @@ scripts/colourway-wiring.generated.txt
 # from them by scripts/compress-video.mjs into public/video at web weight,
 # which IS committed.
 /video source/
+
+# The upright colourway masters, 1080x1920 PNGs at ~3MB each. Same bargain
+# as `video source/` and `scrape/`: the originals stay out, and what the
+# site serves is derived from them into
+# public/images/arca-i/variants/tall at web weight, which IS committed.
+/mobile color photos/

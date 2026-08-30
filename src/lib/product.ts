@@ -122,6 +122,17 @@ export type Colorway = {
   name: string;
   swatch: string;
   image?: string;
+  /**
+   * The upright plate, for the square this panel becomes on a phone.
+   *
+   * A separate photograph rather than a crop: `image` is a wide still, and
+   * centre-cropping a wide still to a square is a picture of a wide object
+   * with its width taken away. These are framed for the square.
+   *
+   * Optional, and falls through to `image` — ARCA I is the only house whose
+   * colourways have been shot twice.
+   */
+  imageNarrow?: string;
   alt?: string;
   /**
    * Where this colourway is bought. Present only where the house has a buy

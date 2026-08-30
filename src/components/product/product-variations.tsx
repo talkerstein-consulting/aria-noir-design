@@ -31,6 +31,7 @@ export function ProductVariations({ variations }: { variations: Variations }) {
     name: c.name,
     meta: variations.preheader,
     image: c.image,
+    imageNarrow: c.imageNarrow,
     swatch: c.swatch,
     href: c.href,
     cta: c.cta,

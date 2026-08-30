@@ -130,6 +130,18 @@ export type PanelItem = {
   meta: string;
   /** Full-bleed plate. Omit where the house has no photograph yet. */
   image?: string;
+  /**
+   * The plate a PHONE shows, where the house has one shot for it.
+   *
+   * Not a smaller copy of `image` — a different photograph. The stage is a
+   * square on a phone (see `.stage-media--foot`), and a landscape still
+   * centre-cropped to a square is the wide object it is a picture of,
+   * narrowed. These are shot upright for the crop they land in.
+   *
+   * Falls through to `image` where a house has not had the second shoot,
+   * which is every house but ARCA I.
+   */
+  imageNarrow?: string;
   /** Acetate swatch, for the panels with no plate in hand — the same
    *  bargain the index grid strikes rather than borrowing someone else's
    *  photograph and calling it this frame. */
@@ -350,7 +362,7 @@ export function StickyPanels({
               transform: `translateY(${PLATE_REST_Y_VH}vh) scale(${PLATE_START_SCALE})`,
             }}
           >
-            <Ground item={first} placement={placement} />
+            <Ground item={first} placement={placement} narrow={narrow} />
             <Label
               refCb={(el) => {
                 labels.current[0] = el;
@@ -371,7 +383,7 @@ export function StickyPanels({
             className="absolute inset-0 will-change-transform"
             style={{ zIndex: 21 + i, transform: "translateX(100%)" }}
           >
-            <Ground item={item} placement={placement} />
+            <Ground item={item} placement={placement} narrow={narrow} />
             <Label
               refCb={(el) => {
                 labels.current[i + 1] = el;
@@ -392,10 +404,15 @@ export function StickyPanels({
 function Ground({
   item,
   placement,
+  narrow,
 }: {
   item: PanelItem;
   placement: LabelPlacement;
+  narrow: boolean;
 }) {
+  /* The upright plate where the house has one and the stage is a square,
+     the wide one everywhere else. */
+  const src = (narrow && item.imageNarrow) || item.image;
   /* The picture's own box, rather than the panel's.
   
      It is the panel's full box everywhere except a phone showing a foot
@@ -404,7 +421,7 @@ function Ground({
      act on, and `<Image fill>` needs a positioned parent anyway. */
   const box = `stage-media absolute inset-0 ${placement === "foot" ? "stage-media--foot" : ""}`;
 
-  if (!item.image) {
+  if (!src) {
     return (
       <div
         className={box}
@@ -417,10 +434,10 @@ function Ground({
   return (
     <div className={box}>
       <Image
-        src={item.image}
+        src={src}
         alt=""
         fill
-        sizes="(min-width: 1024px) 100vw, 100vw"
+        sizes="100vw"
         className="object-cover"
       />
       {/* A foot label needs no veil over the plate — the gradient under

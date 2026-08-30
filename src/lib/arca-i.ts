@@ -184,6 +184,9 @@ export const offering: Offering = {
  *  find it again by hand.
  */
 const V = `${P}/variants`;
+/* The upright colourway plates, shot for the square the panel becomes on a
+   phone. See Colorway.imageNarrow. */
+const VT = `${V}/tall`;
 const buyColour = (name: string) =>
   `/shop/arca-i?colourway=${encodeURIComponent(name)}`;
 
@@ -195,6 +198,7 @@ export const variations: Variations = {
       name: "K Black",
       swatch: "#0b0b0c",
       image: `${V}/k-black-main.jpg`,
+      imageNarrow: `${VT}/k-black.jpg`,
       alt: "K Black — front on, against poured concrete",
       href: buyColour("K Black"),
       cta: "Acquire K Black",
@@ -203,6 +207,7 @@ export const variations: Variations = {
       name: "Z White",
       swatch: "#e8e5df",
       image: `${V}/z-white-main.jpg`,
+      imageNarrow: `${VT}/z-white.jpg`,
       alt: "Z White — front on, against poured concrete",
       href: buyColour("Z White"),
       cta: "Acquire Z White",
@@ -211,6 +216,7 @@ export const variations: Variations = {
       name: "Proceso Brown",
       swatch: "#4a3626",
       image: `${V}/proceso-brown-main.jpg`,
+      imageNarrow: `${VT}/proceso-brown.jpg`,
       alt: "Proceso Brown — front on, against poured concrete",
       href: buyColour("Proceso Brown"),
       cta: "Acquire Proceso Brown",
@@ -219,6 +225,7 @@ export const variations: Variations = {
       name: "309 Blue",
       swatch: "#1f2c3d",
       image: `${V}/309-blue-main.jpg`,
+      imageNarrow: `${VT}/309-blue.jpg`,
       alt: "309 Blue — front on, against poured concrete",
       href: buyColour("309 Blue"),
       cta: "Acquire 309 Blue",
