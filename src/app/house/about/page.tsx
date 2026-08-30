@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { PageHero } from "@/components/page/page-hero";
+import { HouseIndex } from "@/components/page/house-index";
 import { TextPair } from "@/components/page/text-pair";
 import { StickyFeature } from "@/components/page/sticky-feature";
 import { PlateBand } from "@/components/page/plate-band";
@@ -28,7 +28,12 @@ export default function AboutPage() {
       <SmoothScroll />
       <SiteNav />
       <main className="relative">
-        <PageHero {...about.hero} />
+        {/* The house's whole output, above its argument for itself. The
+            title plate that used to open this page is gone: a page called
+            The House opened on a photograph of the founders and a line
+            about soul, and left the reader to go somewhere else to find out
+            what the house actually makes. See HouseIndex. */}
+        <HouseIndex />
         <TextPair {...about.opening} />
         {/* The band is this page's one full-bleed beat, and it sits between
             the two arguments rather than after both — the vision section
