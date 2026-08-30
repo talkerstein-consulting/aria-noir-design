@@ -63,6 +63,26 @@ const PRESET = "slow";
  *  under it is left at its own size rather than being scaled up. */
 const MAX_HEIGHT = 1080;
 
+/**
+ * H.264 level, and it is the single most important number in this file.
+ *
+ * iOS Safari decodes High profile in hardware up to LEVEL 4.2 and no
+ * further. Above that it does not fall back to software — it declines the
+ * video, and the page gets Safari's play-button placeholder instead of a
+ * film. Which is what happened: left to itself x264 chose level 5.0 for a
+ * 1080p master, so an encode that looked perfect on every desktop refused
+ * to autoplay on a phone.
+ *
+ * 4.0 rather than 4.2 because it costs nothing here and covers more
+ * hardware: it permits 1920x1080 up to ~30fps and 20 Mbps on High profile,
+ * and these clips are 24–30fps at about 2 Mbps. There is no headroom being
+ * given up.
+ *
+ * If a future master is 1080p60 this must go to 4.2, and 4.2 is the ceiling
+ * — a 60fps 1080p clip does not fit in 4.0.
+ */
+const LEVEL = "4.0";
+
 const only = process.argv[2];
 
 mkdirSync(OUT, { recursive: true });
@@ -91,6 +111,7 @@ for (const file of files) {
       "-crf", String(CRF),
       "-preset", PRESET,
       "-profile:v", "high",
+      "-level:v", LEVEL,
       "-pix_fmt", "yuv420p",
       /* Only ever down. `-2` keeps width even, which h264 requires. */
       "-vf", `scale=-2:'min(${MAX_HEIGHT},ih)'`,

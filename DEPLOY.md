@@ -78,13 +78,20 @@ Both source sets are gitignored, with a script that regenerates what ships:
 | `scrape/` | `node scripts/import-colourway-photography.mjs` | `public/images/<house>/variants/` |
 | `3d models/` | `node scripts/export-models.mjs` | `public/models/houses/*.glb` |
 
-The films are already compressed — CRF 24, `preset slow`, audio dropped
-(every film plays muted), `+faststart` so playback begins before the
-download finishes. `arca-i-hero.mp4` went from 42.1 MB @ 20.6 Mbps to
-**4.2 MB @ 2.0 Mbps**. This matters beyond bandwidth: the home page's loader
-waits on that film (`lib/preload`), and at 20 Mbps nothing could finish
-inside a ceiling worth showing, so the loader gave up every time and handed
-over to a hero that had not arrived.
+The films are already compressed — CRF 24, `preset slow`, **H.264 High
+profile at level 4.0**, audio dropped (every film plays muted),
+`+faststart` so playback begins before the download finishes.
+`arca-i-hero.mp4` went from 42.1 MB @ 20.6 Mbps to **4.2 MB @ 2.0 Mbps**.
+
+The level is not cosmetic: iOS Safari decodes High profile in hardware only
+up to **level 4.2**, and above that it declines the video and shows its own
+play button instead of a film. Left alone, x264 picks level 5.0 for 1080p.
+Never remove `-level:v` from the encode.
+
+The weight matters beyond bandwidth too: the home page's loader waits on
+that film (`lib/preload`), and at 20 Mbps nothing could finish inside a
+ceiling worth showing, so the loader gave up every time and handed over to a
+hero that had not arrived.
 
 ## Worth doing, not yet done
 

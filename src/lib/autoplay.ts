@@ -56,6 +56,29 @@ const RETRY_MS = 1000;
 export function kickPlay(el: HTMLVideoElement | null | undefined): void {
   if (!el || typeof window === "undefined") return;
 
+  /* ---- Say it in the two places iOS reads ----
+   *
+   * Safari decides whether a video may autoplay inline from the ELEMENT's
+   * own state, and it decides early. React writes `muted` as a DOM property
+   * and `playsInline` as an attribute, and on a client-side navigation the
+   * element is created and its `src` starts loading in the same tick those
+   * are being applied — so the check can run against an element that is not
+   * yet muted as far as the browser is concerned. The answer is then no,
+   * and no is permanent for that load: Safari puts its own play button over
+   * the film and waits for a tap.
+   *
+   * Setting both the property and the attribute is redundant on purpose.
+   * `defaultMuted` is the one that reflects to the attribute, `muted` is the
+   * one the current playback reads, and `webkit-playsinline` is what iOS
+   * versions before 10 look for. None of it costs anything, and each covers
+   * a case the others do not. */
+  el.muted = true;
+  el.defaultMuted = true;
+  el.playsInline = true;
+  el.setAttribute("muted", "");
+  el.setAttribute("playsinline", "");
+  el.setAttribute("webkit-playsinline", "");
+
   let last = 0;
 
   const attempt = () => {
