@@ -123,11 +123,11 @@ export type Colorway = {
   swatch: string;
   image?: string;
   /**
-   * The upright plate, for the square this panel becomes on a phone.
+   * The upright plate a phone shows full bleed.
    *
    * A separate photograph rather than a crop: `image` is a wide still, and
-   * centre-cropping a wide still to a square is a picture of a wide object
-   * with its width taken away. These are framed for the square.
+   * a wide still in a portrait plate is a picture of a wide object with its
+   * width cropped away. These are 1080x1920 — the shape of the screen.
    *
    * Optional, and falls through to `image` — ARCA I is the only house whose
    * colourways have been shot twice.

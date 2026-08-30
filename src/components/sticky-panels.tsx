@@ -133,10 +133,10 @@ export type PanelItem = {
   /**
    * The plate a PHONE shows, where the house has one shot for it.
    *
-   * Not a smaller copy of `image` — a different photograph. The stage is a
-   * square on a phone (see `.stage-media--foot`), and a landscape still
-   * centre-cropped to a square is the wide object it is a picture of,
-   * narrowed. These are shot upright for the crop they land in.
+   * Not a smaller copy of `image` — a different photograph, 1080x1920,
+   * which is the shape of the screen it fills. `image` is a landscape
+   * still, and a landscape still in a phone's portrait plate is the wide
+   * object it is a picture of with its width cropped away.
    *
    * Falls through to `image` where a house has not had the second shoot,
    * which is every house but ARCA I.
@@ -319,7 +319,7 @@ export function StickyPanels({
     >
       <div
         className={`sticky top-0 h-screen ${
-          inset ? "p-5 sm:p-12 lg:p-16" : "overflow-hidden"
+          inset ? "stage-inset p-5 sm:p-12 lg:p-16" : "overflow-hidden"
         }`}
       >
         {/* When the stage is inset, the CLIP moves in here with it: the
@@ -413,13 +413,11 @@ function Ground({
   /* The upright plate where the house has one and the stage is a square,
      the wide one everywhere else. */
   const src = (narrow && item.imageNarrow) || item.image;
-  /* The picture's own box, rather than the panel's.
-  
-     It is the panel's full box everywhere except a phone showing a foot
-     label, where `.stage-media` makes it a SQUARE at the top and the
-     caption moves below it — see the stylesheet. That needs an element to
-     act on, and `<Image fill>` needs a positioned parent anyway. */
-  const box = `stage-media absolute inset-0 ${placement === "foot" ? "stage-media--foot" : ""}`;
+  /* The picture's own box rather than the panel's. `<Image fill>` needs a
+     positioned parent, and giving the photograph an element of its own
+     keeps the label's scrim and type layered over it rather than beside
+     it. */
+  const box = "absolute inset-0";
 
   if (!src) {
     return (
@@ -487,7 +485,7 @@ function Label({
              ramp: the gold eyebrow is the palest thing in the label and it
              sits highest, so it is the line that decides how far up the
              ink has to reach. */
-          className="stage-scrim pointer-events-none absolute inset-x-0 bottom-0 z-0 h-3/5 bg-gradient-to-t from-ink from-15% via-ink/75 via-45% to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-3/5 bg-gradient-to-t from-ink from-15% via-ink/75 via-45% to-transparent"
         />
       ) : null}
 
@@ -498,7 +496,7 @@ function Label({
            rather than one thing and its name. */
         className={`relative z-10 flex h-full w-full flex-col gap-3 ${
           foot
-            ? "stage-caption items-center justify-end px-6 pb-16 text-center sm:px-10 sm:pb-20"
+            ? "items-center justify-end px-6 pb-16 text-center sm:px-10 sm:pb-20"
             : "items-center justify-center"
         }`}
       >

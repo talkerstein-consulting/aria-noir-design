@@ -1337,45 +1337,22 @@
   }
 }
 
-/* ── The colourway stage on a phone: a square, and its caption under it ──
+/* ── The colourway stage on a phone: the whole screen ──
 
-   The stage is one screen tall and the panels fill it, so on a desktop each
-   colourway is a tall plate with its name seated at the foot over a
-   gradient. At 375px that same rule gives a 375×740 box — a portrait crop
-   of a photograph of a WIDE object. The frame ends up small in the middle
-   of a lot of concrete, and the type sits over the bottom of it.
+   The panel was briefly a square with its caption underneath, which was the
+   right answer to the WIDE stills it had at the time: a landscape frame
+   cropped to a phone's portrait box is the object with its width taken
+   away. The answer stopped being right the moment the upright plates
+   arrived — those are 1080x1920, the shape of the screen itself, so
+   cropping them to a square throws away the half of the picture that was
+   shot for the device.
 
-   So on a phone the picture is a square and the caption moves out from
-   underneath it onto the page. The frame fills the crop it is actually
-   shaped for, and the name is read rather than read-through.
-
-   Only the FOOT treatment changes. The home page's collections uses the
-   centred label, where the name belongs across the middle of a full-bleed
-   plate and a square would be a different composition entirely. */
+   So the plate is full bleed and the name sits back on it, which is the
+   desktop treatment and now the correct one at both sizes. The stage's
+   inset gutter goes too: an inset frames the stage as an object ON the
+   page, and at this size the stage IS the page. */
 @media (max-width: 1023px) {
-  /* Square because the box is as tall as it is wide, and pinned to the top
-     of the panel rather than centred in it — the caption needs the room
-     below, and a square floating in the middle of the stage with type under
-     it reads as two objects. */
-  .stage-media--foot {
-    bottom: auto;
-    aspect-ratio: 1;
-    height: auto;
-  }
-
-  /* The gradient exists to seat type ON the photograph. There is no type on
-     the photograph any more. */
-  .stage-scrim {
-    display: none;
-  }
-
-  /* Pushed clear of the square rather than positioned against it: a
-     percentage padding resolves against the element's own WIDTH, and the
-     square's height IS that width, so this lands exactly under the picture
-     at any screen size with nothing measured in JavaScript. */
-  .stage-caption {
-    justify-content: flex-start;
-    padding-top: calc(100% + 1.75rem);
-    padding-bottom: 0;
+  .stage-inset {
+    padding: 0;
   }
 }
