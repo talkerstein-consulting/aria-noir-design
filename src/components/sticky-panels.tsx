@@ -270,7 +270,21 @@ export function StickyPanels({
 
     labels.current.forEach((el, i) => {
       if (!el) return;
-      const o = clamp01((eased[i] - 0.75) / 0.25);
+      /* In on the last quarter of this panel's own slide, and OUT as soon
+         as the next one starts moving.
+      
+         The fade-out is not cosmetic. A label used to stay at 1 once its
+         panel had arrived, and that was invisible only because the next
+         panel's photograph slid over the top of it and covered the type.
+         On a phone the caption now sits BELOW the square, on the page's own
+         black, where nothing covers it — so the outgoing name stayed lit
+         under the incoming one and the two read as a single smeared word.
+      
+         Multiplying by the next panel's progress fixes it in the one place
+         that is true for both layouts: on a desktop the photograph is still
+         doing the covering and this changes nothing anyone can see. */
+      const nextIn = eased[i + 1] ?? 0;
+      const o = clamp01((eased[i] - 0.75) / 0.25) * (1 - nextIn);
       el.style.opacity = String(o);
       /* Only the panel that has actually arrived is clickable. Without this
          a label still at opacity 0 mid-slide would keep a full-screen link
@@ -382,10 +396,18 @@ function Ground({
   item: PanelItem;
   placement: LabelPlacement;
 }) {
+  /* The picture's own box, rather than the panel's.
+  
+     It is the panel's full box everywhere except a phone showing a foot
+     label, where `.stage-media` makes it a SQUARE at the top and the
+     caption moves below it — see the stylesheet. That needs an element to
+     act on, and `<Image fill>` needs a positioned parent anyway. */
+  const box = `stage-media absolute inset-0 ${placement === "foot" ? "stage-media--foot" : ""}`;
+
   if (!item.image) {
     return (
       <div
-        className="absolute inset-0"
+        className={box}
         style={{
           background: `linear-gradient(160deg, ${item.swatch ?? "#2a2a2a"} 0%, var(--ink) 85%)`,
         }}
@@ -393,12 +415,12 @@ function Ground({
     );
   }
   return (
-    <>
+    <div className={box}>
       <Image
         src={item.image}
         alt=""
         fill
-        sizes="100vw"
+        sizes="(min-width: 1024px) 100vw, 100vw"
         className="object-cover"
       />
       {/* A foot label needs no veil over the plate — the gradient under
@@ -406,7 +428,7 @@ function Ground({
       {placement === "center" ? (
         <div className={`absolute inset-0 ${TINT}`} />
       ) : null}
-    </>
+    </div>
   );
 }
 
@@ -448,7 +470,7 @@ function Label({
              ramp: the gold eyebrow is the palest thing in the label and it
              sits highest, so it is the line that decides how far up the
              ink has to reach. */
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-3/5 bg-gradient-to-t from-ink from-15% via-ink/75 via-45% to-transparent"
+          className="stage-scrim pointer-events-none absolute inset-x-0 bottom-0 z-0 h-3/5 bg-gradient-to-t from-ink from-15% via-ink/75 via-45% to-transparent"
         />
       ) : null}
 
@@ -459,7 +481,7 @@ function Label({
            rather than one thing and its name. */
         className={`relative z-10 flex h-full w-full flex-col gap-3 ${
           foot
-            ? "items-center justify-end px-6 pb-16 text-center sm:px-10 sm:pb-20"
+            ? "stage-caption items-center justify-end px-6 pb-16 text-center sm:px-10 sm:pb-20"
             : "items-center justify-center"
         }`}
       >
