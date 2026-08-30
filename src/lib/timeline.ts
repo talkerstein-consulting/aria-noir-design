@@ -12,13 +12,48 @@
  */
 
 export const FRAMES_PER_VH = 100;
-/* The home page's choreography now ends at F.modelEntryEnd (380) — the
-   frame the video finishes leaving — because the 3D model and the ARCA I
-   block that used to run to frame 620 have both been removed from it. The
-   runway is sized to that beat plus 40 frames to land the handoff; leaving
-   it at the old 640 would have stranded ~2.5 viewports of empty black
-   between the video exiting and the collections section arriving. */
-export const RUNWAY_VH = 420;
+
+/**
+ * The phone's frame rate against scroll, and its runway.
+ *
+ * ---- Why the choreography is compressed rather than re-timed ----
+ *
+ * Every beat in `F` below is a frame number, and 100 frames is one viewport
+ * height — so the table is not really a timeline, it is a SCROLL BUDGET. The
+ * logo docks at frame 94, which means it docks after most of a screen of
+ * scrolling, and the heading is not settled until frame 200, which is two.
+ * On a desktop that is two turns of a wheel. On a phone it is two full
+ * swipes before the page has said anything, and the reader is swiping past a
+ * logo they have already read.
+ *
+ * Raising the frames-per-viewport is what shortens it, and it shortens the
+ * whole thing PROPORTIONALLY: at 150, frame 94 lands at 0.63 of a screen and
+ * frame 200 at 1.33, so the logo docks and the text settles inside what is
+ * comfortably one swipe and a bit. Nothing about the composition changes —
+ * the beats keep their relationship to each other exactly, which is the
+ * point of expressing them as frames in the first place. Re-timing the table
+ * for a second breakpoint would mean maintaining two sets of relationships
+ * and getting to break one of them by accident.
+ *
+ * The runway shrinks with it, and has to: it is the scroll distance the
+ * fixed scene needs, and the last beat is `modelEntryEnd` at 380. At 150
+ * frames per screen that is 2.53 screens, against 3.8 on a desktop — which
+ * is also what removes the third of a screen of dead black that used to sit
+ * between the scene ending and the next section's heading. The runway
+ * itself is `.home-runway` in the stylesheet; see the note above `F`.
+ */
+export const NARROW_FRAMES_PER_VH = 150;
+/* The runway — the scroll distance the fixed scene plays over — is NOT here.
+   It is `.home-runway` in styles/interactions.css, because it has to change
+   on the same breakpoint the frame budget does and a stylesheet is the only
+   place that can do that without re-rendering the page to follow a media
+   query. Two copies of one number is how they drift; there is one, and this
+   is the note that says where.
+
+   It is sized to the last beat, `F.modelEntryEnd` at 380, plus a short
+   landing. The 3D model and the ARCA I block that used to run to frame 620
+   have both been removed from this page, which is why it is not sized to
+   `sceneShiftEnd`. */
 
 /** One vertical rhythm for every flow section, so the gaps between them read
  *  as a single system rather than per-section guesses. */

@@ -13,7 +13,7 @@ import { opening, sectionTwo } from "@/lib/content";
 import {
   F,
   FRAMES_PER_VH,
-  RUNWAY_VH,
+  NARROW_FRAMES_PER_VH,
   EXIT_VH,
   VIDEO_REST_SCALE,
   VIDEO_REST_LIFT_VH,
@@ -264,9 +264,17 @@ export function Experience() {
   useEffect(() => {
     if (!live) return;
 
+    /* Read per frame rather than captured once: a phone rotating into
+       landscape crosses this breakpoint, and a scene half-played on one
+       budget and half on the other would jump. */
+    const perVh = () =>
+      window.matchMedia("(max-width: 1023px)").matches
+        ? NARROW_FRAMES_PER_VH
+        : FRAMES_PER_VH;
+
     const onScroll = () => {
       const vh = window.innerHeight;
-      const frame = (window.scrollY / vh) * FRAMES_PER_VH;
+      const frame = (window.scrollY / vh) * perVh();
 
       const shrink = clamp01(frame / F.videoShrinkEnd);
       /* the lift starts LATER than the shrink — nothing moves up until 94 */
@@ -471,8 +479,10 @@ export function Experience() {
       </div>
 
       <main className="relative">
-        {/* runway for the fixed choreography above */}
-        <div style={{ height: `${RUNWAY_VH}vh` }} />
+        {/* Runway for the fixed choreography above — the scroll distance the
+            scene needs, and nothing else. Shorter on a phone because the
+            scene itself is compressed there; see NARROW_FRAMES_PER_VH. */}
+        <div className="home-runway" />
         <CollectionsSection />
         <AtelierSection />
         <GridSection />

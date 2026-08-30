@@ -91,6 +91,16 @@ const NARROW = {
   TAIL_VH: 6,
 };
 
+/** Where the heading group sits, phone only.
+ *
+ *  The desktop offset centres it and lifts it 16vh, which on a wide screen
+ *  reads as "upper middle". On a phone the same rule leaves it 245px down a
+ *  812px stage — and the section it follows is a fixed scene whose own copy
+ *  is still on screen at the seam, so what the reader actually sees between
+ *  the two is a third of a screen of black. Lifting it further closes that
+ *  without moving the heading off the composition it belongs to. */
+const NARROW_HEAD_OFFSET_VH = -27;
+
 const PLATE_START_SCALE = 0.22; // 22vw × 22vh
 const PLATE_REST_Y_VH = 24; // sits LOW, beneath the heading
 const HEAD_OFFSET_VH = -16;
@@ -291,7 +301,11 @@ export function StickyPanels({
           >
             <div
               className="flex flex-col items-center gap-5 px-8"
-              style={{ transform: `translateY(${HEAD_OFFSET_VH}vh)` }}
+              style={{
+                transform: `translateY(${
+                  narrow ? NARROW_HEAD_OFFSET_VH : HEAD_OFFSET_VH
+                }vh)`,
+              }}
             >
               {preheader ? (
                 <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">

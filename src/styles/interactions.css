@@ -1313,3 +1313,26 @@
     outline-offset: calc(var(--focus-offset) + 2px);
   }
 }
+
+/* ── The home page's runway ──
+
+   The scroll distance the fixed opening scene plays over, and nothing else
+   is in it. As a media query rather than an inline style because it has to
+   change with the same breakpoint the frame budget does — see
+   NARROW_FRAMES_PER_VH in lib/timeline — and an inline style would have to
+   re-render the whole page to follow it.
+
+   The desktop figure covers the last beat (frame 380 at 100 frames per
+   screen, so 3.8 screens) with a landing. The phone plays the same beats at
+   150 frames per screen, so the same beat lands at 2.53 screens and the
+   runway follows it down — which is also what removes the third of a screen
+   of dead black that used to sit between the scene ending and the next
+   section's heading. */
+.home-runway {
+  height: 420vh;
+}
+@media (max-width: 1023px) {
+  .home-runway {
+    height: 270vh;
+  }
+}
