@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
-import { useOnScreen } from "@/hooks/use-on-screen";
+import { useRenderGate } from "@/hooks/use-on-screen";
 import * as THREE from "three";
 
 /** Three quarters: enough yaw to read the temple and the hinge, and a
@@ -361,7 +361,7 @@ export function ProductModel({
      map drawing sixty times a second for the whole visit — including the
      ten screens after the reader has scrolled past it. See useOnScreen. */
   const box = useRef<HTMLDivElement>(null);
-  const live = useOnScreen(box);
+  const live = useRenderGate(box);
 
   return (
     <div ref={box} className="model-stage-box relative h-full w-full">

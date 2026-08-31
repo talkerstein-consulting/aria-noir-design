@@ -77,7 +77,7 @@ const HOLD_AT = 0.9;
  * itself is a bad first impression, a loading screen that never ends is a
  * lost visitor.
  */
-const MAX_WAIT_MS = 16000;
+const MAX_WAIT_MS = 26000;
 
 /* 9000 before, and it was the binding constraint on the whole loader rather
    than the last-resort ceiling it is written as: the per-asset waits in
@@ -88,7 +88,14 @@ const MAX_WAIT_MS = 16000;
    It can afford to be a real ceiling now. The hero film was a 42MB master
    and is 4.2MB — see scripts/compress-video.mjs — so the thing this was
    quietly cutting short is now something a slow connection can actually
-   finish inside the ceiling. */
+   finish inside the ceiling.
+
+   26s rather than 16, to sit above lib/preload's own per-asset ceiling
+   rather than under it: at 16s this timer fired first and the per-asset
+   waits never got to finish, which made them decorative. The home page's
+   cold payload is about 7MB, so this covers down to roughly 2.5 Mbps.
+   Past that the page opens unfinished, which is the correct failure — the
+   alternative is a visitor who never gets in. */
 
 const GROW_START_MS = COUNT_MS * GROW_END_AT - GROW_MS;
 const DOT_MS = COUNT_MS * DOT_AT;

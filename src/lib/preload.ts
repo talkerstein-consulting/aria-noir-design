@@ -40,8 +40,21 @@ import { kickPlay } from "@/lib/autoplay";
  *  This is a real wait now that the films are web weight — the hero was a
  *  42MB, 20 Mbps master and no ceiling worth having could cover it, so the
  *  loader gave up on it every time and handed over to a hero that had not
- *  arrived. See scripts/compress-video.mjs. */
-const PER_ASSET_MS = 8000;
+ *  arrived. See scripts/compress-video.mjs.
+ *
+ *  Raised from 8s. The home page's cold payload is about 7MB — a 4.8MB
+ *  film, a 0.9MB mesh, and a megabyte of everything else — which is six
+ *  seconds on a 10 Mbps line and nineteen on a 3 Mbps one. At 8s the
+ *  loader was quietly giving up on anyone below roughly 8 Mbps, which is
+ *  the case it exists for.
+ *
+ *  It is deliberately still a ceiling. "Wait until everything is loaded"
+ *  sounds like the honest version and is not: an asset that stalls, a CDN
+ *  that hangs, a 404 on a file the loader is counting — any of them means a
+ *  visitor who never sees the site at all. A page that assembles itself is
+ *  a bad first impression; a loading screen that never ends is a lost
+ *  reader. */
+const PER_ASSET_MS = 14000;
 
 /** Resolves with `false` if the promise has not settled in time. */
 function withTimeout(p: Promise<unknown>, ms: number): Promise<void> {

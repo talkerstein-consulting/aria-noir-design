@@ -64,3 +64,54 @@ export function useOnScreen(
 
   return onScreen;
 }
+
+/**
+ * Whether a WebGL canvas should be rendering.
+ *
+ * Not the same question as "is it on screen", and the difference is a bug I
+ * shipped by assuming it was. `frameloop="never"` does not merely skip
+ * frames — react-three-fiber sizes its canvas and builds its scene on the
+ * first render, so a Canvas that mounts already switched off never sets
+ * itself up at all. The observable symptom is a canvas left at its default
+ * 300x150 with nothing in it, which is exactly what happened: every scene
+ * on this site mounts below the fold, so the gate turned it off before it
+ * had drawn once.
+ *
+ * So a scene renders until it has been SEEN, and only then becomes
+ * pausable. That keeps the saving where almost all of it was — a page is
+ * long, and a scene the reader has scrolled past is the one that used to go
+ * on drawing for the rest of the visit — while never withholding the first
+ * frame from a scene that has not had one.
+ */
+export function useRenderGate(
+  ref: RefObject<Element | null>,
+  margin = "50% 0px",
+) {
+  /* Starts true so the first paint renders — see above. */
+  const [render, setRender] = useState(true);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") return;
+
+    /* `seen` is a closure variable rather than state or a ref: it is read
+       and written only inside the observer callback, so it never needs to
+       participate in a render, and keeping it here is what lets the whole
+       decision be made in the one place React is happy to see a setState —
+       a subscription callback. */
+    let seen = false;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) seen = true;
+        setRender(entry.isIntersecting || !seen);
+      },
+      { rootMargin: margin },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref, margin]);
+
+  return render;
+}

@@ -5,7 +5,7 @@ import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { privateAccess } from "@/lib/content";
-import { useOnScreen } from "@/hooks/use-on-screen";
+import { useRenderGate } from "@/hooks/use-on-screen";
 
 /**
  * The unreleased frame, under a light that walks across it as you scroll.
@@ -224,7 +224,7 @@ export function AccessModel() {
      a gate it renders continuously from the moment the page loads until
      the reader leaves — most of that time from several screens away. */
   const box = useRef<HTMLDivElement>(null);
-  const live = useOnScreen(box);
+  const live = useRenderGate(box);
 
   return (
     <div ref={box} className="h-full w-full">

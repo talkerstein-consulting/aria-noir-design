@@ -167,10 +167,17 @@ export const offering: Offering = {
   cta: "Enter the Registry",
   registryNote:
     "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
-  /* The house's own cut, at full mesh resolution — this page is where
-     someone is deciding, so it gets the heavier file rather than the
-     index's export. */
-  view: { kind: "model", src: "/models/arca-i-k-black.glb" },
+  /* The Draco export, the same one the buy page turns.
+  
+     This used to point at `/models/arca-i-k-black.glb` on the reasoning
+     that "this page is where someone is deciding, so it gets the heavier
+     file rather than the index's export". The premise was wrong in both
+     halves. Measured: the heavy file is 10.20MB with 343,706 triangles and
+     no compression; the export below is 1.56MB with 806,858 — denser
+     geometry at a sixth of the bytes, because Draco compresses geometry
+     rather than throwing it away. The reader deciding was being sent eight
+     and a half megabytes to see LESS of the frame. */
+  view: { kind: "model", src: "/models/houses/arca-i-k-black.glb" },
 };
 
 /** The colourway still-life set. Shot against the same brutalist ground as
