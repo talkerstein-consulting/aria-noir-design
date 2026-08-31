@@ -1397,3 +1397,23 @@
     padding: 0;
   }
 }
+
+/* ── Compositor layers, held only while they are worth holding ──
+
+   The sticky stage's plate and panels are transformed every frame while the
+   section is on screen, so they want promoting — and they are full-screen,
+   so promoting them is expensive: six layers is 7.7 megapixels, roughly
+   31MB of GPU memory at dpr 1 and 123MB at dpr 2. Held for the whole visit
+   on a section the reader may never reach, that is memory bought for
+   nothing, and on integrated graphics it is the kind of nothing that makes
+   an entire page feel heavy.
+
+   `data-live` follows an IntersectionObserver with half a screen of margin,
+   so the layers exist before the section arrives and are handed back after
+   it leaves. */
+.stage-layer {
+  will-change: auto;
+}
+[data-live="true"] .stage-layer {
+  will-change: transform;
+}

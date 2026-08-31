@@ -45,6 +45,24 @@ export function WhiteDotOverlay({ anchorId = "gallery" }: { anchorId?: string })
       const t = easeInOutCubic(clamp01((window.scrollY - from) / (to - from)));
       dot.current.style.transform = `translate(-50%, -50%) scale(${t})`;
 
+      /* ---- Promoted only while it is actually moving ----
+      
+         This element is 150vmax square — 2160x2160 on a 1440 desktop, 4.7
+         megapixels, which is 19MB of compositor layer at dpr 1 and 75MB at
+         dpr 2. `will-change: transform` in the class list held that layer
+         for the entire visit so that a circle could grow once, over one
+         screen of scroll, near the end of the page. It was the single
+         largest promoted layer on the site and it was idle for almost all
+         of it.
+      
+         Promotion is worth having WHILE it runs — the whole point is a
+         full-screen scale that must not repaint — so it is switched on at
+         the first frame of the wipe and off again at either end. Writing
+         the same string on every scroll tick is free; the browser only acts
+         on a change. */
+      const moving = t > 0 && t < 1;
+      dot.current.style.willChange = moving ? "transform" : "auto";
+
       /* Scrollbar flips white-track/black-handle once the iris has fully
          landed (t===1, the same instant the page turns light — frame 1421 at
          the design viewport). Piggybacks on this handler's own scroll tick
@@ -83,7 +101,7 @@ export function WhiteDotOverlay({ anchorId = "gallery" }: { anchorId?: string })
     >
       <div
         ref={dot}
-        className="absolute top-1/2 left-1/2 aspect-square w-[150vmax] rounded-full bg-paper will-change-transform"
+        className="absolute top-1/2 left-1/2 aspect-square w-[150vmax] rounded-full bg-paper"
         style={{ transform: "translate(-50%, -50%) scale(0)" }}
       />
     </div>

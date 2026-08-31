@@ -5,6 +5,7 @@ import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { privateAccess } from "@/lib/content";
+import { useOnScreen } from "@/hooks/use-on-screen";
 
 /**
  * The unreleased frame, under a light that walks across it as you scroll.
@@ -113,7 +114,9 @@ function SweepLight() {
        push it and the rim it crosses goes to near-white, which reads as a
        white frame rather than a black one being lit. */
     const k = PANEL_I * (DARK + (1 - DARK) * ease(p));
-    (mesh.material as THREE.MeshBasicMaterial).color.copy(base).multiplyScalar(k);
+    (mesh.material as THREE.MeshBasicMaterial).color
+      .copy(base)
+      .multiplyScalar(k);
   });
 
   return (
@@ -196,7 +199,8 @@ function Frame() {
     return { object, radius: sphere.radius };
   }, [scene]);
 
-  const scale = (Math.min(viewport.width, viewport.height) * 0.95) / (radius * 2);
+  const scale =
+    (Math.min(viewport.width, viewport.height) * 0.95) / (radius * 2);
 
   /* THE FRAME DOES NOT MOVE. Only the lamp does — see SweepLight.
 
@@ -216,27 +220,35 @@ function Frame() {
 }
 
 export function AccessModel() {
+  /* Same bargain as ProductModel: this sits on the home page, and without
+     a gate it renders continuously from the moment the page loads until
+     the reader leaves — most of that time from several screens away. */
+  const box = useRef<HTMLDivElement>(null);
+  const live = useOnScreen(box);
+
   return (
-    <Canvas
-      dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 5], fov: 40 }}
-      gl={{ antialias: true, alpha: true }}
-      onCreated={({ gl }) => {
-        gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.35;
-      }}
-    >
-      <Lift />
-      <Suspense fallback={null}>
-        <Frame />
-        {/* Three dim panels, and they are what makes a BLACK object visible
+    <div ref={box} className="h-full w-full">
+      <Canvas
+        frameloop={live ? "always" : "never"}
+        dpr={[1, 1.5]}
+        camera={{ position: [0, 0, 5], fov: 40 }}
+        gl={{ antialias: true, alpha: true }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.35;
+        }}
+      >
+        <Lift />
+        <Suspense fallback={null}>
+          <Frame />
+          {/* Three dim panels, and they are what makes a BLACK object visible
             at all: acetate is read off the edges it reflects, not off the
             light falling on its face. Without this the first build showed
             two lenses floating in a void — the frame was lit and still not
             there. Kept low and cold so the moving key is the only warm
             thing in the scene, which is what lets it read as a lamp
             crossing rather than the exposure changing. */}
-        {/* An overcast sky, and one panel of it walking across the frame.
+          {/* An overcast sky, and one panel of it walking across the frame.
 
             `frames={Infinity}` is what lets the moving panel be part of the
             reflected world rather than a light shining on it: the map is
@@ -247,13 +259,30 @@ export function AccessModel() {
             enough to keep the frame present between passes, not so much
             that the sweep is a rounding error on top of them. That was the
             first version's mistake in the other direction. */}
-        <Environment resolution={256} frames={Infinity}>
-          <Lightformer intensity={1.9} position={[0, 4, 1]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 6, 1]} color="#ffffff" />
-          <Lightformer intensity={1.5} position={[-5, 0, -2]} scale={[3, 7, 1]} color="#cddcec" />
-          <Lightformer intensity={1.4} position={[5, 0, -2]} scale={[3, 7, 1]} color="#ffffff" />
-          <SweepLight />
-        </Environment>
-      </Suspense>
-    </Canvas>
+          <Environment resolution={256} frames={Infinity}>
+            <Lightformer
+              intensity={1.9}
+              position={[0, 4, 1]}
+              rotation={[Math.PI / 2, 0, 0]}
+              scale={[10, 6, 1]}
+              color="#ffffff"
+            />
+            <Lightformer
+              intensity={1.5}
+              position={[-5, 0, -2]}
+              scale={[3, 7, 1]}
+              color="#cddcec"
+            />
+            <Lightformer
+              intensity={1.4}
+              position={[5, 0, -2]}
+              scale={[3, 7, 1]}
+              color="#ffffff"
+            />
+            <SweepLight />
+          </Environment>
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }

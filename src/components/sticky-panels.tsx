@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CtaLink } from "@/components/cta-link";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
+import { useOnScreen } from "@/hooks/use-on-screen";
 
 /**
  * The sticky stage — the home page's collections hijack, lifted out so the
@@ -262,6 +263,15 @@ export function StickyPanels({
   const narrow = useNarrow();
   const { heightVh, zones } = useTiming(items.length, narrow);
 
+  /* Whether this stage's layers are worth holding on the compositor.
+  
+     The plate and every panel carry `will-change: transform`, which is
+     correct while they slide and pure cost when they do not: six
+     full-screen layers is 7.7 megapixels, about 31MB of GPU memory at dpr 1
+     and 123MB at dpr 2, held for the whole visit on a section that may be
+     ten screens away. Promotion now follows the section. */
+  const live = useOnScreen(wrap);
+
   /* `zones` is memoised on the panel count, so this identity only changes
      when the number of panels does — which is the one case the scroll
      subscription genuinely does need to be rebuilt for. */
@@ -315,6 +325,7 @@ export function StickyPanels({
       ref={wrap}
       id={id}
       className={`relative z-[35] bg-ink ${className}`}
+      data-live={live}
       style={{ height: `${heightVh}vh` }}
     >
       <div
@@ -357,7 +368,7 @@ export function StickyPanels({
             ref={plate}
             /* h-full rather than h-screen: the same box either way when
                the stage is full bleed, and the framed box when it is not. */
-            className="relative h-full w-full origin-center overflow-hidden will-change-transform"
+            className="stage-layer relative h-full w-full origin-center overflow-hidden"
             style={{
               transform: `translateY(${PLATE_REST_Y_VH}vh) scale(${PLATE_START_SCALE})`,
             }}
@@ -380,7 +391,7 @@ export function StickyPanels({
             ref={(el) => {
               panels.current[i] = el;
             }}
-            className="absolute inset-0 will-change-transform"
+            className="stage-layer absolute inset-0"
             style={{ zIndex: 21 + i, transform: "translateX(100%)" }}
           >
             <Ground item={item} placement={placement} narrow={narrow} />

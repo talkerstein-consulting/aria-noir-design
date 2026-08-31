@@ -3,6 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
+import { useOnScreen } from "@/hooks/use-on-screen";
 import * as THREE from "three";
 
 /** Three quarters: enough yaw to read the temple and the hinge, and a
@@ -265,7 +266,8 @@ function Model({
   /* Fit that sphere inside the SMALLER of the two viewport dimensions, so
      the plate's shape can never clip it top-to-bottom either. 0.86 leaves a
      margin the frame turns inside of, rather than skimming the edges of. */
-  const scale = (Math.min(viewport.width, viewport.height) * 0.86) / (radius * 2);
+  const scale =
+    (Math.min(viewport.width, viewport.height) * 0.86) / (radius * 2);
 
   /* Eases `at` toward `to` and writes the one rotation this object has.
      Frame-rate independent, and it settles rather than oscillating: at rest
@@ -278,7 +280,11 @@ function Model({
        read from a ref because it changes every frame — as a prop it would
        re-render the tree sixty times a second to move a number React does
        not draw. */
-    group.current.rotation.set(PITCH, REST_YAW + drive.at + (yaw?.current ?? 0), 0);
+    group.current.rotation.set(
+      PITCH,
+      REST_YAW + drive.at + (yaw?.current ?? 0),
+      0,
+    );
     /* Enlargement happens HERE, in the scene, and never as a CSS scale on
        the container.
     
@@ -350,10 +356,22 @@ export function ProductModel({
     if (dragging.current?.id === e.pointerId) dragging.current = null;
   }, []);
 
+  /* Render only while someone can see it. r3f's default is `always`, which
+     on this page meant a full-screen antialiased scene with an environment
+     map drawing sixty times a second for the whole visit — including the
+     ten screens after the reader has scrolled past it. See useOnScreen. */
+  const box = useRef<HTMLDivElement>(null);
+  const live = useOnScreen(box);
+
   return (
-    <div className="model-stage-box relative h-full w-full">
+    <div ref={box} className="model-stage-box relative h-full w-full">
       <div className="pointer-events-none h-full w-full">
         <Canvas
+          /* `never` rather than `demand`: this scene animates itself (the
+             rotation eases every frame), so there is no discrete moment to
+             invalidate on — the question is simply whether anyone is
+             looking. */
+          frameloop={live ? "always" : "never"}
           dpr={[1, 2]}
           /* Dead-on, y=0, and it never moves again: the model is recentred
              on the origin and the fit leaves an even margin all round, so
@@ -393,15 +411,47 @@ export function ProductModel({
                 just no longer a spotlight's. */}
             <Environment resolution={512}>
               {/* the sky itself — wide, high, and the brightest thing here */}
-              <Lightformer intensity={1.9} position={[0, 6, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[20, 8, 1]} color="#ffffff" />
+              <Lightformer
+                intensity={1.9}
+                position={[0, 6, 0]}
+                rotation={[Math.PI / 2, 0, 0]}
+                scale={[20, 8, 1]}
+                color="#ffffff"
+              />
               {/* the horizon, all the way round */}
-              <Lightformer intensity={0.9} position={[-8, 1, 0]} scale={[6, 10, 1]} color="#ffffff" />
-              <Lightformer intensity={0.9} position={[8, 1, 0]} scale={[6, 10, 1]} color="#fbf7ef" />
-              <Lightformer intensity={0.8} position={[0, 0, 7]} scale={[12, 8, 1]} color="#ffffff" />
-              <Lightformer intensity={0.7} position={[0, 0, -7]} scale={[12, 8, 1]} color="#ffffff" />
+              <Lightformer
+                intensity={0.9}
+                position={[-8, 1, 0]}
+                scale={[6, 10, 1]}
+                color="#ffffff"
+              />
+              <Lightformer
+                intensity={0.9}
+                position={[8, 1, 0]}
+                scale={[6, 10, 1]}
+                color="#fbf7ef"
+              />
+              <Lightformer
+                intensity={0.8}
+                position={[0, 0, 7]}
+                scale={[12, 8, 1]}
+                color="#ffffff"
+              />
+              <Lightformer
+                intensity={0.7}
+                position={[0, 0, -7]}
+                scale={[12, 8, 1]}
+                color="#ffffff"
+              />
               {/* the ground bounce, which is what an overcast day has under
                   it: dimmer than the sky, and a little warm */}
-              <Lightformer intensity={0.45} position={[0, -5, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[16, 8, 1]} color="#efe7d8" />
+              <Lightformer
+                intensity={0.45}
+                position={[0, -5, 0]}
+                rotation={[-Math.PI / 2, 0, 0]}
+                scale={[16, 8, 1]}
+                color="#efe7d8"
+              />
             </Environment>
           </Suspense>
         </Canvas>
