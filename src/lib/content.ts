@@ -1,4 +1,13 @@
-// Placeholder copy — swap freely, layout never needs touching to revise text.
+/**
+ * The home page's words.
+ *
+ * Governed by COPY.md, which is the house's master prompt and the copy of
+ * record. Read it before changing anything here. The rules that bite most
+ * often on this page: no em-dashes, nothing explained that can be simply
+ * stated, and the tagline is never unpacked.
+ *
+ * Layout never needs touching to revise text.
+ */
 
 export const opening = {
   stackA: ["AN OBJECT MADE", "TO BE WORN"],
@@ -21,8 +30,8 @@ export const sectionTwo = {
   heading: "Every frame begins with a single face.",
   /** Two columns, sitting under the heading during its hang. */
   body: [
-    "No two faces share a bridge, a temple length, or a line of brow. We measure all three before a single blank is cut, so the frame is drawn to one head and no other.",
-    "What follows is slow. Eleven days at the bench, forty-two operations, none of them automated — because the last half-millimetre is the only part anyone actually feels.",
+    "No two faces share a bridge, a temple length, or a line of brow. We measure all three before a single blank is cut.",
+    "What follows is slow. Eleven days at the bench, forty-two operations, and the last half-millimetre done by hand.",
   ],
 };
 
@@ -49,7 +58,7 @@ export const atelier = {
   feature: {
     heading: "Cut, not moulded.",
     body:
-      "Every Aria Noir frame begins as a solid block. We mill it down rather than pour it out, which is why the acetate holds an edge that injection moulding can only imitate. The gold is set by hand, last, once the shape has already earned it.",
+      "Every frame begins as a solid block. We mill it down rather than pour it out. The gold is set last, by hand, once the shape has earned it.",
     cta: "See the process",
   },
   pairTwo: [
@@ -92,7 +101,7 @@ export const gallery = {
     { text: "Every pair,", italic: true },
     { text: "ITS OWN FACE.", italic: false },
   ],
-  cta: "Explore the gallery",
+  cta: "See the gallery",
   /** Three columns × three rows, EQUAL photo counts so the grid always rests
    *  aligned — the only difference between columns is fall velocity. Every
    *  slot is a distinct plate: the previous four-column version needed
@@ -124,7 +133,7 @@ export const finale = {
     "TO OUTLAST THE FACE",
     "THAT WORE IT FIRST",
   ],
-  attribution: "Aria Noir — founding note",
+  attribution: "Aria Noir, founding note",
   /** Pulled by the pointer trail. */
   trail: [
     "/images/plate-08-matriarca.jpg",
@@ -169,7 +178,7 @@ export const newsletter = {
 export const privateAccess = {
   heading: "The next edition isn't for everyone.",
   body:
-    "Private access to unreleased frames, limited editions, and first releases — before they enter the collection.",
+    "Unreleased frames, before they enter the collection.",
   cta: "Request private access",
   href: "/contact",
   /** The model the section lights. The house has no story page yet, so
@@ -181,7 +190,7 @@ export const footer = {
   /* The link columns used to live here as bare strings, all rendered with
      `href="#"`. They are routes, not copy, so they moved to lib/navigation
      as `sitemap` — where a link has somewhere to go. */
-  newsletterLabel: "Stay in touch with the studio",
+  newsletterLabel: "Word from the bench",
   newsletterPlaceholder: "Email address",
   /* One, because one is what the house has. Pinterest and LinkedIn were
      here as `href="#"` alongside it — the same furniture the link columns
