@@ -45,25 +45,42 @@ export const product = {
 
 export const atelier = {
   preheader: "Inside the Atelier",
-  /** Mixed treatment: italic lowercase against roman caps. */
+  /**
+   * Mixed treatment: italic lowercase against roman caps.
+   *
+   * This said "Made slowly, ON PURPOSE." for a long time, and it was the
+   * weakest line on the page. Every workshop in the world says it, it
+   * apologises for the slowness in the same breath as claiming it, and
+   * "on purpose" is an explanation bolted onto a fact that did not need
+   * one. The section is about SUBTRACTION: a frame here is what is left
+   * of a block after eleven days of removing. So the heading states the
+   * one fact that makes that true, and withholds how.
+   */
   heading: [
-    { text: "Made slowly,", italic: true },
-    { text: "ON PURPOSE.", italic: false },
+    { text: "Nothing here is", italic: true },
+    { text: "MOULDED.", italic: false },
   ],
-  stickyImage: "/images/plate-12-founders.jpg",
+  /* The object on a face, at the closest range in the whole shoot, and the
+     only 9:16 master in it — which is the shape this column is, running the
+     full height of the viewport. */
+  stickyImage: "/images/arca-ii/home/eye-macro.jpg",
+  stickyAlt: "An eye behind ARCA II, gold at the temple",
+  /* The craft pair: the frame against poured concrete, and the Deco plate
+     set into the acetate. The only photograph of the inlay that exists. */
   pairOne: [
-    "/images/plate-16-masked-dancers-02.jpg",
-    "/images/plate-05-macro.jpg",
+    "/images/arca-i/home/frame-macro-concrete.jpg",
+    "/images/arca-ii/home/gold-plate-macro.jpg",
   ],
   feature: {
-    heading: "Cut, not moulded.",
+    heading: "The block comes first.",
     body:
-      "Every frame begins as a solid block. We mill it down rather than pour it out. The gold is set last, by hand, once the shape has earned it.",
+      "Italian acetate, milled down rather than poured out. The gold is set by hand, into a shape that has already earned it.",
     cta: "See the process",
   },
+  /* The object alone, in the building it was shot in. */
   pairTwo: [
-    "/images/plate-13-studio-shadow.jpg",
-    "/images/plate-00-masked-dancers.jpg",
+    "/images/arca-i/home/frame-window-shadow.jpg",
+    "/images/arca-i/home/frame-puddle.jpg",
   ],
   quote: "A frame should disappear on the face and survive the century.",
   quoteAttribution: "Aria Noir, founding note",
@@ -107,44 +124,68 @@ export const gallery = {
    *  slot is a distinct plate: the previous four-column version needed
    *  sixteen and there are only nine, so half the grid was the same photo
    *  twice and the repeats were the first thing the eye found. */
+  /* Read left to right, the curtain runs from the first cut to the second:
+     column one is ARCA I on the model, column two is the frame close
+     enough to read, column three is ARCA II in the dark. Nobody will
+     notice, and it is why the three columns do not look like one bag of
+     photographs shaken out. */
   columns: [
     [
-      "/images/plate-17-founders-duo.jpg",
-      "/images/plate-13-studio-shadow.jpg",
-      "/images/plate-00-masked-dancers.jpg",
+      "/images/arca-i/home/aria-doorway-coat.jpg",
+      "/images/arca-i/home/noir-doorway-coat.jpg",
+      "/images/arca-i/home/aria-striped-light.jpg",
     ],
     [
-      "/images/plate-05-macro.jpg",
-      "/images/plate-10-ahava.jpg",
-      "/images/plate-12-founders.jpg",
+      "/images/arca-i/home/aria-fisheye-close.jpg",
+      "/images/arca-i/home/noir-bust-close.jpg",
+      "/images/arca-i/home/frame-portrait.jpg",
     ],
     [
-      "/images/plate-16-masked-dancers-02.jpg",
-      "/images/plate-09-patriarca.jpg",
-      "/images/plate-08-matriarca.jpg",
+      "/images/arca-ii/home/noir-vaulted.jpg",
+      "/images/arca-ii/home/aria-cloister.jpg",
+      "/images/arca-ii/home/aria-close-dark.jpg",
     ],
   ],
 };
 
+/**
+ * The close.
+ *
+ * ---- What was here ----
+ *
+ * "WE MAKE ONE THING / AND WE MAKE IT / TO OUTLAST THE FACE / THAT WORE IT
+ * FIRST". Four lines to carry one idea, and the first of them was not true:
+ * the bench cuts six houses and knits a sweater, and the section directly
+ * above this one says so in its own heading. A page cannot close on a claim
+ * it spent its middle contradicting.
+ *
+ * ---- Why the tagline, and why nothing else ----
+ *
+ * COPY.md holds "Frame your mind" as the house tagline and says it must be
+ * able to appear completely alone, on a box or at the end of a film or on a
+ * blank page, and do its whole job with no supporting text. It appeared
+ * nowhere on this site. This is the end of the page, in the only white the
+ * page has, at the largest type it owns, with the photographs passing over
+ * the letters. There is no better place for it, and putting a sentence
+ * beside it would be the supporting text the line is not allowed to need.
+ *
+ * The attribution went with it. A tagline is not a quotation, and signing
+ * it would be the first step toward explaining it.
+ */
 export const finale = {
-  lines: [
-    "WE MAKE ONE THING",
-    "AND WE MAKE IT",
-    "TO OUTLAST THE FACE",
-    "THAT WORE IT FIRST",
-  ],
-  attribution: "Aria Noir, founding note",
-  /** Pulled by the pointer trail. */
+  lines: ["FRAME YOUR", "MIND."],
+  /** Pulled by the pointer trail. Nine, from both cuts: the frame at macro
+   *  range, and the faces wearing it. */
   trail: [
-    "/images/plate-08-matriarca.jpg",
-    "/images/plate-05-macro.jpg",
-    "/images/plate-16-masked-dancers-02.jpg",
-    "/images/plate-09-patriarca.jpg",
-    "/images/plate-12-founders.jpg",
-    "/images/plate-10-ahava.jpg",
-    "/images/plate-13-studio-shadow.jpg",
-    "/images/plate-17-founders-duo.jpg",
-    "/images/plate-00-masked-dancers.jpg",
+    "/images/arca-i/home/aria-bokeh-close.jpg",
+    "/images/arca-i/home/aria-face-fisheye.jpg",
+    "/images/arca-i/home/noir-fisheye-desat.jpg",
+    "/images/arca-i/home/noir-door-bokeh.jpg",
+    "/images/arca-i/home/frame-macro-concrete.jpg",
+    "/images/arca-i/home/macro-nose-front.jpg",
+    "/images/arca-i/home/stairwell-spiral.jpg",
+    "/images/arca-ii/home/eye-macro.jpg",
+    "/images/arca-ii/home/aria-dark-coat.jpg",
   ],
 };
 

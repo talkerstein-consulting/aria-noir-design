@@ -15,6 +15,7 @@ export function AtelierSection() {
       preheader={atelier.preheader}
       heading={atelier.heading}
       stickyImage={atelier.stickyImage}
+      stickyAlt={atelier.stickyAlt}
       pairOne={atelier.pairOne}
       pairTwo={atelier.pairTwo}
       feature={{ ...atelier.feature, href: "#process" }}

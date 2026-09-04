@@ -25,6 +25,9 @@ import { StickyPanels, type PanelItem } from "@/components/sticky-panels";
  * panels sliding over one another, the label timing — is StickyPanels,
  * shared with the eyewear index.
  */
+/** Photography from the Arca I / Arca II batch, by path. */
+const ARCA_SHOOT = /^\/images\/arca-(i|ii)\//;
+
 export function CollectionsSection() {
   const items: PanelItem[] = houses.map((house) => ({
     name: house.name,
@@ -32,7 +35,18 @@ export function CollectionsSection() {
        copy, and this line is copy: it is set under the house's name on
        every panel. The same separator the buy pages already use. */
     meta: `${house.index} · ${house.material}`,
-    image: house.plate ?? undefined,
+    /* The home page is dressed out of the Arca I and Arca II shoot and
+       nothing else, so a plate from any other campaign is not eligible
+       here. Four of the six houses have no photograph in that shoot, and
+       they cannot borrow one: a panel captioned AHAVA showing an ARCA
+       frame is the home page naming the wrong product. Those four fall
+       back to their own acetate swatch, which is the fallback StickyPanels
+       already carries for a house that has not been shot yet.
+
+       Scoped to this file rather than done by emptying `plate` in
+       lib/navigation, because the eyewear index and The House both show
+       those same photographs and both are right to. */
+    image: house.plate && ARCA_SHOOT.test(house.plate) ? house.plate : undefined,
     swatch: house.swatch,
     /* The house's own page where there is one; the index otherwise. NOT
        the buy page — that sits after the story, and a home page panel is

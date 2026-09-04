@@ -77,9 +77,6 @@ export function FinaleSection() {
               {line}
             </p>
           ))}
-          <footer className="mt-8 font-ui text-[10px] tracking-[0.35em] text-ink/60 uppercase sm:text-[11px]">
-            {finale.attribution}
-          </footer>
         </blockquote>
       </div>
 
