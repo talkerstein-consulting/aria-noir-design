@@ -6,13 +6,22 @@ import { CtaLink } from "@/components/cta-link";
 import { RevealText } from "@/components/reveal";
 
 /**
- * Light closing block. Like the home page's finale it carries no background
- * of its own — the white underneath is the iris the WhiteDotOverlay has
- * already expanded, which keeps that circle the page's only dark→light cut.
+ * Light closing block, and the page's own dark to light turn.
  *
- * The closing line sits at the TOP of this section rather than a third of
- * the way down it: the iris finishing is the beat the line is answering, so
- * any run-up of empty white in between reads as the page having stalled.
+ * It used to carry NO background: the white came from the WhiteDotOverlay,
+ * a fixed circle that expanded over the gallery while the gallery kept
+ * scrolling underneath it. That was the clearest case of a section sitting
+ * above another on this page, so it is gone from the story pages, and the
+ * white is this section's own.
+ *
+ * The turn is a gradient in the top band rather than a hard edge. The
+ * gallery above ends on ink; this opens on ink and is paper by the time
+ * the heading arrives, so the page changes ground while it scrolls instead
+ * of cutting between two grounds.
+ *
+ * The closing line still sits near the TOP rather than a third of the way
+ * down: a run-up of empty white before it reads as the page having
+ * stalled.
  *
  * The pointer trail is scoped to the heading's own zone — absolutely
  * positioned inside it, so it can never reach the body copy or the CTA
@@ -39,8 +48,15 @@ export function ProductClose({
   return (
     <section
       id="acquire"
-      className="relative z-[38] overflow-hidden px-6 pt-[8vh] pb-32 text-ink sm:px-10 sm:pb-48"
+      className="relative overflow-hidden bg-paper px-6 pt-[8vh] pb-32 text-ink sm:px-10 sm:pb-48"
     >
+      {/* The turn itself. Ink at the very top, paper by the time the
+          heading is on screen, so the gallery above hands over rather than
+          stops. Behind the content and inert to the pointer. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[22vh] bg-gradient-to-b from-ink to-paper"
+      />
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-7 text-center">
         {/* heading zone — the trail's full extent */}
         <div className="relative w-full">

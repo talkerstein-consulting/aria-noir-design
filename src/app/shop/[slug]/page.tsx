@@ -77,6 +77,18 @@ import { shipping } from "@/lib/policies";
  * site does not do.
  */
 
+/* No slug outside the list below is renderable, so a held-back house is a
+   real 404 rather than a soft one rendered at request time. */
+export const dynamicParams = false;
+
+/**
+ * A buy page per house ON SHOW.
+ *
+ * `houses` is the catalogue filtered by what is currently published (see
+ * VISIBLE_SLUGS in lib/navigation), so the held-back houses get no buy
+ * page — the template still covers them, and the day they are shown their
+ * page is built with nothing here to change.
+ */
 export function generateStaticParams() {
   return houses.map((house) => ({ slug: house.slug }));
 }

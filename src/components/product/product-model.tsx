@@ -372,7 +372,13 @@ export function ProductModel({
              invalidate on — the question is simply whether anyone is
              looking. */
           frameloop={live ? "always" : "never"}
-          dpr={[1, 2]}
+          /* Capped at 1.5 rather than 2. At dpr 2 a full-screen
+             antialiased scene draws four times the pixels of a CSS-pixel
+             buffer, every frame, while the reader is scrolling past it.
+             1.5 is 2.25x, which is a third less work for a difference that
+             is very hard to see on a polished black object. This is the
+             one deliberate sacrifice in this pass. */
+          dpr={[1, 1.5]}
           /* Dead-on, y=0, and it never moves again: the model is recentred
              on the origin and the fit leaves an even margin all round, so
              any camera offset just spends that margin on one side. */
@@ -409,7 +415,14 @@ export function ProductModel({
                 what runs along an edge is a broad even sheen instead. The
                 frame still separates from the page by its rim; the rim is
                 just no longer a spotlight's. */}
-            <Environment resolution={512}>
+            {/* 256 rather than 512. This map is convolved once when the scene
+                is built, and that build is the single most expensive moment
+                the turntable has. The rig here is six broad, dim, nearly
+                even sources — an overcast sky, with no small bright detail
+                anywhere in it — so halving the resolution costs a scene
+                like this almost nothing to look at. The second deliberate
+                sacrifice in this pass. */}
+            <Environment resolution={256}>
               {/* the sky itself — wide, high, and the brightest thing here */}
               <Lightformer
                 intensity={1.9}

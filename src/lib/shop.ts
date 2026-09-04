@@ -1,4 +1,4 @@
-import { houses, type House } from "@/lib/navigation";
+import { allHouses, type House } from "@/lib/navigation";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
 
 /**
@@ -151,7 +151,7 @@ export function formatPrice(cents: number) {
 }
 
 export function houseBySlug(slug: string) {
-  return houses.find((h) => h.slug === slug);
+  return allHouses.find((h) => h.slug === slug);
 }
 
 /**

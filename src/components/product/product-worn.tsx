@@ -95,7 +95,7 @@ export function ProductWorn({
       id="worn"
       /* px-6 is the page gutter (--gutter); this was the one section on the
          page opening at 32px while every other one opened at 24px. */
-      className={`relative z-[37] bg-ink px-6 sm:px-20 lg:px-40 ${SECTION_PAD}`}
+      className={`relative bg-ink px-6 sm:px-20 lg:px-40 ${SECTION_PAD}`}
     >
       <div className="mx-auto mb-24 flex max-w-4xl flex-col items-center gap-6 text-center sm:mb-32">
         <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">

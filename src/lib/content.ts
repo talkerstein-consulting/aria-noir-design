@@ -69,16 +69,24 @@ export const atelier = {
     { text: "Nothing here is", italic: true },
     { text: "MOULDED.", italic: false },
   ],
-  /* The object on a face, at the closest range in the whole shoot, and the
-     only 9:16 master in it — which is the shape this column is, running the
-     full height of the viewport. */
-  stickyImage: "/images/arca-ii/home/eye-macro.jpg",
-  stickyAlt: "An eye behind ARCA II, gold at the temple",
-  /* The craft pair: the frame against poured concrete, and the Deco plate
-     set into the acetate. The only photograph of the inlay that exists. */
+  /* ---- worn, not macro ----
+
+     This beat ran on the object alone: the frame against poured concrete,
+     the Deco plate, the frame on a windowsill. Every plate here is the
+     frame being worn now. Five masters no other page uses, so nothing on
+     the site is showing the same photograph twice.
+
+     The sticky column is the Together Shot: the two of them in one frame,
+     which is what this column is for. It is a 16:9 master in a slot the
+     height of the viewport, so object-cover holds the centre and loses
+     the sides. The pair sit centre, which is what makes that survivable
+     rather than a crop through somebody's face. See the note on this
+     entry in scripts/import-arca-photography.mjs. */
+  stickyImage: "/images/arca-ii/home/pair-lit-dark.jpg",
+  stickyAlt: "Aria and Noir together, both wearing ARCA II",
   pairOne: [
-    "/images/arca-i/home/frame-macro-concrete.jpg",
-    "/images/arca-ii/home/gold-plate-macro.jpg",
+    "/images/arca-i/home/noir-corridor-stand.jpg",
+    "/images/arca-ii/home/aria-cloister-full.jpg",
   ],
   feature: {
     heading: "The block comes first.",
@@ -86,10 +94,9 @@ export const atelier = {
       "Italian acetate, milled down rather than poured out. The gold is set by hand, into a shape that has already earned it.",
     cta: "See the process",
   },
-  /* The object alone, in the building it was shot in. */
   pairTwo: [
-    "/images/arca-i/home/frame-window-shadow.jpg",
-    "/images/arca-i/home/frame-puddle.jpg",
+    "/images/arca-i/home/aria-layered.jpg",
+    "/images/arca-ii/home/aria-cloister-turn.jpg",
   ],
   quote: "A frame should disappear on the face and survive the century.",
   quoteAttribution: "Aria Noir, founding note",
@@ -234,10 +241,10 @@ export const privateAccess = {
   body:
     "Unreleased frames, before they enter the collection.",
   cta: "Request private access",
-  /* The offer is taken on the page now, in a modal, rather than by
-     leaving for /contact. This href is the modal's own second door: some
-     readers do not want a list, they want to talk to someone, and the
-     panel carries it as a quiet link under the field. */
+  /* Unused by the section, which opens the modal instead of navigating.
+     Kept because it is the destination should the panel ever come out,
+     and because /contact still exists and still answers even though
+     nothing advertises it. */
   href: "/contact",
   /** The model the section lights. The house has no story page yet, so
    *  nothing on the site contradicts a frame that is not released. */
@@ -264,7 +271,6 @@ export const preorderModal = {
   label: "Email address",
   cta: "Request access",
   note: "One letter, when there is something to see.",
-  alt: "Talk to the studio",
   close: "Close",
   done: {
     heading: "Noted.",

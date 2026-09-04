@@ -9,7 +9,7 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  */
 export function ProductAriaNoir({ ariaNoir }: { ariaNoir: AriaNoir }) {
   return (
-    <section className="on-ink section relative z-[35] bg-ink">
+    <section className="on-ink section relative bg-ink">
       <div className="mx-auto max-w-6xl">
         {/* the homepage atelier masthead: one centred column at max-w-5xl,
             gold caps preheader, display heading under it running the same

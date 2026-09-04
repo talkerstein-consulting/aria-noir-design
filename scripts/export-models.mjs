@@ -49,7 +49,17 @@ const BLENDER = process.env.BLENDER || "blender";
 const PICK = {
   AHAVA: "AHAVA-Noir.blend",
   "ARCA I": null, // four distinct cuts — all of them
-  "Arca II": "Noir.blend",
+  /* All eight, and this is the one place the "one mesh per house" rule
+     above does not apply.
+
+     That rule is right when a colourway is a flat colour: tint one loaded
+     material in the browser and you are done. ARCA II's run is not flat.
+     Dark Tortoise is tortoiseshell, Caramel Stripe and Tutti Frutti are
+     laid-up striped acetate, Pixie Dust is flecked. No runtime tint
+     produces any of those from Noir, so the pattern has to arrive baked,
+     which means it has to arrive as its own export. Eight meshes at about
+     870KB, loaded one at a time as the reader picks. */
+  "Arca II": null,
   MATRIARCA: "Midnight Noir.blend",
   MONARCA: "MONARCA-Noir.blend",
   PATRIARCA: "Midnight Noir.blend",

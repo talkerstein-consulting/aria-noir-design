@@ -16,7 +16,7 @@ import { RevealPlate, RevealText } from "@/components/reveal";
  *
  * MONARCA has no photograph in the pool, so it renders as an
  * acetate swatch rather than being dropped or given a borrowed plate. Same
- * bargain ProductVariations struck on ARCA I — a complete row with an
+ * bargain the deleted ProductVariations struck on ARCA I — a complete row with an
  * honest gap reads as a house with six names; four plates and two holes
  * reads as a broken page.
  *

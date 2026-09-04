@@ -3,43 +3,32 @@ import type { Meaning } from "@/lib/product";
 import { RevealText, RevealPlate } from "@/components/reveal";
 
 /**
- * The "Arca" definition — plate right, text left.
+ * The "Arca" definition: plate right, text left.
  *
- * The WHOLE SECTION is sticky at exactly one viewport tall. It pins the
- * moment its top reaches 0 and holds there while the sections after it
- * ride over the top of it. Nothing here animates out and nothing here
- * scrolls away under its own power.
+ * ---- This section used to PIN ----
  *
- * How long it holds is decided by the wrapper around it in the page file,
- * NOT here — a sticky element pins until the bottom of its containing
- * block. That wrapper is deliberately short (this section, the band and
- * the spec), because a sticky element with no wrapper takes <main> as its
- * containing block and stays pinned behind every later section to the end
- * of the page, showing through anything transparent. Read the note there
- * before changing this section's height.
+ * It was `sticky top-0 z-[35] h-svh`, held by a wrapper in the page file,
+ * and the sections after it rode over the top of it at z-index 36+. That
+ * whole machine is gone. The page is one continuous scroll now, so this is
+ * an ordinary section that arrives, is read, and leaves.
  *
- * What ends it is the next section simply arriving. ProductBand and every
- * section after it sit at z-index 36+ against this one's 35, in ordinary
- * document flow — so they scroll up the page as normal and pass straight
- * over the top of this pinned frame, covering it. No negative margins, no
- * scroll maths: the effect is entirely "a fixed thing, and opaque things
- * moving in front of it".
+ * What that removes, and none of it is missed: the leash wrapper in both
+ * page files, the requirement that every later section carry an explicit
+ * z-index and an opaque background, and the reason ProductClose had no
+ * background of its own.
  *
- * Every later section on this page is therefore REQUIRED to carry both an
- * explicit z-index of 36 or higher and an opaque background. Without the
- * z-index it would render *behind* this pinned section (a positioned
- * element beats an auto-z sibling regardless of source order); without the
- * background this section would show through it.
+ * It keeps a viewport of height because the plate is the argument and a
+ * full-bleed photograph wants the screen. Nothing pins to it.
  *
  * The gradient is a section-level overlay rather than something inside the
- * text column: the column is now centred on the page's own container (see
- * the note on it), and a scrim that travelled with it would start a couple
- * of hundred pixels in from the left edge on a wide screen, leaving a
- * bright strip of the plate showing down the side of the page.
+ * text column: the column is centred on the page's own container (see the
+ * note on it), and a scrim that travelled with it would start a couple of
+ * hundred pixels in from the left edge on a wide screen, leaving a bright
+ * strip of the plate showing down the side of the page.
  */
 export function ProductMeaning({ meaning }: { meaning: Meaning }) {
   return (
-    <section className="sticky top-0 z-[35] h-svh overflow-hidden bg-ink">
+    <section className="relative h-svh overflow-hidden bg-ink">
       <RevealPlate className="absolute inset-y-0 right-0 w-full sm:w-3/5 lg:w-3/4">
         <Image
           src={meaning.image}

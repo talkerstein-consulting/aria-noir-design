@@ -41,13 +41,25 @@ export function useOnScreen(
   ref: RefObject<Element | null>,
   /** How far outside the viewport still counts, as a CSS margin. */
   margin = "50% 0px",
+  /**
+   * What to answer before the observer has reported.
+   *
+   * Defaults to TRUE, and for the original caller that is deliberate: a
+   * scene above the fold must render on the first frame, and an observer's
+   * first callback arrives after paint. Being wrong in that direction
+   * costs one frame of rendering a scene that turns out to be off screen;
+   * being wrong the other way shows the reader an empty canvas.
+   *
+   * Pass FALSE when the answer gates WORK RATHER THAN PIXELS — fetching,
+   * decoding, anything the reader is not currently owed. There the two
+   * errors are not symmetrical at all: a hopeful `true` means the work
+   * starts at mount for an element most of a page away, which is precisely
+   * what the gate was added to prevent. ProductOffering's acetate preload
+   * is the case this was added for.
+   */
+  initial = true,
 ) {
-  /* Starts true, and that is deliberate: a scene that is above the fold
-     must render on the first frame, and an observer's first callback
-     arrives after paint. Being wrong in this direction costs one frame of
-     rendering a scene that turns out to be off screen; being wrong in the
-     other shows the reader an empty canvas. */
-  const [onScreen, setOnScreen] = useState(true);
+  const [onScreen, setOnScreen] = useState(initial);
 
   useEffect(() => {
     const el = ref.current;

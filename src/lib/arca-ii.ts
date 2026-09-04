@@ -16,6 +16,7 @@
  * so a section can be re-ordered without renaming files.
  */
 
+import type { Approach } from "@/components/product/product-approach";
 import type {
   AriaNoir,
   Close,
@@ -24,17 +25,14 @@ import type {
   Meaning,
   Offering,
   Opening,
-  References,
   Shoot,
   Spec,
-  Variations,
   Worn,
 } from "./product";
 import { swatchFor } from "./shop";
 
 const P = "/images/arca-ii";
 /* The colourway run, one plate per acetate. See build-arca-ii-images.mjs. */
-const V = `${P}/variants`;
 
 /* The campaign film opens this cut, as it opens ARCA I. It replaces the
    still that stood here: a hero that holds for a second before the type
@@ -47,7 +45,7 @@ export const hero: Hero = {
   eyebrow: "The Second Cut",
   name: "ARCA II",
   line: [
-    { text: "In praise of shadows.", italic: true },
+    { text: "Cut for the darker room.", italic: true },
     { text: "NINETY-SEVEN PARTS DARK, THREE PARTS GOLD.", italic: false },
   ],
   image: `${P}/hero-poster.jpg`,
@@ -58,10 +56,10 @@ export const hero: Hero = {
 
 export const structure: Opening = {
   preheader: "The Structure",
-  heading: "We built the room before we built a single frame in it.",
+  heading: "We built the room before the frame that stands in it.",
   body: [
-    "Not a set. A place, with its own stairwell and its own far door, so that every shot taken afterwards was taken somewhere rather than against something. The brutalist bones are the same ones ARCA I stood in — two cuts from one house should not arrive from two different worlds.",
-    "What changed is the light. ARCA I was lit from outside, and the concrete answered coldly. This room glows from within, and the Art Deco lines inlaid into that concrete only appear where the glow happens to reach them.",
+    "Not a set. A place, with its own stairwell and its own far door.",
+    "ARCA I was lit from outside. This room glows from within, and the lines cut into it appear only where the glow reaches.",
   ],
   images: [
     { src: `${P}/structure-stair.jpg`, alt: "A stone stair rising out of a dark passage towards one lit window" },
@@ -72,12 +70,12 @@ export const structure: Opening = {
 export const ariaNoir: AriaNoir = {
   preheader: "Aria / Noir",
   heading: [
-    { text: "The same two faces, asked to stand in far less light", italic: true },
-    { text: "AND GIVE AWAY JUST AS MUCH.", italic: false },
+    { text: "The same two faces, in far less light", italic: true },
+    { text: "AND GIVING AWAY JUST AS MUCH.", italic: false },
   ],
   body: [
-    "A house's names have to survive a change of weather. Aria is still a single voice holding a room alone; Noir is still the colour a shadow keeps at noon. Neither of them was softened to suit a warmer room.",
-    "What the room did instead was take things away — a jawline, a shoulder, half a coat — and leave the frame as the one object it never lets go of.",
+    "A house's names have to survive a change of weather. Aria still holds a room alone. Noir is still the colour a shadow keeps at noon.",
+    "The room took a jawline, a shoulder, half a coat. It never took the frame.",
   ],
   images: [
     { src: `${P}/aria.jpg`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
@@ -87,10 +85,10 @@ export const ariaNoir: AriaNoir = {
 
 export const shoot: Shoot = {
   preheader: "The Shoot",
-  heading: "Almost too dark, and held there on purpose.",
+  heading: "Almost too dark, and held there.",
   body: [
-    "Every instinct in the process wanted to light this evenly. Even light is what a product shot does, and a product shot is precisely what this could not become — so the exposure was set once, low, and defended frame by frame against its own drift back toward normal.",
-    "The gold was the harder half of that. It had to catch light without ever being fully lit, which is a thing to ask of any camera: show me this, but do not show me all of it. Drop frames, split bands, a fisheye that admits what it is — the flourishes are here because the shadow needed something to happen inside it.",
+    "Even light is what a product shot does. The exposure was set once, low, and defended frame by frame.",
+    "The gold was the harder half. It had to catch light without ever being fully lit.",
   ],
   images: [
     { src: `${P}/shoot-pair-door.jpg`, alt: "Aria and Noir at distance in a cloister colonnade, the arcade running away behind them" },
@@ -98,18 +96,17 @@ export const shoot: Shoot = {
   ],
   note: {
     label: "A note on shadow",
-    body:
-      "Tanizaki's question, borrowed rather than cited: does the thing grow more beautiful as the room grows darker. Everything on this page was made to answer yes.",
+    body: "The room was never fully lit. Neither was the frame.",
   },
 };
 
 export const meaning: Meaning = {
   image: `${P}/meaning-aria-deco.jpg`,
   alt: "Aria in ARCA II, close, black leather, lit out of the dark",
-  eyebrow: "L'Éloge de l'Ombre",
-  heading: "In praise of shadows: the argument that a thing is not revealed by light so much as spent by it.",
+  eyebrow: "The Darker Room",
+  heading: "A thing is not revealed by light so much as spent by it.",
   body:
-    "Lacquer was made for candlelight. Gold leaf was made for a room with one lamp in it. Set either under a bright even source and you get an accurate photograph of an object that has stopped doing the one thing it was made to do. ARCA II is cut for the darker room, and asks to be met there.",
+    "Lacquer was made for candlelight. Gold leaf for a room with one lamp. ARCA II is cut for the same hour.",
   /* The new plate is a centred close portrait rather than the wide it
      replaces, so there is nothing to push out from under the text column —
      any crop off centre now cuts her face. */
@@ -119,7 +116,6 @@ export const meaning: Meaning = {
 export const detail: Detail = {
   image: `${P}/detail-lightfall.jpg`,
   alt: "An empty hall with window light laid in long bars across the floor",
-  line: "Three percent of this frame is gold. It is the only part of it that ever moves.",
 };
 
 export const spec: Spec = {
@@ -130,37 +126,37 @@ export const spec: Spec = {
       term: "Frame",
       summary: "Hand-cut block acetate, single cut",
       detail:
-        "One shape, held in eight colourways — the opposite bet from ARCA I, which took four shapes and four colours. A house that cuts once has to get the cut right, so the profile here is wider through the browline and squarer at the corner than the founding model, and it does not vary.",
+        "One shape, held in eight colourways. Wider through the brow and squarer at the corner than the founding model.",
     },
     {
       term: "Temple",
       summary: "Inlaid gold plaque, set into stone-cut detailing",
       detail:
-        "The three percent. A geometric Deco plaque let into the temple face, sitting proud of a stone-textured field cut around it. It is the only element on the frame finished to catch light rather than absorb it, which is why it is small and why it is placed where a turn of the head will find it.",
+        "The three percent. Let into the temple face, proud of a stone-cut field. The only part finished to catch light rather than absorb it. Placed where a turn of the head will find it.",
     },
     {
       term: "Hinge",
       summary: "Five-barrel spring hinge",
       detail:
-        "Built to flex outward past the temple's resting point and return to true, rated for tens of thousands of open-close cycles without loosening. Carried over from ARCA I unchanged, because it was already the part of that frame worth keeping.",
+        "Flexes past the temple's resting point and returns to true. Rated for tens of thousands of cycles. Carried over from ARCA I unchanged.",
     },
     {
       term: "Lens",
       summary: "UV400-rated, scratch-resistant optical glass",
       detail:
-        "Full-spectrum UV protection paired with genuine optical clarity. Held here in a warmer tint than the founding model takes — the amber is what lets the lens read as lit from inside rather than as a dark panel.",
+        "Full-spectrum UV protection, genuine optical clarity. Warmer than the founding model takes. The amber is what makes the lens read as lit from inside.",
     },
     {
       term: "Bridge",
       summary: "Flat keyhole, double bar",
       detail:
-        "The keyhole shape ARCA I established, squared off and carried on a second bar across the top of the frame. Fewer points of failure than a hardware bridge, and the bar is what gives this cut its brow.",
+        "The keyhole ARCA I established, squared off and carried on a second bar. The bar is what gives this cut its brow.",
     },
     {
       term: "Finish",
       summary: "Hand-polished, lacquer depth",
       detail:
-        "Every edge finished by hand after cutting, then polished past the point where acetate merely looks clean and into the point where it holds a reflection. That depth is the whole reason the frame survives a dark room instead of disappearing into one.",
+        "Every edge finished by hand after cutting, then polished until the acetate holds a reflection. It survives a dark room instead of disappearing into one.",
     },
   ],
   macro: [
@@ -171,62 +167,91 @@ export const spec: Spec = {
   ],
 };
 
+/* The buy page with one acetate already chosen. Read by the turntable's
+   squares and by the colourway data further down, so the two never hand
+   the reader different links for the same colour — and declared up here
+   because `const` does not hoist and the offering now reads it. */
+const buyColour = (name: string) =>
+  `/shop/arca-ii?colourway=${encodeURIComponent(name)}`;
+
+/* The walk in to the object: the film, then a face, then the frame — see
+   ProductApproach.
+
+   Same knowing repeat as ARCA I: the film here is this cut's campaign
+   reel, which the hero also runs. One reel exists. Replace it with its own
+   footage when there is some.
+
+   The face is `noir` — front on, close, the amber lenses reading at size.
+   In a cut whose whole argument is that the gold only appears where the
+   light reaches it, a portrait that shows the lenses lit is the right
+   thing to put between the film and the object. */
+export const approach: Approach = {
+  film: {
+    src: "/video/arca-ii-hero.mp4",
+    poster: `${P}/hero-poster.jpg`,
+    alt: "The campaign film for ARCA II",
+  },
+  face: {
+    src: `${P}/noir.jpg`,
+    alt: "Noir front on under a carved stone arch, amber lenses",
+  },
+};
+
 export const offering: Offering = {
   preheader: "The Offering",
   name: "ARCA II",
   cta: "Enter the Registry",
-  registryNote:
-    "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
+  registryNote: "Each acquisition is registered. The piece is yours, permanently.",
+  moreNote: "Three of eight. The rest are in the registry.",
   /* The Noir, turning. This cut HAS an export — scripts/export-models.mjs
      ran the whole `3d models/` set, and arca-ii-noir.glb has been sitting
      in public/models/houses since — the page just never asked for it and
      showed a still life instead. */
-  view: { kind: "model", src: "/models/houses/arca-ii-noir.glb" },
+  view: {
+    kind: "model",
+    src: "/models/houses/arca-ii-noir.glb",
+    /* All eight, on the object itself.
+
+       This is what replaced "The Variations" on this page, and it is the
+       cut where the replacement earns the most: eight full-screen panels
+       was eight screens of scroll to see one shape change colour, and the
+       reader could not compare any two of them without scrolling back. As
+       squares they are all in view at once, on the frame, at whatever
+       angle the reader has turned it to.
+
+       Every acetate has its own export — scripts/export-models.mjs ran
+       the whole `3d models/Arca II` set, and the eight glbs are in
+       public/models/houses. The hexes come from SWATCHES via swatchFor,
+       which is what the buy page's picker paints: one acetate must not be
+       two colours across two surfaces. */
+    /* The turntable loads the first THREE of these. See `turned` below,
+       and the note on it in lib/product.ts.
+
+       The order is therefore load-bearing in a way it was not before: the
+       three at the top are the three a reader can turn, so they are one
+       per family rather than the first three of a list. Noir is the house
+       black and the acetate this cut opens on. Dark Tortoise is the brown.
+       Dreamy Rose is the light end of the run. A reader who turns those
+       three has seen what this shape does across the whole set.
+
+       The other five stay here in full: the palette band under the opening
+       paints all eight, the buy page sells all eight, and this is the list
+       both of those read. */
+    turned: 3,
+    colorways: [
+      { name: "Noir", swatch: swatchFor("Noir"), src: "/models/houses/arca-ii-noir.glb", href: buyColour("Noir") },
+      { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise"), src: "/models/houses/arca-ii-dark-tortoise.glb", href: buyColour("Dark Tortoise") },
+      { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose"), src: "/models/houses/arca-ii-dreamy-rose.glb", href: buyColour("Dreamy Rose") },
+      { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe"), src: "/models/houses/arca-ii-caramel-stripe.glb", href: buyColour("Caramel Stripe") },
+      { name: "Root Beer Float", swatch: swatchFor("Root Beer Float"), src: "/models/houses/arca-ii-root-beer-float.glb", href: buyColour("Root Beer Float") },
+      { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti"), src: "/models/houses/arca-ii-tutti-frutti.glb", href: buyColour("Tutti Frutti") },
+      { name: "Velvet Rose", swatch: swatchFor("Velvet Rose"), src: "/models/houses/arca-ii-velvet-rose.glb", href: buyColour("Velvet Rose") },
+      { name: "Pixie Dust", swatch: swatchFor("Pixie Dust"), src: "/models/houses/arca-ii-pixie-dust.glb", href: buyColour("Pixie Dust") },
+    ],
+  },
 };
 
-/** Every colourway lands on the buy page with that acetate already chosen
- *  — the same handover ARCA I makes. A colour named at full bleed that
- *  drops the reader on the house's default is a colour they then have to
- *  find again by hand. */
-const buyColour = (name: string) =>
-  `/shop/arca-ii?colourway=${encodeURIComponent(name)}`;
 
-export const variations: Variations = {
-  preheader: "The Variations",
-  heading: "Eight colourways, and one room dark enough that the difference between them is a matter of how each one gives light back.",
-  /* Every acetate now has its own photograph — the campaign shot the run
-     one frame at a time on the same window sill, so the panels differ by
-     the material rather than by the light. They live under
-     `variants/<slug>-sill.jpg`, apart from the storefront's numbered set,
-     because two sources writing one namespace is how a campaign frame gets
-     silently replaced by a catalogue thumbnail.
-
-     The hexes stay: they come from SWATCHES in lib/shop, they are what the
-     picker paints, and this page and the buy page must not show one acetate
-     in two colours. */
-  colorways: [
-    { name: "Noir", swatch: swatchFor("Noir"), image: `${V}/noir-sill.jpg`, alt: "Noir — on the window sill, lenses to the light", href: buyColour("Noir"), cta: "Acquire Noir" },
-    { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise"), image: `${V}/dark-tortoise-sill.jpg`, alt: "Dark Tortoise — on the window sill, lenses to the light", href: buyColour("Dark Tortoise"), cta: "Acquire Dark Tortoise" },
-    { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe"), image: `${V}/caramel-stripe-sill.jpg`, alt: "Caramel Stripe — on the window sill, lenses to the light", href: buyColour("Caramel Stripe"), cta: "Acquire Caramel Stripe" },
-    { name: "Root Beer Float", swatch: swatchFor("Root Beer Float"), image: `${V}/root-beer-float-sill.jpg`, alt: "Root Beer Float — on the window sill, lenses to the light", href: buyColour("Root Beer Float"), cta: "Acquire Root Beer Float" },
-    { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti"), image: `${V}/tutti-frutti-sill.jpg`, alt: "Tutti Frutti — on the window sill, lenses to the light", href: buyColour("Tutti Frutti"), cta: "Acquire Tutti Frutti" },
-    { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose"), image: `${V}/dreamy-rose-sill.jpg`, alt: "Dreamy Rose — on the window sill, lenses to the light", href: buyColour("Dreamy Rose"), cta: "Acquire Dreamy Rose" },
-    { name: "Velvet Rose", swatch: swatchFor("Velvet Rose"), image: `${V}/velvet-rose-sill.jpg`, alt: "Velvet Rose — on the window sill, lenses to the light", href: buyColour("Velvet Rose"), cta: "Acquire Velvet Rose" },
-    { name: "Pixie Dust", swatch: swatchFor("Pixie Dust"), image: `${V}/pixie-dust-sill.jpg`, alt: "Pixie Dust — on the window sill, lenses to the light", href: buyColour("Pixie Dust"), cta: "Acquire Pixie Dust" },
-  ],
-};
-
-export const references: References = {
-  label: "References",
-  names: [
-    "Tanizaki",
-    "Horst",
-    "Sugimoto",
-    "Dunand",
-    "Only Lovers Left Alive",
-    "In the Mood for Love",
-  ],
-};
 
 export const worn: Worn = {
   preheader: "Worn",
@@ -259,7 +284,7 @@ export const worn: Worn = {
 
 export const close: Close = {
   heading: "Best seen in the last light of the room.",
-  body: "This is the second door into the house. There are others.",
+  body: "The second door into the house. There are others.",
   cta: "Enter the Registry",
   trail: [
     `${P}/hero-arca.jpg`,

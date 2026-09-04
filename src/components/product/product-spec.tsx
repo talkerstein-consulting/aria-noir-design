@@ -13,7 +13,7 @@ export function ProductSpec({ spec }: { spec: Spec }) {
   return (
     <section
       id="specification"
-      className="on-ink section relative z-[36] bg-ink"
+      className="on-ink section relative bg-ink"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
         {/* ---- column 1: sticky bench sheet ---- */}

@@ -9,8 +9,7 @@ import {
   type FormEvent,
 } from "react";
 import { createPortal } from "react-dom";
-import { preorderModal as copy, privateAccess } from "@/lib/content";
-import { CtaLink } from "@/components/cta-link";
+import { preorderModal as copy } from "@/lib/content";
 
 /**
  * The sign-up for private access, as a modal.
@@ -231,16 +230,12 @@ export function PreorderModal({ onClose }: { onClose: () => void }) {
               </button>
             </form>
 
+            {/* No second door to the contact desk. It was here for one
+                commit and came straight back out: Contact is hidden from
+                the navigation and the footer now, and the home page is
+                the last place that should be the one surface still
+                advertising it. */}
             <p className="mt-5 font-ui text-xs text-paper/45">{copy.note}</p>
-
-            {/* The other door. A list is not what everyone came for, and
-                the contact desk is a real page with a real form. It is
-                also what keeps the tab cycle worth trapping. */}
-            <div className="mt-7">
-              <CtaLink href={privateAccess.href} tone="quiet">
-                {copy.alt}
-              </CtaLink>
-            </div>
           </>
         )}
       </div>

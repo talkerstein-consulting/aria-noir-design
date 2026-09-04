@@ -13,6 +13,7 @@
  * rather than fork them.
  */
 
+import type { Approach } from "@/components/product/product-approach";
 import type {
   AriaNoir,
   Close,
@@ -23,7 +24,6 @@ import type {
   Opening,
   Shoot,
   Spec,
-  Variations,
   Worn,
 } from "./product";
 
@@ -39,7 +39,7 @@ export const hero: Hero = {
     { text: "THE FIRST NAME IN THE HOUSE'S BLOODLINE.", italic: false },
   ],
   image: `${P}/hero-arca.jpg`,
-  alt: "ARCA I, amber-lit portrait, layered foreground — the campaign's climax frame",
+  alt: "ARCA I, amber-lit portrait, layered foreground",
   video: "/video/arca-i-hero.mp4",
   /** Frame 0 of the film above, so the still and the first frame of the
    *  footage are the same picture. */
@@ -48,10 +48,10 @@ export const hero: Hero = {
 
 export const structure: Opening = {
   preheader: "The Structure",
-  heading: "This building decided, decades ago, exactly how it feels about light.",
+  heading: "This building settled its argument with light decades ago.",
   body: [
-    "We worked inside that decision. Its architect goes unnamed here on purpose. The concrete speaks for itself — raw, poured once, never dressed up after the fact.",
-    "A house called Noir belongs in a building that already understood the assignment.",
+    "We worked inside that decision. Poured once, never dressed after.",
+    "A house called Noir belongs in a building that already knew.",
   ],
   images: [
     { src: `${P}/structure-door.jpg`, alt: "Bust portrait at a concrete doorway, bokeh, desaturated" },
@@ -68,12 +68,12 @@ export const ariaNoir: AriaNoir = {
     { text: "BEFORE IT CAN CARRY ANYTHING ELSE.", italic: false },
   ],
   body: [
-    "Hers is Aria — a single voice, unaccompanied, asked to hold a room's attention alone. His is Noir — the color a shadow keeps even at noon, in a hallway the sun never fully reaches.",
-    "The house gave them these names, and they carry them exactly the way this building carries its concrete — as fact, not costume.",
+    "Hers is Aria. A single voice, unaccompanied, asked to hold a room alone. His is Noir. The colour a shadow keeps at noon.",
+    "The house gave them the names. They wear them as fact.",
   ],
   images: [
-    { src: `${P}/aria.jpg`, alt: "Aria — black sleeveless portrait against poured concrete" },
-    { src: `${P}/noir.jpg`, alt: "Noir — looking down, portrait" },
+    { src: `${P}/aria.jpg`, alt: "Aria in a black sleeveless dress against poured concrete" },
+    { src: `${P}/noir.jpg`, alt: "Noir looking down, portrait" },
   ],
 };
 
@@ -81,8 +81,8 @@ export const shoot: Shoot = {
   preheader: "The Shoot",
   heading: "We shot at the hour the concrete does its best work.",
   body: [
-    "Early enough that shadows still hold their edges. The building's own grilles cut the light into hard bars long before we arrived — Melville's venetian blinds, poured in concrete instead of hung in a window. We simply pointed the camera at what was already true.",
-    "Where the lens bends the architecture around them and leaves their faces the sharpest thing in frame, we kept it that way. A tool that admits what it is earns more trust than one pretending to be invisible.",
+    "Early, while the shadows still hold an edge. The building cuts the light into bars on its own.",
+    "The lens bends the architecture and leaves their faces the sharpest thing in the frame. We kept it.",
   ],
   images: [
     { src: `${P}/shoot-fisheye-face.jpg`, alt: "Face through the fisheye lens" },
@@ -90,8 +90,7 @@ export const shoot: Shoot = {
   ],
   note: {
     label: "A note on stillness",
-    body:
-      "A reference point, not a citation — the same restraint that lets a face hold a frame without needing to perform for it.",
+    body: "A face can hold a frame without performing for it.",
   },
 };
 
@@ -99,15 +98,14 @@ export const meaning: Meaning = {
   image: `${P}/meaning-longcoat.jpg`,
   alt: "Long coat, bespoke shot at the building's door",
   eyebrow: "Arca",
-  heading: "Latin, before it was anything else: the ark, the vessel, the chest built to carry what must survive the water.",
+  heading: "Latin. The chest built to carry what must survive the water.",
   body:
-    "It is the first name in the house's bloodline. Ahava, Monarca, Matriarca, Patriarca — all descend from this root. Before a sovereign, a mother, or a father, there was only the vessel that got everyone there.",
+    "The first name in the house's bloodline. Before a sovereign, a mother, or a father, there was only the vessel that got everyone there.",
 };
 
 export const detail: Detail = {
   image: `${P}/detail-ribbon-dress.jpg`,
   alt: "Black ribbon dress portrait, close",
-  line: "Acetate, cut and polished the way concrete is poured and finished — one material, shaped once, standing on its own terms.",
 };
 
 export const spec: Spec = {
@@ -118,30 +116,30 @@ export const spec: Spec = {
       term: "Frame",
       summary: "Hand-cut cellulose acetate",
       detail:
-        "Layered and polished in five separate stages rather than molded in one, the same lamination technique used in fine cathedral glass, applied here to something people touch every day. Acetate breathes slightly with body heat, softening its grip through the day rather than staying rigid against the skin.",
+        "Layered and polished in five stages rather than moulded in one. Acetate warms to the skin and softens its grip through the day.",
     },
     {
       term: "Hinge",
       summary: "Five-barrel spring hinge",
       detail:
-        "Built to flex outward past the temple's resting point and return to true, rated for tens of thousands of open-close cycles without loosening. The difference between a frame that lasts a season and one that lasts a decade usually comes down to this one small part.",
+        "Flexes past the temple's resting point and returns to true. Rated for tens of thousands of cycles.",
     },
     {
       term: "Lens",
       summary: "UV400-rated, scratch-resistant optical glass",
       detail:
-        "Full-spectrum UV protection paired with genuine optical clarity — the kind of lens that cuts glare without dulling what's actually in front of you.",
+        "Full-spectrum UV protection with genuine optical clarity. Cuts glare without dulling what is in front of you.",
     },
     {
       term: "Bridge",
       summary: "Keyhole fit",
-      detail: "Shaped to sit on the nose without slipping and without hardware. Fewer parts, fewer points of failure.",
+      detail: "Sits on the nose without slipping and without hardware. Fewer parts, fewer points of failure.",
     },
     {
       term: "Finish",
       summary: "Hand-polished, not stamped",
       detail:
-        "Every edge is finished by hand after cutting. It's slower. It's also the only way the edge actually looks the way acetate is supposed to look.",
+        "Every edge finished by hand after cutting. Slower, and the only way the edge looks the way acetate should.",
     },
   ],
   /* Four plates only, one per subject — bridge, temple hinge, temple face,
@@ -161,12 +159,40 @@ export const spec: Spec = {
   ],
 };
 
+/* The buy page with one acetate already chosen. Used by the turntable's
+   squares and by the colourway data below it, so both hand the reader the
+   same link — and declared up here because `const` does not hoist and the
+   offering now reads it. */
+const buyColour = (name: string) =>
+  `/shop/arca-i?colourway=${encodeURIComponent(name)}`;
+
+/* The walk in to the object: the film, then a face, then the frame itself
+   — see ProductApproach for why it is in that order and why neither stage
+   carries a word.
+
+   The film is the campaign film, the same one the hero opens on. That is a
+   REPEAT and it is knowing: there is one reel for this cut, and a mood
+   stage with nothing in it would be worse than the reel a second time.
+   Point this at its own footage the day the house cuts some.
+
+   The face is `worn-12` — the only close portrait in the set that is a
+   face and not a figure, which is exactly what this step needs: the frame
+   at the distance a person is actually seen at, between the wide film and
+   the object alone on its stage. */
+export const approach: Approach = {
+  film: {
+    src: "/video/arca-i-hero.mp4",
+    poster: `${P}/hero-poster.jpg`,
+    alt: "The campaign film for ARCA I",
+  },
+  face: { src: `${P}/worn-12.jpg`, alt: "Closeup face, bokeh, wearing ARCA I" },
+};
+
 export const offering: Offering = {
   preheader: "The Offering",
   name: "ARCA I",
   cta: "Enter the Registry",
-  registryNote:
-    "Every acquisition is registered as an OFFICIAL NFT, your piece is only yours, forever.",
+  registryNote: "Each acquisition is registered. The piece is yours, permanently.",
   /* The Draco export, the same one the buy page turns.
   
      This used to point at `/models/arca-i-k-black.glb` on the reasoning
@@ -177,68 +203,48 @@ export const offering: Offering = {
      geometry at a sixth of the bytes, because Draco compresses geometry
      rather than throwing it away. The reader deciding was being sent eight
      and a half megabytes to see LESS of the frame. */
-  view: { kind: "model", src: "/models/houses/arca-i-k-black.glb" },
+  view: {
+    kind: "model",
+    src: "/models/houses/arca-i-k-black.glb",
+    /* The four acetates, as squares under the frame. This is what stands
+       in for the deleted Variations stage: the same four colours, on the
+       object itself rather than on four photographs of it, and each one
+       carrying the buy link it used to carry down there.
+
+       `src` is the per-colourway export — scripts/export-models.mjs runs
+       the whole `3d models/` set, so every acetate has had its own glb in
+       public/models/houses all along. The hexes are the same ones the
+       plates used; they are stand-ins for measured acetate, see SWATCHES
+       in lib/shop. */
+    colorways: [
+      {
+        name: "K Black",
+        swatch: "#0b0b0c",
+        src: "/models/houses/arca-i-k-black.glb",
+        href: buyColour("K Black"),
+      },
+      {
+        name: "Z White",
+        swatch: "#e8e5df",
+        src: "/models/houses/arca-i-z-white.glb",
+        href: buyColour("Z White"),
+      },
+      {
+        name: "Proceso Brown",
+        swatch: "#4a3626",
+        src: "/models/houses/arca-i-proceso-brown.glb",
+        href: buyColour("Proceso Brown"),
+      },
+      {
+        name: "309 Blue",
+        swatch: "#1f2c3d",
+        src: "/models/houses/arca-i-309-blue.glb",
+        href: buyColour("309 Blue"),
+      },
+    ],
+  },
 };
 
-/** The colourway still-life set. Shot against the same brutalist ground as
- *  the campaign, so the four read as one series rather than four product
- *  shots. Each is now a full-bleed panel on the sticky stage, so it is one
- *  plate per colour rather than a card and a gallery behind it.
- *
- *  `href` is the buy page with the colourway already chosen — the whole
- *  point of naming a colour at full bleed is that the reader can act on
- *  THAT one, and landing them on the house's default acetate makes them
- *  find it again by hand.
- */
-const V = `${P}/variants`;
-/* The upright colourway plates, shot for the square the panel becomes on a
-   phone. See Colorway.imageNarrow. */
-const VT = `${V}/tall`;
-const buyColour = (name: string) =>
-  `/shop/arca-i?colourway=${encodeURIComponent(name)}`;
-
-export const variations: Variations = {
-  preheader: "The Variations",
-  heading: "Four colorways. One building.",
-  colorways: [
-    {
-      name: "K Black",
-      swatch: "#0b0b0c",
-      image: `${V}/k-black-main.jpg`,
-      imageNarrow: `${VT}/k-black.jpg`,
-      alt: "K Black — front on, against poured concrete",
-      href: buyColour("K Black"),
-      cta: "Acquire K Black",
-    },
-    {
-      name: "Z White",
-      swatch: "#e8e5df",
-      image: `${V}/z-white-main.jpg`,
-      imageNarrow: `${VT}/z-white.jpg`,
-      alt: "Z White — front on, against poured concrete",
-      href: buyColour("Z White"),
-      cta: "Acquire Z White",
-    },
-    {
-      name: "Proceso Brown",
-      swatch: "#4a3626",
-      image: `${V}/proceso-brown-main.jpg`,
-      imageNarrow: `${VT}/proceso-brown.jpg`,
-      alt: "Proceso Brown — front on, against poured concrete",
-      href: buyColour("Proceso Brown"),
-      cta: "Acquire Proceso Brown",
-    },
-    {
-      name: "309 Blue",
-      swatch: "#1f2c3d",
-      image: `${V}/309-blue-main.jpg`,
-      imageNarrow: `${VT}/309-blue.jpg`,
-      alt: "309 Blue — front on, against poured concrete",
-      href: buyColour("309 Blue"),
-      cta: "Acquire 309 Blue",
-    },
-  ],
-};
 
 export const worn: Worn = {
   preheader: "Worn",
@@ -274,7 +280,7 @@ export const worn: Worn = {
 
 export const close: Close = {
   heading: "Worn by those the city never sees.",
-  body: "This is the first door into the house. There are others.",
+  body: "The first door into the house. There are others.",
   cta: "Enter the Registry",
   trail: [
     `${P}/close-dropframes.jpg`,

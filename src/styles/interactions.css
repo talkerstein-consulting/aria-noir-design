@@ -1444,3 +1444,59 @@
     transform: none;
   }
 }
+
+/* ── 6. The stage loader ─────────────────────────────────────────────
+   The eyewear hero waits on about two and a half megabytes of geometry.
+   Locally that is a fifth of a second; on a phone on a train it is ten,
+   and for all ten the stage was a lit room with nothing standing in it.
+   A hero silently missing its subject reads as broken, not as loading.
+
+   Same three parts as the home page's opening, because that is the only
+   other place on this site that has ever had to make anyone wait: a
+   word, a hairline, a number. No spinner. The site has no radii and no
+   fills, and a loading state is not the place to invent both. */
+.stage-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.15rem;
+  background: var(--ink);
+  transition:
+    opacity var(--dur-scene) var(--ease-out),
+    visibility 0s linear var(--dur-scene);
+}
+/* Gone, and out of the a11y tree with it. `visibility` is what actually
+   removes it from hit-testing and from screen readers; opacity alone
+   would leave an invisible sheet over the whole stage. */
+.stage-loader[data-done="true"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.stage-loader-bar {
+  position: relative;
+  width: min(180px, 46vw);
+  height: var(--rule-weight);
+  background: var(--fg-rule);
+  overflow: hidden;
+}
+.stage-loader-bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--fg-accent);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-loader,
+  .stage-loader-bar i {
+    transition-duration: 0.01ms;
+  }
+}

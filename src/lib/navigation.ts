@@ -37,30 +37,27 @@ export type MenuLink = { label: string; href: string; external?: boolean };
  * difference between "read this" and "this exists".
  */
 export const menu = {
-  /* Six entries: five destinations and the bag.
+  /* Three entries: two destinations and the bag.
 
-     The Process is deliberately not among them, and neither is it in the
-     footer. The page still exists and `/house/about` still sends a reader
-     to it — but it is a chapter of the house's argument, reached from
-     inside that argument, rather than a peer of Eyewear and the Lookbook
-     in a list of places to go.
+     ---- What is deliberately not here ----
 
-     ARCA I is deliberately not among them. It is a frame, not a section —
-     putting the one house that happens to have a page beside Eyewear and
-     The House would tell a reader it is a peer of those, and would look
-     stranger still the day a second house ships. It lives where its five
-     siblings live: on the eyewear index. */
+     The Lookbook, The House and Contact, along with the Process before
+     them. All four pages still build and still answer; none of them is
+     advertised. What is left is the shortest possible account of the
+     site: the frames, and the thing you are holding.
+
+     ARCA I is not here either, and for a different reason. It is a frame,
+     not a section, and listing the one house that happens to have a page
+     beside Eyewear would tell a reader it is a peer of the index rather
+     than something inside it. It lives where its siblings live.
+
+     The bag is the one utility in the list, and it earns its place: this
+     site has no cart control in its header, so without this line the only
+     route to the bag is a footer link filed under "Client", which is
+     where someone looks for a policy rather than for their own bag. */
   primary: [
     { label: "Home", href: "/" },
     { label: "Eyewear", href: "/eyewear" },
-    { label: "Lookbook", href: "/lookbook/ss26" },
-    { label: "The House", href: "/house/about" },
-    { label: "Contact", href: "/contact" },
-    /* The bag, and the only reason the menu carries a utility beside six
-       destinations: this site deliberately has no cart control in its
-       header, so without this line the only route to the bag is a footer
-       link under "Client" — which is where someone looks for a policy, not
-       for the thing they are holding. */
     { label: "Bag", href: "/bag" },
   ] satisfies readonly MenuLink[],
 
@@ -110,7 +107,7 @@ export type Macro = {
  *
  * `plate` is null where the house has no photograph in the pool yet —
  * MONARCA is the last one sold on colourway stills we don't have. The
- * index renders it as the same swatch treatment ProductVariations uses, so
+ * index renders it as the same swatch treatment the offering's colourway squares use, so
  * the grid stays complete rather than five-sixths full.
  */
 export type House = {
@@ -378,7 +375,11 @@ export const allHouses: readonly House[] = [
        rooftop is two figures on a concrete plane cut by one long diagonal
        shadow, and that diagonal is the whole point: it is the one thing in
        the pool that still reads as composition after the blur. */
-    ground: "/images/arca-i/lifestyle/pair-rooftop.jpg",
+    /* The brutalist corridor: one lamp, and everything else falling away
+       into it. An EMPTY room, which is what the turntable's ground has to
+       be — the old plate had the pair standing in it, so a frame turning
+       in front of it was the third and fourth pair of glasses on screen. */
+    ground: "/images/arca-i/ground-corridor.png",
     lifestyle: "/images/arca-i/lifestyle/aria-low-angle.jpg",
     note: "The founding model, and the only house cut in four distinct shapes: Z White, K Black, Proceso Brown and 309 Blue.",
   },
@@ -476,7 +477,11 @@ export const allHouses: readonly House[] = [
     model: "/models/houses/arca-ii-noir.glb",
     /* The pair in a lit doorway, which blurs down to exactly what this cut
        is: a bright centre and everything else given away to the dark. */
-    ground: "/images/arca-ii/lifestyle/pair-doorway.jpg",
+    /* The vaulted hall, light laid across the floor in bars. Warm stone
+       against ARCA I's cold concrete, which is the difference between the
+       two cuts said in a room rather than in a sentence. Empty, for the
+       same reason as above. */
+    ground: "/images/arca-ii/ground-hall.jpg",
     lifestyle: "/images/arca-ii/lifestyle/noir-cloister.jpg",
     note: "The second cut, and the widest colourway run in the house: eight, from Noir to Pixie Dust.",
   },
@@ -810,14 +815,6 @@ export const sitemap: readonly SitemapGroup[] = [
       ...houses
         .filter((house) => house.href)
         .map((house) => ({ label: house.name, href: house.href as string })),
-      { label: "Lookbook SS26", href: "/lookbook/ss26" },
-    ],
-  },
-  {
-    title: "The House",
-    links: [
-      { label: "About", href: "/house/about" },
-      { label: "Contact", href: "/contact" },
     ],
   },
   {

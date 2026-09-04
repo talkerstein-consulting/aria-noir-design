@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
@@ -79,7 +79,7 @@ const REST = 0.34;
 /** How far down the plate is pushed. This is a ground, not a picture: it
  *  has to survive white type, a lit mesh in front of it, and the next plate
  *  sliding over it. */
-const TINT = 0.82;
+const TINT = 0.5;
 /**
  * Blurred, desaturated and pulled down a stop before the tint lands.
  *
@@ -97,7 +97,7 @@ const TINT = 0.82;
  * wildly differently plate to plate, and a flat black overlay preserves
  * that gap exactly instead of closing it.
  */
-const PLATE_FILTER = "blur(10px) saturate(0.6) brightness(0.8)";
+const PLATE_FILTER = "blur(6px) saturate(0.8) brightness(0.95)";
 /**
  * The plate is fetched at THUMBNAIL width and stretched over the viewport.
  *
@@ -113,7 +113,7 @@ const PLATE_FILTER = "blur(10px) saturate(0.6) brightness(0.8)";
  * at ~3KB, which matters more than the filter did — this is the hero, and
  * it is what a reader waits on.
  */
-const PLATE_SIZES = "96px";
+const PLATE_SIZES = "320px";
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -206,9 +206,12 @@ export function ModelStage({
   items,
   id,
   intro,
+  loadingLabel = "Cutting the frames",
 }: {
   items: readonly StageItem[];
   id?: string;
+  /** What the loading screen says while the geometry arrives. */
+  loadingLabel?: string;
   /**
    * The page's title, for when this IS the hero.
    *
@@ -237,6 +240,20 @@ export function ModelStage({
      normalised against the section's own extent, so the loop does not care
      what the number is; it is purely how much thumb a turn costs. */
   const units = T_INTRO + n;
+
+  /* How much of the geometry has arrived, 0 to 1, and whether the stage can
+     open. State rather than a ref: these two draw a bar and dismiss a
+     screen, so they are allowed to re-render. Both settle within a handful
+     of updates and then never change again. */
+  const [progress01, setProgress01] = useState(0);
+  const [firstArrived, setFirstArrived] = useState(false);
+
+  /* Derived, not stored. A stage with no exports at all has nothing to
+     wait for and must not open behind a bar that will never move — and
+     computing that during render rather than setting it from inside the
+     effect keeps the "ready" state out of the effect's hands entirely. */
+  const hasModels = items.some((item) => !!item.model);
+  const ready = !hasModels || firstArrived;
 
   /* Scroll and pointer live in refs, not state: the loop below writes
      straight to the DOM and to three, and a render per frame would undo the
@@ -389,6 +406,37 @@ export function ModelStage({
     let disposed = false;
 
     const unique = [...new Set(modelUrls.filter((u): u is string => !!u))];
+
+    /* ---- progress ----
+       Measured in BYTES across every export, not in files finished. Two
+       models at 1.2MB each would otherwise sit at 0% and then jump to 50%,
+       which is a bar that lies twice. `total` is unknown until the servers
+       answer with a length, so it grows as the responses do; the ratio is
+       still monotonic because loaded bytes never exceed the totals already
+       counted. */
+    const bytes = new Map<string, { got: number; total: number }>();
+    unique.forEach((u) => bytes.set(u, { got: 0, total: 0 }));
+
+    const report = () => {
+      if (disposed) return;
+      let got = 0;
+      let total = 0;
+      bytes.forEach((b) => {
+        got += b.got;
+        total += b.total || b.got;
+      });
+      setProgress01(total > 0 ? Math.min(1, got / total) : 0);
+    };
+
+    let settled = 0;
+    const settle = () => {
+      settled += 1;
+      /* The stage opens as soon as the FIRST frame can be shown. Holding
+         it until all of them have arrived would keep the reader on a
+         loading screen for meshes belonging to houses four turns away. */
+      if (!disposed && settled >= 1) setFirstArrived(true);
+    };
+
     unique.forEach((url) => {
       loader.load(
         url,
@@ -399,14 +447,29 @@ export function ModelStage({
           modelUrls.forEach((u, i) => {
             if (u === url) loaded[i] = obj;
           });
+          const b = bytes.get(url);
+          if (b) b.got = b.total || b.got;
+          report();
+          settle();
         },
-        undefined,
+        (e) => {
+          const b = bytes.get(url);
+          if (!b) return;
+          b.got = e.loaded;
+          if (e.total) b.total = e.total;
+          report();
+        },
         () => {
-          /* A missing export is the expected state for four of six houses,
-             not an error worth shouting about. The stage runs without it. */
+          /* A missing export is a state the stage runs in, not an error
+             worth shouting about. It still counts as settled, or one bad
+             URL would hold the loading screen open forever. */
+          bytes.delete(url);
+          report();
+          settle();
         },
       );
     });
+
 
     /* What is currently parented to the stage. Tracked as the OBJECT, not
        just the index — the loop calls show(0) on its first frame, long
@@ -713,6 +776,36 @@ export function ModelStage({
             </div>
           </div>
         ) : null}
+
+        {/* ---- the preloader ----
+            Two and a half megabytes of geometry stand between arriving and
+            seeing anything. On this machine that is a fifth of a second; on
+            a phone on a train it is ten, and for all ten the stage showed a
+            lit room with nothing standing in it. A hero that is silently
+            missing its subject reads as broken, not as loading.
+
+            So the stage says so, in the vocabulary it already owns: an
+            eyebrow, a hairline, and a number. It is the home page's loading
+            bar, which is the only other place on this site that has ever
+            had to make someone wait.
+
+            It leaves on the first model, not the last — see `settle`. And
+            it is `inert` while it is up, so a reader tabbing in does not
+            land on controls behind a screen they cannot see past. */}
+        <div
+          className="stage-loader"
+          data-done={ready}
+          inert={ready}
+          aria-hidden={ready}
+        >
+          <p className="t-eyebrow">{loadingLabel}</p>
+          <div className="stage-loader-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress01 * 100)}>
+            <i style={{ transform: `scaleX(${progress01})` }} />
+          </div>
+          <p className="t-micro tabular-nums">
+            {Math.round(progress01 * 100)}
+          </p>
+        </div>
 
         {/* ---- the name ---- */}
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-6 pb-[clamp(3.5rem,12vh,9.5rem)] sm:px-10">

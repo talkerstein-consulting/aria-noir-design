@@ -10,7 +10,7 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  */
 export function ProductShoot({ shoot }: { shoot: Shoot }) {
   return (
-    <section className={`relative z-[35] bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
+    <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-2">
         <div className="flex flex-col gap-4">
           <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">

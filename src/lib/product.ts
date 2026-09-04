@@ -76,7 +76,10 @@ export type Meaning = {
   objectPosition?: string;
 };
 
-export type Detail = { image: string; alt: string; line: Headline };
+/** The full-bleed breather. `line` is optional: the section's job is to
+ *  stop talking for a screen, and it does that with or without a sentence
+ *  laid over the plate. */
+export type Detail = { image: string; alt: string; line?: Headline };
 
 export type SpecRow = { term: string; summary: string; detail: string };
 
@@ -103,6 +106,11 @@ export type Offering = {
   name: string;
   cta: string;
   registryNote: string;
+  /** Shown under the squares where `turned` holds the turntable to fewer
+   *  acetates than the house makes. Names the full count and points at the
+   *  buy page, so a short row of squares reads as a selection rather than
+   *  as the whole run. */
+  moreNote?: string;
   /**
    * What stands in for a product photograph.
    *
@@ -114,39 +122,63 @@ export type Offering = {
    * that refuses to spin.
    */
   view:
-    | { kind: "model"; src: string }
+    | {
+        kind: "model";
+        src: string;
+        /**
+         * The acetates this turntable can be turned into, as squares under
+         * the object.
+         *
+         * This is what replaced "The Variations". That section spent eight
+         * screens of scroll showing eight photographs of one shape, which
+         * is the same shape eight times and a colour swap dressed as a
+         * story. Here the reader changes the acetate on the frame they are
+         * already holding, at the angle they have already turned it to,
+         * and the offer under it follows what they picked.
+         *
+         * Each entry names its own glb — the exports are per colourway,
+         * see scripts/export-models.mjs — and its own `href`, which is the
+         * buy page with that acetate already chosen. Clicking a square
+         * does NOT navigate: it swaps the model, and the section's one CTA
+         * carries the choice onward. A control that both changed the view
+         * and left the page would make the view unusable.
+         *
+         * Absent, or shorter than two, and no squares are drawn: one
+         * colourway is not a choice.
+         */
+        colorways?: readonly OfferingColorway[];
+        /**
+         * How many of those the TURNTABLE will actually load.
+         *
+         * Every entry above is still the house's run, and the palette band
+         * under the opening still shows all of them. This is only about
+         * how many meshes the page is willing to fetch and decode.
+         *
+         * Each glb is roughly 0.9MB on ARCA II and 1.6MB on ARCA I, so a
+         * house with eight is asking for close to seven megabytes to let a
+         * reader try on colours that the buy page can show them anyway.
+         * Three is enough to prove the shape holds its character across
+         * the run; the rest are one click away, on the surface that can
+         * actually take the order.
+         *
+         * Omit it and every colourway turns. Where it IS set, the section
+         * says so in `moreNote` rather than quietly showing a short list.
+         */
+        turned?: number;
+      }
     | { kind: "plate"; image: string; alt: string };
 };
 
-export type Colorway = {
+/** One acetate the turntable can wear. `swatch` comes from SWATCHES in
+ *  lib/shop so the square here and the square on the buy page are never
+ *  two different claims about one material. */
+export type OfferingColorway = {
   name: string;
   swatch: string;
-  image?: string;
-  /**
-   * The upright plate a phone shows full bleed.
-   *
-   * A separate photograph rather than a crop: `image` is a wide still, and
-   * a wide still in a portrait plate is a picture of a wide object with its
-   * width cropped away. These are 1080x1920 — the shape of the screen.
-   *
-   * Optional, and falls through to `image` — ARCA I is the only house whose
-   * colourways have been shot twice.
-   */
-  imageNarrow?: string;
-  alt?: string;
-  /**
-   * Where this colourway is bought. Present only where the house has a buy
-   * page — the panel keeps its plate and its name either way, and simply
-   * shows no action when there is nowhere to send anyone.
-   */
-  href?: string;
-  cta?: string;
-};
-
-export type Variations = {
-  preheader: string;
-  heading: Headline;
-  colorways: readonly Colorway[];
+  /** The glb for THIS acetate, under public/models/houses. */
+  src: string;
+  /** The buy page with this colourway already chosen. */
+  href: string;
 };
 
 export type References = { label: string; names: readonly string[] };

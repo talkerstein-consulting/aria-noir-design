@@ -4,9 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { AtelierSection } from "./atelier-section";
 import { CollectionsSection } from "./collections-section";
 import { GridSection } from "./grid-section";
-import dynamic from "next/dynamic";
-import { WhiteDotOverlay } from "./white-dot-overlay";
-import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
 import { SiteNav } from "./site-nav";
 import { opening, sectionTwo } from "@/lib/content";
@@ -25,21 +22,6 @@ import { whenAssetsReady } from "@/lib/preload";
 import { kickPlay } from "@/lib/autoplay";
 import { privateAccess } from "@/lib/content";
 
-/**
- * The scrubbed film, loaded on demand.
- *
- * It is the heaviest thing on this page after the hero — a canvas engine
- * that decodes a video into frames — and it sits below four full sections.
- * Nobody has seen it by the time the home page has to be interactive, so
- * none of it belongs in the first payload. `ssr: false` because it is a
- * canvas that measures the window: there is nothing for the server to
- * render but a hole the same size.
- */
-const PrivateAccessSection = dynamic(
-  () =>
-    import("./private-access-section").then((m) => m.PrivateAccessSection),
-  { ssr: false, loading: () => <div className="h-[520vh] bg-ink" /> },
-);
 
 /* ---------- opening ----------
    One rAF loop writing straight to the DOM. Nothing goes through React state
@@ -514,17 +496,21 @@ export function Experience() {
         <CollectionsSection />
         <AtelierSection />
         <GridSection />
-        {/* The last black on the page, and the one offer that is not for
-            everybody. */}
-        <PrivateAccessSection />
-        {/* The dark→light handoff moved with it: the iris is anchored to
-            the END of whatever section precedes the closing block, and that
-            is no longer the gallery. Anchored by id rather than by position
-            so the two cannot drift apart silently. */}
-        <WhiteDotOverlay anchorId="private-access" />
-        <FinaleSection />
       </main>
-      <SiteFooter />
+      {/* The page ends on the gallery.
+
+          What used to follow it — the private-access block, the white iris
+          and the light closing statement — is gone. The iris was the site's
+          only dark→light cut and it existed to hand over to that closing
+          block; with nothing to hand over to, a page that spends four
+          screens establishing black has no reason to turn white in its last
+          two. It ends on the work instead.
+
+          The footer therefore paints its own ink. It carried no background
+          of its own precisely BECAUSE the iris was still covering the
+          viewport underneath it — remove the circle and leave the footer
+          `.on-paper` and it is white type on nothing. */}
+      <SiteFooter tone="ink" />
     </>
   );
 }

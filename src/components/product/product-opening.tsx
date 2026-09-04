@@ -11,7 +11,7 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  */
 export function ProductOpening({ structure }: { structure: Opening }) {
   return (
-    <section className={`relative z-[35] bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
+    <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
       <div className="mx-auto flex max-w-6xl flex-col gap-16 sm:gap-20">
         <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
           {structure.preheader}

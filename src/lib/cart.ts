@@ -2,7 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
-import { houses, type House } from "@/lib/navigation";
+import { allHouses, type House } from "@/lib/navigation";
 import { SHOP_URL } from "@/lib/shop";
 
 /**
@@ -79,7 +79,7 @@ function write(lines: BagLine[]) {
 
 export function resolve(lines: readonly BagLine[]): ResolvedLine[] {
   return lines.map((line) => {
-    const house = houses.find((h) => h.slug === line.slug);
+    const house = allHouses.find((h) => h.slug === line.slug);
     const entry = (CATALOGUE[line.slug] ?? []).find(
       (e) => e.colorway === line.colorway,
     );

@@ -108,6 +108,28 @@ const MAP = [
   [`${I}/AR model  images - Arca I/Arca 1 - Aria Photoshoot Matrix Brutalist Perspective Low Angle.png`, "arca-i/lifestyle/aria-low-angle.jpg", "ARCA I grid card, 4:5"],
   [`${II}/16_9 Banner model images/13.png`, "arca-ii/lifestyle/pair-doorway.jpg", "ARCA II ground, 16:9 blurred"],
   [`${II}/4_5 AR model  images/33.jpeg`, "arca-ii/lifestyle/noir-cloister.jpg", "ARCA II grid card, 4:5"],
+
+  /* ---------- the home page's atelier beat ----------
+
+     "Nothing here is MOULDED" ran on macro: the frame against concrete,
+     the gold plate, the object on a windowsill. Worn photography now, on
+     the brief. Five masters nothing else on the site uses, so no page
+     repeats another's picture. */
+  /* The sticky column is the one slot on this beat with two people in
+     it, and the Together Shot is the master that says so most plainly.
+     It is a 16:9 banner going into a column the height of the viewport,
+     so the slot's own object-cover takes a hard crop off both sides —
+     that is the trade for the pair being in it, and it is deliberate. */
+  [`${I}/16_9 Banner model images/Aria and Noir - Together Shot.jpeg`, "arca-ii/home/pair-lit-dark.jpg", "atelier sticky plate, wide master cropped to a column"],
+  [`${I}/AR model  images - Arca I/Arca 1 brutalist door standing up shot.png`, "arca-i/home/noir-corridor-stand.jpg", "atelier pair, 4:5"],
+  [`${II}/4_5 AR model  images/38.jpeg`, "arca-ii/home/aria-cloister-full.jpg", "atelier pair, 4:5"],
+  [`${I}/AR model  images - Arca I/Arca 1 - Aria Photoshoot Matrix Brutalist Portrait layered foreground.png`, "arca-i/home/aria-layered.jpg", "atelier pair, 4:5"],
+  /* ⚠️ 33.jpeg is ALSO the master behind arca-ii/lifestyle/noir-cloister
+     above, so this beat and the ARCA II grid card now run the same
+     photograph. That breaks the "no master twice" rule this block was
+     written under, and it is a deliberate instruction rather than a
+     slip. Point one of the two at another master to restore it. */
+  [`${II}/4_5 AR model  images/33.jpeg`, "arca-ii/home/aria-cloister-turn.jpg", "atelier pair, 4:5"],
 ];
 
 const OUT = path.join("public", "images");
