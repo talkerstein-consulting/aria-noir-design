@@ -41,15 +41,19 @@ import { RevealPlate, RevealText } from "@/components/reveal";
  * houses were cut in, which is why the grid does not re-sort by price.
  */
 function Card({ house, i }: { house: House; i: number }) {
+  /* The frame being worn where there is such a photograph, the object
+     alone where there is not. See `lifestyle` in lib/navigation for why
+     this page prefers one and the rest of the site prefers the other. */
+  const picture = house.lifestyle ?? house.plate;
   return (
     <>
       <RevealPlate
         delay={i * 70}
         className="relative aspect-[4/5] overflow-hidden bg-ink"
       >
-        {house.plate ? (
+        {picture ? (
           <Image
-            src={house.plate}
+            src={picture}
             alt={`${house.name} — ${house.material}`}
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
@@ -75,7 +79,7 @@ function Card({ house, i }: { house: House; i: number }) {
             is the useful figure at index level. */}
         <RevealText as="h2" text={house.name} className="t-display-xs" />
         <p className="t-label">
-          {house.index} — {house.material}
+          {house.index} · {house.material}
         </p>
         <p className="t-caption">
           {house.models === 1

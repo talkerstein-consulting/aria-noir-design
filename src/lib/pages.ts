@@ -324,21 +324,35 @@ export const lookbook = {
 export const eyewear = {
   hero: {
     eyebrow: "The Collections",
-    title: "Six houses, one hand.",
+    /**
+     * No count, deliberately.
+     *
+     * This read "Two houses, one hand.", and before that "Six houses" —
+     * hand-corrected when VISIBLE_SLUGS narrowed the index, which is the
+     * kind of edit that gets forgotten exactly once. An index does not
+     * need to say how many things are in it; the things are directly
+     * below, and the reader can see. What it can say is that there is
+     * nothing else, which is the only promise an index makes.
+     *
+     * The count still appears, once, in the line under this one, where it
+     * is read from the catalogue rather than typed.
+     */
+    title: "Every cut the house has made.",
     line: [
-      { text: "Nine frames.", italic: true },
+      { text: "Five frames.", italic: true },
       { text: "NOTHING MADE TWICE.", italic: false },
     ],
     plate: "/images/arca-showroom.png",
     alt: "The showroom",
   },
   intro:
-    "Each house is a single cut, held in the colourways it earns. ARCA I is the exception — the founding model, and the only one the bench has taken in four directions.",
+    "Each house is a single cut, held in the colourways it earns. ARCA I is the exception: the founding model, and the only one the bench has taken in four directions.",
 
   /** The stage is the hero, so this is the line under the page title —
-   *  it turntables away with it as the first frame forms. */
+   *  it turntables away with it as the first frame forms. The count is
+   *  supplied by the page from `housesOnShow()`; see the title above. */
   stage: {
-    sub: "Six houses · MMXXVI",
+    subYear: "MMXXVI",
   },
 } as const;
 

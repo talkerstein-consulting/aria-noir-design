@@ -9,6 +9,8 @@
  * Layout never needs touching to revise text.
  */
 
+import { housesOnShow } from "./navigation";
+
 export const opening = {
   stackA: ["AN OBJECT MADE", "TO BE WORN"],
   stackB: ["A GAZE MADE", "TO LAST"],
@@ -28,6 +30,13 @@ export const nav = {
 
 export const sectionTwo = {
   heading: "Every frame begins with a single face.",
+  /* The way out of the opening. This block used to be the end of the
+     choreography and nothing else: the reader arrived at a heading, read
+     two columns, and had to keep scrolling on faith. It is the first
+     sentence on the page that names the product, so it is the first place
+     that should offer the frames. */
+  cta: "See the frames",
+  href: "/eyewear",
   /** Two columns, sitting under the heading during its hang. */
   body: [
     "No two faces share a bridge, a temple length, or a line of brow. We measure all three before a single blank is cut.",
@@ -88,8 +97,12 @@ export const atelier = {
 
 export const collections = {
   preheader: "The Collections",
+  /* The count is read from the catalogue, not typed. It said "Six houses"
+     while VISIBLE_SLUGS was holding the index to two, so the heading was
+     promising four panels that do not exist on this page. See
+     `housesOnShow` in lib/navigation. */
   heading: [
-    { text: "Six houses,", italic: true },
+    { text: `${housesOnShow()},`, italic: true },
     { text: "ONE HAND.", italic: false },
   ],
   /**

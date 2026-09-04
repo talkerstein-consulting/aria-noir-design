@@ -1,5 +1,5 @@
 /**
- * Bring the home page's photography in from the Phase 1 Arca I and Arca II
+ * Bring the site's photography in from the Phase 1 Arca I and Arca II
  * shoot.
  *
  * ---- Why this exists ----
@@ -7,7 +7,7 @@
  * The home page was dressed in `plate-*.jpg`: founders, masked dancers, a
  * studio shadow. Good pictures, but from a different campaign and a
  * different world, and none of them of the frames the page is selling. The
- * house has one shoot now, in two chapters, and the home page should be
+ * house has one shoot now, in two chapters, and the pages should be
  * furnished out of it and nothing else.
  *
  * ---- Why an explicit map rather than a directory sweep ----
@@ -24,7 +24,7 @@
  * studio. Nothing in this map points at one; a sweep would have taken them
  * all.
  *
- *   node scripts/import-home-photography.mjs
+ *   node scripts/import-arca-photography.mjs
  *
  * Idempotent. Re-running re-encodes from the masters, so the derived files
  * in `public/images/*` can be deleted and rebuilt at any time.
@@ -90,6 +90,24 @@ const MAP = [
      deliberately: the Deco plate sits dead centre of the master, and it is
      the only photograph of the inlay that exists. */
   [`${II}/Macro Images/Arca II - Macro Middle.png`, "arca-ii/home/gold-plate-macro.jpg", "atelier pair, centre crop"],
+
+  /* ---------- the eyewear index ----------
+
+     Two jobs, and they want opposite masters.
+
+     A `ground` is the full-bleed plate behind a turning frame, and
+     ModelStage fetches it at 96px and blurs it (see PLATE_SIZES there): it
+     is read as light and shape, never as a picture. So the wides go here,
+     chosen for the structure of their light rather than their subject, and
+     both of them happen to be the pair in the place, which is what the
+     page is about.
+
+     A grid card is 4:5 and sharp, so it takes a native 4:5 master. These
+     are the only sharp lifestyle photographs on the page. */
+  [`${I}/16_9 Banner model images/Aria and Noir Rooftop.jpeg`, "arca-i/lifestyle/pair-rooftop.jpg", "ARCA I ground, 16:9 blurred"],
+  [`${I}/AR model  images - Arca I/Arca 1 - Aria Photoshoot Matrix Brutalist Perspective Low Angle.png`, "arca-i/lifestyle/aria-low-angle.jpg", "ARCA I grid card, 4:5"],
+  [`${II}/16_9 Banner model images/13.png`, "arca-ii/lifestyle/pair-doorway.jpg", "ARCA II ground, 16:9 blurred"],
+  [`${II}/4_5 AR model  images/33.jpeg`, "arca-ii/lifestyle/noir-cloister.jpg", "ARCA II grid card, 4:5"],
 ];
 
 const OUT = path.join("public", "images");

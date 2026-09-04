@@ -4,13 +4,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ModelStage } from "@/components/eyewear/model-stage";
 import { HouseGrid } from "@/components/page/house-grid";
-import { houses, shopPath } from "@/lib/navigation";
+import { houses, shopPath, housesOnShow } from "@/lib/navigation";
 import { eyewear } from "@/lib/pages";
 
 export const metadata: Metadata = {
   title: "Eyewear — Aria Noir",
   description:
-    "Six houses, one hand. ARCA I, ARCA II, AHAVA, MATRIARCA, PATRIARCA and MONARCA, in the round.",
+    "The houses, one hand. ARCA I and ARCA II, in the round.",
 };
 
 /**
@@ -41,7 +41,7 @@ export default function EyewearPage() {
        phone width it wrapped to two lines of wide-tracked caps and pushed
        the house name off its baseline. The colourways are named in full on
        the grid below, where you can see them side by side. */
-    meta: `${house.index} — ${house.material}`,
+    meta: `${house.index} · ${house.material}`,
     image: house.ground ?? house.plate ?? undefined,
     swatch: house.swatch,
     model: house.model,
@@ -79,7 +79,7 @@ export default function EyewearPage() {
                 {eyewear.hero.title}
               </h1>
               <p className="mt-6 font-ui text-[11px] tracking-[0.42em] text-paper/55 uppercase">
-                {eyewear.stage.sub}
+                {housesOnShow()} · {eyewear.stage.subYear}
               </p>
             </>
           }

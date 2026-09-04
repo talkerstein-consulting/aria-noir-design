@@ -137,6 +137,17 @@ export type House = {
   from: number;
   plate: string | null;
   /**
+   * A photograph of the frame being WORN, in the place it was shot.
+   *
+   * Separate from `plate`, which is the object alone. The eyewear index
+   * prefers this: that page opens on a turntable of the bare object and
+   * then argues in a grid, and a grid of six more bare objects is the same
+   * sentence twice. Everywhere else still wants the plate, because a
+   * catalogue card and a home page panel are answering "which one is it",
+   * not "what is it like to wear".
+   */
+  lifestyle?: string;
+  /**
    * A photograph PER COLOURWAY, keyed by the names in `colorwayNames`.
    *
    * `plate` is the house's one card picture; this is the run, shot colour
@@ -361,8 +372,15 @@ export const allHouses: readonly House[] = [
     video: "/video/arca-i-hero.mp4",
     videoPoster: "/images/arca-i/hero-poster.jpg",
     model: "/models/houses/arca-i-z-white.glb",
-    ground: "/images/arca-i/object-lightshaft.jpg",
-    note: "The founding model, and the only house cut in four distinct shapes — Z White, K Black, Proceso Brown and 309 Blue.",
+    /* The ground behind the turning frame. Was `object-lightshaft.jpg` —
+       the object again, behind the object, which at 96px and ten pixels of
+       blur left the stage looking like it had no background at all. The
+       rooftop is two figures on a concrete plane cut by one long diagonal
+       shadow, and that diagonal is the whole point: it is the one thing in
+       the pool that still reads as composition after the blur. */
+    ground: "/images/arca-i/lifestyle/pair-rooftop.jpg",
+    lifestyle: "/images/arca-i/lifestyle/aria-low-angle.jpg",
+    note: "The founding model, and the only house cut in four distinct shapes: Z White, K Black, Proceso Brown and 309 Blue.",
   },
   {
     name: "ARCA II",
@@ -456,8 +474,11 @@ export const allHouses: readonly House[] = [
       "/images/arca-ii/worn-noir-front.jpg",
     ],
     model: "/models/houses/arca-ii-noir.glb",
-    ground: "/images/arca-ii/detail-lightfall.jpg",
-    note: "The second cut, and the widest colourway run in the house — eight, from Noir to Pixie Dust.",
+    /* The pair in a lit doorway, which blurs down to exactly what this cut
+       is: a bright centre and everything else given away to the dark. */
+    ground: "/images/arca-ii/lifestyle/pair-doorway.jpg",
+    lifestyle: "/images/arca-ii/lifestyle/noir-cloister.jpg",
+    note: "The second cut, and the widest colourway run in the house: eight, from Noir to Pixie Dust.",
   },
   {
     name: "AHAVA",
@@ -730,6 +751,28 @@ export const allHouses: readonly House[] = [
 export const houses: readonly House[] = allHouses.filter((house) =>
   VISIBLE_SLUGS.has(house.slug),
 );
+
+const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+
+/**
+ * How many houses are on show, in words, ready to be read aloud.
+ *
+ * Copy that counts the catalogue has been wrong on this site three times
+ * now, in both directions: the home page said three houses when the bench
+ * cut six, then said six while VISIBLE_SLUGS was holding it to two, and
+ * the eyewear title had to be hand-corrected from six to two for the same
+ * reason. Every one of those was a sentence restating a fact the catalogue
+ * already held.
+ *
+ * So the sentence asks. Widen VISIBLE_SLUGS and every heading that counts
+ * follows on the same commit, which is the only arrangement in which they
+ * cannot disagree.
+ */
+export function housesOnShow(): string {
+  const n = houses.length;
+  const word = WORDS[n] ?? String(n);
+  return `${word} ${n === 1 ? "house" : "houses"}`;
+}
 
 /**
  * The footer's sitemap.

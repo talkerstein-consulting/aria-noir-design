@@ -10,6 +10,7 @@ import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
 import { SiteNav } from "./site-nav";
 import { opening, sectionTwo } from "@/lib/content";
+import { CtaLink } from "@/components/cta-link";
 import {
   F,
   FRAMES_PER_VH,
@@ -318,8 +319,17 @@ export function Experience() {
          are one unit. It naturally HANGS while the video rests. ---- */
       if (headGroup.current) {
         const videoBottomVh = scale * 50 + liftVh + exitVh;
+        const headAlpha = headIn * (1 - headOut);
         headGroup.current.style.transform = `translateY(${videoBottomVh + H2_GAP_VH}vh)`;
-        headGroup.current.style.opacity = String(headIn * (1 - headOut));
+        headGroup.current.style.opacity = String(headAlpha);
+        /* The group carries the page's only link into /eyewear, and the
+           group is a FIXED layer that spends most of the scroll invisible.
+           An invisible fixed layer with a live link in it is a trap: the
+           reader clicks a photograph three sections later and lands on the
+           index. So the whole group's pointer-events follow its own
+           opacity, written in the same frame as the opacity, which is the
+           only way the two cannot fall out of step. */
+        headGroup.current.style.pointerEvents = headAlpha > 0.9 ? "auto" : "none";
       }
 
       /* ---- logo ---- */
@@ -483,6 +493,17 @@ export function Experience() {
             </p>
           ))}
         </div>
+        {/* `pointer-events-auto` on the link and nothing else in the group:
+            the parent is pointer-events-none so the type never intercepts a
+            scroll gesture, and the parent's own gate above decides whether
+            this is reachable at all. */}
+        <CtaLink
+          href={sectionTwo.href}
+          className="pointer-events-auto mt-2"
+          tone="quiet"
+        >
+          {sectionTwo.cta}
+        </CtaLink>
       </div>
 
       <main className="relative">
