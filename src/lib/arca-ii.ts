@@ -33,9 +33,16 @@ import type {
 import { swatchFor } from "./shop";
 
 const P = "/images/arca-ii";
+/* The colourway run, one plate per acetate. See build-arca-ii-images.mjs. */
+const V = `${P}/variants`;
 
-/* No campaign film for this cut — the hero renders the still alone, and the
-   type keeps the same one-second hold it observes on ARCA I. */
+/* The campaign film opens this cut, as it opens ARCA I. It replaces the
+   still that stood here: a hero that holds for a second before the type
+   arrives is holding for a reason now.
+
+   `image` and `poster` are the same picture, and that picture is frame 0
+   of the film. There is no moment where the reader sees one image and then
+   sees a different one take its place. */
 export const hero: Hero = {
   eyebrow: "The Second Cut",
   name: "ARCA II",
@@ -43,8 +50,10 @@ export const hero: Hero = {
     { text: "In praise of shadows.", italic: true },
     { text: "NINETY-SEVEN PARTS DARK, THREE PARTS GOLD.", italic: false },
   ],
-  image: `${P}/hero-arca.jpg`,
-  alt: "Aria and Noir wearing ARCA II, a concrete corridor running away behind them",
+  image: `${P}/hero-poster.jpg`,
+  alt: "Aria and Noir in the dark in ARCA II, the room glowing behind them",
+  video: "/video/arca-ii-hero.mp4",
+  poster: `${P}/hero-poster.jpg`,
 };
 
 export const structure: Opening = {
@@ -55,8 +64,8 @@ export const structure: Opening = {
     "What changed is the light. ARCA I was lit from outside, and the concrete answered coldly. This room glows from within, and the Art Deco lines inlaid into that concrete only appear where the glow happens to reach them.",
   ],
   images: [
-    { src: `${P}/structure-stair.jpg`, alt: "A stairwell falling away into the dark, a single light at the head of it" },
-    { src: `${P}/structure-door.jpg`, alt: "An empty concrete hall with one lit doorway at the far end" },
+    { src: `${P}/structure-stair.jpg`, alt: "A stone stair rising out of a dark passage towards one lit window" },
+    { src: `${P}/structure-door.jpg`, alt: "An empty vaulted corridor, a single window burning at the far end of it" },
   ],
 };
 
@@ -71,8 +80,8 @@ export const ariaNoir: AriaNoir = {
     "What the room did instead was take things away — a jawline, a shoulder, half a coat — and leave the frame as the one object it never lets go of.",
   ],
   images: [
-    { src: `${P}/aria.jpg`, alt: "Aria in ARCA II, front on, the gold temple plaque catching the only light in frame" },
-    { src: `${P}/noir.jpg`, alt: "Noir in ARCA II against an Art Deco panelled wall, amber lenses" },
+    { src: `${P}/aria.jpg`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
+    { src: `${P}/noir.jpg`, alt: "Noir front on under a carved stone arch, amber lenses" },
   ],
 };
 
@@ -84,8 +93,8 @@ export const shoot: Shoot = {
     "The gold was the harder half of that. It had to catch light without ever being fully lit, which is a thing to ask of any camera: show me this, but do not show me all of it. Drop frames, split bands, a fisheye that admits what it is — the flourishes are here because the shadow needed something to happen inside it.",
   ],
   images: [
-    { src: `${P}/shoot-pair-door.jpg`, alt: "Split band frame — Aria and Noir at the timber door, cropped to the eyeline" },
-    { src: `${P}/shoot-pair-bands.jpg`, alt: "Aria and Noir back to back, high contrast monochrome, lenses lit from within" },
+    { src: `${P}/shoot-pair-door.jpg`, alt: "Aria and Noir at distance in a cloister colonnade, the arcade running away behind them" },
+    { src: `${P}/shoot-pair-bands.jpg`, alt: "Aria and Noir together in a stone room, the light coming from one side" },
   ],
   note: {
     label: "A note on shadow",
@@ -96,20 +105,20 @@ export const shoot: Shoot = {
 
 export const meaning: Meaning = {
   image: `${P}/meaning-aria-deco.jpg`,
-  alt: "Aria in ARCA II against concrete etched with Art Deco geometry",
+  alt: "Aria in ARCA II, close, black leather, lit out of the dark",
   eyebrow: "L'Éloge de l'Ombre",
   heading: "In praise of shadows: the argument that a thing is not revealed by light so much as spent by it.",
   body:
     "Lacquer was made for candlelight. Gold leaf was made for a room with one lamp in it. Set either under a bright even source and you get an accurate photograph of an object that has stopped doing the one thing it was made to do. ARCA II is cut for the darker room, and asks to be met there.",
-  /* Plate 15 sits Aria left of centre and high; the text column owns the
-     left half from `sm` up, so the crop is pushed right and lifted to keep
-     her clear of it. */
-  objectPosition: "68% 30%",
+  /* The new plate is a centred close portrait rather than the wide it
+     replaces, so there is nothing to push out from under the text column —
+     any crop off centre now cuts her face. */
+  objectPosition: "50% 35%",
 };
 
 export const detail: Detail = {
   image: `${P}/detail-lightfall.jpg`,
-  alt: "ARCA II laid on raw concrete, a single shaft of warm light falling across it",
+  alt: "An empty hall with window light laid in long bars across the floor",
   line: "Three percent of this frame is gold. It is the only part of it that ever moves.",
 };
 
@@ -155,10 +164,10 @@ export const spec: Spec = {
     },
   ],
   macro: [
-    { src: `${P}/spec-macro-eye-gold.jpg`, alt: "Macro of the gold temple plaque against skin, the eye behind an amber lens" },
-    { src: `${P}/spec-macro-temple.jpg`, alt: "Monochrome macro of the temple's stone-cut detailing" },
-    { src: `${P}/spec-macro-eye.jpg`, alt: "Close crop through the lens, the plaque at the top corner of frame" },
-    { src: `${P}/object-front.jpg`, alt: "ARCA II front on, laid flat on concrete" },
+    { src: `${P}/spec-macro-eye-gold.jpg`, alt: "Half a face, the gold temple plaque beside the eye behind an amber lens" },
+    { src: `${P}/spec-macro-temple.jpg`, alt: "The temple engraved ARCA-00003NFT-NR, 54â21â140, in tortoise acetate" },
+    { src: `${P}/spec-macro-eye.jpg`, alt: "Macro of the gold bridge plaque, its Deco fan cut into the acetate" },
+    { src: `${P}/object-front.jpg`, alt: "ARCA II on a stone sill, amber lenses catching the window" },
   ],
 };
 
@@ -185,25 +194,25 @@ const buyColour = (name: string) =>
 export const variations: Variations = {
   preheader: "The Variations",
   heading: "Eight colourways, and one room dark enough that the difference between them is a matter of how each one gives light back.",
-  /* Only the Noir has a still in the pool; the rest carry a swatch and a
-     name, the same treatment the eyewear index uses for houses whose
-     photography has not landed. On the stage that swatch becomes the
-     panel's whole ground — the acetate itself, at full bleed, rather than a
-     borrowed photograph of a frame this house does not make.
+  /* Every acetate now has its own photograph — the campaign shot the run
+     one frame at a time on the same window sill, so the panels differ by
+     the material rather than by the light. They live under
+     `variants/<slug>-sill.jpg`, apart from the storefront's numbered set,
+     because two sources writing one namespace is how a campaign frame gets
+     silently replaced by a catalogue thumbnail.
 
-     The hexes come from SWATCHES in lib/shop so this page and the buy page
-     cannot show the same acetate in two different colours. They are still
-     approximations — nobody has measured the material — but they are one
-     approximation rather than two. */
+     The hexes stay: they come from SWATCHES in lib/shop, they are what the
+     picker paints, and this page and the buy page must not show one acetate
+     in two colours. */
   colorways: [
-    { name: "Noir", swatch: swatchFor("Noir"), image: `${P}/object-front.jpg`, alt: "Noir — laid on concrete, front on", href: buyColour("Noir"), cta: "Acquire Noir" },
-    { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise"), href: buyColour("Dark Tortoise"), cta: "Acquire Dark Tortoise" },
-    { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe"), href: buyColour("Caramel Stripe"), cta: "Acquire Caramel Stripe" },
-    { name: "Root Beer Float", swatch: swatchFor("Root Beer Float"), href: buyColour("Root Beer Float"), cta: "Acquire Root Beer Float" },
-    { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti"), href: buyColour("Tutti Frutti"), cta: "Acquire Tutti Frutti" },
-    { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose"), href: buyColour("Dreamy Rose"), cta: "Acquire Dreamy Rose" },
-    { name: "Velvet Rose", swatch: swatchFor("Velvet Rose"), href: buyColour("Velvet Rose"), cta: "Acquire Velvet Rose" },
-    { name: "Pixie Dust", swatch: swatchFor("Pixie Dust"), href: buyColour("Pixie Dust"), cta: "Acquire Pixie Dust" },
+    { name: "Noir", swatch: swatchFor("Noir"), image: `${V}/noir-sill.jpg`, alt: "Noir — on the window sill, lenses to the light", href: buyColour("Noir"), cta: "Acquire Noir" },
+    { name: "Dark Tortoise", swatch: swatchFor("Dark Tortoise"), image: `${V}/dark-tortoise-sill.jpg`, alt: "Dark Tortoise — on the window sill, lenses to the light", href: buyColour("Dark Tortoise"), cta: "Acquire Dark Tortoise" },
+    { name: "Caramel Stripe", swatch: swatchFor("Caramel Stripe"), image: `${V}/caramel-stripe-sill.jpg`, alt: "Caramel Stripe — on the window sill, lenses to the light", href: buyColour("Caramel Stripe"), cta: "Acquire Caramel Stripe" },
+    { name: "Root Beer Float", swatch: swatchFor("Root Beer Float"), image: `${V}/root-beer-float-sill.jpg`, alt: "Root Beer Float — on the window sill, lenses to the light", href: buyColour("Root Beer Float"), cta: "Acquire Root Beer Float" },
+    { name: "Tutti Frutti", swatch: swatchFor("Tutti Frutti"), image: `${V}/tutti-frutti-sill.jpg`, alt: "Tutti Frutti — on the window sill, lenses to the light", href: buyColour("Tutti Frutti"), cta: "Acquire Tutti Frutti" },
+    { name: "Dreamy Rose", swatch: swatchFor("Dreamy Rose"), image: `${V}/dreamy-rose-sill.jpg`, alt: "Dreamy Rose — on the window sill, lenses to the light", href: buyColour("Dreamy Rose"), cta: "Acquire Dreamy Rose" },
+    { name: "Velvet Rose", swatch: swatchFor("Velvet Rose"), image: `${V}/velvet-rose-sill.jpg`, alt: "Velvet Rose — on the window sill, lenses to the light", href: buyColour("Velvet Rose"), cta: "Acquire Velvet Rose" },
+    { name: "Pixie Dust", swatch: swatchFor("Pixie Dust"), image: `${V}/pixie-dust-sill.jpg`, alt: "Pixie Dust — on the window sill, lenses to the light", href: buyColour("Pixie Dust"), cta: "Acquire Pixie Dust" },
   ],
 };
 
@@ -228,22 +237,22 @@ export const worn: Worn = {
   cta: "Enter the Registry",
   columns: [
     [
-      { src: `${P}/worn-noir-front.jpg`, alt: "Noir front on, leather, against Deco-etched concrete" },
-      { src: `${P}/worn-aria-doorway.jpg`, alt: "Aria at a doorway, warm bokeh behind her" },
-      { src: `${P}/worn-noir-profile.jpg`, alt: "Noir in profile, monochrome, coat turned to the light" },
-      { src: `${P}/worn-aria-panel.jpg`, alt: "Aria, panel crop, lenses catching the room" },
+      { src: `${P}/worn-noir-front.jpg`, alt: "Noir full length in a vaulted stone hall" },
+      { src: `${P}/worn-aria-doorway.jpg`, alt: "Aria in a cloister, window light falling across her" },
+      { src: `${P}/worn-noir-profile.jpg`, alt: "Noir in profile, turned out of the dark" },
+      { src: `${P}/worn-aria-panel.jpg`, alt: "Aria turning, coat swinging, against black" },
     ],
     [
-      { src: `${P}/worn-pair-corridor.jpg`, alt: "Aria and Noir together in the corridor" },
-      { src: `${P}/worn-aria-concrete.jpg`, alt: "Aria turning over her shoulder against poured concrete" },
-      { src: `${P}/worn-noir-edge.jpg`, alt: "Noir at a concrete edge, two lights burning out of focus behind him" },
-      { src: `${P}/aria.jpg`, alt: "Aria front on, the gold plaque the brightest thing in frame" },
+      { src: `${P}/worn-pair-corridor.jpg`, alt: "Aria and Noir far down a cloister colonnade" },
+      { src: `${P}/worn-aria-concrete.jpg`, alt: "Aria in a black dress in the cloister, stone arches behind her" },
+      { src: `${P}/worn-noir-edge.jpg`, alt: "Noir out of the dark, two lights burning out of focus behind him" },
+      { src: `${P}/aria.jpg`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
     ],
     [
-      { src: `${P}/worn-aria-trench.jpg`, alt: "Aria in a trench coat, monochrome, back three-quarters" },
-      { src: `${P}/worn-noir-panel.jpg`, alt: "Noir, panel crop, high collar" },
-      { src: `${P}/noir.jpg`, alt: "Noir against the Deco wall, amber lenses" },
-      { src: `${P}/meaning-aria-deco.jpg`, alt: "Aria against etched concrete" },
+      { src: `${P}/worn-aria-trench.jpg`, alt: "Aria full length in the vaulted hall, the coat to the floor" },
+      { src: `${P}/worn-noir-panel.jpg`, alt: "Noir leaning in a stone window, the cloister bright behind him" },
+      { src: `${P}/noir.jpg`, alt: "Noir front on under a carved stone arch, amber lenses" },
+      { src: `${P}/meaning-aria-deco.jpg`, alt: "Aria close, black leather, lit out of the dark" },
     ],
   ],
 };

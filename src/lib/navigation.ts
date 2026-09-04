@@ -37,8 +37,13 @@ export type MenuLink = { label: string; href: string; external?: boolean };
  * difference between "read this" and "this exists".
  */
 export const menu = {
-  /* Seven entries: six destinations and the bag. The count above finally
-     matches the list — it said seven while this held six.
+  /* Six entries: five destinations and the bag.
+
+     The Process is deliberately not among them, and neither is it in the
+     footer. The page still exists and `/house/about` still sends a reader
+     to it — but it is a chapter of the house's argument, reached from
+     inside that argument, rather than a peer of Eyewear and the Lookbook
+     in a list of places to go.
 
      ARCA I is deliberately not among them. It is a frame, not a section —
      putting the one house that happens to have a page beside Eyewear and
@@ -50,7 +55,6 @@ export const menu = {
     { label: "Eyewear", href: "/eyewear" },
     { label: "Lookbook", href: "/lookbook/ss26" },
     { label: "The House", href: "/house/about" },
-    { label: "Process", href: "/house/process" },
     { label: "Contact", href: "/contact" },
     /* The bag, and the only reason the menu carries a utility beside six
        destinations: this site deliberately has no cart control in its
@@ -249,7 +253,25 @@ export function shopPath(house: House) {
   return `/shop/${house.slug}`;
 }
 
-export const houses: readonly House[] = [
+/**
+ * The houses on show, and the only ones with a buy page built.
+ *
+ * The other four rows stay in `allHouses` — they are still the catalogue,
+ * and the cart, the prices and the photography all read from them — but
+ * nothing renders them and `/shop/<their slug>` is a 404. Widen this set
+ * and a house comes back everywhere at once: the index, the home panels,
+ * the footer, and its own buy page.
+ */
+const VISIBLE_SLUGS: ReadonlySet<string> = new Set(["arca-i", "arca-ii"]);
+
+/**
+ * Every house the bench has cut, shown or not.
+ *
+ * Read this only where a slug has to RESOLVE — a cart line, a price, a
+ * catalogue lookup. Anything that RENDERS a list of houses reads `houses`,
+ * which is this filtered by what is currently on show.
+ */
+export const allHouses: readonly House[] = [
   {
     name: "ARCA I",
     slug: "arca-i",
@@ -704,6 +726,11 @@ export const houses: readonly House[] = [
   },
 ];
 
+/** The houses on show. Everything that renders a list reads this. */
+export const houses: readonly House[] = allHouses.filter((house) =>
+  VISIBLE_SLUGS.has(house.slug),
+);
+
 /**
  * The footer's sitemap.
  *
@@ -747,7 +774,6 @@ export const sitemap: readonly SitemapGroup[] = [
     title: "The House",
     links: [
       { label: "About", href: "/house/about" },
-      { label: "Process", href: "/house/process" },
       { label: "Contact", href: "/contact" },
     ],
   },
