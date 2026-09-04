@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useRef, useSyncExternalStore } from "react";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 import { AccessModel, setAccessProgress } from "@/components/access-model";
 import { privateAccess } from "@/lib/content";
-import { CtaLink } from "@/components/cta-link";
+import { CtaButton } from "@/components/cta-link";
+import { PreorderModal } from "@/components/ui/preorder-modal";
 import { RevealText } from "@/components/reveal";
 
 /**
@@ -127,6 +128,14 @@ export function PrivateAccessSection() {
   const wrap = useRef<HTMLElement>(null);
   useScrollProgress(wrap, setAccessProgress);
 
+  /* The sign-up. Held here rather than inside the modal so the trigger and
+     the dialog share one piece of truth, and so the dialog can be a
+     sibling of this section's layers rather than a child of them — it
+     portals out of the DOM either way, but the state has to live above
+     both. */
+  const [asking, setAsking] = useState(false);
+  const close = useCallback(() => setAsking(false), []);
+
   /* Read once, at mount, through the store React gives for exactly this:
      no state written from an effect, and a server render that matches the
      client's first paint because both start from the desktop branch. */
@@ -221,15 +230,19 @@ export function PrivateAccessSection() {
             <p className="max-w-xl font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base">
               {privateAccess.body}
             </p>
-            <CtaLink href={privateAccess.href} className="pointer-events-auto mt-6">
+            <CtaButton
+              onClick={() => setAsking(true)}
+              className="pointer-events-auto mt-6"
+            >
               {privateAccess.cta}
-            </CtaLink>
+            </CtaButton>
             </div>
           </div>
         </div>
       </div>
       </div>
 
+      {asking ? <PreorderModal onClose={close} /> : null}
     </section>
   );
 }

@@ -234,17 +234,53 @@ export const privateAccess = {
   body:
     "Unreleased frames, before they enter the collection.",
   cta: "Request private access",
+  /* The offer is taken on the page now, in a modal, rather than by
+     leaving for /contact. This href is the modal's own second door: some
+     readers do not want a list, they want to talk to someone, and the
+     panel carries it as a quiet link under the field. */
   href: "/contact",
   /** The model the section lights. The house has no story page yet, so
    *  nothing on the site contradicts a frame that is not released. */
   model: "/models/houses/monarca-monarca-noir.glb",
 };
 
+/**
+ * The private-access sign-up, as asked in the modal.
+ *
+ * The section above it has already made the offer and already said who it
+ * is not for. So this panel does not sell it again: it states the ask, in
+ * one clause, and gets out of the way. The one thing withheld is WHEN,
+ * because the house does not know yet and a date it cannot keep is worse
+ * than no date.
+ *
+ * "Noted." is the whole confirmation. A house that has just been asked for
+ * an address and got one does not need a paragraph about how pleased it is.
+ */
+export const preorderModal = {
+  eyebrow: "Private Access",
+  heading: "Leave an address.",
+  body:
+    "The next edition is shown to this list before it enters the collection.",
+  label: "Email address",
+  cta: "Request access",
+  note: "One letter, when there is something to see.",
+  alt: "Talk to the studio",
+  close: "Close",
+  done: {
+    heading: "Noted.",
+    body: "You will hear before the collection does.",
+  },
+};
+
 export const footer = {
   /* The link columns used to live here as bare strings, all rendered with
      `href="#"`. They are routes, not copy, so they moved to lib/navigation
      as `sitemap` — where a link has somewhere to go. */
-  newsletterLabel: "Word from the bench",
+  /* Not "Word from the bench" — that is the finale's heading, one screen
+     above this, and the page was saying the same four words twice in its
+     last two blocks. This is the label on a field, so it names the thing
+     rather than announcing it. */
+  newsletterLabel: "The house letter",
   newsletterPlaceholder: "Email address",
   /* One, because one is what the house has. Pinterest and LinkedIn were
      here as `href="#"` alongside it — the same furniture the link columns

@@ -92,10 +92,26 @@ export function FinaleSection() {
           the page ends on the house's own furniture rather than a second
           version of it. */}
       <div className="relative z-30 mx-auto mt-24 flex max-w-2xl flex-col items-center gap-6 text-center sm:mt-32">
+        {/* One step down the house scale, from `--display-xl` to
+            `--display-lg`.
+
+            The inline sizes it carried were text-5xl / sm:7xl / md:8xl,
+            which is `--display-xl` spelled out by hand — the same size as
+            the page's largest headings. Directly above it the close runs
+            at up to 132px, so the two read as headlines of equal rank and
+            the reader meets a second title where they should be meeting a
+            field. This is the label on an email box; it is subordinate,
+            and it should look it.
+
+            Named recipe rather than inline utilities, because that is what
+            the recipes are for and because the hand-spelled version was
+            already a duplicate of a token. The colour comes from the
+            section's `on-paper` ground now instead of a hardcoded
+            text-ink. */}
         <RevealText
           as="h2"
           text={newsletter.heading}
-          className="font-display text-5xl leading-[1.02] tracking-tight text-ink sm:text-7xl md:text-8xl"
+          className="t-display-lg"
         />
         <p className="max-w-xl font-ui text-base leading-relaxed text-ink/65 sm:text-lg">
           {newsletter.body}
