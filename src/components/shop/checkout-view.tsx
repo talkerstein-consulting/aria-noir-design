@@ -23,6 +23,7 @@ import {
   type CheckoutItem,
   type Config,
   type Quote,
+  type Session,
   type SavedAddress,
 } from "@/lib/house-api";
 import { formatPrice } from "@/lib/shop";
@@ -75,10 +76,56 @@ type StepId = "who" | "where" | "pay" | "review";
 
 const CONFIRM_KEY = "aria-noir:last-order";
 
+/* ════════════════════════════════════════════════════════════════════
+   FURNISHING MODE — temporary, and meant to be deleted.
+
+   The house API is not reachable from the deployed build yet, so every
+   visit to this page fell straight through to "the studio's checkout is
+   not answering" and the four steps could not be looked at, let alone
+   worked on. With this on, the page assumes a signed-in reader and
+   renders the sequence so it can be furnished.
+
+   What it does NOT do is fake a sale. `house.quote` and `house.order`
+   are untouched: nothing is priced, authorised or charged, the pay step
+   still renders without its card field while `config` is absent, and the
+   Square SDK is never reached. This only gets the steps on screen.
+
+   Turn it off — and take the stub below with it — the moment the API
+   answers, or the live site is telling every visitor it knows who they
+   are when it does not.
+   ════════════════════════════════════════════════════════════════════ */
+const FURNISHING = true;
+
+/** The reader the page assumes while FURNISHING. Obviously not real, on
+ *  purpose: if this ever shows up in front of an actual customer, it
+ *  should be unmistakable that it is scaffolding rather than their
+ *  account. */
+const FURNISHING_SESSION: Session = {
+  user: {
+    id: "furnishing",
+    firstName: "Aria",
+    lastName: "Noir",
+    email: "furnishing@example.invalid",
+    phone: "",
+  },
+  profile: null,
+  houseAccount: null,
+};
+
 export function CheckoutView() {
   const router = useRouter();
   const { resolved, ready: bagReady, clear } = useBag();
-  const { session, loading: sessionLoading, error: sessionError, reload } = useHouseSession();
+  const {
+    session: liveSession,
+    loading: liveSessionLoading,
+    error: liveSessionError,
+    reload,
+  } = useHouseSession();
+  /* One place where the pretence is applied, so the rest of the component
+     reads exactly as it will once FURNISHING is gone. */
+  const session = FURNISHING ? FURNISHING_SESSION : liveSession;
+  const sessionLoading = FURNISHING ? false : liveSessionLoading;
+  const sessionError = FURNISHING ? "" : liveSessionError;
   const [error, setError] = useState("");
 
   const [config, setConfig] = useState<Config>();
@@ -469,7 +516,7 @@ export function CheckoutView() {
      down; the sale now lives entirely in the build, so a failure is a
      failure and the honest thing is to say so and keep the bag safe rather
      than send the reader somewhere this build cannot follow them. */
-  if (configError || sessionError) {
+  if (!FURNISHING && (configError || sessionError)) {
     return (
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">The studio&rsquo;s checkout is not answering.</p>

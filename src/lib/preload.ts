@@ -11,9 +11,15 @@
  * This module is what it waits on instead. Three things, in parallel:
  *
  *   window `load` — every image, font and stylesheet the document declared.
- *      Note what this does NOT cover: media added by script after parse, and
- *      video that the browser is free to stop fetching once it has enough to
- *      start. Hence the other two.
+ *      Note what this does NOT cover: media added by script after parse,
+ *      lazy images (which have not begun), and video that the browser is
+ *      free to stop fetching once it has enough to start. Hence the rest.
+ *
+ *   every EAGER <img> — the pictures the first screens actually show. A
+ *      lazy image is excluded on purpose: it has not started, it will not
+ *      start until the reader scrolls to it, and waiting on one would mean
+ *      waiting forever. Marking a picture `priority` is therefore the way
+ *      to say "the loader should cover this", and the only way.
  *
  *   every <video> in the DOM — held to `canplaythrough`, i.e. enough buffered
  *      to run start to finish at the current rate. `readyState` is checked
@@ -88,6 +94,23 @@ function documentLoaded(): Promise<void> {
  *  the number disagreed. */
 const HAVE_ENOUGH_DATA = 4;
 
+/** An eager picture, held until it has actually decoded.
+ *
+ *  `complete` alone is not the bar: it is true for an image that failed,
+ *  and true the instant the bytes are in but before the frame can be
+ *  painted. `decode()` is the one that means "this can be drawn now",
+ *  which is what the loader is standing in front of. It rejects on a
+ *  broken image, and that resolves the wait rather than failing it — a
+ *  404 must never strand a visitor on a loading screen.
+ */
+function imageReady(el: HTMLImageElement): Promise<void> {
+  if (el.complete && el.naturalWidth > 0) return Promise.resolve();
+  return el
+    .decode()
+    .catch(() => undefined)
+    .then(() => undefined);
+}
+
 function videoReady(el: HTMLVideoElement): Promise<void> {
   /* Asked to play as well as waited on. A film that is buffered but paused
      behind an autoplay policy is not ready in any sense the reader cares
@@ -123,14 +146,30 @@ export function whenAssetsReady({
 
   const jobs: Promise<unknown>[] = [documentLoaded()];
 
-  /* Videos are collected AFTER load so that anything React mounted during
-     hydration is included, not just what the server sent. */
+  /* Videos and eager images are collected AFTER load so that anything
+     React mounted during hydration is included, not just what the server
+     sent. */
   jobs.push(
     documentLoaded().then(() =>
       Promise.all(
         Array.from(document.querySelectorAll("video")).map((v) =>
           withTimeout(videoReady(v), PER_ASSET_MS),
         ),
+      ),
+    ),
+  );
+
+  /* `loading="lazy"` is the filter, and it is doing real work: on the home
+     page every picture was lazy, so window `load` covered none of them and
+     the first section's plates were still arriving five seconds after the
+     loader had lifted. They are `priority` now; this is what makes that
+     mark mean something. */
+  jobs.push(
+    documentLoaded().then(() =>
+      Promise.all(
+        Array.from(document.querySelectorAll("img"))
+          .filter((i) => i.loading !== "lazy")
+          .map((i) => withTimeout(imageReady(i), PER_ASSET_MS)),
       ),
     ),
   );

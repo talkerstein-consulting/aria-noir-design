@@ -185,6 +185,22 @@ type StickyPanelsProps = {
   /** The heading that the first plate grows out of and swallows. */
   preheader?: string;
   heading?: React.ReactNode;
+  /**
+   * How many of the leading plates to load eagerly rather than lazily.
+   *
+   * Everything here was `loading="lazy"` before, which on the home page
+   * meant the very first section's photograph had not begun downloading
+   * when the loader lifted — it arrived, visibly, about five seconds
+   * later. An eager plate starts immediately AND is what lib/preload
+   * waits on, so the loader covers it.
+   *
+   * Kept a count rather than a flag because the panels are a stack in one
+   * viewport: the first is on screen the moment the section is reached,
+   * the next is one slide behind it, and the rest are far enough away
+   * that making them eager would download six full-bleed photographs to
+   * show one. Default 0 — a section below the fold should ask for this.
+   */
+  eager?: number;
   /** Ties the section into a page's own anchor scheme. */
   id?: string;
   className?: string;
@@ -249,6 +265,7 @@ export function StickyPanels({
   heading,
   labels: placement = "center",
   inset = false,
+  eager = 0,
   id,
   className = "",
 }: StickyPanelsProps) {
@@ -373,7 +390,7 @@ export function StickyPanels({
               transform: `translateY(${PLATE_REST_Y_VH}vh) scale(${PLATE_START_SCALE})`,
             }}
           >
-            <Ground item={first} placement={placement} narrow={narrow} />
+            <Ground item={first} placement={placement} narrow={narrow} eager={eager > 0} />
             <Label
               refCb={(el) => {
                 labels.current[0] = el;
@@ -394,7 +411,7 @@ export function StickyPanels({
             className="stage-layer absolute inset-0"
             style={{ zIndex: 21 + i, transform: "translateX(100%)" }}
           >
-            <Ground item={item} placement={placement} narrow={narrow} />
+            <Ground item={item} placement={placement} narrow={narrow} eager={i + 1 < eager} />
             <Label
               refCb={(el) => {
                 labels.current[i + 1] = el;
@@ -416,10 +433,13 @@ function Ground({
   item,
   placement,
   narrow,
+  eager = false,
 }: {
   item: PanelItem;
   placement: LabelPlacement;
   narrow: boolean;
+  /** See `eager` on StickyPanelsProps. */
+  eager?: boolean;
 }) {
   /* The upright plate where the house has one and the stage is a square,
      the wide one everywhere else. */
@@ -448,6 +468,7 @@ function Ground({
         fill
         sizes="100vw"
         className="object-cover"
+        priority={eager}
       />
       {/* A foot label needs no veil over the plate — the gradient under
           its own type is the whole of the dimming. */}

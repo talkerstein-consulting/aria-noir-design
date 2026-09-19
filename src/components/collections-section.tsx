@@ -51,6 +51,11 @@ export function CollectionsSection() {
   return (
     <StickyPanels
       items={items}
+      /* The first section the reader reaches after the opening, so its
+         leading plates are the ones the loader has to have covered. Two:
+         the one on screen when the section arrives, and the one a single
+         slide behind it. See `eager` on StickyPanelsProps. */
+      eager={2}
       preheader={collections.preheader}
       heading={
         <h2 className="text-center font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl">
