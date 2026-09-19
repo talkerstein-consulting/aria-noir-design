@@ -24,7 +24,7 @@ export const about = {
       { text: "Symmetry, style,", italic: true },
       { text: "AND SOUL.", italic: false },
     ],
-    plate: "/images/plate-12-founders.jpg",
+    plate: "/images/plate-12-founders.webp",
     alt: "The founders, studio portrait",
   },
   /** The live store's About page, in its three named parts. */
@@ -36,8 +36,8 @@ export const about = {
       "Our work is driven by a deep passion for design and craftsmanship. We pursue the perfect harmony of form and vision, creating eyewear that is not only a statement but an experience.",
     ],
     images: [
-      { src: "/images/plate-17-founders-duo.jpg", alt: "The founders, paired portrait" },
-      { src: "/images/plate-13-studio-shadow.jpg", alt: "The studio in shadow" },
+      { src: "/images/plate-17-founders-duo.webp", alt: "The founders, paired portrait" },
+      { src: "/images/plate-13-studio-shadow.webp", alt: "The studio in shadow" },
     ],
   },
   vision: {
@@ -48,12 +48,12 @@ export const about = {
       "Every frame is the result of curated talent and a relentless dedication to detail. Six houses, nine frames, and no intention of making a tenth until it earns the name.",
     ],
     images: [
-      { src: "/images/plate-00-masked-dancers.jpg", alt: "Campaign plate, masked figures" },
-      { src: "/images/plate-16-masked-dancers-02.jpg", alt: "Campaign plate, masked figures, second frame" },
+      { src: "/images/plate-00-masked-dancers.webp", alt: "Campaign plate, masked figures" },
+      { src: "/images/plate-16-masked-dancers-02.webp", alt: "Campaign plate, masked figures, second frame" },
     ],
   },
   band: {
-    image: "/images/plate-05-macro.jpg",
+    image: "/images/plate-05-macro.webp",
     alt: "Macro study of an acetate edge",
     line: "Aria Noir does not produce disposable objects. Each frame is made with the expectation of years — not seasons.",
   },
@@ -77,11 +77,11 @@ export const about = {
       { text: "By designers,", italic: true },
       { text: "FOR VISIONARIES.", italic: false },
     ],
-    stickyImage: "/images/plate-12-founders.jpg",
+    stickyImage: "/images/plate-12-founders.webp",
     stickyAlt: "The founders",
     pairOne: [
-      "/images/plate-17-founders-duo.jpg",
-      "/images/plate-13-studio-shadow.jpg",
+      "/images/plate-17-founders-duo.webp",
+      "/images/plate-13-studio-shadow.webp",
     ],
     feature: {
       heading: "Limited by intent.",
@@ -90,8 +90,8 @@ export const about = {
       href: "/house/process",
     },
     pairTwo: [
-      "/images/plate-00-masked-dancers.jpg",
-      "/images/plate-16-masked-dancers-02.jpg",
+      "/images/plate-00-masked-dancers.webp",
+      "/images/plate-16-masked-dancers-02.webp",
     ],
     quote: "A frame should disappear on the face and survive the century.",
     quoteAttribution: "Aria Noir, founding note",
@@ -114,7 +114,7 @@ export const process = {
       { text: "Cut, not moulded —", italic: true },
       { text: "AND FINISHED BY HAND.", italic: false },
     ],
-    plate: `${P}/macro-lens.jpg`,
+    plate: `${P}/macro-lens.webp`,
     alt: "Macro study of a lens edge",
   },
   study: {
@@ -161,16 +161,16 @@ export const process = {
       },
     ],
     plates: [
-      { src: `${P}/spec-macro-bridge.jpg`, alt: "Macro: the bridge" },
-      { src: `${P}/spec-macro-inner-left.jpg`, alt: "Macro: inner left temple" },
-      { src: `${P}/spec-macro-keyhole.jpg`, alt: "Macro: the keyhole" },
-      { src: `${P}/spec-macro-ltemple.jpg`, alt: "Macro: left temple" },
-      { src: `${P}/spec-macro-rtemple.jpg`, alt: "Macro: right temple" },
-      { src: `${P}/spec-macro-inner-right-full.jpg`, alt: "Macro: inner right temple, full" },
+      { src: `${P}/spec-macro-bridge.webp`, alt: "Macro: the bridge" },
+      { src: `${P}/spec-macro-inner-left.webp`, alt: "Macro: inner left temple" },
+      { src: `${P}/spec-macro-keyhole.webp`, alt: "Macro: the keyhole" },
+      { src: `${P}/spec-macro-ltemple.webp`, alt: "Macro: left temple" },
+      { src: `${P}/spec-macro-rtemple.webp`, alt: "Macro: right temple" },
+      { src: `${P}/spec-macro-inner-right-full.webp`, alt: "Macro: inner right temple, full" },
     ],
   },
   band: {
-    image: `${P}/object-lightshaft.jpg`,
+    image: `${P}/object-lightshaft.webp`,
     alt: "The object in a shaft of light",
     line: "A frame should disappear on the face and survive the century.",
   },
@@ -192,7 +192,7 @@ export const care = {
       { text: "Five contact points.", italic: true },
       { text: "ALL FIVE HAVE TO AGREE.", italic: false },
     ],
-    plate: `${P}/object-shadow.jpg`,
+    plate: `${P}/object-shadow.webp`,
     alt: "The object, raking shadow",
   },
   fit: {
@@ -231,11 +231,11 @@ export const care = {
       },
     ],
     plates: [
-      { src: `${P}/spec-macro-nose.jpg`, alt: "Macro: the nose" },
-      { src: `${P}/spec-macro-keyhole-wear.jpg`, alt: "Macro: the keyhole, worn" },
-      { src: `${P}/spec-macro-inner-left-2.jpg`, alt: "Macro: inner left temple, second study" },
-      { src: `${P}/spec-macro-inner-right.jpg`, alt: "Macro: inner right temple" },
-      { src: `${P}/spec-macro-inner-right-2.jpg`, alt: "Macro: inner right temple, second study" },
+      { src: `${P}/spec-macro-nose.webp`, alt: "Macro: the nose" },
+      { src: `${P}/spec-macro-keyhole-wear.webp`, alt: "Macro: the keyhole, worn" },
+      { src: `${P}/spec-macro-inner-left-2.webp`, alt: "Macro: inner left temple, second study" },
+      { src: `${P}/spec-macro-inner-right.webp`, alt: "Macro: inner right temple" },
+      { src: `${P}/spec-macro-inner-right-2.webp`, alt: "Macro: inner right temple, second study" },
     ],
   },
   /** Verbatim from the live warranty page's care section. */
@@ -247,8 +247,8 @@ export const care = {
       "Avoid placing frames lens-down on hard surfaces, and do not expose eyewear to excessive heat or prolonged sunlight in enclosed spaces — a dashboard in summer will do more damage in an afternoon than a year of wear.",
     ],
     images: [
-      { src: `${P}/object-front.jpg`, alt: "The object, front elevation" },
-      { src: `${P}/object-rain.jpg`, alt: "The object in rain" },
+      { src: `${P}/object-front.webp`, alt: "The object, front elevation" },
+      { src: `${P}/object-rain.webp`, alt: "The object in rain" },
     ],
   },
   close: {
@@ -269,7 +269,7 @@ export const lookbook = {
       { text: "Conceived in shadow,", italic: true },
       { text: "REFINED TO THE ESSENTIAL LINE.", italic: false },
     ],
-    plate: `${P}/hero-wide.jpg`,
+    plate: `${P}/hero-wide.webp`,
     alt: "SS26 campaign, wide frame",
   },
   grid: {
@@ -279,9 +279,9 @@ export const lookbook = {
     /** Three columns, equal counts, so the curtain always rests aligned —
      *  the same rule the home gallery is built on. */
     columns: [
-      [`${P}/worn-01.jpg`, `${P}/worn-04.jpg`, `${P}/worn-07.jpg`, `${P}/worn-10.jpg`],
-      [`${P}/worn-02.jpg`, `${P}/worn-05.jpg`, `${P}/worn-08.jpg`, `${P}/worn-11.jpg`],
-      [`${P}/worn-03.jpg`, `${P}/worn-06.jpg`, `${P}/worn-09.jpg`, `${P}/worn-12.jpg`],
+      [`${P}/worn-01.webp`, `${P}/worn-04.webp`, `${P}/worn-07.webp`, `${P}/worn-10.webp`],
+      [`${P}/worn-02.webp`, `${P}/worn-05.webp`, `${P}/worn-08.webp`, `${P}/worn-11.webp`],
+      [`${P}/worn-03.webp`, `${P}/worn-06.webp`, `${P}/worn-09.webp`, `${P}/worn-12.webp`],
     ],
   },
   /**
@@ -298,16 +298,16 @@ export const lookbook = {
     heading: "SS26, bound.",
     note: "Six leaves. Move the pointer across the spine.",
     leaves: [
-      { front: `${P}/worn-01.jpg`, back: `${P}/worn-02.jpg` },
-      { front: `${P}/worn-03.jpg`, back: `${P}/worn-04.jpg` },
-      { front: `${P}/worn-05.jpg`, back: `${P}/worn-06.jpg` },
-      { front: `${P}/worn-07.jpg`, back: `${P}/worn-08.jpg` },
-      { front: `${P}/worn-09.jpg`, back: `${P}/worn-10.jpg` },
-      { front: `${P}/worn-11.jpg`, back: `${P}/worn-12.jpg` },
+      { front: `${P}/worn-01.webp`, back: `${P}/worn-02.webp` },
+      { front: `${P}/worn-03.webp`, back: `${P}/worn-04.webp` },
+      { front: `${P}/worn-05.webp`, back: `${P}/worn-06.webp` },
+      { front: `${P}/worn-07.webp`, back: `${P}/worn-08.webp` },
+      { front: `${P}/worn-09.webp`, back: `${P}/worn-10.webp` },
+      { front: `${P}/worn-11.webp`, back: `${P}/worn-12.webp` },
     ],
   },
   band: {
-    image: `${P}/pair-corridor.jpg`,
+    image: `${P}/pair-corridor.webp`,
     alt: "SS26 campaign, pair in a corridor",
     line: "Los Angeles, 2026. Front row, FW26.",
   },
@@ -342,7 +342,7 @@ export const eyewear = {
       { text: "Five frames.", italic: true },
       { text: "NOTHING MADE TWICE.", italic: false },
     ],
-    plate: "/images/arca-showroom.png",
+    plate: "/images/arca-showroom.webp",
     alt: "The showroom",
   },
   intro:
@@ -362,7 +362,7 @@ export const contact = {
   hero: {
     eyebrow: "Contact",
     title: "Talk to the studio.",
-    plate: "/images/plate-13-studio-shadow.jpg",
+    plate: "/images/plate-13-studio-shadow.webp",
     alt: "The studio in shadow",
   },
   intro:

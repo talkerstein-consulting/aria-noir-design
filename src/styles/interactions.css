@@ -1,99 +1,142 @@
 /* ══ ARIA NOIR — INTERACTION SYSTEM ═══════════════════════════════════
-   Every interactive thing on this site is one of THREE objects. There
-   are no buttons: no fills, no borders, no pills, no radii. An action
-   is a word with a rule under it, and the rule is what moves.
+   Every interactive thing on this site is one of FOUR objects:
 
-     1. .cta          the primary action — label + sweeping rule
-     2. .link-quiet   nav, footer, list links — colour shift only
-     3. .field        the one input (footer newsletter) — a baseline
+     1. .cta-main       the primary action — SOLID FILL, square corners,
+                        the glyph shuffle on hover
+     1b. .cta-secondary the second action — the same box, OUTLINED
+     2. .link-quiet     nav, footer, list links — colour shift only
+     3. .field          the one input — a baseline
 
-   All three read `--fg-*` from the section's `.on-ink` / `.on-paper`
-   ground, so a CTA does not need to be told which half of the page it
-   is on. That is what `variant="dark"` used to do by hand.
+   Two CTA styles, and nothing is styled a third way. One main action per
+   screen; everything else that is still a CTA is secondary.
 
-   HOVER IS NOT THE ONLY STATE. :focus-visible is treated as a
-   first-class state throughout — the build had none, and a gold-on-
-   black underline that only appears for a mouse is not navigable. */
+   Both are the same box — same padding, same type, same square corners,
+   same shuffle. Fill versus outline is the ONLY difference, which is what
+   makes the pair read as one control at two weights rather than two
+   different components.
 
-/* ── 1. The CTA ──────────────────────────────────────────────────────
-   Bold spaced label sitting close over a single continuous rule. On
-   hover the accent rule sweeps the full width left to right while the
-   glyphs lift and swap, each letter a beat behind the last (`--d`, set
-   per index in cta-link.tsx), so the word reads as a wave rather than
-   a jump-cut. */
-.cta {
-  --cut: var(
-    --track-eyebrow
-  ); /* letter-spacing; also the trailing gap trimmed off the rule */
-  position: relative;
+   NO RADII ANYWHERE. The fill is square, the outline is square. A rounded
+   corner is not part of this house.
+
+   Both read `--fg-*` from the section's `.on-ink` / `.on-paper` ground, so
+   a CTA is never told which half of the page it is on. The main CTA fills
+   with the section's own FOREGROUND and sets its text in the section's own
+   GROUND — inverted rather than tinted, so it borrows the two colours
+   already on screen instead of introducing a third.
+
+   HOVER IS NOT THE ONLY STATE. Both define :hover, :focus-visible,
+   :active and :disabled. */
+
+/* ── The shared box ──────────────────────────────────────────────────
+   Everything the two have in common. Neither class restates any of it. */
+.cta-main,
+.cta-secondary {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 1x block, 2x inline. */
+  padding: 1em 2em;
+  border: var(--rule-weight) solid transparent;
+  border-radius: 0;
   font-family: var(--font-ui-stack);
   font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: var(--cut);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: var(--fg-primary);
-  transition: color var(--dur-fast) ease;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease,
+    opacity var(--dur-fast) ease;
 }
-/* Tailwind v4 resets `button` to `cursor: default` — a deliberate change
-   from v3, on the reasoning that a native button is not a link. That is
-   defensible for a form control inside a page of text and wrong for this
-   site: the header's Menu control, the footer's sitemap tabs and the
-   newsletter's submit are buttons, they are the primary things on their
-   band, and a word with a rule under it is already only barely announcing
-   itself as an object. Losing the pointer takes away the last cue that it
-   can be pressed at all.
 
-   Declared on every interactive recipe rather than on `button` globally,
-   so the rule follows the OBJECTS and a disabled control can still opt
-   out. */
-.cta,
+/* Tailwind v4 resets `button` to `cursor: default` — a deliberate change
+   from v3, on the reasoning that a native button is not a link. Declared
+   on every interactive recipe rather than on `button` globally, so the
+   rule follows the OBJECTS and a disabled control can still opt out. */
 .link-quiet,
 .field-submit {
   cursor: pointer;
 }
 
-.cta:hover,
-.cta:focus-visible {
-  color: var(--fg-accent);
+/* ── 1. .cta-main — solid fill ───────────────────────────────────────
+   The one thing the screen wants done. Filled in the section's own
+   foreground with the section's own ground as its text, so it is the
+   highest-contrast object on the band and needs no third colour to say
+   so. */
+.cta-main {
+  background: var(--fg-primary);
+  border-color: var(--fg-primary);
+  color: var(--ground);
 }
-.cta:focus-visible {
+.cta-main:hover,
+.cta-main:focus-visible {
+  background: var(--fg-accent);
+  border-color: var(--fg-accent);
+  color: var(--ground);
+}
+.cta-main:active {
+  background: var(--fg-accent);
+  border-color: var(--fg-accent);
+  color: var(--ground);
+  opacity: 0.85;
+}
+.cta-main:focus-visible {
   outline: var(--rule-weight) solid var(--fg-accent);
   outline-offset: var(--focus-offset);
 }
+.cta-main:disabled,
+.cta-main[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* The destination the reader is already standing on: the fill goes accent
+   and stays there. Still the object's own vocabulary, no third style. */
+.cta-main[aria-current="page"] {
+  background: var(--fg-accent);
+  border-color: var(--fg-accent);
+  color: var(--ground);
+}
 
-/* The rule lives here, spanning the whole label. `right: var(--cut)`
-   trims the trailing letter-spacing so the line stops under the last
-   glyph rather than floating past it. */
+/* ── 1b. .cta-secondary — the outline ────────────────────────────────
+   The second action in a section, where two filled blocks would fight.
+   Same box, hairline instead of fill. */
+.cta-secondary {
+  background: transparent;
+  border-color: var(--fg-rule);
+  color: var(--fg-primary);
+}
+.cta-secondary:hover,
+.cta-secondary:focus-visible {
+  border-color: var(--fg-accent);
+  color: var(--fg-accent);
+}
+.cta-secondary:active {
+  border-color: var(--fg-accent);
+  color: var(--fg-accent);
+  background: color-mix(in srgb, var(--fg-accent) 12%, transparent);
+}
+.cta-secondary:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+.cta-secondary:disabled,
+.cta-secondary[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── The shuffle ─────────────────────────────────────────────────────
+   The house gesture, and it belongs to BOTH: every glyph stacked over a
+   duplicate of itself inside its own clip box, so hover lifts one out and
+   the other in, each letter a beat behind the last (`--d`, set per index
+   in cta-link.tsx). The word reads as a wave rather than a jump-cut. */
 .cta-chars {
   position: relative;
   display: inline-flex;
-  padding-bottom: var(--cta-gap);
 }
-.cta-chars::before,
-.cta-chars::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: var(--cut);
-  bottom: 0;
-  height: var(--rule-weight);
-}
-.cta-chars::before {
-  background: currentColor;
-  opacity: 0.45;
-}
-.cta-chars::after {
-  background: var(--fg-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--dur-slow) var(--ease-inout);
-}
-.cta:hover .cta-chars::after,
-.cta:focus-visible .cta-chars::after {
-  transform: scaleX(1);
-}
-
 .cta-char {
   display: inline-block;
 }
@@ -116,39 +159,16 @@
   top: 100%;
   left: 0;
 }
-.cta:hover .cta-char-line,
-.cta:focus-visible .cta-char-line {
+.cta-main:hover .cta-char-line,
+.cta-main:focus-visible .cta-char-line,
+.cta-secondary:hover .cta-char-line,
+.cta-secondary:focus-visible .cta-char-line {
   transform: translateY(-100%);
 }
 
-/* Current page, in the menu stack. Not a new colour and not a new
-   underline — it simply holds the CTA's own accent rule permanently
-   swept, so "you are here" is said in the object's existing language
-   rather than in a second one invented for it. The glyphs do NOT lift:
-   the lift is the answer to a pointer, and a word that arrives already
-   shuffled has nothing left to do on hover. */
-.cta--here .cta-chars::after {
-  transform: scaleX(1);
-}
-
-/* ── Bare CTA — the wave without the rule ────────────────────────────
-   The header chrome and the menu stack. In both places the CTA is the
-   only object on its ground, so the rule is not separating it from
-   anything; it is a line drawn under the site's own furniture, and six
-   of them stacked down the middle of the menu read as a form. The lift
-   and the colour shift remain, which is the affordance doing its job.
-   `--cut` is zeroed off the trailing edge only, so nothing reflows. */
-.cta--bare .cta-chars {
-  padding-bottom: 0;
-}
-.cta--bare .cta-chars::before,
-.cta--bare .cta-chars::after {
-  display: none;
-}
-
 /* ── The flip ────────────────────────────────────────────────────────
-   MENU → CLOSE → MENU, and the second arrow is the same motion as the
-   first.
+   MENU → CLOSE → MENU (a .cta-main), and Add to bag → Add again (a
+   .cta-main) — the second arrow is the same motion as the first.
 
    The naive version is a boolean: hold the lift open while the panel is
    up, drop it when the panel closes. That gives you a swap on the way in
@@ -192,64 +212,37 @@
   transition: none;
 }
 
-/* Current page, in a bare stack. With no rule to hold swept, "you are
-   here" is said in the accent colour instead — still the object's own
-   vocabulary, still exactly one of them on the page. */
-.cta--bare.cta--here {
+/* ── The menu stack ──────────────────────────────────────────────────
+   Navigation, not a CTA. No box, no fill, no outline — just the house's
+   glyph shuffle and a colour that answers. Six filled blocks stacked down
+   the middle of a black page would be a form rather than a menu, and at
+   the stack's display size the fill would be most of the screen.
+
+   Belongs to the navigation family with `.link-quiet`, NOT to the two-CTA
+   vocabulary. See NavShuffleLink in cta-link.tsx. */
+.menu-link {
+  display: inline-flex;
+  color: var(--fg-primary);
+  cursor: pointer;
+  transition: color var(--dur-fast) ease;
+}
+.menu-link:hover,
+.menu-link:focus-visible {
   color: var(--fg-accent);
 }
-
-/* Secondary CTA: same mechanics, quieter voice. For the second action
-   in a section, where two full-weight CTAs would fight. */
-.cta--quiet {
-  font-weight: 500;
-  font-size: var(--text-eyebrow);
-  color: var(--fg-tertiary);
+.menu-link:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
 }
-
-/* ── Chrome voice ────────────────────────────────────────────────────
-   The header's two controls. They are `--quiet` for SIZE — the eyebrow
-   step, which is what keeps the header's proportions — but they are not
-   quiet in weight or tone: they are the only two words in the band and
-   they should read as firmly as the wordmark between them. Bold, and
-   full-strength foreground rather than tertiary. */
-.cta--strong {
-  font-family: var(--font-mono-stack);
-  font-weight: 500;
-  color: var(--fg-primary);
-  /* At the standard CTA step — the same 0.95rem every other action on the
-     site is set at — rather than the 0.66rem this used to take.
-     
-     The old size came from a fair argument: mono is wider per glyph than
-     Manrope, so matching Manrope's size makes these two words physically
-     bigger than a CTA of the same nominal size. But they are the only
-     controls in the chrome, they sit either side of the wordmark, and at
-     eleven-ish pixels they read as a caption on the header rather than as
-     the two things in it you can press. Bigger is the correct trade: the
-     band can carry the width because the words are short. */
-  font-size: 0.95rem;
-  /* Wide, but tightened from 0.32em now that the type is half again as
-     big: tracking is a proportion of the size, so the gaps grew with it
-     and the words started to come apart into letters. */
-  letter-spacing: 0.24em;
+/* The destination you are already on, said in the accent colour. The
+   glyphs do NOT lift: the lift answers a pointer, and a word that arrives
+   already shuffled has nothing left to do on hover. */
+.menu-link[aria-current="page"] {
+  color: var(--fg-accent);
 }
-
-/* ── Legacy ground overrides ─────────────────────────────────────────
-   `.cta--dark` is what the `variant="dark"` prop maps to. It is now
-   just a ground declaration — identical to putting `.on-paper` on the
-   section — kept because the closing block sets its ground on the CTA
-   rather than on its wrapper. */
-.cta--dark {
-  --fg-primary: var(--text-primary-light);
-  --fg-accent: var(--text-accent-light);
-  --fg-tertiary: var(--text-tertiary-light);
-  /* The ground has to come with the foreground.
-  
-     This declaration is what `.on-paper` would have said, and it was
-     missing the one token the filled CTA inverts against — so on a phone
-     the closing block's button painted ink on ink and disappeared. A
-     ground declaration that names only foregrounds is not a ground. */
-  --ground: var(--paper);
+.menu-link:hover .cta-char-line,
+.menu-link:focus-visible .cta-char-line {
+  transform: translateY(-100%);
 }
 
 /* ── 2. Quiet links ──────────────────────────────────────────────────
@@ -327,13 +320,161 @@
   transform: translateX(3px); /* the arrow leans into the direction it means */
 }
 
+/* ── 4. The access intake ────────────────────────────────────────────
+   ONE BOX. The button's fill is not the button's: it is `__panel`, laid
+   under the label at exactly the button's size. Pressing does not swap
+   the button for a form — the same box grows (sideways on a wide screen,
+   downward on a phone), its fill drains to a rule, the label shuffles up
+   out of it the way every CTA's glyphs do, and the fields come up into
+   the room it left. Nothing fades. The label element itself never
+   changes size, so the sticky block around it never reflows.
+   See components/ui/access-intake.tsx. */
+.access-intake {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+/* The label, on top of the box, with no fill of its own. */
+.access-intake__cta {
+  position: relative;
+  z-index: 1;
+}
+.access-intake__cta .cta-main {
+  background: transparent;
+  border-color: transparent;
+  overflow: hidden;
+}
+.access-intake__cta .cta-chars {
+  transition: transform var(--dur-base) var(--ease-inout);
+}
+/* The box. At rest it IS the button's fill. */
+.access-intake__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  border: var(--rule-weight) solid var(--fg-primary);
+  background: var(--fg-primary);
+  transition:
+    background-color var(--dur-slow) ease,
+    border-color var(--dur-slow) ease;
+}
+.access-intake__inner {
+  min-height: 0;
+}
+/* The hover the button used to own, now on the box that is its fill. */
+.access-intake[data-phase="cta"]:has(.cta-main:hover) .access-intake__panel,
+.access-intake[data-phase="cta"]:has(.cta-main:focus-visible) .access-intake__panel {
+  background: var(--fg-accent);
+  border-color: var(--fg-accent);
+}
+.access-intake[data-phase="form"] .access-intake__cta,
+.access-intake[data-phase="done"] .access-intake__cta {
+  pointer-events: none;
+}
+.access-intake[data-phase="form"] .access-intake__cta .cta-chars,
+.access-intake[data-phase="done"] .access-intake__cta .cta-chars {
+  transform: translateY(-160%);
+}
+.access-intake[data-phase="form"] .access-intake__panel,
+.access-intake[data-phase="done"] .access-intake__panel {
+  background: color-mix(in oklab, var(--ground) 84%, transparent);
+  border-color: var(--fg-rule);
+  backdrop-filter: blur(6px);
+}
+.access-intake .field-row {
+  padding-bottom: 0.35rem;
+}
+.access-intake .field-submit {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Wide: the box widens from its centre and stays the button's height.
+   The row of fields is already inside it, held one line below the
+   bottom edge; it rises into place as the label rises out. */
+@media (min-width: 768px) {
+  .access-intake__panel {
+    left: 50%;
+    transform: translateX(-50%);
+    transition:
+      width var(--dur-slow) var(--ease-out),
+      background-color var(--dur-slow) ease,
+      border-color var(--dur-slow) ease;
+  }
+  .access-intake__inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    transform: translateY(110%);
+    transition: transform var(--dur-base) var(--ease-inout);
+  }
+  .access-intake__inner > form,
+  .access-intake__inner > div {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+  .access-intake__inner .field-row {
+    flex: 1;
+    min-width: 0;
+  }
+  .access-intake__inner .access-intake__note {
+    display: none;
+  }
+  .access-intake[data-phase="form"] .access-intake__panel,
+  .access-intake[data-phase="done"] .access-intake__panel {
+    width: min(38rem, calc(100vw - 3rem));
+  }
+  .access-intake[data-phase="form"] .access-intake__inner,
+  .access-intake[data-phase="done"] .access-intake__inner {
+    transform: none;
+    transition-delay: 60ms;
+  }
+}
+
+/* Narrow: the box keeps the button's width and grows downward; the
+   fields are simply what the growth uncovers. The section's floor
+   leaves the room — see private-access-section. */
+@media (max-width: 767px) {
+  .access-intake__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition:
+      grid-template-rows var(--dur-slow) var(--ease-out),
+      background-color var(--dur-slow) ease,
+      border-color var(--dur-slow) ease;
+  }
+  .access-intake__inner {
+    padding: 0.75rem 1.25rem 1rem;
+  }
+  .access-intake__inner > form,
+  .access-intake__inner > div {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .access-intake[data-phase="form"] .access-intake__panel,
+  .access-intake[data-phase="done"] .access-intake__panel {
+    grid-template-rows: 1fr;
+  }
+}
+
 /* ── Reduced motion ──────────────────────────────────────────────────
    Colour still changes — that is information, not decoration. Only the
    travel is dropped. */
 @media (prefers-reduced-motion: reduce) {
   .cta-chars::after,
   .cta-char-line,
-  .field-submit {
+  .field-submit,
+  .access-intake__cta .cta-chars,
+  .access-intake__panel,
+  .access-intake__inner {
     transition-duration: 0.01ms;
     transition-delay: 0ms;
   }
@@ -624,6 +765,15 @@
   width: 100%;
   height: 100%;
 }
+/* Four across on a phone. At 5rem three fit in a 327px column and the
+   fourth wrapped onto a second row that began exactly at the fold; at
+   4.5rem the whole run is one row, and on the first screen. */
+@media (max-width: 639px) {
+  .swatch--thumb {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
 
 /* The selected colourway carries a heavier stroke as well as a gold one —
    at five across, colour alone is a weak signal on a row where every
@@ -791,9 +941,9 @@
   background:
     radial-gradient(
       118% 88% at 50% 34%,
-      #2b2d32 0%,
-      #191a1e 46%,
-      #101113 74%,
+      #1a1b1f 0%,
+      #101114 46%,
+      #0a0b0d 74%,
       var(--ink) 100%
     );
 }
@@ -1011,48 +1161,9 @@
   color: var(--fg-tertiary);
 }
 
-/* ── The buy button ──
-   The one control on the site that is a rectangle rather than a word with
-   a rule under it. Everything else here offers to take you somewhere; this
-   takes money, and it has to look pressable from across the panel. Same
-   hairline, same gold on hover — it is the house's rule drawn around four
-   sides instead of one. */
-.btn-outline {
-  /* inline-flex, not block: this class is worn BY `.cta` on the buy page,
-     and the glyph wave inside it lays its letters out as flex columns.
-     Centring here is what keeps the label in the middle of the box now
-     that the box is wider than the word. */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.85rem 2rem;
-  border: var(--rule-weight) solid var(--fg-rule);
-  background: transparent;
-  font-family: var(--font-ui-stack);
-  font-size: var(--text-eyebrow);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: var(--fg-primary);
-  text-align: center;
-  cursor: pointer;
-  transition:
-    border-color var(--dur-fast) ease,
-    color var(--dur-fast) ease,
-    background-color var(--dur-fast) ease;
-}
-.btn-outline:hover:not(:disabled),
-.btn-outline:focus-visible:not(:disabled) {
-  border-color: var(--fg-accent);
-  color: var(--fg-accent);
-}
-.btn-outline:focus-visible {
-  outline: var(--rule-weight) solid var(--fg-accent);
-  outline-offset: var(--focus-offset);
-}
-.btn-outline:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+/* The buy button is `.cta-main`, defined once at the top of this file
+   with the rest of the CTA system — a plain `<button>` (checkout steps,
+   the profile form) just wears the class directly. */
 
 /* ── The detail accordion ──
    Four questions, one open. The row is the whole width so the target is
@@ -1151,6 +1262,20 @@
 }
 .card-link:focus:not(:focus-visible) {
   outline: none;
+}
+
+/* The card's photograph. SQUARE, and declared once — the bag's cross-sell,
+   You may also like, the held list and both index grids all read this, so
+   the catalogue's proportion is one number rather than six copies of a
+   utility class that drift apart the first time one of them is touched.
+
+   Square is the card's shape, not the site's: the story pages' plates stay
+   4:5, because those are a photographic rhythm running down a column and a
+   card is an object in a grid. */
+.card-shot {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
 }
 
 .card-name {
@@ -1295,63 +1420,19 @@
   display: none;
 }
 
-/* ── The filled CTA, phones only ──
-
-   The site's rule is that there are no buttons: an action is a word with a
-   rule under it. That reads on a desktop, where a cursor can hover a word
-   and the rule answers. On a phone there is no hover, no cursor, and the
-   letter-wave never plays — so the primary action on the page is a line of
-   small caps that looks exactly like the small caps above it, and the one
-   thing a thumb is looking for is the thing hardest to find.
-
-   So the registry CTA — and only that one, the page's actual offer —
-   becomes a solid block below 1024px, painted in the section's foreground
-   with the section's own ground as its text. Inverted rather than tinted:
-   it borrows the two colours already on screen instead of introducing a
-   third, which is why it can sit on ink and on paper without being told
-   which it is on.
-
-   Everything the rule did is removed rather than layered over: the
-   underline, the accent sweep and the hover colour all belong to a word,
-   not to a block. The letter flip stays — it is the same object, and on
-   the desktop side of this breakpoint nothing here applies at all. */
+/* ── CTAs, full-span on a phone ──
+   A singular CTA in its container spans the full width on a small screen.
+   `.buy-row` is the one exception: quantity and Add to bag share a row
+   there, so the button takes the space the stepper leaves rather than a
+   line of its own. */
 @media (max-width: 1023px) {
-  .cta--filled {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .cta-main,
+  .cta-secondary {
     width: 100%;
-    padding: 1.05rem 1.5rem;
-    background: var(--fg-primary);
-    color: var(--ground);
-    transition:
-      background var(--dur-fast) ease,
-      color var(--dur-fast) ease;
   }
-
-  /* The rule and its sweep are the word's affordance. A filled block does
-     not need to announce that it is pressable, and a line under type that
-     is already inside a solid rectangle reads as an underline in a button
-     — which is a different, wronger thing. */
-  .cta--filled .cta-chars {
-    padding-bottom: 0;
-  }
-  .cta--filled .cta-chars::before,
-  .cta--filled .cta-chars::after {
-    display: none;
-  }
-
-  /* Hover is a desktop state and this is the phone rule, but a stylus, a
-     trackpad on a small window, or a long-press can still produce it.
-     Accent-on-fill would be gold on white; holding the inversion keeps the
-     contrast the fill was chosen for. */
-  .cta--filled:hover,
-  .cta--filled:focus-visible {
-    color: var(--ground);
-  }
-  .cta--filled:focus-visible {
-    outline: var(--rule-weight) solid var(--fg-accent);
-    outline-offset: calc(var(--focus-offset) + 2px);
+  .buy-row .cta-main,
+  .buy-row .cta-secondary {
+    width: auto;
   }
 }
 
@@ -1498,5 +1579,112 @@
   .stage-loader,
   .stage-loader-bar i {
     transition-duration: 0.01ms;
+  }
+}
+
+/* ── The plate frame ─────────────────────────────────────────────────
+   Every full-screen asset on the story pages sits inside the SAME margin
+   the padded sections open at, rather than running into the viewport
+   edge. It was the one inconsistency you could see without measuring
+   anything: the shoot, the specification and the registry all opened at
+   the page gutter, while the hero, the two films, the meaning plate and
+   the detail band ran corner to corner between them.
+
+   The gutter is the page's own — `--gutter` / `--gutter-wide`, the same
+   two numbers `.section` reads — so a change to the page's margin moves
+   the plates with it and there is no second measurement to keep in step.
+
+   The frame is ABSOLUTE rather than padding on the section, because these
+   plates fill their section with `position: absolute; inset: 0` (or
+   Next's `fill`, which is the same thing). An absolute child resolves its
+   insets against the PADDING box, so padding on the section would have
+   moved nothing at all. This element is the padding box.
+
+   Two stacked full-bleed sections therefore show two gutters between
+   them, which is the intended reading: each plate is a framed object with
+   an even margin, and the gap between two of them is that margin twice
+   rather than a seam. */
+:root {
+  --plate-gutter: var(--gutter);
+}
+@media (min-width: 640px) {
+  :root {
+    --plate-gutter: var(--gutter-wide);
+  }
+}
+
+.plate-frame {
+  position: absolute;
+  top: var(--plate-gutter);
+  bottom: var(--plate-gutter);
+  /* The page's own column, not the viewport. These plates used to run to
+     the gutter while every section beside them stood in `max-w-7xl`, so on
+     a wide screen the page alternated between two widths as you scrolled
+     it: a film corner to corner, then a paragraph a hundred and eighty
+     pixels in, then another film. They are the same column now.
+
+     `max()` is what keeps it honest below the measure: at any width where
+     80rem does not fit, the centring term goes negative and the gutter
+     wins, so a phone gets exactly what it got before. */
+  left: max(var(--plate-gutter), calc((100% - var(--page-measure)) / 2));
+  right: max(var(--plate-gutter), calc((100% - var(--page-measure)) / 2));
+  overflow: hidden;
+}
+
+/* The half-width plate: same right edge and same measure as its siblings,
+   opening from inside the column rather than from the viewport's midline.
+   The percentages are of the COLUMN, which is why they are written against
+   `--page-measure` rather than left as `width: 60%` — 60% of the section
+   is 60% of the screen, and on a wide one that reaches back past the
+   column's left edge and out under the type. */
+@media (min-width: 640px) {
+  .plate-frame--aside {
+    left: auto;
+    width: min(60%, calc(var(--page-measure) * 0.6));
+  }
+}
+@media (min-width: 1024px) {
+  .plate-frame--aside {
+    width: min(75%, calc(var(--page-measure) * 0.75));
+  }
+}
+
+/* ── THE BLACK SCREEN LEAVING ──────────────────────────────────────
+   The other half of `.site-loading` (commerce.css). That one is a Suspense
+   fallback and cannot animate its own exit — React unmounts it in the same
+   commit that paints the page, so it does not leave, it stops existing.
+   This is the sheet that DOES leave: same ink, same z-index, put up by
+   RouteWipe at the instant the new route commits and then wiped off the
+   top of the screen.
+
+   `inset: 0` with a transform rather than an animated height, because
+   height is a layout property and this is a full-screen rectangle moving
+   every frame. transform is the only thing here the compositor can take.
+
+   Inert throughout. The page underneath is interactive before this is even
+   on screen. */
+.route-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--ink);
+  pointer-events: none;
+  transform: translateY(0);
+  will-change: transform;
+}
+
+/* Up, and out. The ease is the house's own slow-out: the sheet leaves fast
+   and decelerates into nothing, so the page arrives rather than is
+   revealed. */
+.route-wipe[data-lift] {
+  transform: translateY(-100%);
+  transition: transform 620ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* A reader who asked for less motion still needs the cover to go away. It
+   goes away at once rather than travelling. */
+@media (prefers-reduced-motion: reduce) {
+  .route-wipe[data-lift] {
+    transition-duration: 1ms;
   }
 }

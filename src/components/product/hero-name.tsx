@@ -42,8 +42,14 @@ export function HeroName({
       as="h1"
       text={text}
       className={`justify-center ${className ?? ""}`}
-      segmentBy="chars"
-      delay={80}
+      /* Words, not characters. The hero line is a SENTENCE now rather than
+         a two-letter name, and StaggeredText lays its segments out as flex
+         items in a wrapping row: at character granularity the line is free
+         to break between any two letters, which it did, mid-word. Words
+         are the smallest unit that can wrap without cutting one in half,
+         and the stagger still reads across four of them. */
+      segmentBy="words"
+      delay={110}
       duration={0.6}
       /* "bottom" is where the glyphs START, so they travel UPWARD into
          place — "top" dropped them in from above. */

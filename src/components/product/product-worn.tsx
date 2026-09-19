@@ -93,9 +93,11 @@ export function ProductWorn({
     <section
       ref={wrap}
       id="worn"
-      /* px-6 is the page gutter (--gutter); this was the one section on the
-         page opening at 32px while every other one opened at 24px. */
-      className={`relative bg-ink px-6 sm:px-20 lg:px-40 ${SECTION_PAD}`}
+      /* The page gutter, and nothing of its own. This section used to run
+         px-20 at sm and px-40 at lg, which is a second margin: its columns
+         opened a hundred pixels inside every other section's content on a
+         wide screen. The measure below is what holds the grid in now. */
+      className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}
     >
       <div className="mx-auto mb-24 flex max-w-4xl flex-col items-center gap-6 text-center sm:mb-32">
         <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
@@ -106,7 +108,7 @@ export function ProductWorn({
           text={worn.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl"
         />
-        <CtaLink href={buyHref} className="cta--filled mt-4">
+        <CtaLink href={buyHref} className="mt-4">
           {worn.cta}
         </CtaLink>
       </div>
@@ -114,7 +116,7 @@ export function ProductWorn({
       {/* Three columns at every width — same fix as the gallery curtain.
           `grid-cols-2` wrapped the third stack onto its own row, so the
           object arrived on a phone as two columns and a remainder. */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-10 lg:gap-14">
+      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-3 sm:gap-10 lg:gap-14">
         {worn.columns.map((col, i) => (
           <div
             key={i}

@@ -30,6 +30,24 @@ export type Hero = {
   /** Poster for the video where there is one; the plate itself where there
    *  is not. Always present, so the first paint is never empty. */
   image: string;
+  /**
+   * The same plate framed 9:16 for a phone. `image` is cut for a wide
+   * screen, and `object-cover` on a portrait viewport keeps only its
+   * middle third — which is the frame, cropped. A portrait cut shows the
+   * whole object at the same zoom. Omit and the wide plate is used at
+   * every width.
+   */
+  imagePortrait?: string;
+  /**
+   * CSS `object-position` for `image` and `imagePortrait`. The hero is
+   * `object-cover` on a viewport whose shape is never exactly the plate's,
+   * so some edge is always cut; these say which. Default "50% 30%" wide
+   * and "50% 40%" portrait — right for a frame centred in its plate. A
+   * plate whose frame sits off-centre (MATRIARCA's runs to the left edge)
+   * moves the point toward the frame so the crop comes off the empty side.
+   */
+  focus?: string;
+  focusPortrait?: string;
   alt: string;
   /** Campaign film. Omit and the hero renders the still alone. */
   video?: string;
@@ -61,7 +79,10 @@ export type Shoot = {
   heading: Headline;
   body: readonly string[];
   images: readonly Plate[];
-  note: { label: string; body: string };
+  /** The opt-in aside under the body. Optional: a house whose deck does not
+   *  carry one renders the section without it rather than with an empty
+   *  disclosure sitting under the copy. */
+  note?: { label: string; body: string };
 };
 
 export type Meaning = {
@@ -169,12 +190,27 @@ export type Offering = {
     | { kind: "plate"; image: string; alt: string };
 };
 
+/**
+ * A colour in the house's run, reduced to what it takes to PAINT it: a
+ * name and a hex.
+ *
+ * The palette band under the opening used to take `OfferingColorway[]`,
+ * which meant a house could only show its acetates if every one of them
+ * had its own turntable export and its own buy link. Four of the six
+ * houses have one glb between the whole run, so four of the six showed no
+ * palette at all — not because the colours were unknown, but because a
+ * band of flat colour was being asked for a 3D model first.
+ *
+ * The band now takes this instead, and StoryPage builds it from the
+ * catalogue's own `colorwayNames` and SWATCHES. One list, read from the
+ * place that already holds it.
+ */
+export type PaletteColour = { name: string; swatch: string };
+
 /** One acetate the turntable can wear. `swatch` comes from SWATCHES in
  *  lib/shop so the square here and the square on the buy page are never
  *  two different claims about one material. */
-export type OfferingColorway = {
-  name: string;
-  swatch: string;
+export type OfferingColorway = PaletteColour & {
   /** The glb for THIS acetate, under public/models/houses. */
   src: string;
   /** The buy page with this colourway already chosen. */
@@ -193,8 +229,14 @@ export type Worn = {
 };
 
 export type Close = {
-  heading: Headline;
-  body: string;
+  /** The small caps line over the heading. Optional, since the closing
+   *  block on a house without one opens straight on the heading. */
+  eyebrow?: string;
+  /** Optional, like the eyebrow and the body. A page whose gallery already
+   *  closed on a line does not close on it again at the counter; what is
+   *  left of this block is then the offer alone, which is enough. */
+  heading?: Headline;
+  body?: string;
   cta: string;
   /** Plates the pointer trail throws. */
   trail: readonly string[];

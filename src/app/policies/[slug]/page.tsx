@@ -6,6 +6,7 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { PageHero } from "@/components/page/page-hero";
 import { ProsePage } from "@/components/page/prose-page";
 import { policies } from "@/lib/policies";
+import { PrivacySwitches } from "@/components/page/privacy-switches";
 
 /**
  * The five policy documents on one route.
@@ -52,7 +53,9 @@ export default async function PolicyPage({
             to be admired while someone is trying to find out whether their
             hinge is covered. The house voice survives in the type. */}
         <PageHero eyebrow={policy.eyebrow} title={policy.title} />
-        <ProsePage updated={policy.updated} sections={policy.sections} />
+        <ProsePage updated={policy.updated} sections={policy.sections}>
+          {policy.slug === "privacy-preferences" ? <PrivacySwitches /> : null}
+        </ProsePage>
       </main>
       <SiteFooter tone="ink" />
     </>

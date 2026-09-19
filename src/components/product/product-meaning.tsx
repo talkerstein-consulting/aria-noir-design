@@ -29,7 +29,7 @@ import { RevealText, RevealPlate } from "@/components/reveal";
 export function ProductMeaning({ meaning }: { meaning: Meaning }) {
   return (
     <section className="relative h-svh overflow-hidden bg-ink">
-      <RevealPlate className="absolute inset-y-0 right-0 w-full sm:w-3/5 lg:w-3/4">
+      <RevealPlate className="plate-frame plate-frame--aside">
         <Image
           src={meaning.image}
           alt={meaning.alt}

@@ -5,13 +5,15 @@ import { RevealText, RevealPlate } from "@/components/reveal";
 
 /**
  * "The Shoot" — two fisheye plates over the text, with an opt-in expandable
- * note. `<details>` keeps it genuinely optional (no JS, no layout shift for
- * readers who skip it) while matching the gold/paper palette everywhere else.
+ * note, where the house has one. `<details>` keeps it genuinely optional (no
+ * JS, no layout shift for readers who skip it) while matching the gold/paper
+ * palette everywhere else. A house whose deck carries no note renders the
+ * column without it rather than with an empty disclosure under the body.
  */
 export function ProductShoot({ shoot }: { shoot: Shoot }) {
   return (
     <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-2">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-2">
         <div className="flex flex-col gap-4">
           <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
             {shoot.preheader}
@@ -32,6 +34,7 @@ export function ProductShoot({ shoot }: { shoot: Shoot }) {
             ))}
           </div>
 
+          {shoot.note ? (
           <details className="group mt-6 border-t border-paper/15 pt-6">
             <summary className="cursor-pointer list-none font-ui text-[11px] tracking-[0.25em] text-gold uppercase [&::-webkit-details-marker]:hidden">
               <span className="mr-2">①</span>
@@ -41,6 +44,7 @@ export function ProductShoot({ shoot }: { shoot: Shoot }) {
               {shoot.note.body}
             </p>
           </details>
+          ) : null}
         </div>
 
         <div className="grid grid-cols-2 gap-4 self-start sm:gap-6">

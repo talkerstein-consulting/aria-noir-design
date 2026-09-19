@@ -23,8 +23,16 @@ import { RevealPlate } from "@/components/reveal";
  * pages any more, so there is no stacking to arrange.
  */
 export type Approach = {
-  /** The mood film. Muted, looping, no controls: it is a moving plate. */
-  film: { src: string; poster: string; alt: string };
+  /**
+   * The mood film. Muted, looping, no controls: it is a moving plate.
+   *
+   * Optional, because four of the six houses have not been filmed. Where
+   * there is none the approach is the face alone, which is still an
+   * approach — one step shorter. The alternative was borrowing another
+   * house's footage, and a film of a different frame is not this frame's
+   * mood, it is a lie about which object the page is about.
+   */
+  film?: { src: string; poster: string; alt: string };
   /** The face, close. A PORTRAIT of someone wearing the frame, not a macro
    *  of a hinge — the detail shots have their own section, and what this
    *  step has to answer is how the cut sits on a head. */
@@ -35,6 +43,10 @@ export function ProductApproach({ approach }: { approach: Approach }) {
   return (
     <>
       {/* ---- The film ----
+          Skipped whole where the house has none: see `film` above. */}
+      {approach.film ? (
+      <>
+      {/* ---- The film ----
           Full bleed, silent, and given the whole screen. It carries a
           vignette rather than a scrim: nothing is set over it, so the
           darkening is only there to keep the frame edges from cutting hard
@@ -43,6 +55,8 @@ export function ProductApproach({ approach }: { approach: Approach }) {
         id="approach-film"
         className="relative h-svh overflow-hidden bg-ink"
       >
+        {/* The film keeps the page's own margin — see .plate-frame. */}
+        <div className="plate-frame">
         <HeroFilm
           src={approach.film.src}
           poster={approach.film.poster}
@@ -60,7 +74,10 @@ export function ProductApproach({ approach }: { approach: Approach }) {
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(120%_100%_at_50%_50%,rgba(0,0,0,0)_45%,rgba(0,0,0,0.55)_100%)]"
         />
+        </div>
       </section>
+      </>
+      ) : null}
 
       {/* ---- The face ----
           Held at 4:5 on a phone and full screen above it, because a close
@@ -68,9 +85,13 @@ export function ProductApproach({ approach }: { approach: Approach }) {
           plate reveals on scroll like every other still on these pages. */}
       <section
         id="approach-face"
-        className="relative overflow-hidden bg-ink"
+        /* The height lives on the SECTION now rather than on the plate:
+           the plate is inset by the page gutter (see .plate-frame), so it
+           can no longer be the thing that gives the section its height
+           without the gutter falling off the bottom of it. */
+        className="relative h-svh overflow-hidden bg-ink"
       >
-        <RevealPlate className="relative h-svh w-full">
+        <RevealPlate className="plate-frame">
           <Image
             src={approach.face.src}
             alt={approach.face.alt}

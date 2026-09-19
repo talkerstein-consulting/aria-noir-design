@@ -29,12 +29,23 @@ import { ACCOUNT_URL } from "@/lib/navigation";
  * because there was never anything behind this flag to leak.
  */
 
-/* Renamed from `aria-noir:room` when the Room was removed. A stored flag
-   under the old key is simply not found, so anyone carrying one is shown
-   ACCESS until their next sign-in — a wasted click for existing visitors
-   and nothing more, since the flag never guarded anything. Worth it to
-   leave no trace of a route that no longer exists. */
-const KEY = "aria-noir:bag";
+/* ---- `aria-noir:known`, and why it is not `aria-noir:bag` ----
+
+   It was. Renamed from `aria-noir:room` when the Room was removed, the new
+   name landed on the key lib/cart.ts stores the BAG under — one
+   localStorage key, two owners, holding two different shapes.
+
+   The collision was not theoretical. `getSnapshot` compares the stored
+   value to "1", and a bag serialises to a JSON array, so any reader with
+   something in their bag read as signed out. Worse in the other
+   direction: `set(true)` writes "1" over that key, which is a customer's
+   bag being deleted by the act of signing in.
+
+   Renamed again, to a key nothing else claims. A flag under either old
+   name is simply not found, which shows ACCESS until the next sign-in —
+   a wasted click, and nothing more, since this flag has never guarded
+   anything. */
+const KEY = "aria-noir:known";
 
 /** Point Shopify's post-auth redirect at `/bag?welcome=1`. */
 export const RETURN_PARAM = "welcome";
@@ -66,21 +77,25 @@ function getSnapshot() {
   }
 }
 
+/** The same write `useSession().set` does, for callers that are not in a
+ *  render — the house API's session fetch mirrors its answer here. */
+export function markKnown(on: boolean) {
+  try {
+    if (on) window.localStorage.setItem(KEY, "1");
+    else window.localStorage.removeItem(KEY);
+  } catch {
+    /* Storage refused; the header just keeps saying Access. */
+  }
+  window.dispatchEvent(new Event(KEY));
+}
+
 export function useSession() {
   /* False on the server and on the hydrating render — the header draws
      Access until proven otherwise, which is the safe way round: showing
      Room to a signed-out reader is a promise the next page cannot keep. */
   const signedIn = useSyncExternalStore(subscribe, getSnapshot, () => false);
 
-  const set = useCallback((on: boolean) => {
-    try {
-      if (on) window.localStorage.setItem(KEY, "1");
-      else window.localStorage.removeItem(KEY);
-    } catch {
-      /* Storage refused; the header just keeps saying Access. */
-    }
-    window.dispatchEvent(new Event(KEY));
-  }, []);
+  const set = useCallback((on: boolean) => markKnown(on), []);
 
   return { signedIn, set };
 }

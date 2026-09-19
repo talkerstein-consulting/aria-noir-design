@@ -48,7 +48,12 @@ export function ProductClose({
   return (
     <section
       id="acquire"
-      className="relative overflow-hidden bg-paper px-6 pt-[8vh] pb-32 text-ink sm:px-10 sm:pb-48"
+      /* `on-paper` is the ground declaration, and it is what the CTA inside
+         reads to invert correctly — the section paints white, so the filled
+         CTA has to fill with ink and set its label in paper. This used to be
+         a `variant="dark"` prop on the CTA itself; ground belongs on the
+         section. */
+      className="on-paper relative overflow-hidden bg-paper px-6 pt-[8vh] pb-32 text-ink sm:px-10 sm:pb-48"
     >
       {/* The turn itself. Ink at the very top, paper by the time the
           heading is on screen, so the gallery above hands over rather than
@@ -65,21 +70,21 @@ export function ProductClose({
           <div className="absolute inset-0 z-20 isolate" aria-hidden>
             <ImageTrail items={[...close.trail]} variant={1} />
           </div>
-          <RevealText
-            as="h2"
-            text={close.heading}
-            className="pointer-events-none relative z-10 font-display text-5xl leading-[1.02] tracking-tight text-balance text-ink sm:text-7xl md:text-8xl"
-          />
+          {/* Optional now, like the body below it. See Close in
+              lib/product. */}
+          {close.heading ? (
+            <RevealText
+              as="h2"
+              text={close.heading}
+              className="pointer-events-none relative z-10 font-display text-5xl leading-[1.02] tracking-tight text-balance text-ink sm:text-7xl md:text-8xl"
+            />
+          ) : null}
         </div>
 
         <p className="relative z-30 max-w-xl font-ui text-base leading-relaxed text-pretty text-ink/65 sm:text-lg">
           {close.body}
         </p>
-        <CtaLink
-          href={buyHref}
-          variant="dark"
-          className="cta--filled relative z-30 mt-4"
-        >
+        <CtaLink href={buyHref} className="relative z-30 mt-4">
           {close.cta}
         </CtaLink>
       </div>

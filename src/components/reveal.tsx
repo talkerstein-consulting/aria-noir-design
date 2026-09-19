@@ -217,6 +217,10 @@ type RevealPlateProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
+  /** Merged over the component's own, which is only the stagger variable.
+   *  The caller that needs this is a plate whose box takes its ratio from
+   *  the photograph inside it — a number, so it cannot be a class. */
+  style?: CSSProperties;
 };
 
 /**
@@ -229,13 +233,14 @@ export function RevealPlate({
   children,
   className = "",
   delay = 0,
+  style,
 }: RevealPlateProps) {
   const ref = useReveal<HTMLDivElement>();
   return (
     <div
       ref={ref}
       className={`reveal-plate ${className}`.trim()}
-      style={{ "--d": `${delay}ms` } as CSSProperties}
+      style={{ ...style, "--d": `${delay}ms` } as CSSProperties}
     >
       {children}
     </div>

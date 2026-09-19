@@ -106,6 +106,11 @@
      must never be guessed per-section. */
   --gutter: 1.5rem; /* px-6  */
   --gutter-wide: 2.5rem; /* sm:px-10 */
+  /* The page's column. Every section that holds words or a grid is
+     `mx-auto max-w-7xl`, which is this number; the full-screen plates read
+     it here so they can stand in the same column instead of running out to
+     the gutter. Change it and the whole page moves together. */
+  --page-measure: 80rem; /* max-w-7xl */
   --section-pad: 8rem; /* py-32 */
   --section-pad-wide: 12rem; /* sm:py-48 */
 

@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aria Noir — Interface Style Guide</title>
+<meta name="description" content="A living rendering of STYLE-GUIDE.md: the tokens, the type scale and every component pattern shown on both grounds." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><text x='50' y='68' font-size='58' font-family='Georgia,serif' fill='%23fff' text-anchor='middle'>A</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&family=Manrope:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ══ Tokens ═══════════════════════════════════════════════════════════
+   Transcribed from src/styles/tokens.css. Nothing is imported: this page
+   has to open from a USB stick in five years. If a value here disagrees
+   with tokens.css, tokens.css is right and this page is stale. */
+:root {
+  --ink: #000000;
+  --paper: #ffffff;
+  --gold: #c6a664;
+  --gold-on-light: #6f5622;
+
+  --text-primary-dark: var(--paper);
+  --text-secondary-dark: color-mix(in srgb, var(--paper) 70%, transparent);
+  --text-tertiary-dark: color-mix(in srgb, var(--paper) 50%, transparent);
+  --text-quiet-dark: color-mix(in srgb, var(--paper) 40%, transparent);
+  --text-accent-dark: var(--gold);
+  --rule-dark: color-mix(in srgb, var(--paper) 15%, transparent);
+
+  --text-primary-light: var(--ink);
+  --text-secondary-light: color-mix(in srgb, var(--ink) 70%, transparent);
+  --text-tertiary-light: color-mix(in srgb, var(--ink) 60%, transparent);
+  --text-quiet-light: color-mix(in srgb, var(--ink) 40%, transparent);
+  --text-accent-light: var(--gold-on-light);
+  --rule-light: color-mix(in srgb, var(--ink) 10%, transparent);
+
+  --font-display-stack: "Libre Bodoni", Georgia, "Times New Roman", serif;
+  --font-ui-stack: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono-stack: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --display-hero: clamp(3.5rem, 17vw, 12rem);
+  --display-xl: clamp(3rem, 9vw, 6rem);
+  --display-lg: clamp(2.25rem, 6.5vw, 3.75rem);
+  --display-md: clamp(1.875rem, 4.5vw, 3rem);
+  --display-sm: clamp(1.25rem, 2.6vw, 1.875rem);
+  --display-xs: clamp(1rem, 1.6vw, 1.25rem);
+
+  --leading-display-hero: 0.82;
+  --leading-display-xl: 1.02;
+  --leading-display-lg: 1.05;
+  --leading-display-md: 1.12;
+  --leading-display-quote: 1.3;
+  --leading-display-xs: 1.35;
+
+  --text-eyebrow: 0.6875rem;
+  --text-micro: 0.625rem;
+  --text-caption: 0.75rem;
+  --text-body-sm: 0.875rem;
+  --text-body: 1rem;
+  --text-body-lg: 1.125rem;
+  --leading-body: 1.65;
+
+  --track-display: -0.02em;
+  --track-body: -0.01em;
+  --track-label: 0.3em;
+  --track-eyebrow: 0.35em;
+  --track-wide: 0.4em;
+
+  --gutter: 1.5rem;
+  --gutter-wide: 2.5rem;
+  --page-measure: 80rem;
+  --stack-xs: 0.5rem;
+  --stack-sm: 1rem;
+  --stack-md: 1.5rem;
+  --stack-lg: 2.5rem;
+  --stack-xl: 4rem;
+  --stack-2xl: 6rem;
+
+  --measure-tight: 52ch;
+  --measure: 62ch;
+  --measure-wide: 68ch;
+
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout-strong: cubic-bezier(0.83, 0, 0.17, 1);
+
+  --dur-instant: 0.2s;
+  --dur-fast: 0.3s;
+  --dur-base: 0.45s;
+  --dur-slow: 0.5s;
+  --dur-reveal: 0.85s;
+  --dur-scene: 0.9s;
+
+  --stagger-char: 22ms;
+  --stagger-word: 45ms;
+
+  --rule-weight: 1px;
+  --cta-gap: 6px;
+  --focus-ring: 2px;
+  --focus-offset: 4px;
+}
+
+/* ── Ground, exactly as typography.css declares it ─────────────────── */
+.on-ink {
+  background: var(--ink);
+  color: var(--text-primary-dark);
+  --fg-primary: var(--text-primary-dark);
+  --fg-secondary: var(--text-secondary-dark);
+  --fg-tertiary: var(--text-tertiary-dark);
+  --fg-quiet: var(--text-quiet-dark);
+  --fg-accent: var(--text-accent-dark);
+  --fg-rule: var(--rule-dark);
+  --ground: var(--ink);
+}
+.on-paper {
+  background: var(--paper);
+  color: var(--text-primary-light);
+  --fg-primary: var(--text-primary-light);
+  --fg-secondary: var(--text-secondary-light);
+  --fg-tertiary: var(--text-tertiary-light);
+  --fg-quiet: var(--text-quiet-light);
+  --fg-accent: var(--text-accent-light);
+  --fg-rule: var(--rule-light);
+  --ground: var(--paper);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body {
+  margin: 0;
+  background: var(--ink);
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body);
+  letter-spacing: var(--track-body);
+  -webkit-font-smoothing: antialiased;
+  --fg-primary: var(--text-primary-dark);
+  --fg-secondary: var(--text-secondary-dark);
+  --fg-tertiary: var(--text-tertiary-dark);
+  --fg-quiet: var(--text-quiet-dark);
+  --fg-accent: var(--text-accent-dark);
+  --fg-rule: var(--rule-dark);
+  --ground: var(--ink);
+  color: var(--fg-secondary);
+}
+
+/* ── Type recipes ──────────────────────────────────────────────────── */
+.t-display-xl, .t-display-lg, .t-display-md, .t-display-sm, .t-display-xs {
+  font-family: var(--font-display-stack);
+  letter-spacing: var(--track-display);
+  color: var(--fg-primary);
+  text-wrap: balance;
+  margin: 0;
+}
+.t-display-xl { font-size: var(--display-xl); line-height: var(--leading-display-xl); }
+.t-display-lg { font-size: var(--display-lg); line-height: var(--leading-display-lg); }
+.t-display-md { font-size: var(--display-md); line-height: var(--leading-display-md); }
+.t-display-sm { font-size: var(--display-sm); line-height: var(--leading-display-quote); }
+.t-display-xs { font-size: var(--display-xs); line-height: var(--leading-display-xs); }
+.t-eyebrow {
+  font-size: var(--text-eyebrow); letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase; color: var(--fg-quiet); margin: 0;
+}
+.t-label {
+  font-size: var(--text-eyebrow); letter-spacing: var(--track-label);
+  text-transform: uppercase; color: var(--fg-quiet);
+}
+.t-caption { font-size: var(--text-caption); color: var(--fg-tertiary); }
+.t-body { font-size: var(--text-body-sm); color: var(--fg-secondary); max-width: var(--measure); }
+.t-body--lede { font-size: var(--text-body-lg); color: var(--fg-secondary); max-width: var(--measure-tight); }
+.mono { font-family: var(--font-mono-stack); font-variant-numeric: tabular-nums; }
+
+/* ── Page frame ────────────────────────────────────────────────────── */
+.bar {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: var(--rule-weight) solid var(--rule-dark);
+}
+.bar-inner {
+  max-width: var(--page-measure); margin: 0 auto;
+  padding: 0.9rem var(--gutter);
+  display: flex; align-items: baseline; gap: 1.5rem; flex-wrap: wrap;
+}
+.bar .mark {
+  font-family: var(--font-display-stack); font-size: 1rem;
+  letter-spacing: 0.22em; color: var(--text-primary-dark); text-transform: uppercase;
+}
+.bar nav { display: flex; gap: 1.1rem; flex-wrap: wrap; }
+.bar nav a {
+  font-size: var(--text-micro); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-quiet-dark); text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-inout);
+}
+.bar nav a:hover, .bar nav a:focus-visible { color: var(--text-primary-dark); }
+
+.wrap { max-width: var(--page-measure); margin: 0 auto; padding: 0 var(--gutter); }
+@media (min-width: 768px) { .wrap { padding: 0 var(--gutter-wide); } }
+
+header.page { padding: 6rem 0 4rem; }
+header.page .t-body { color: var(--text-tertiary-dark); }
+
+section.band { padding: var(--stack-2xl) 0; border-top: var(--rule-weight) solid var(--fg-rule); }
+section.band > .wrap > .head { margin-bottom: var(--stack-xl); }
+.head .num { font-family: var(--font-mono-stack); font-size: var(--text-eyebrow); color: var(--fg-quiet); }
+.head h2 { margin: var(--stack-xs) 0 var(--stack-sm); }
+.head p { margin: 0; color: var(--fg-tertiary); max-width: var(--measure); font-size: var(--text-body-sm); }
+
+.grid { display: grid; gap: var(--stack-lg); }
+@media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 720px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 720px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }
+
+.panel { padding: var(--stack-lg); border: var(--rule-weight) solid var(--fg-rule); }
+.panel > .t-eyebrow { margin-bottom: var(--stack-md); }
+
+/* ── Token tables ──────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; font-size: var(--text-caption); }
+th {
+  text-align: left; font-weight: 400; padding: 0 0 0.6rem;
+  font-size: var(--text-eyebrow); letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase; color: var(--fg-quiet);
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+td { padding: 0.75rem 1rem 0.75rem 0; border-bottom: var(--rule-weight) solid var(--fg-rule); vertical-align: middle; }
+td:last-child { padding-right: 0; color: var(--fg-tertiary); }
+td.name { font-family: var(--font-mono-stack); color: var(--fg-secondary); white-space: nowrap; }
+td.val { font-family: var(--font-mono-stack); color: var(--fg-quiet); white-space: nowrap; }
+
+.chip { display: inline-block; width: 2.5rem; height: 1.25rem; border: var(--rule-weight) solid var(--fg-rule); vertical-align: middle; }
+.rule-demo { display: block; width: 100%; height: var(--rule-weight); }
+
+/* ── Specimens ─────────────────────────────────────────────────────── */
+.spec { border-bottom: var(--rule-weight) solid var(--fg-rule); padding: var(--stack-md) 0; }
+.spec .meta {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  font-family: var(--font-mono-stack); font-size: var(--text-micro);
+  color: var(--fg-quiet); margin-bottom: 0.6rem;
+}
+
+/* ── The chrome ────────────────────────────────────────────────────── */
+.chrome {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 1.25rem var(--gutter);
+  border: var(--rule-weight) solid var(--fg-rule);
+}
+.chrome .left, .chrome .right { display: flex; align-items: center; gap: 0.75rem; }
+.chrome .right { justify-content: flex-end; }
+.chrome .wordmark {
+  font-family: var(--font-display-stack); letter-spacing: 0.24em;
+  text-transform: uppercase; font-size: 0.95rem; color: var(--fg-primary);
+}
+.nav-icon {
+  width: 2.25rem; height: 2.25rem; display: grid; place-items: center;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: inherit; opacity: 0.86; position: relative;
+  transition: opacity var(--dur-fast) var(--ease-inout);
+}
+.nav-icon:hover { opacity: 1; }
+.nav-icon:focus-visible { opacity: 1; outline: var(--rule-weight) solid currentColor; outline-offset: 2px; }
+.nav-icon svg { width: 1.125rem; height: 1.125rem; stroke: currentColor; stroke-width: 1.25; fill: none; }
+.tally {
+  position: absolute; right: 0.1rem; bottom: 0.15rem;
+  font-family: var(--font-mono-stack); font-size: 0.5625rem; color: var(--fg-primary);
+}
+.menu-word {
+  font-size: var(--text-eyebrow); letter-spacing: var(--track-label);
+  text-transform: uppercase; color: var(--fg-secondary); background: none;
+  border: 0; padding: 0; cursor: pointer;
+}
+
+/* ── Crumbs ────────────────────────────────────────────────────────── */
+.crumbs { font-size: var(--text-eyebrow); letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-quiet); white-space: nowrap; }
+.crumbs a { color: inherit; text-decoration: none; transition: color var(--dur-fast) var(--ease-inout); }
+.crumbs a:hover, .crumbs a:focus-visible { color: var(--fg-primary); }
+.crumbs .sep { opacity: 0.45; margin: 0 0.5rem; }
+.crumbs [aria-current="page"] { color: var(--fg-secondary); }
+
+/* ── CTAs ──────────────────────────────────────────────────────────── */
+.cta-main, .cta-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0.9rem 1.6rem; font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  font-family: var(--font-ui-stack); border-radius: 0; cursor: pointer;
+  text-decoration: none; transition: background var(--dur-fast) var(--ease-inout),
+    color var(--dur-fast) var(--ease-inout), opacity var(--dur-fast) var(--ease-inout);
+}
+.cta-main { background: var(--fg-primary); color: var(--ground); border: var(--rule-weight) solid var(--fg-primary); }
+.cta-main:hover { background: var(--fg-secondary); border-color: transparent; }
+.cta-secondary { background: none; color: var(--fg-primary); border: var(--rule-weight) solid var(--fg-rule); }
+.cta-secondary:hover { border-color: var(--fg-primary); }
+.cta-main:disabled { opacity: 0.38; cursor: not-allowed; }
+.cta-main:focus-visible, .cta-secondary:focus-visible {
+  outline: var(--focus-ring) solid var(--fg-primary); outline-offset: var(--focus-offset);
+}
+.link-quiet { color: var(--fg-quiet); text-decoration: none; transition: color var(--dur-fast) var(--ease-inout); }
+.link-quiet:hover { color: var(--fg-primary); }
+
+/* ── Field ─────────────────────────────────────────────────────────── */
+.field { display: block; margin-bottom: var(--stack-lg); }
+.field > span {
+  display: block; font-size: var(--text-eyebrow); letter-spacing: var(--track-label);
+  text-transform: uppercase; color: var(--fg-quiet); margin-bottom: 0.6rem;
+}
+.field input {
+  width: 100%; background: none; border: 0; border-radius: 0;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  padding: 0.5rem 0; color: var(--fg-primary);
+  font-family: var(--font-ui-stack); font-size: var(--text-body);
+  transition: border-color var(--dur-fast) var(--ease-inout);
+}
+.field input:focus { outline: none; border-bottom-color: var(--fg-primary); }
+.field[data-invalid] input { border-bottom-color: var(--fg-accent); }
+.field[data-invalid] > span { color: var(--fg-accent); }
+.field .opt { opacity: 0.6; }
+.field-error { display: block; margin-top: 0.6rem; font-size: var(--text-caption); color: var(--fg-accent); }
+
+/* ── Folding steps ─────────────────────────────────────────────────── */
+.steps { border-top: var(--rule-weight) solid var(--fg-rule); }
+.step { border-bottom: var(--rule-weight) solid var(--fg-rule); }
+.step-head {
+  width: 100%; display: flex; align-items: baseline; gap: 1rem;
+  background: none; border: 0; padding: 1.1rem 0; cursor: pointer;
+  color: inherit; text-align: left; font-family: inherit;
+}
+.step-head .idx { font-family: var(--font-mono-stack); font-size: var(--text-eyebrow); color: var(--fg-quiet); }
+.step-head .title { flex: 1; font-size: var(--text-eyebrow); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-primary); }
+.step-head .change { font-size: var(--text-eyebrow); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--fg-quiet); }
+.step-body { padding: 0 0 1.4rem 2.4rem; color: var(--fg-tertiary); font-size: var(--text-body-sm); }
+.step-summary { padding: 0 0 1.1rem 2.4rem; color: var(--fg-tertiary); font-size: var(--text-body-sm); }
+.step[data-state="waiting"] .step-head { opacity: 0.4; cursor: default; }
+.step[data-state="waiting"] .step-body,
+.step[data-state="waiting"] .step-summary,
+.step[data-state="done"] .step-body,
+.step[data-state="open"] .step-summary,
+.step[data-state="open"] .change,
+.step[data-state="waiting"] .change { display: none; }
+
+/* ── Product surfaces ──────────────────────────────────────────────── */
+.card { text-decoration: none; color: inherit; display: block; }
+.card-shot { aspect-ratio: 1 / 1; display: grid; place-items: center; border: var(--rule-weight) solid var(--fg-rule); }
+.card-shot span { font-family: var(--font-mono-stack); font-size: var(--text-micro); color: var(--fg-quiet); letter-spacing: 0.1em; }
+.card-name { margin: 0.9rem 0 0.25rem; font-family: var(--font-display-stack); font-size: 1.05rem; color: var(--fg-primary); }
+.card-note { font-size: var(--text-caption); color: var(--fg-quiet); font-variant-numeric: tabular-nums; }
+.plate-45 { aspect-ratio: 4 / 5; display: grid; place-items: center; border: var(--rule-weight) solid var(--fg-rule); }
+
+.swatches { display: flex; gap: 0.6rem; }
+.swatch { width: 2rem; height: 2rem; border: var(--rule-weight) solid var(--fg-rule); padding: 0; cursor: pointer; border-radius: 0; }
+.swatch[aria-pressed="true"] { outline: var(--rule-weight) solid var(--fg-primary); outline-offset: 3px; }
+.hold-toggle {
+  display: inline-flex; align-items: center; gap: 0.5rem; background: none;
+  border: 0; padding: 0; cursor: pointer; color: var(--fg-secondary);
+  font-size: var(--text-eyebrow); letter-spacing: var(--track-label); text-transform: uppercase;
+}
+.hold-toggle svg { width: 1rem; height: 1rem; stroke: currentColor; stroke-width: 1.25; fill: none; }
+.hold-toggle[aria-pressed="true"] { color: var(--fg-primary); }
+.hold-toggle[aria-pressed="true"] svg { fill: currentColor; }
+
+/* ── Motion demos ──────────────────────────────────────────────────── */
+.motion-track { height: var(--rule-weight); background: var(--fg-rule); position: relative; overflow: hidden; margin-top: 0.75rem; }
+.motion-track i { position: absolute; inset: 0 auto 0 0; width: 100%; background: var(--fg-primary); transform-origin: left; transform: scaleX(0); }
+.motion-card:hover .motion-track i, .motion-card:focus-within .motion-track i { transform: scaleX(1); }
+.motion-card { padding: var(--stack-md) 0; border-bottom: var(--rule-weight) solid var(--fg-rule); }
+.motion-card .t-caption { color: var(--fg-quiet); }
+
+.dont { color: var(--fg-accent); }
+.rules { list-style: none; padding: 0; margin: 0; }
+.rules li { padding: 0.9rem 0; border-bottom: var(--rule-weight) solid var(--fg-rule); color: var(--fg-tertiary); font-size: var(--text-body-sm); }
+.rules li b { color: var(--fg-primary); font-weight: 500; }
+
+footer.page { padding: var(--stack-2xl) 0 6rem; border-top: var(--rule-weight) solid var(--rule-dark); color: var(--text-quiet-dark); font-size: var(--text-caption); }
+footer.page a { color: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-inner">
+    <span class="mark">Aria Noir</span>
+    <nav aria-label="Sections">
+      <a href="#tokens">Tokens</a>
+      <a href="#type">Type</a>
+      <a href="#chrome">Chrome</a>
+      <a href="#crumbs">Crumbs</a>
+      <a href="#controls">Controls</a>
+      <a href="#field">Field</a>
+      <a href="#steps">Steps</a>
+      <a href="#product">Product</a>
+      <a href="#states">States</a>
+      <a href="#motion">Motion</a>
+      <a href="#floor">Floor</a>
+    </nav>
+  </div>
+</div>
+
+<header class="page wrap">
+  <p class="t-eyebrow">Interface style guide · rendered</p>
+  <h1 class="t-display-xl">Everything the words sit in</h1>
+  <p class="t-body t-body--lede" style="margin-top:2rem">
+    <code class="mono">COPY.md</code> governs the words. <code class="mono">STYLE-GUIDE.md</code> governs
+    everything else, and this page is that file drawn rather than described —
+    every swatch, specimen and control below is live CSS lifted from
+    <code class="mono">src/styles/tokens.css</code>. Nothing here is imported, so the page
+    opens standalone; if a value disagrees with the stylesheet, the stylesheet is right.
+  </p>
+  <div class="grid grid-2" style="margin-top:3.5rem">
+    <div class="panel">
+      <p class="t-eyebrow">Rule one</p>
+      <p class="t-display-xs" style="margin-bottom:0.75rem">No radii, no shadows.</p>
+      <p class="t-caption">Every corner is square and nothing casts a shadow. Fill is spent
+      twice: the main CTA, and the held heart. Everything else is hairlines and type.</p>
+    </div>
+    <div class="panel">
+      <p class="t-eyebrow">Rule two</p>
+      <p class="t-display-xs" style="margin-bottom:0.75rem">Colour never carries a state alone.</p>
+      <p class="t-caption">An error turns a rule accent <em>and</em> says what to do. A selected
+      swatch is ruled <em>and</em> named in the panel above it.</p>
+    </div>
+  </div>
+</header>
+
+<!-- ══ 1 · TOKENS ══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="tokens">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">01</span>
+      <h2 class="t-display-md">Tokens</h2>
+      <p>Defined in <code class="mono">src/styles/tokens.css</code>. Never write a literal colour,
+      duration or rule weight in a component. Three inks and nothing else: a black page that
+      turns white once, with gold as the only chromatic accent.</p>
+    </div>
+
+    <div class="grid grid-2">
+      <div>
+        <p class="t-eyebrow" style="margin-bottom:1.25rem">Primitives</p>
+        <table>
+          <thead><tr><th>Token</th><th>Value</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="name">--ink</td><td class="val">#000000</td><td><span class="chip" style="background:#000"></span></td></tr>
+            <tr><td class="name">--paper</td><td class="val">#ffffff</td><td><span class="chip" style="background:#fff"></span></td></tr>
+            <tr><td class="name">--gold</td><td class="val">#c6a664</td><td><span class="chip" style="background:#c6a664"></span></td></tr>
+            <tr><td class="name">--gold-on-light</td><td class="val">#6f5622</td><td><span class="chip" style="background:#6f5622"></span></td></tr>
+          </tbody>
+        </table>
+        <p class="t-caption" style="margin-top:1rem"><code class="mono">--gold</code> is only ~2:1 on paper.
+        Use <code class="mono">--gold-on-light</code> for gold text on the light closing sections.</p>
+      </div>
+
+      <div>
+        <p class="t-eyebrow" style="margin-bottom:1.25rem">Geometry &amp; motion</p>
+        <table>
+          <thead><tr><th>Token</th><th>Value</th><th>Job</th></tr></thead>
+          <tbody>
+            <tr><td class="name">--rule-weight</td><td class="val">1px</td><td>Every line. There is no second weight.</td></tr>
+            <tr><td class="name">--focus-ring</td><td class="val">2px</td><td>Visible focus, offset 4px.</td></tr>
+            <tr><td class="name">--cta-gap</td><td class="val">6px</td><td>Label to its underline.</td></tr>
+            <tr><td class="name">--dur-fast</td><td class="val">0.3s</td><td>Colour on hover.</td></tr>
+            <tr><td class="name">--dur-base</td><td class="val">0.45s</td><td>Glyph shuffle.</td></tr>
+            <tr><td class="name">--dur-slow</td><td class="val">0.5s</td><td>Rule sweep.</td></tr>
+            <tr><td class="name">--dur-reveal</td><td class="val">0.85s</td><td>Plate wipe.</td></tr>
+            <tr><td class="name">--dur-scene</td><td class="val">0.9s</td><td>Full-section rise.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="t-eyebrow" style="margin:4rem 0 1.25rem">The semantic ramp — the same nine jobs on both grounds</p>
+    <div class="grid grid-2">
+      <div class="on-ink panel">
+        <p class="t-eyebrow">On ink · the dark 90%</p>
+        <table>
+          <tbody>
+            <tr><td class="name">--fg-primary</td><td style="color:var(--fg-primary)">Headings, the thing being bought</td><td><span class="chip" style="background:var(--fg-primary)"></span></td></tr>
+            <tr><td class="name">--fg-secondary</td><td style="color:var(--fg-secondary)">Body on ink</td><td><span class="chip" style="background:var(--fg-secondary)"></span></td></tr>
+            <tr><td class="name">--fg-tertiary</td><td style="color:var(--fg-tertiary)">Supporting paragraph</td><td><span class="chip" style="background:var(--fg-tertiary)"></span></td></tr>
+            <tr><td class="name">--fg-quiet</td><td style="color:var(--fg-quiet)">Labels, eyebrows, list prices</td><td><span class="chip" style="background:var(--fg-quiet)"></span></td></tr>
+            <tr><td class="name">--fg-accent</td><td style="color:var(--fg-accent)">Errors, one progress mark</td><td><span class="chip" style="background:var(--fg-accent)"></span></td></tr>
+            <tr><td class="name">--fg-rule</td><td><span class="rule-demo" style="background:var(--fg-rule)"></span></td><td class="val">15%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="on-paper panel">
+        <p class="t-eyebrow">On paper · finale + footer</p>
+        <table>
+          <tbody>
+            <tr><td class="name">--fg-primary</td><td style="color:var(--fg-primary)">Headings, the thing being bought</td><td><span class="chip" style="background:var(--fg-primary)"></span></td></tr>
+            <tr><td class="name">--fg-secondary</td><td style="color:var(--fg-secondary)">Body on paper</td><td><span class="chip" style="background:var(--fg-secondary)"></span></td></tr>
+            <tr><td class="name">--fg-tertiary</td><td style="color:var(--fg-tertiary)">Supporting paragraph</td><td><span class="chip" style="background:var(--fg-tertiary)"></span></td></tr>
+            <tr><td class="name">--fg-quiet</td><td style="color:var(--fg-quiet)">Labels, eyebrows, list prices</td><td><span class="chip" style="background:var(--fg-quiet)"></span></td></tr>
+            <tr><td class="name">--fg-accent</td><td style="color:var(--fg-accent)">Errors, one progress mark</td><td><span class="chip" style="background:var(--fg-accent)"></span></td></tr>
+            <tr><td class="name">--fg-rule</td><td><span class="rule-demo" style="background:var(--fg-rule)"></span></td><td class="val">10%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="t-caption" style="margin-top:1.5rem;max-width:var(--measure)">
+      A section declares its own ground with <code class="mono">.on-ink</code> or
+      <code class="mono">.on-paper</code>, and every recipe resolves itself from there. A section that
+      forgets gets a white header over whatever it is — and a filled CTA in the body's dark tokens,
+      which is white fill on a white page.
+    </p>
+  </div>
+</section>
+
+<!-- ══ 2 · TYPE ════════════════════════════════════════════════════ -->
+<section class="band on-ink" id="type">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">02</span>
+      <h2 class="t-display-md">Type</h2>
+      <p>Three families. Libre Bodoni for headings and the one-line answers in a search result —
+      never for a label. Manrope for body, labels, buttons, fields. IBM Plex Mono for numerals
+      being compared, step indices, route paths and the bag's tally.</p>
+    </div>
+
+    <div class="spec">
+      <div class="meta"><span>.t-display-xl</span><span>clamp(3rem, 9vw, 6rem)</span><span>lh 1.02</span></div>
+      <p class="t-display-xl">Arca I</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-display-lg</span><span>clamp(2.25rem, 6.5vw, 3.75rem)</span><span>lh 1.05</span></div>
+      <p class="t-display-lg">The house, carved</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-display-md</span><span>clamp(1.875rem, 4.5vw, 3rem)</span><span>lh 1.12</span></div>
+      <p class="t-display-md">Section headings sit here</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-display-sm</span><span>clamp(1.25rem, 2.6vw, 1.875rem)</span><span>pull quote</span></div>
+      <p class="t-display-sm"><em>Every frame is cut from one block, and the block remembers.</em></p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-display-xs</span><span>clamp(1rem, 1.6vw, 1.25rem)</span><span>hero standfirst</span></div>
+      <p class="t-display-xs">The standfirst keeps the serif because it carries the italic half of the mix.</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-body--lede</span><span>1.125rem</span><span>lh 1.65 · 52ch</span></div>
+      <p class="t-body t-body--lede">The lede is the widest body voice on the site, and it is only
+      allowed on the light sections past the white iris.</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-body</span><span>0.875rem</span><span>62ch</span></div>
+      <p class="t-body">Default body. Copy is never allowed to run the full width of a section —
+      52ch, 62ch and 68ch are the only three line lengths in use.</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-caption</span><span>0.75rem</span></div>
+      <p class="t-caption">A caption, a note under a field, the quiet line under a card name.</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-eyebrow</span><span>0.6875rem</span><span>tracking 0.35em</span></div>
+      <p class="t-eyebrow">The interface's smallest voice</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>.t-label</span><span>0.6875rem</span><span>tracking 0.3em</span></div>
+      <p class="t-label">Telephone</p>
+    </div>
+    <div class="spec">
+      <div class="meta"><span>--font-mono · 0.5625rem</span><span>the bag tally, and nothing else</span></div>
+      <p class="mono" style="font-size:0.5625rem;color:var(--fg-primary)">2</p>
+    </div>
+    <div class="spec" style="border-bottom:0">
+      <div class="meta"><span>tabular-nums</span><span>always, on every price</span></div>
+      <div class="grid grid-2">
+        <div>
+          <p class="t-caption" style="margin:0 0 0.5rem">Correct — a column that scans</p>
+          <p class="mono" style="color:var(--fg-primary);line-height:1.8;margin:0">£1,180<br />£980<br />£1,240</p>
+        </div>
+        <div>
+          <p class="t-caption dont" style="margin:0 0 0.5rem">Wrong — proportional figures</p>
+          <p style="font-variant-numeric:proportional-nums;color:var(--fg-quiet);line-height:1.8;margin:0">£1,180<br />£980<br />£1,240</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 3 · CHROME ══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="chrome">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">03</span>
+      <h2 class="t-display-md">The chrome</h2>
+      <p>Fixed header, three columns: <code class="mono">1fr auto 1fr</code>. Icons are lucide-react at
+      1.125rem with <code class="mono">stroke-width: 1.25</code>, in a 2.25rem target, at 0.86 opacity —
+      five icon sizes in one band is what makes a header look assembled.</p>
+    </div>
+
+    <div class="chrome">
+      <div class="left">
+        <button class="menu-word" type="button">Menu</button>
+        <button class="nav-icon" type="button" aria-label="Search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        </button>
+      </div>
+      <a class="wordmark" href="#chrome" aria-label="Aria Noir — home">Aria</a>
+      <div class="right">
+        <button class="nav-icon" type="button" aria-label="Your desk">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+        </button>
+        <button class="nav-icon" type="button" aria-label="Bag, 2 items">
+          <svg viewBox="0 0 24 24"><path d="M5 7h14l-1 14H6L5 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
+          <span class="tally mono">2</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:var(--stack-lg)">
+      <table>
+        <thead><tr><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td class="name">Glyph</td><td>1.125rem, stroke-width 1.25</td></tr>
+          <tr><td class="name">Target</td><td>2.25rem square (<code class="mono">.nav-icon</code>)</td></tr>
+          <tr><td class="name">Rest</td><td>opacity .86 — no fill, no plate, no radius</td></tr>
+          <tr><td class="name">Hover / focus</td><td>opacity 1; focus adds 1px currentColor at 2px offset</td></tr>
+          <tr><td class="name">Label</td><td>always an <code class="mono">aria-label</code></td></tr>
+        </tbody>
+      </table>
+      <ul class="rules">
+        <li>The <b>bag tally</b> is a mono numeral at 0.5625rem in the glyph's corner — not a filled badge.</li>
+        <li>It waits for the store's <b><code class="mono">ready</code></b> flag. A <code class="mono">0</code> that
+        becomes a <code class="mono">2</code> a frame later reads as the shop finding things it had lost.</li>
+        <li>The profile glyph goes to <b><code class="mono">/access</code></b> for a stranger and
+        <b><code class="mono">/desk</code></b> for someone known. Same door; the door knows.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4 · CRUMBS ══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="crumbs">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">04</span>
+      <h2 class="t-display-md">Breadcrumbs</h2>
+      <p><code class="mono">src/components/crumbs.tsx</code> · <code class="mono">.crumbs</code> in
+      <code class="mono">src/styles/commerce.css</code>. One line at eyebrow scale, 0.12em tracking.
+      The separator is a middot at 45% — a chevron is a second glyph weight inside the smallest
+      type on the page.</p>
+    </div>
+
+    <div class="panel">
+      <nav aria-label="Breadcrumb" class="crumbs">
+        <a href="#crumbs">Eyewear</a><span class="sep">·</span><a href="#crumbs">The story</a><span class="sep">·</span><span aria-current="page">Arca I</span>
+      </nav>
+      <p class="t-caption" style="margin-top:1.25rem">The last crumb is the current page: one step
+      brighter, <code class="mono">aria-current="page"</code>, and not a link. Hover a link — the crumb
+      moves to <code class="mono">--fg-primary</code> and nothing else moves.</p>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:var(--stack-lg)">
+      <ul class="rules">
+        <li><b>It never starts with "Home."</b> The wordmark two centimetres above it already goes home.</li>
+        <li><b>It never wraps.</b> On a phone the last crumb truncates — the end of the trail is where the reader is standing.</li>
+        <li>The whole thing sits in a <code class="mono">&lt;nav aria-label="Breadcrumb"&gt;</code>.</li>
+      </ul>
+      <ul class="rules">
+        <li><b>Where it belongs:</b> any page reachable from more than two directions. Today that is
+        <code class="mono">/shop/[slug]</code> — reached from the story, the index, <em>You may also like</em>,
+        and search — plus <code class="mono">/held</code>, which hangs off the desk.</li>
+        <li class="dont"><b>Where it does not:</b> the home page, a story page, or <code class="mono">/bag</code>.
+        Those are destinations, not depths.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5 · CONTROLS ════════════════════════════════════════════════ -->
+<section class="band on-ink" id="controls">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">05</span>
+      <h2 class="t-display-md">Controls</h2>
+      <p>Two CTAs. Same box, same padding, same type, same square corners — fill versus outline is
+      the only difference, which is what makes them read as one control at two weights.
+      <b style="color:var(--fg-primary)">One main per screen.</b></p>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="on-ink panel">
+        <p class="t-eyebrow">On ink</p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+          <button class="cta-main" type="button">Add to bag</button>
+          <button class="cta-secondary" type="button">Talk to the studio</button>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">
+          <button class="cta-main" type="button" disabled>Out of the workshop</button>
+          <a class="link-quiet" href="#controls">A quiet link</a>
+        </div>
+      </div>
+      <div class="on-paper panel">
+        <p class="t-eyebrow">On paper</p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+          <button class="cta-main" type="button">Checkout</button>
+          <button class="cta-secondary" type="button">Shop all</button>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">
+          <button class="cta-main" type="button" disabled>Out of the workshop</button>
+          <a class="link-quiet" href="#controls">A quiet link</a>
+        </div>
+      </div>
+    </div>
+    <p class="t-caption" style="margin-top:1.25rem;max-width:var(--measure)">
+      The main CTA fills with <code class="mono">--fg-primary</code> and sets its label in
+      <code class="mono">--ground</code>, so it inverts correctly on both sides without being told which
+      it is on. That is why every section must declare its ground.
+    </p>
+
+    <table style="margin-top:var(--stack-xl)">
+      <thead><tr><th>Control</th><th>When</th><th>How</th></tr></thead>
+      <tbody>
+        <tr><td class="name">&lt;CtaLink&gt; / &lt;CtaButton&gt;</td><td>The one thing the screen wants done — Add to bag, Checkout, Sign in, a step's commit</td><td>Solid fill, label in the ground, shuffle on hover</td></tr>
+        <tr><td class="name">kind="secondary"</td><td>The second action, where two fills would fight</td><td>Same box, hairline border, no fill</td></tr>
+        <tr><td class="name">.menu-link</td><td>The menu stack — navigation, not a CTA</td><td>No box at all; glyph shuffle and a colour that answers</td></tr>
+        <tr><td class="name">.link-quiet</td><td>Footer columns, legal, socials</td><td>Colour shift only</td></tr>
+        <tr><td class="name">.nav-icon</td><td>The chrome, and only the chrome</td><td>See section 03</td></tr>
+      </tbody>
+    </table>
+    <p class="t-caption" style="margin-top:1.25rem;max-width:var(--measure)">
+      An <b style="color:var(--fg-primary)">out of stock</b> primary is a disabled button that changes
+      its word, not a hidden one. A control that disappears leaves the reader wondering what they did.
+    </p>
+  </div>
+</section>
+
+<!-- ══ 6 · FIELD ═══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="field">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">06</span>
+      <h2 class="t-display-md">The field</h2>
+      <p>Label above, always — a placeholder that vanishes when you type is a label you cannot check
+      your own answer against. Underline only: no box, no fill, no radius. Focus turns the rule
+      <code class="mono">--fg-primary</code>, and that is the whole focus treatment.</p>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="panel">
+        <p class="t-eyebrow">Rest, focus and optional</p>
+        <label class="field"><span>Telephone</span>
+          <input type="tel" inputmode="tel" autocomplete="tel" value="+1 555 0134" />
+        </label>
+        <label class="field" style="margin-bottom:0"><span>Apartment <span class="opt">· optional</span></span>
+          <input type="text" autocomplete="address-line2" placeholder="" />
+        </label>
+      </div>
+      <div class="panel" >
+        <p class="t-eyebrow">Invalid</p>
+        <label class="field" data-invalid style="margin-bottom:0">
+          <span>Email</span>
+          <input type="email" value="rems@" aria-invalid="true" aria-describedby="err-email" autocomplete="email" />
+          <span class="field-error" id="err-email" role="alert">Add the part after the @ so the courier's notice can reach you.</span>
+        </label>
+        <p class="t-caption" style="margin-top:1.5rem">The rule goes accent <em>and</em> the message
+        says what to do — colour is never the only carrier.</p>
+      </div>
+    </div>
+
+    <ul class="rules" style="margin-top:var(--stack-lg)">
+      <li><b>Optional is marked; required is not.</b> Most fields are required, so marking them marks everything.</li>
+      <li><b>Validate on blur, never on keystroke.</b> Telling someone their email is wrong while they are still typing the @ is a scold.</li>
+      <li>Always the right <code class="mono">autoComplete</code> and <code class="mono">inputMode</code>. A phone field that opens a qwerty keyboard is a bug.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ 7 · STEPS ═══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="steps">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">07</span>
+      <h2 class="t-display-md">The folding step</h2>
+      <p><code class="mono">src/components/shop/checkout-steps.tsx</code> · <code class="mono">.step</code>.
+      The pattern for any surface that asks more than one question. Three states on
+      <code class="mono">data-state</code>: open, done, waiting. Flow and rationale live in
+      <code class="mono">docs/COMMERCE-FLOWS.md</code>; this is how it looks.</p>
+    </div>
+
+    <div class="steps" style="max-width:38rem">
+      <div class="step" data-state="done">
+        <button class="step-head" type="button" aria-expanded="false">
+          <span class="idx mono">01</span><span class="title">Who is buying</span><span class="change">Change</span>
+        </button>
+        <p class="step-summary">As a guest. No account, no password.</p>
+      </div>
+      <div class="step" data-state="open">
+        <button class="step-head" type="button" aria-expanded="true">
+          <span class="idx mono">02</span><span class="title">Where it goes</span><span class="change">Change</span>
+        </button>
+        <div class="step-body">
+          <label class="field" style="margin-bottom:0"><span>Street</span><input type="text" autocomplete="address-line1" /></label>
+        </div>
+      </div>
+      <div class="step" data-state="waiting">
+        <button class="step-head" type="button" aria-expanded="false" disabled>
+          <span class="idx mono">03</span><span class="title">What you are buying</span>
+        </button>
+      </div>
+    </div>
+
+    <ul class="rules" style="margin-top:var(--stack-lg)">
+      <li>Hairline above each step, one below the last. <b>No boxes.</b></li>
+      <li>The index is mono at eyebrow scale in <code class="mono">--fg-quiet</code>. It tells the reader how many questions are left before they read the first one.</li>
+      <li>The head is the whole button, and it carries <code class="mono">aria-expanded</code>.</li>
+      <li><b>An answered step folds to its answer</b>, not to its title repeated.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ 8 · PRODUCT ═════════════════════════════════════════════════ -->
+<section class="band on-ink" id="product">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">08</span>
+      <h2 class="t-display-md">Product surfaces</h2>
+      <p>The card's photograph is <b style="color:var(--fg-primary)">square</b>, declared once in
+      <code class="mono">interactions.css</code> and read by all six card surfaces. The story and
+      campaign plates stay at <code class="mono">4/5</code> — a photographic rhythm running down a column
+      is not the same object as a card in a grid.</p>
+    </div>
+
+    <div class="grid grid-4">
+      <a class="card" href="#product">
+        <div class="card-shot" style="background:#1c1c1c"><span>Noir</span></div>
+        <p class="card-name">Arca I</p>
+        <p class="card-note mono">£1,180</p>
+      </a>
+      <a class="card" href="#product">
+        <div class="card-shot" style="background:#c6a664"><span style="color:rgba(0,0,0,.5)">Miel</span></div>
+        <p class="card-name">Arca I</p>
+        <p class="card-note mono">£1,180</p>
+      </a>
+      <a class="card" href="#product">
+        <div class="card-shot" style="background:#6b4a2f"><span>Perdiz</span></div>
+        <p class="card-name">Arca II</p>
+        <p class="card-note mono">£1,240</p>
+      </a>
+      <div>
+        <div class="plate-45" style="background:#141414"><span class="mono" style="font-size:var(--text-micro);color:var(--fg-quiet)">PLATE 4/5</span></div>
+        <p class="card-note" style="margin-top:0.9rem">Story and campaign plates, not cards</p>
+      </div>
+    </div>
+    <p class="t-caption" style="margin-top:1.25rem;max-width:var(--measure)">
+      The acetate swatch is the card's background, so a colourway the shoot has not reached is honest
+      about being an approximation rather than showing a sibling colour.
+    </p>
+
+    <div class="grid grid-2" style="margin-top:var(--stack-xl)">
+      <div class="panel">
+        <p class="t-eyebrow">Offer panel · the order never changes</p>
+        <p class="t-eyebrow" style="margin-top:1.5rem">Arca — the first house</p>
+        <p class="t-display-sm" style="margin:0.5rem 0">Arca I</p>
+        <p class="t-caption" id="cw-name" style="margin:0">Noir · hand-polished acetate</p>
+        <p class="mono" style="color:var(--fg-primary);font-size:1.125rem;margin:1.25rem 0 0">£1,180</p>
+        <hr style="border:0;border-top:var(--rule-weight) solid var(--fg-rule);margin:1.5rem 0" />
+        <div class="swatches" role="group" aria-label="Colourway">
+          <button class="swatch" type="button" aria-pressed="true" aria-label="Noir" style="background:#1c1c1c"></button>
+          <button class="swatch" type="button" aria-pressed="false" aria-label="Miel" style="background:#c6a664"></button>
+          <button class="swatch" type="button" aria-pressed="false" aria-label="Perdiz" style="background:#6b4a2f"></button>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:center;margin-top:1.5rem;flex-wrap:wrap">
+          <button class="cta-main" type="button">Add to bag</button>
+          <button class="hold-toggle" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.3-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.7-7 9-7 9z"/></svg>
+            <span>Hold</span>
+          </button>
+        </div>
+        <p class="t-caption" style="margin-top:1.25rem">Made to order · ships in 3 weeks</p>
+      </div>
+      <div>
+        <ul class="rules">
+          <li><b>Colourway picker:</b> the acetate itself as the mark, the selected one named in words in the panel above. Never colour alone — press a swatch to see the name change.</li>
+          <li><b>Hold:</b> <code class="mono">aria-pressed</code>, filled heart plus the word <em>Held</em>. The site's only other fill, and the word is why it is allowed.</li>
+          <li><b>Order:</b> collection eyebrow → name → colourway → note → price → hairline → picker → quantity and add to bag → shipping line → hold. That order does not change between houses.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 9 · STATES ══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="states">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">09</span>
+      <h2 class="t-display-md">The wait, the empty, the failure</h2>
+      <p>Every one of these is a designed region with somewhere to go — never a thrown error, never
+      a bare sentence.</p>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="panel">
+        <p class="t-eyebrow">A route</p>
+        <div style="display:grid;place-items:center;min-height:9rem;background:var(--ink)">
+          <span style="font-family:var(--font-display-stack);letter-spacing:0.3em;color:var(--fg-quiet);text-transform:uppercase">Aria</span>
+        </div>
+        <p class="t-caption" style="margin-top:1rem"><code class="mono">.site-loading</code> — full sheet
+        of ink, the loader mark drawing itself, nothing else.</p>
+      </div>
+      <div class="panel">
+        <p class="t-eyebrow">A canvas</p>
+        <div style="min-height:9rem;display:flex;flex-direction:column;justify-content:center;gap:0.75rem">
+          <span class="t-eyebrow">Loading the stage</span>
+          <span class="rule-demo" style="background:var(--fg-rule)"></span>
+          <span class="mono" style="font-size:var(--text-micro);color:var(--fg-quiet)">62%</span>
+        </div>
+        <p class="t-caption" style="margin-top:1rem"><code class="mono">.stage-loader</code> — a word,
+        a hairline, a number, scoped to the stage that is loading.</p>
+      </div>
+      <div class="panel">
+        <p class="t-eyebrow">A list from localStorage</p>
+        <div style="min-height:9rem;display:flex;align-items:center">
+          <span class="rule-demo" style="background:var(--fg-rule)"></span>
+        </div>
+        <p class="t-caption" style="margin-top:1rem">One hairline's worth of height until
+        <code class="mono">ready</code>. <b style="color:var(--fg-primary)">Never</b> the empty state —
+        rendering "nothing here" and replacing it a frame later reads as the shop losing things.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-2" style="margin-top:var(--stack-lg)">
+      <div class="panel">
+        <p class="t-eyebrow">A bag line that went out of the workshop</p>
+        <div style="display:flex;gap:1rem;align-items:center;margin-top:1.25rem;opacity:.45">
+          <span style="width:3rem;height:3rem;background:#6b4a2f;border:var(--rule-weight) solid var(--fg-rule)"></span>
+          <div>
+            <p style="margin:0;color:var(--fg-primary)">Arca II · Perdiz</p>
+            <p class="t-caption" style="margin:0.25rem 0 0">Out of the workshop — it will not be taken to checkout.</p>
+          </div>
+        </div>
+        <p class="t-caption" style="margin-top:1.25rem">The line stays and greys. It does not vanish.</p>
+      </div>
+      <div class="panel">
+        <p class="t-eyebrow">Nothing matched</p>
+        <p class="t-display-xs" style="margin:1.25rem 0 0.75rem">No frame answers to that.</p>
+        <p class="t-caption" style="margin:0 0 1.25rem">Search is never a dead end: the words, then three routes out.</p>
+        <div style="display:flex;gap:1.25rem;flex-wrap:wrap">
+          <a class="link-quiet" href="#states">All eyewear</a>
+          <a class="link-quiet" href="#states">The houses</a>
+          <a class="link-quiet" href="#states">Talk to the studio</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="t-caption" style="margin-top:var(--stack-lg);max-width:var(--measure)">
+      Also designed, not defaulted: the empty bag, the empty held list, empty orders, a colourway with
+      no photograph (the acetate, as the ground), <code class="mono">src/app/error.tsx</code> and
+      <code class="mono">src/app/not-found.tsx</code>.
+    </p>
+  </div>
+</section>
+
+<!-- ══ 10 · MOTION ═════════════════════════════════════════════════ -->
+<section class="band on-ink" id="motion">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">10</span>
+      <h2 class="t-display-md">Motion</h2>
+      <p>Three curves, and each one has a job. Mixing them arbitrarily is what makes a page feel like
+      several pages. Hover a row to run its rule at its own duration and easing.</p>
+    </div>
+
+    <div class="grid grid-2">
+      <div>
+        <div class="motion-card" tabindex="0">
+          <p class="t-label">Things that swap</p>
+          <p class="t-caption mono">--ease-inout · cubic-bezier(.65, 0, .35, 1) · --dur-base 0.45s</p>
+          <div class="motion-track"><i style="transition:transform var(--dur-base) var(--ease-inout)"></i></div>
+        </div>
+        <div class="motion-card" tabindex="0">
+          <p class="t-label">Things that arrive</p>
+          <p class="t-caption mono">--ease-out · cubic-bezier(.16, 1, .3, 1) · --dur-reveal 0.85s</p>
+          <div class="motion-track"><i style="transition:transform var(--dur-reveal) var(--ease-out)"></i></div>
+        </div>
+        <div class="motion-card" tabindex="0">
+          <p class="t-label">Choreographed scene beats</p>
+          <p class="t-caption mono">--ease-inout-strong · cubic-bezier(.83, 0, .17, 1) · --dur-scene 0.9s</p>
+          <div class="motion-track"><i style="transition:transform var(--dur-scene) var(--ease-inout-strong)"></i></div>
+        </div>
+      </div>
+      <div>
+        <table>
+          <thead><tr><th>Token</th><th>Value</th><th>Job</th></tr></thead>
+          <tbody>
+            <tr><td class="name">--dur-instant</td><td class="val">0.2s</td><td>The smallest change</td></tr>
+            <tr><td class="name">--dur-fast</td><td class="val">0.3s</td><td>Colour on hover</td></tr>
+            <tr><td class="name">--dur-base</td><td class="val">0.45s</td><td>Glyph shuffle</td></tr>
+            <tr><td class="name">--dur-slow</td><td class="val">0.5s</td><td>Rule sweep</td></tr>
+            <tr><td class="name">--dur-reveal</td><td class="val">0.85s</td><td>Plate wipe</td></tr>
+            <tr><td class="name">--dur-scene</td><td class="val">0.9s</td><td>Full-section rise</td></tr>
+            <tr><td class="name">--stagger-char</td><td class="val">22ms</td><td>Per character</td></tr>
+            <tr><td class="name">--stagger-word</td><td class="val">45ms</td><td>Per word</td></tr>
+          </tbody>
+        </table>
+        <p class="t-caption" style="margin-top:1.25rem">The wave <em>is</em> the brand gesture — one
+        stagger value keeps the CTA hover and the scroll reveals reading as the same hand.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 11 · FLOOR ══════════════════════════════════════════════════ -->
+<section class="band on-ink" id="floor">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">11</span>
+      <h2 class="t-display-md">Accessibility floor &amp; mobile</h2>
+      <p>Not a phase. A change that breaks one of these is not finished.</p>
+    </div>
+
+    <div class="grid grid-2">
+      <ul class="rules">
+        <li>Everything reachable by keyboard, with a <b>visible <code class="mono">:focus-visible</code></b>. Never <code class="mono">outline: none</code> without a replacement in the same rule. <button class="cta-secondary" style="margin-left:0.75rem;padding:0.5rem 1rem" type="button">Tab to me</button></li>
+        <li><b>One <code class="mono">&lt;h1&gt;</code> per page.</b> On the buy page it is the name in the offer panel — the opening's centred copy is decorative and <code class="mono">aria-hidden</code>.</li>
+        <li>Every icon-only control has an <code class="mono">aria-label</code>. Every decorative image has <code class="mono">alt=""</code>.</li>
+        <li>A toggle carries <code class="mono">aria-pressed</code>; a disclosure carries <code class="mono">aria-expanded</code> and <code class="mono">aria-controls</code>; a panel carries <code class="mono">role="region"</code> and <code class="mono">aria-labelledby</code>.</li>
+        <li>An overlay locks the page with <code class="mono">overflow: hidden</code> <b>and</b> <code class="mono">scrollbar-gutter: stable</code>, or every fixed element jumps by the scrollbar's width.</li>
+        <li><code class="mono">prefers-reduced-motion</code> is honoured everywhere, including in self-animating SVGs.</li>
+      </ul>
+      <ul class="rules">
+        <li><b>44px minimum target.</b> <code class="mono">.nav-icon</code> is 36px of box around an 18px glyph in a 24px-padded band, which clears it; nothing smaller ships.</li>
+        <li><b>No horizontal overflow, ever.</b> The breadcrumb truncates rather than scrolls.</li>
+        <li>The buy row pins to the foot of the screen and <b>takes itself away</b> once the film has been scrolled past. A sticky element that covers content is worse than no sticky element.</li>
+        <li><b>Test at 375px</b> before calling anything done.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="page wrap">
+  <p>Rendered from <code class="mono">STYLE-GUIDE.md</code> · values transcribed from
+  <code class="mono">src/styles/tokens.css</code> and <code class="mono">typography.css</code> ·
+  companion reference in <code class="mono">docs/design-tokens.md</code>. Standalone: no build step, no imports.</p>
+</footer>
+
+<script>
+  // The colourway picker, only so rule two can be demonstrated rather than
+  // asserted: the mark is the acetate, the state is the name in words.
+  (function () {
+    var group = document.querySelector('.swatches');
+    var name = document.getElementById('cw-name');
+    if (!group || !name) return;
+    var notes = {
+      Noir: 'Noir · hand-polished acetate',
+      Miel: 'Miel · hand-polished acetate',
+      Perdiz: 'Perdiz · hand-polished acetate'
+    };
+    group.addEventListener('click', function (e) {
+      var btn = e.target.closest('.swatch');
+      if (!btn) return;
+      group.querySelectorAll('.swatch').forEach(function (s) {
+        s.setAttribute('aria-pressed', String(s === btn));
+      });
+      name.textContent = notes[btn.getAttribute('aria-label')] || '';
+    });
+  })();
+
+  // Hold, same reason: filled versus outlined is the fastest state pair a
+  // person can read, and the word is what makes the fill allowed.
+  (function () {
+    var hold = document.querySelector('.hold-toggle');
+    if (!hold) return;
+    hold.addEventListener('click', function () {
+      var on = hold.getAttribute('aria-pressed') !== 'true';
+      hold.setAttribute('aria-pressed', String(on));
+      hold.querySelector('span').textContent = on ? 'Held' : 'Hold';
+    });
+  })();
+
+  // The folding step, so the three states are walkable.
+  (function () {
+    document.querySelectorAll('.step-head').forEach(function (head) {
+      head.addEventListener('click', function () {
+        var step = head.parentElement;
+        if (step.getAttribute('data-state') === 'waiting') return;
+        var opening = step.getAttribute('data-state') !== 'open';
+        document.querySelectorAll('.step').forEach(function (s) {
+          if (s.getAttribute('data-state') === 'open') {
+            s.setAttribute('data-state', 'done');
+            s.querySelector('.step-head').setAttribute('aria-expanded', 'false');
+          }
+        });
+        step.setAttribute('data-state', opening ? 'open' : 'done');
+        head.setAttribute('aria-expanded', String(opening));
+      });
+    });
+  })();
+</script>
+</body>
+</html>

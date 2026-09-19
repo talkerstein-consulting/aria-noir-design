@@ -1,18 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import type { CSSProperties } from "react";
 import { useSearchParams } from "next/navigation";
 import type { House } from "@/lib/navigation";
-import {
-  MACRO_ZOOM,
-  defaultColorway,
-  focalOrigin,
-  macroFor,
-  stockFor,
-  swatchFor,
-} from "@/lib/shop";
+import { defaultColorway, stockFor, swatchFor } from "@/lib/shop";
 
 /**
  * Pick a colourway.
@@ -83,7 +74,6 @@ export function ColourwayPicker({
       >
         {stock.map(({ colorway: name, available: inStock }) => {
           const on = name === chosen;
-          const macro = macroFor(house, name);
           return (
             <li key={name}>
               <button
@@ -98,34 +88,15 @@ export function ColourwayPicker({
                 data-on={on}
                 data-out={!inStock}
               >
-                {macro ? (
-                  <Image
-                    src={macro.src}
-                    alt=""
-                    fill
-                    sizes="160px"
-                    className="swatch-shot"
-                    /* Only a macro that needs AIMING is magnified. The
-                       supplied crops are already square and already on the
-                       acetate, so they render at their own scale; a wide
-                       shot of a whole frame gets scaled up and pointed at
-                       the colour. See Macro in lib/navigation. */
-                    style={
-                      (macro.position
-                        ? {
-                            "--focal": focalOrigin(macro.position),
-                            "--zoom": MACRO_ZOOM,
-                          }
-                        : undefined) as CSSProperties | undefined
-                    }
-                  />
-                ) : (
-                  <span
-                    aria-hidden
-                    className="swatch-chip"
-                    style={{ background: swatchFor(name) }}
-                  />
-                )}
+                {/* One flat chip per acetate, the catalogue's swatch colour
+                    and nothing else: a row of macro photographs was eight
+                    different crops at eight different scales, and read as a
+                    gallery rather than as a control. */}
+                <span
+                  aria-hidden
+                  className="swatch-chip"
+                  style={{ background: swatchFor(name) }}
+                />
               </button>
             </li>
           );

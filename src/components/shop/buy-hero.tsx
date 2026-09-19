@@ -16,6 +16,7 @@ import {
   defaultColorway,
   galleryFor,
   modelFor,
+  plateRatio,
   priceOf,
   stockFor,
   swatchFor,
@@ -31,6 +32,8 @@ import {
 } from "@/components/product/product-model";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
+import { BagAdded } from "@/components/shop/bag-added";
+import { HoldToggle } from "@/components/shop/hold-toggle";
 
 /**
  * The transaction, and the scene that hands you to it.
@@ -152,11 +155,33 @@ export function BuyHero({ house }: { house: House }) {
   /* The buy control, and the box that holds its place while it is pinned. */
   const buyRowRef = useRef<HTMLDivElement>(null);
   const buySlotRef = useRef<HTMLDivElement>(null);
-  const [added, setAdded] = useState(false);
+  /* A SNAPSHOT of what went in, not a flag. The picker and the stepper
+     behind the sheet stay live, so reading `chosen` and `qty` from inside
+     it would let the confirmation change its mind about what it just
+     confirmed. Null when the sheet is down. */
+  const [added, setAdded] = useState<{ colorway: string; qty: number } | null>(
+    null,
+  );
 
   const entry = stockFor(house).find((e) => e.colorway === chosen);
   const available = entry?.available === true;
-  const { add } = useBag();
+  const { add, lines, ready } = useBag();
+
+  /* Whether the bag ALREADY holds this house in this colourway.
+     `added` would have been the cheaper source, but it is cleared the
+     moment the confirmation sheet is dismissed — so the label would say
+     "Add again" for exactly as long as the sheet covered it and revert
+     the instant it went. The bag itself is the thing the word is about,
+     and it is also what makes the answer follow a change of colourway:
+     a reader who owns the black and is now looking at the tortoise is
+     being told, correctly, that this one is not in there.
+
+     `ready` gates it because the bag is read from storage after mount —
+     without it the server renders one word and the client another. */
+  const inBag =
+    ready &&
+    chosen !== null &&
+    lines.some((l) => l.slug === house.slug && l.colorway === chosen);
 
   const images = galleryFor(house, chosen ?? undefined);
   const modelSrc = modelFor(house, chosen);
@@ -193,8 +218,7 @@ export function BuyHero({ house }: { house: House }) {
   const addToBag = () => {
     if (!chosen) return;
     add(house.slug, chosen, qty);
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 2200);
+    setAdded({ colorway: chosen, qty });
   };
 
   const titleRef = useRef<HTMLDivElement>(null);
@@ -449,7 +473,7 @@ export function BuyHero({ house }: { house: House }) {
           inner.style.top = `${stickyTop}px`;
           inner.style.left = `${panelX}px`;
           inner.style.width = `${panelW}px`;
-            inner.style.transform = `translate3d(${
+          inner.style.transform = `translate3d(${
             away * (vw() + columnGap - panelX)
           }px, 0, 0)`;
         } else {
@@ -793,35 +817,49 @@ export function BuyHero({ house }: { house: House }) {
           <h1 className="t-display-lg mt-3">{house.name}</h1>
           <p className="buy-colourway mt-2">{chosen}</p>
 
-          <p className="t-body mt-5 text-[var(--fg-tertiary)]">{house.note}</p>
+          {/* The acetates come straight after the name, before the note
+              and the price. They are the one decision the page asks for
+              and they were the first thing below the fold: on a phone the
+              lead picture, the name and a paragraph stood between the top
+              of the screen and the first swatch. Under the name they are
+              on the first screen at every width; the price keeps its
+              place beside the control that spends it. */}
+          <div className="mt-6">
+            <Suspense fallback={null}>
+              <ColourwayPicker house={house} onChoose={setChosen} />
+            </Suspense>
+          </div>
+
+          <p className="t-body mt-6 text-[var(--fg-tertiary)]">{house.note}</p>
 
           <p className="buy-price mt-6 tabular-nums">
             {priceOf(house, chosen ?? undefined)}
           </p>
 
           <div className="hairline mt-8 pt-8">
-            <Suspense fallback={null}>
-              <ColourwayPicker house={house} onChoose={setChosen} />
-            </Suspense>
-
             {/* The slot keeps the row's height in the offer's flow while the
                 row itself is pinned to the top of a phone's screen, so the
                 panel does not collapse by 48px the instant it pins. */}
             <div ref={buySlotRef} className="buy-slot mt-10">
               <div ref={buyRowRef} className="buy-row">
               <QtyStepper value={qty} onChange={setQty} />
+              {/* The swap said "In the bag" before, and it described the bag
+                  rather than the button: a filled CTA whose label is a
+                  statement of fact reads as spent, so a reader wanting a
+                  second pair had no word telling them the control still
+                  works. "Add again" is the same swap saying what another
+                  press actually does. */}
               {available ? (
                 <CtaButton
-                  bare
-                  className="btn-outline flex-1"
-                  alt="In the bag"
-                  swapped={added}
+                  className="flex-1"
+                  alt="Add again"
+                  swapped={inBag}
                   onClick={addToBag}
                 >
                   Add to bag
                 </CtaButton>
               ) : (
-                <button type="button" className="btn-outline flex-1" disabled>
+                <button type="button" className="cta-main flex-1" disabled>
                   Out of the workshop
                 </button>
               )}
@@ -833,6 +871,19 @@ export function BuyHero({ house }: { house: House }) {
                 ? "Ships in 3–5 days. Free worldwide standard shipping."
                 : "Made in runs. Tell us and we will write when this one returns."}
             </p>
+
+            {/* The third thing a reader can do with a frame, after buying
+                it and leaving. It sits UNDER the shipping line rather than
+                beside Add to bag: a save is the quieter of the two
+                intentions and should not be competing for the same
+                pixels. For a colourway that is out of the workshop it is
+                the only thing left to press, which is the whole reason it
+                exists on this panel. */}
+            <HoldToggle
+              slug={house.slug}
+              colorway={chosen}
+              className="mt-6"
+            />
           </div>
           </div>
         </div>
@@ -851,14 +902,21 @@ export function BuyHero({ house }: { house: House }) {
             the copy in the column below is hidden at this width — see
             `.buy-grid-lead`. */}
         {images.length ? (
-          <div className="buy-grid-lead relative aspect-square overflow-hidden bg-ink">
+          /* 4:3 rather than square, and cropped towards the foot of the
+             plate. A square lead put the acetates a full screen down on a
+             phone; a quarter shorter, the name AND the colourways fit on
+             the first screen. The colourway plates stand the frame on a
+             surface in the lower half, so the crop is anchored there — a
+             centred 4:3 of a "tall" plate was the wall behind the frame
+             and nothing of the frame. */
+          <div className="buy-grid-lead relative aspect-[4/3] overflow-hidden bg-ink">
             <Image
               src={images[0]}
               alt={`${house.name}${chosen ? ` — ${chosen}` : ""}, ${house.material}`}
               fill
               sizes="100vw"
               priority
-              className="object-cover"
+              className="object-cover object-[50%_62%]"
             />
           </div>
         ) : null}
@@ -867,9 +925,31 @@ export function BuyHero({ house }: { house: House }) {
         <div className="buy-grid-photos stack stack--sm">
           {images.length ? (
             images.map((src, i) => (
+              /* ONE WIDTH, and nothing cropped to reach it.
+
+                 The column is a mixed set: the colourway shots are
+                 1920x1080 and ARCA I's macros are square. It was a square
+                 box on `cover`, which threw away forty-four percent of the
+                 width of every landscape shot on the page a person is
+                 deciding on — usually the temples, which is most of what
+                 distinguishes one of these cuts from another. Landscape and
+                 `contain` fixed the crop and left the second half of the
+                 problem: the square macros then rendered forty-four percent
+                 NARROWER than the product shots, in a column whose whole
+                 job is to be one column.
+
+                 So the box is the full width and takes its height from the
+                 plate. The product shot is the reference — it is 16:9 and
+                 that is what the column measures — and every other plate
+                 matches its width and is as tall as it needs to be.
+                 `plateRatio` is measured at author time, so the space is
+                 reserved before the picture lands and the column does not
+                 jump as it fills. 16/9 is the fallback for a plate the
+                 manifest has never seen. */
               <RevealPlate
                 key={src}
-                className="relative aspect-square overflow-hidden bg-ink"
+                className="relative w-full overflow-hidden bg-ink"
+                style={{ aspectRatio: plateRatio(src) ?? 16 / 9 }}
               >
                 <Image
                   src={src}
@@ -881,13 +961,15 @@ export function BuyHero({ house }: { house: House }) {
                   fill
                   sizes="(min-width: 1024px) 55vw, 100vw"
                   priority={i === 0}
+                  /* cover, not contain: the box now IS the plate's ratio,
+                     so the two agree and there is nothing to letterbox. */
                   className="arca-rise object-cover"
                 />
               </RevealPlate>
             ))
           ) : model ? null : (
             <div
-              className="flex aspect-square w-full items-end p-6 transition-colors duration-500"
+              className="flex aspect-[16/9] w-full items-end p-6 transition-colors duration-500"
               style={{
                 background: `linear-gradient(160deg, ${acetate} 0%, var(--ink) 82%)`,
               }}
@@ -904,6 +986,14 @@ export function BuyHero({ house }: { house: House }) {
 
       </div>
 
+      {added ? (
+        <BagAdded
+          house={house}
+          colorway={added.colorway}
+          qty={added.qty}
+          onClose={() => setAdded(null)}
+        />
+      ) : null}
     </>
   );
 }

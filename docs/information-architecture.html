@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aria Noir — Information Architecture</title>
+<meta name="description" content="Every route the house answers on, drawn as a tree, with the commerce surfaces that are still missing marked in gold." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><text x='50' y='68' font-size='58' font-family='Georgia,serif' fill='%23fff' text-anchor='middle'>A</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&family=Manrope:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* Tokens transcribed from src/styles/tokens.css — this page opens standalone. */
+:root {
+  --ink: #000; --paper: #fff; --gold: #c6a664;
+  --fg-primary: #fff;
+  --fg-secondary: color-mix(in srgb, #fff 70%, transparent);
+  --fg-tertiary: color-mix(in srgb, #fff 50%, transparent);
+  --fg-quiet: color-mix(in srgb, #fff 40%, transparent);
+  --fg-rule: color-mix(in srgb, #fff 15%, transparent);
+  --fg-accent: var(--gold);
+  --font-display: "Libre Bodoni", Georgia, serif;
+  --font-ui: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --rule-weight: 1px;
+  --gutter: 1.5rem; --page-measure: 80rem;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur-fast: .3s;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
+body {
+  margin: 0; background: var(--ink); color: var(--fg-secondary);
+  font-family: var(--font-ui); font-size: .875rem; line-height: 1.65;
+  letter-spacing: -.01em; -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: var(--page-measure); margin: 0 auto; padding: 0 var(--gutter); }
+@media (min-width: 768px) { .wrap { padding: 0 2.5rem; } }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.bar {
+  position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, #000 88%, transparent);
+  backdrop-filter: blur(10px); border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.bar-inner { max-width: var(--page-measure); margin: 0 auto; padding: .9rem var(--gutter); display: flex; gap: 1.5rem; align-items: baseline; flex-wrap: wrap; }
+.bar .mark { font-family: var(--font-display); letter-spacing: .22em; text-transform: uppercase; color: var(--fg-primary); font-size: 1rem; }
+.bar nav { display: flex; gap: 1.1rem; flex-wrap: wrap; }
+.bar nav a { font-size: .625rem; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-quiet); text-decoration: none; transition: color var(--dur-fast); }
+.bar nav a:hover, .bar nav a:focus-visible { color: var(--fg-primary); }
+
+header.page { padding: 6rem 0 3rem; }
+.t-eyebrow { font-size: .6875rem; letter-spacing: .35em; text-transform: uppercase; color: var(--fg-quiet); margin: 0; }
+h1 { font-family: var(--font-display); font-size: clamp(3rem, 9vw, 6rem); line-height: 1.02; letter-spacing: -.02em; color: var(--fg-primary); margin: .75rem 0 0; }
+h2 { font-family: var(--font-display); font-size: clamp(1.875rem, 4.5vw, 3rem); line-height: 1.12; letter-spacing: -.02em; color: var(--fg-primary); margin: .5rem 0 1rem; }
+h3 { font-family: var(--font-display); font-size: 1.25rem; color: var(--fg-primary); margin: 0 0 .5rem; }
+.lede { font-size: 1.125rem; max-width: 52ch; color: var(--fg-secondary); margin-top: 2rem; }
+.note { max-width: 62ch; color: var(--fg-tertiary); }
+section.band { padding: 6rem 0; border-top: var(--rule-weight) solid var(--fg-rule); }
+.head .num { font-family: var(--font-mono); font-size: .6875rem; color: var(--fg-quiet); }
+.head { margin-bottom: 3rem; }
+
+/* ── Legend ─────────────────────────────────────────────────────────── */
+.legend { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 2.5rem; }
+.legend div { display: flex; align-items: center; gap: .6rem; font-size: .6875rem; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-quiet); }
+.key { width: 1.75rem; height: 1.75rem; border: var(--rule-weight) solid var(--fg-rule); }
+.key[data-k="designed"] { border-color: var(--fg-primary); background: color-mix(in srgb, #fff 8%, transparent); }
+.key[data-k="built"] { border-color: color-mix(in srgb, #fff 35%, transparent); }
+.key[data-k="private"] { border-style: dashed; border-color: color-mix(in srgb, #fff 28%, transparent); }
+.key[data-k="tool"] { border-color: color-mix(in srgb, #fff 18%, transparent); }
+.key[data-k="missing"] { border-style: dashed; border-color: var(--gold); }
+
+/* ── The tree ───────────────────────────────────────────────────────── */
+.tree-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 1rem; }
+.tree { position: relative; }
+.tree svg.wires { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+.tree svg.wires path {
+  fill: none; stroke: var(--fg-rule); stroke-width: 1;
+  transition: stroke var(--dur-fast) var(--ease-out);
+}
+.tree svg.wires path.lit { stroke: var(--fg-primary); }
+.tree svg.wires path.ghost { stroke: color-mix(in srgb, var(--gold) 45%, transparent); stroke-dasharray: 3 4; }
+
+.node {
+  position: absolute; padding: .7rem .9rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  background: var(--ink);
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.node .label { display: block; color: var(--fg-secondary); font-size: .8125rem; line-height: 1.35; }
+.node .path { display: block; font-family: var(--font-mono); font-size: .625rem; color: var(--fg-quiet); margin-top: .2rem; letter-spacing: .02em; }
+.node .note { display: block; font-size: .6875rem; color: var(--fg-quiet); margin-top: .35rem; line-height: 1.5; max-width: 22rem; }
+.node[data-kind="root"] { border-color: var(--fg-primary); }
+.node[data-kind="root"] .label { font-family: var(--font-display); font-size: 1.05rem; color: var(--fg-primary); letter-spacing: .04em; }
+.node[data-kind="group"] { border-color: color-mix(in srgb, #fff 30%, transparent); }
+.node[data-kind="group"] .label { font-size: .6875rem; letter-spacing: .3em; text-transform: uppercase; color: var(--fg-primary); }
+.node[data-kind="designed"] { border-color: var(--fg-primary); background: color-mix(in srgb, #fff 6%, transparent); }
+.node[data-kind="designed"] .label { color: var(--fg-primary); }
+.node[data-kind="built"] { border-color: color-mix(in srgb, #fff 35%, transparent); }
+.node[data-kind="private"] { border-style: dashed; border-color: color-mix(in srgb, #fff 28%, transparent); }
+.node[data-kind="tool"] { border-color: color-mix(in srgb, #fff 18%, transparent); }
+.node[data-kind="tool"] .label { color: var(--fg-quiet); }
+.node[data-kind="missing"] { border-style: dashed; border-color: color-mix(in srgb, var(--gold) 70%, transparent); }
+.node[data-kind="missing"] .label { color: var(--gold); }
+.node[data-kind="missing"] .path { color: color-mix(in srgb, var(--gold) 60%, transparent); }
+.node:hover, .node:focus-within { border-color: var(--fg-primary); }
+.node .state {
+  position: absolute; top: .55rem; right: .7rem;
+  font-family: var(--font-mono); font-size: .5rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--fg-quiet);
+}
+.node[data-kind="missing"] .state { color: var(--gold); }
+
+/* ── Audit ──────────────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; font-size: .75rem; }
+th { text-align: left; font-weight: 400; font-size: .6875rem; letter-spacing: .3em; text-transform: uppercase; color: var(--fg-quiet); padding: 0 1rem .6rem 0; border-bottom: var(--rule-weight) solid var(--fg-rule); }
+td { padding: .8rem 1rem .8rem 0; border-bottom: var(--rule-weight) solid var(--fg-rule); vertical-align: top; color: var(--fg-tertiary); }
+td:last-child, th:last-child { padding-right: 0; }
+td.phase { font-family: var(--font-mono); color: var(--fg-quiet); white-space: nowrap; font-size: .625rem; letter-spacing: .1em; text-transform: uppercase; }
+td.screen { color: var(--fg-secondary); white-space: nowrap; }
+td.verdict { white-space: nowrap; font-family: var(--font-mono); font-size: .625rem; letter-spacing: .1em; text-transform: uppercase; }
+tr[data-v="have"] td.verdict { color: var(--fg-secondary); }
+tr[data-v="part"] td.verdict { color: var(--fg-quiet); }
+tr[data-v="none"] td.verdict { color: var(--gold); }
+tr[data-v="none"] td.screen { color: var(--gold); }
+.tally { display: flex; gap: 3rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+.tally div { border-left: var(--rule-weight) solid var(--fg-rule); padding-left: 1rem; }
+.tally .n { font-family: var(--font-display); font-size: 2.5rem; line-height: 1; color: var(--fg-primary); display: block; }
+.tally[data-tone] .n { color: var(--gold); }
+.tally .k { font-size: .6875rem; letter-spacing: .3em; text-transform: uppercase; color: var(--fg-quiet); }
+.filters { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+.filters button {
+  font-family: var(--font-ui); font-size: .6875rem; letter-spacing: .3em; text-transform: uppercase;
+  background: none; border: var(--rule-weight) solid var(--fg-rule); color: var(--fg-quiet);
+  padding: .6rem 1.1rem; cursor: pointer; border-radius: 0; transition: all var(--dur-fast);
+}
+.filters button[aria-pressed="true"] { border-color: var(--fg-primary); color: var(--fg-primary); }
+.filters button:focus-visible { outline: 2px solid var(--fg-primary); outline-offset: 4px; }
+
+ul.rules { list-style: none; padding: 0; margin: 0; }
+ul.rules li { padding: .9rem 0; border-bottom: var(--rule-weight) solid var(--fg-rule); color: var(--fg-tertiary); }
+ul.rules li b { color: var(--fg-primary); font-weight: 500; }
+ul.rules li.gold b { color: var(--gold); }
+.grid2 { display: grid; gap: 2.5rem; }
+@media (min-width: 860px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+footer.page { padding: 5rem 0 6rem; border-top: var(--rule-weight) solid var(--fg-rule); color: var(--fg-quiet); font-size: .75rem; }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition-duration: .001ms !important; } }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-inner">
+    <span class="mark">Aria Noir</span>
+    <nav aria-label="Sections">
+      <a href="#tree">The tree</a>
+      <a href="#audit">Coverage audit</a>
+      <a href="#gaps">What is missing</a>
+      <a href="style-guide.html">Style guide →</a>
+    </nav>
+  </div>
+</div>
+
+<header class="page wrap">
+  <p class="t-eyebrow">Information architecture</p>
+  <h1>Every room, and the doors between them</h1>
+  <p class="lede">
+    The tree below is the site as it stands — read off <code class="mono">src/lib/navigation.ts</code>,
+    which is what <code class="mono">/sitemap</code> renders, so a route added there appears here on the
+    same commit. The gold nodes are the ones a standard commerce build expects and this one does not
+    have yet; they are drawn in place rather than listed at the end, so a gap is visible where it
+    would sit.
+  </p>
+  <div class="legend">
+    <div><span class="key" data-k="designed"></span>Designed</div>
+    <div><span class="key" data-k="built"></span>Built, not designed</div>
+    <div><span class="key" data-k="private"></span>Private / local state</div>
+    <div><span class="key" data-k="tool"></span>Tool, not a surface</div>
+    <div><span class="key" data-k="missing"></span>Missing</div>
+  </div>
+</header>
+
+<section class="band" id="tree">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">01</span>
+      <h2>The tree</h2>
+      <p class="note">Six groups, thirty-one live routes, nine gaps. Hover a node to light its path
+      back to the door. Every leaf links to the running dev server on port 3000.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="tree-scroll">
+      <div class="tree" id="ia-tree"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="audit">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">02</span>
+      <h2>Coverage audit</h2>
+      <p class="note">The standard storefront checklist, phase by phase, against what this build
+      actually renders. <b style="color:var(--fg-primary)">Have</b> means the surface exists and is
+      designed; <b>Part</b> means something stands in for it or it covers only some of the states
+      listed; <b style="color:var(--gold)">None</b> means nothing in the repo answers for it.</p>
+    </div>
+
+    <div class="tally">
+      <div><span class="n" id="n-have">—</span><span class="k">Have</span></div>
+      <div><span class="n" id="n-part" style="color:var(--fg-secondary)">—</span><span class="k">Partial</span></div>
+      <div><span class="n" id="n-none" style="color:var(--gold)">—</span><span class="k">Missing</span></div>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filter the audit">
+      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="have" aria-pressed="false">Have</button>
+      <button type="button" data-f="part" aria-pressed="false">Partial</button>
+      <button type="button" data-f="none" aria-pressed="false">Missing</button>
+    </div>
+
+    <table id="audit-table">
+      <thead><tr><th>Phase</th><th>Screen / state</th><th>Where it is, or what is absent</th><th>Verdict</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="band" id="gaps">
+  <div class="wrap">
+    <div class="head">
+      <span class="num">03</span>
+      <h2>What is missing, in order of what it costs</h2>
+      <p class="note">Not everything on a standard checklist belongs to this house — some of it is
+      deliberately absent, and some of it is absent because nobody has built it yet. These are the
+      second kind, and the first kind is stated plainly underneath so the two never get confused.</p>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <h3>Blocks a purchase</h3>
+        <ul class="rules">
+          <li class="gold"><b>No promo / discount field.</b> The folding checkout asks who, where and what, and never offers a code. A campaign that mails one has nowhere to spend it.</li>
+          <li class="gold"><b>No checkout failure states.</b> Validation errors exist on the field; a declined payment, an invalid code and an item going out of stock mid-checkout do not.</li>
+          <li class="gold"><b>No confirmation page.</b> The bag hands off to the account host, so there is no order number, summary or account-creation prompt on this side of the door.</li>
+          <li class="gold"><b>No shipping estimate in the bag.</b> One line of copy says made-to-order; there is no cost shown before the handoff.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Blocks a browse</h3>
+        <ul class="rules">
+          <li class="gold"><b>No filtering or sorting on the index.</b> <code class="mono">/eyewear</code> is six houses in a fixed order. At six that is a feature; at twenty it is a wall.</li>
+          <li class="gold"><b>No search results page.</b> Search is an overlay only — there is no linkable <code class="mono">/search?q=</code>, so a result cannot be shared or bookmarked.</li>
+          <li class="gold"><b>No recently viewed, no complete-the-look.</b> <em>You may also like</em> is the only recommendation surface.</li>
+          <li class="gold"><b>No journal, FAQ or size guide.</b> Three content rooms the footer of a storefront this size normally has. Fit &amp; Care carries part of the sizing job.</li>
+          <li class="gold"><b>No cookie or privacy-preferences UI.</b> The privacy policy is written; nothing asks.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-top:4rem">Absent on purpose — do not "fix" these</h3>
+    <ul class="rules">
+      <li><b>No announcement bar.</b> A strip of promotional type above a wordmark is the one element that makes a luxury header look rented. If something must be announced, it is a line in the menu overlay.</li>
+      <li><b>No mega menu.</b> The overlay is four doors set large. Thirteen destinations in a hover panel was the storefront's shape, and it was deliberately cut — see the note in <code class="mono">lib/navigation.ts</code>.</li>
+      <li><b>No account dashboard of our own.</b> Login, signup, password reset, payment methods and addresses live on <code class="mono">account.arianoir.com</code>. <code class="mono">/access</code> is the branded door and <code class="mono">/desk</code> is the reading room; the credential step is the host's, on purpose.</li>
+      <li><b>No wishlist account-side.</b> <code class="mono">/held</code> is localStorage and says so. That is a decision about not asking for an account before someone has decided, not a missing feature.</li>
+      <li><b>No maintenance page.</b> A static host with atomic deploys has nothing to put behind one.</li>
+      <li><b>No quick add on the card.</b> Every frame has four to eight colourways; a quick-add button that cannot ask which one is a button that adds the wrong thing.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page wrap">
+  <p>Routes read from <code class="mono">src/lib/navigation.ts</code> · rendered live at
+  <code class="mono">/sitemap</code> · companion to <code class="mono">docs/style-guide.html</code> and
+  <code class="mono">docs/COMMERCE-FLOWS.md</code>. Standalone: no build step, no imports.</p>
+</footer>
+
+<script>
+/* ── The data ──────────────────────────────────────────────────────────
+   Mirrors `architecture` in src/lib/navigation.ts, with the gaps from the
+   commerce checklist inserted as `missing` leaves so the tree shows the
+   holes in the shape rather than in a list at the end. */
+const ORIGIN = "http://localhost:3000";
+const GROUPS = [
+  { title: "The door", leaves: [
+    { l: "Home", p: "/", k: "designed", n: "The opening. The whole house in one scroll, closing on the shop." },
+    { l: "All pages", p: "/sitemap", k: "tool", n: "Every route, linked. The live version of this page." },
+    { l: "Announcement bar", p: "—", k: "missing", n: "Absent on purpose. See the note below the audit." },
+  ]},
+  { title: "The frames", leaves: [
+    { l: "Eyewear", p: "/eyewear", k: "designed", n: "The index. Six houses, turntable above the grid." },
+    { l: "ARCA I — story", p: "/arca-i", k: "designed", n: "" },
+    { l: "ARCA II — story", p: "/arca-ii", k: "designed", n: "" },
+    { l: "AHAVA — story", p: "/ahava", k: "designed", n: "" },
+    { l: "MATRIARCA — story", p: "/matriarca", k: "designed", n: "" },
+    { l: "PATRIARCA — story", p: "/patriarca", k: "designed", n: "" },
+    { l: "MONARCA — story", p: "/monarca", k: "designed", n: "" },
+    { l: "Buy page ×6", p: "/shop/[slug]", k: "designed", n: "Templated over the catalogue. Gallery, picker, qty, hold, campaign, detail tabs." },
+    { l: "Lookbook SS26", p: "/lookbook/ss26", k: "designed", n: "The season, shot." },
+    { l: "Filters & sorting", p: "—", k: "missing", n: "The index is a fixed order of six. Nothing narrows or re-sorts it." },
+    { l: "Search results page", p: "/search?q=", k: "missing", n: "Search is an overlay only — a result cannot be linked or shared." },
+    { l: "Recently viewed", p: "—", k: "missing", n: "Only You-may-also-like exists." },
+  ]},
+  { title: "The house", leaves: [
+    { l: "The House", p: "/house/about", k: "designed", n: "Brand, company, vision." },
+    { l: "The Process", p: "/house/process", k: "built", n: "How a frame is made. On the menu now." },
+    { l: "Contact", p: "/contact", k: "designed", n: "The desk a question goes to." },
+    { l: "Journal / editorial", p: "—", k: "missing", n: "No listing, no article template." },
+    { l: "FAQ", p: "—", k: "missing", n: "Answers are spread across Care and the policies." },
+  ]},
+  { title: "The transaction", leaves: [
+    { l: "The Bag", p: "/bag", k: "private", n: "The list, then three folding questions, then out to the secure checkout." },
+    { l: "Held", p: "/held", k: "private", n: "Saved, not bought. localStorage, and it says so." },
+    { l: "The Desk", p: "/desk", k: "private", n: "Orders, Held, Profile. The view is in the hash." },
+    { l: "Access", p: "/access", k: "built", n: "The branded door. Hands off to account.arianoir.com." },
+    { l: "Cart", p: "/cart", k: "built", n: "The old route, kept so an old link still lands." },
+    { l: "Promo code", p: "—", k: "missing", n: "Nowhere in the bag or the folding steps." },
+    { l: "Confirmation", p: "—", k: "missing", n: "Order number and summary live on the account host." },
+  ]},
+  { title: "The small print", leaves: [
+    { l: "Fit & Care", p: "/care", k: "built", n: "Adjustable at five points. Most of what a return would have been." },
+    { l: "Shipping", p: "/policies/shipping", k: "built", n: "" },
+    { l: "Returns", p: "/policies/returns", k: "built", n: "" },
+    { l: "Warranty", p: "/policies/warranty", k: "built", n: "" },
+    { l: "Terms", p: "/policies/terms", k: "built", n: "" },
+    { l: "Privacy", p: "/policies/privacy", k: "built", n: "" },
+    { l: "Size guide", p: "—", k: "missing", n: "Care carries part of it; there is no chart." },
+    { l: "Cookie consent", p: "—", k: "missing", n: "The policy is written. Nothing asks." },
+  ]},
+  { title: "The workshop", leaves: [
+    { l: "Poster kitchen", p: "/poster", k: "tool", n: "Renders a still of every turntable. Writes files, so next dev only." },
+    { l: "404", p: "/does-not-exist", k: "built", n: "Branded, with routes out." },
+    { l: "Error boundary", p: "app/error.tsx", k: "built", n: "A route that throws." },
+  ]},
+];
+
+const STATE_WORD = { designed: "Designed", built: "Built", private: "Private", tool: "Tool", missing: "Missing" };
+
+/* ── Layout ────────────────────────────────────────────────────────────
+   Three columns: the door, the six groups, their leaves. Leaves stack in
+   document order and each group centres itself against its own run, which
+   is what lets the connectors be a single cubic each — the curve is doing
+   the work a bracket would otherwise do. */
+const COL_ROOT = 0, W_ROOT = 190;
+const COL_GROUP = 250, W_GROUP = 190;
+const COL_LEAF = 520, W_LEAF = 340;
+const GAP_LEAF = 14, GAP_GROUP = 40;
+
+const tree = document.getElementById("ia-tree");
+
+function el(kind, html, cls) {
+  const n = document.createElement(cls === "a" ? "a" : "div");
+  n.className = "node";
+  n.dataset.kind = kind;
+  n.innerHTML = html;
+  return n;
+}
+
+function build() {
+  tree.innerHTML = "";
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "wires");
+  tree.appendChild(svg);
+
+  const root = el("root", '<span class="label">arianoir.com</span><span class="path">the door</span>');
+  root.style.left = COL_ROOT + "px";
+  root.style.width = W_ROOT + "px";
+  tree.appendChild(root);
+
+  let y = 0;
+  const wires = [];
+  const groupBoxes = [];
+
+  GROUPS.forEach((g, gi) => {
+    const leafTop = y;
+    const leafNodes = [];
+
+    g.leaves.forEach((leaf) => {
+      const linkable = leaf.p.startsWith("/") && !leaf.p.includes("[");
+      const inner =
+        (linkable
+          ? '<a class="label" href="' + ORIGIN + leaf.p + '" style="color:inherit;text-decoration:none">' + leaf.l + "</a>"
+          : '<span class="label">' + leaf.l + "</span>") +
+        '<span class="path">' + leaf.p + "</span>" +
+        (leaf.n ? '<span class="note">' + leaf.n + "</span>" : "") +
+        '<span class="state">' + STATE_WORD[leaf.k] + "</span>";
+      const n = el(leaf.k, inner);
+      n.style.left = COL_LEAF + "px";
+      n.style.width = W_LEAF + "px";
+      n.style.top = y + "px";
+      tree.appendChild(n);
+      leafNodes.push({ node: n, missing: leaf.k === "missing" });
+      y += n.offsetHeight + GAP_LEAF;
+    });
+
+    const runBottom = y - GAP_LEAF;
+    const gnode = el("group", '<span class="label">' + g.title + "</span>");
+    gnode.style.left = COL_GROUP + "px";
+    gnode.style.width = W_GROUP + "px";
+    tree.appendChild(gnode);
+    const gy = leafTop + (runBottom - leafTop) / 2 - gnode.offsetHeight / 2;
+    gnode.style.top = gy + "px";
+
+    const gmid = gy + gnode.offsetHeight / 2;
+    leafNodes.forEach(({ node, missing }) => {
+      const lmid = node.offsetTop + node.offsetHeight / 2;
+      wires.push({
+        x1: COL_GROUP + W_GROUP, y1: gmid,
+        x2: COL_LEAF, y2: lmid,
+        ghost: missing, group: gi,
+      });
+      node.dataset.group = gi;
+    });
+    groupBoxes.push({ node: gnode, mid: gmid, i: gi });
+    gnode.dataset.group = gi;
+
+    y += GAP_GROUP;
+  });
+
+  const total = y - GAP_GROUP;
+  const rootMid = total / 2;
+  root.style.top = rootMid - root.offsetHeight / 2 + "px";
+
+  groupBoxes.forEach((g) => {
+    wires.push({
+      x1: COL_ROOT + W_ROOT, y1: rootMid,
+      x2: COL_GROUP, y2: g.mid,
+      ghost: false, group: g.i, trunk: true,
+    });
+  });
+
+  /* The wires are drawn in the same pixel space the nodes are positioned
+     in, so the SVG is sized in px rather than stretched to 100% — a
+     percentage width with a fixed viewBox scales the curves off the nodes
+     they are supposed to be touching. */
+  const W = COL_LEAF + W_LEAF;
+  tree.style.height = total + "px";
+  tree.style.width = W + "px";
+  svg.setAttribute("viewBox", "0 0 " + W + " " + total);
+  svg.setAttribute("width", W);
+  svg.setAttribute("height", total);
+  svg.style.width = W + "px";
+  svg.style.height = total + "px";
+
+  wires.forEach((w) => {
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    /* One cubic per wire, with the handles pushed two-thirds of the way
+       across. That ratio is what keeps a wire leaving its node horizontally
+       — a shallower handle makes the run to a far-off leaf leave at an
+       angle, and forty of those read as a spray rather than a tree. */
+    const dx = (w.x2 - w.x1) * 0.66;
+    p.setAttribute("d",
+      "M " + w.x1 + " " + w.y1 +
+      " C " + (w.x1 + dx) + " " + w.y1 +
+      ", " + (w.x2 - dx) + " " + w.y2 +
+      ", " + w.x2 + " " + w.y2);
+    if (w.ghost) p.classList.add("ghost");
+    p.dataset.group = w.group;
+    if (w.trunk) p.dataset.trunk = "1";
+    svg.appendChild(p);
+  });
+
+  /* Hovering a node lights its whole group's run back to the door, which is
+     the question the diagram is actually asked: how does a reader get here. */
+  tree.querySelectorAll(".node[data-group]").forEach((n) => {
+    const lightOn = () => svg.querySelectorAll('path[data-group="' + n.dataset.group + '"]').forEach((p) => p.classList.add("lit"));
+    const lightOff = () => svg.querySelectorAll("path.lit").forEach((p) => p.classList.remove("lit"));
+    n.addEventListener("mouseenter", lightOn);
+    n.addEventListener("mouseleave", lightOff);
+    n.addEventListener("focusin", lightOn);
+    n.addEventListener("focusout", lightOff);
+  });
+}
+
+build();
+let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(build, 150); });
+document.fonts && document.fonts.ready.then(build);
+
+/* ── The audit ─────────────────────────────────────────────────────── */
+const AUDIT = [
+  ["Global", "Header — desktop & mobile", "site-nav.tsx. Three columns, menu word, search, profile, bag with tally.", "have"],
+  ["Global", "Header — announcement bar", "None. Deliberate: see the note below.", "none"],
+  ["Global", "Header — mega menu", "None. site-menu.tsx is four doors set large, by decision.", "none"],
+  ["Global", "Footer", "site-footer.tsx + sitemap-tabs.tsx — four columns on desktop, an accordion on the phone. Newsletter, policies, social.", "have"],
+  ["Global", "Footer — payment methods", "Not shown. The card is taken on the account host.", "none"],
+  ["Global", "Search — overlay & autocomplete", "site-search.tsx, index in lib/search.ts. Frames, colourways, pages, with counts.", "have"],
+  ["Global", "Search — recent searches", "Not kept. The sheet offers the catalogue below two characters instead.", "none"],
+  ["Global", "Search — no results", "Designed: the words, then three routes out.", "have"],
+  ["Global", "Account — login, signup, reset", "/access is the branded door; credentials are account.arianoir.com's. Nothing on this side.", "part"],
+  ["Global", "Account — dashboard", "/desk — Orders, Held, Profile, one view at a time.", "have"],
+  ["Homepage", "Hero, editorial blocks, newsletter", "One scroll: hero, atelier, collections, sticky panels, finale, newsletter in the footer.", "have"],
+  ["Homepage", "Featured collection & categories", "collections-section.tsx panels into the six houses. No category layer — the house is the category.", "have"],
+  ["Homepage", "Best sellers / promotional sections", "None. No merchandising rail anywhere in the build.", "none"],
+  ["PLP", "Collection / category grid", "/eyewear — six houses, turntable above the grid.", "have"],
+  ["PLP", "Filters, sorting, pagination", "None. Fixed order, no load-more, six items.", "none"],
+  ["PLP", "Product card — default & hover", "product-card.tsx, square shot declared once in interactions.css and read by all six card surfaces.", "have"],
+  ["PLP", "Product card — sale / sold out badges", "No badge language exists. Out-of-stock is only stated on the buy page.", "none"],
+  ["PLP", "Product card — swatches & quick add", "Swatches yes, via the acetate. Quick add deliberately absent — four to eight colourways per house.", "part"],
+  ["PLP", "Search results page", "Overlay only. No /search?q= route, so a result cannot be linked.", "none"],
+  ["PDP", "Gallery, info, price, variants, qty, add", "buy-hero.tsx + colourway-picker + qty-stepper. The left column is a scroll, not a carousel.", "have"],
+  ["PDP", "Media — zoom, video, thumbnails", "Turntable per colourway, campaign film where one is cut, gallery scroll. No pinch zoom.", "part"],
+  ["PDP", "Details — description, specs, materials, accordion", "buy-detail.tsx tabs; materials and measurements from the catalogue.", "have"],
+  ["PDP", "Details — sizing / size guide", "Fit & Care covers adjustment. No chart, no measurement instructions.", "part"],
+  ["PDP", "States — sold out / unavailable variant", "Disabled primary that changes its word. Out of the workshop.", "have"],
+  ["PDP", "States — low stock, pre-order, backorder", "A preorder modal component exists; no low-stock or backorder state anywhere.", "part"],
+  ["PDP", "Recommendations — related", "also-like.tsx.", "have"],
+  ["PDP", "Recommendations — recently viewed, complete the look", "Neither exists.", "none"],
+  ["Cart", "Drawer — products, qty, remove, subtotal, CTA", "bag-drawer.tsx + bag-added.tsx.", "have"],
+  ["Cart", "Drawer / page — promo code", "No field anywhere in the bag or the folding steps.", "none"],
+  ["Cart", "Page — full cart, recommendations, empty", "/bag with cart-table.tsx; empty bag is a designed region with routes out.", "have"],
+  ["Cart", "Page — shipping estimate", "One made-to-order line. No cost before the handoff.", "none"],
+  ["Cart", "States — unavailable item, quantity limit", "An out-of-workshop line stays, greys, and says it will not go to checkout. No qty ceiling.", "part"],
+  ["Checkout", "Contact, shipping, delivery, payment, summary", "checkout-steps.tsx asks three folding questions, then hands off. Payment is the host's.", "part"],
+  ["Checkout", "States — validation errors", "Field-level, on blur, with role=\"alert\".", "have"],
+  ["Checkout", "States — invalid promo, payment failure, out of stock mid-flow", "None of the three.", "none"],
+  ["Checkout", "Confirmation — order number, summary, account CTA", "Lives on the account host. Nothing on this side of the door.", "none"],
+  ["Account", "Orders — history, detail, tracking", "desk-view.tsx lists orders. No detail view, no tracking.", "part"],
+  ["Account", "Profile", "profile-form.tsx.", "have"],
+  ["Account", "Wishlist", "/held — localStorage, with a designed empty state and a one-hairline wait.", "have"],
+  ["Account", "Addresses — add, edit, delete", "desk-drawer.tsx shows an address; no CRUD. The host owns it.", "part"],
+  ["Account", "Payment methods", "The host's, entirely.", "none"],
+  ["Content", "About — story, positioning", "/house/about and /house/process.", "have"],
+  ["Content", "Journal / editorial", "Listing and article template both absent. /lookbook/ss26 is the only editorial surface.", "none"],
+  ["Content", "FAQ", "No listing or accordion. Answers are spread across Care and the policies.", "none"],
+  ["Content", "Size guide", "No chart, no measurement instructions.", "none"],
+  ["Content", "Shipping & returns information", "/policies/shipping, /policies/returns, plus warranty, terms, privacy.", "have"],
+  ["Utility", "404 with recovery", "app/not-found.tsx — branded, with routes out. app/error.tsx for a throw.", "have"],
+  ["Utility", "Maintenance page", "None. Atomic deploys leave nothing to put behind one.", "none"],
+  ["Utility", "Cookie consent / privacy preferences", "The privacy policy is written; nothing asks, and nothing stores a preference.", "none"],
+];
+
+const tbody = document.querySelector("#audit-table tbody");
+const VERDICT = { have: "Have", part: "Part", none: "None" };
+AUDIT.forEach(([phase, screen, where, v]) => {
+  const tr = document.createElement("tr");
+  tr.dataset.v = v;
+  tr.innerHTML =
+    '<td class="phase">' + phase + "</td>" +
+    '<td class="screen">' + screen + "</td>" +
+    "<td>" + where + "</td>" +
+    '<td class="verdict">' + VERDICT[v] + "</td>";
+  tbody.appendChild(tr);
+});
+
+const counts = AUDIT.reduce((a, r) => ((a[r[3]] = (a[r[3]] || 0) + 1), a), {});
+document.getElementById("n-have").textContent = counts.have || 0;
+document.getElementById("n-part").textContent = counts.part || 0;
+document.getElementById("n-none").textContent = counts.none || 0;
+
+document.querySelectorAll(".filters button").forEach((b) => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".filters button").forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+    const f = b.dataset.f;
+    tbody.querySelectorAll("tr").forEach((tr) => {
+      tr.style.display = f === "all" || tr.dataset.v === f ? "" : "none";
+    });
+  });
+});
+</script>
+</body>
+</html>

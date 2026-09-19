@@ -41,11 +41,7 @@ export function PageClose({
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-7 text-center">
         <RevealText as="h2" text={heading} className="t-display-lg" />
         <p className="t-body t-body--lede">{body}</p>
-        <CtaLink
-          href={href}
-          variant={tone === "ink" ? "light" : "dark"}
-          className="mt-4"
-        >
+        <CtaLink href={href} className="mt-4">
           {cta}
         </CtaLink>
       </div>

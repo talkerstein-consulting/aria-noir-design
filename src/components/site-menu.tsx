@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useRef, type CSSProperties } from "react";
 import { menu } from "@/lib/navigation";
-import { CtaLink } from "@/components/cta-link";
+import { NavShuffleLink } from "@/components/cta-link";
 
 /**
- * Full-screen menu overlay.
+ * The menu sheet: four fifths of the viewport, dropped from the top, with
+ * the rest of the page left visible under frosted glass beneath it.
  *
  * One centred stack of destinations, each one a CTA rather than a link.
  * That is the whole design: the site has three interactive objects, and a
@@ -26,26 +27,27 @@ import { CtaLink } from "@/components/cta-link";
  *
  * Nothing here is italic.
  *
- * Roman numerals are real information: a fixed, ordered set of six, and
- * the numeral says how far down it you are. They hang in a gutter to the
+ * Roman numerals are real information: a fixed, ordered set, and the
+ * numeral says how far down it you are. They hang in a gutter to the
  * left of the centred column rather than sitting inside each item — as a
  * flex sibling a numeral's width would push its word off-centre, and by a
  * different amount for a I than for a VI.
  *
- * Nothing in the stack is underlined. Six rules stacked down the middle of
- * a black page read as a form, not as six invitations — so the items are
- * `bare` CTAs and the wave is the whole affordance. The current page is
- * said in the accent colour instead, which is still the object's own
- * vocabulary and still exactly one of them.
+ * Nothing in the stack is a CTA. The CTA vocabulary is two styles — filled
+ * and outlined — and six filled blocks stacked down the middle of a black
+ * page is a form, not a menu. These are `.menu-link`: the house's glyph
+ * shuffle and nothing else, with the current page said in the accent colour
+ * via `aria-current="page"`.
  *
- * There is no Close control in here. Close is the LOWER LINE of the
- * header's Menu button — the same control, lifted — so the header sits
+ * There is no Close control drawn in here. Close is the LOWER LINE of the
+ * header's Menu button, or a click on the glass below the sheet — the same control, lifted — so the header sits
  * above this panel at z-70 rather than being covered by it. That is why
  * the panel opens with header-height padding at the top and nothing in it.
  *
- * The panel rises. Ground, stack and foot all travel upward on open — the
- * same direction the CTA's own glyphs move, so the overlay arrives as one
- * large instance of the gesture it is full of.
+ * The sheet slides down from above the top edge and goes back up the same
+ * way. Inside it, the stack and foot still rise a beat behind — the same
+ * direction the CTA's own glyphs move, so the contents settle into a panel
+ * that has already arrived rather than travelling with it.
  *
  * Sits at z-60, above the header's z-50, so it carries its own close
  * control rather than leaving the header showing through. Covering the
@@ -61,11 +63,12 @@ import { CtaLink } from "@/components/cta-link";
  * animate from. Its transition is un-eased and delayed to the end of the
  * close, so the panel finishes leaving before it stops existing.
  *
- * Styling is utilities and inline transitions rather than a class in
- * globals.css: this is the only page-level surface with no shared
- * vocabulary, and keeping it self-contained means the overlay cannot be
- * broken by an edit to a stylesheet it is the sole consumer of. Every
- * value still comes from the token layer.
+ * The panel itself — its 80vh, its slide, its glass and the delayed
+ * `visibility` that lets a closed sheet still be transitioned — is
+ * `.sheet` / `.sheet-glass` / `.sheet-panel` in commerce.css, shared with
+ * the search sheet so the two arrive and leave identically. What stays
+ * inline here is only what is this menu's own: the stack's fluid size and
+ * the per-item entrance stagger, neither of which search has any use for.
  */
 
 /** Deliberately small and local — the list is six long and fixed. */
@@ -80,7 +83,22 @@ const STEP_MS = 22;
  *  breakpoint deciding they suddenly shouldn't. */
 const STACK_STYLE: CSSProperties = {
   fontFamily: "var(--font-display-stack)",
-  fontSize: "clamp(1.5rem, 4.6vw, 3rem)",
+  /* Sized off the PANEL, not the page. The sheet is 80vh and does not
+     scroll, so the four items and their gaps have to fit inside it at any
+     viewport height — `vh` in the size is what makes a short window shrink
+     the type instead of hiding the last destination. The vw term keeps a
+     wide, short window from setting them at footnote scale, and the rem
+     bounds stop both terms at a size that is still Bodoni.
+
+     Four destinations rather than seven is most of the ceiling: the same
+     80vh divided four ways carries a word half again as large, and the
+     tighter gaps below are what stop the extra size being spent on air. */
+  fontSize: "clamp(1.35rem, min(6.4vw, 7.4vh), 4rem)",
+  /* Stated, not inherited. At this size the body's line-height would set
+     the items nearly two words apart, and the gap below is doing that job
+     — but it has to be the ONLY thing doing it, or tightening the stack
+     pulls the glyphs into each other instead of the words together. */
+  lineHeight: 1.04,
   fontWeight: 400,
 };
 
@@ -152,49 +170,74 @@ export function SiteMenu({
     };
   }, [open, onClose]);
 
-  const panelStyle: CSSProperties = {
-    opacity: open ? 1 : 0,
-    /* The ground itself rises. Small — this is a lift, not a drawer. */
-    transform: open ? "none" : "translateY(1.5rem)",
-    visibility: open ? "visible" : "hidden",
-    transition: open
-      ? "opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s"
-      : "opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base)",
-  };
-
+  /* The items rise in on open. On close they do NOT play in reverse: the
+     sheet is sliding up and taking them with it, and a stack dissolving
+     inside a panel that is already leaving reads as two exits for one
+     gesture. Instead they hold, and snap back to their start state at the
+     exact moment the overlay goes invisible — so the reset is never seen
+     and the next open has something to rise from. */
   const riseStyle = (i: number): CSSProperties => ({
     opacity: open ? 1 : 0,
     transform: open ? "none" : "translateY(0.8em)",
-    transition: `opacity var(--dur-reveal) var(--ease-out) ${i * STEP_MS}ms, transform var(--dur-reveal) var(--ease-out) ${i * STEP_MS}ms`,
+    transition: open
+      ? `opacity var(--dur-reveal) var(--ease-out) ${i * STEP_MS}ms, transform var(--dur-reveal) var(--ease-out) ${i * STEP_MS}ms`
+      : "opacity 0s linear var(--dur-base), transform 0s linear var(--dur-base)",
   });
 
   return (
     <div
       ref={panel}
       id="site-menu"
-      className="on-ink fixed inset-0 z-[60] overflow-y-auto overscroll-contain bg-ink motion-reduce:transform-none motion-reduce:transition-none"
-      style={panelStyle}
+      className="sheet"
+      data-open={open}
       /* Boolean, not an empty string: React 19 reads `inert=""` as false,
          which would leave the closed panel focusable. */
       inert={!open}
       aria-hidden={!open}
     >
+      {/* The rest of the page, held under glass, and also the close
+          control: a click anywhere off the sheet dismisses it, the same as
+          Escape and the same as the header's own control. */}
+      <button
+        type="button"
+        aria-label={menu.close}
+        onClick={onClose}
+        className="sheet-glass"
+      />
+
       {/* px-8 py-6 is the header's own padding, and the empty band at the
           top is the header itself showing through from above — the panel
-          reserves its height rather than drawing anything into it. */}
-      <div className="flex min-h-full flex-col px-8 py-6">
+          reserves its height rather than drawing anything into it.
+
+          Nothing in here is set at a fixed size: the stack, its gaps and
+          the padding are all fluid in `vh`, so a short window shrinks the
+          menu rather than pushing the small print off the bottom of it.
+          The panel's own overflow is the safety net under that, for the
+          landscape phone where no type size would fit. */}
+      <div className="sheet-panel on-ink px-8 py-6">
         <div className="min-h-8" aria-hidden />
 
         {/* ---- the stack, centred on both axes ---- */}
         <nav
           aria-label="Main"
-          className="flex flex-1 flex-col items-center justify-center py-12 sm:py-16"
+          /* Left on a phone, centred from `sm` up. A centred stack needs
+             the eye to find a new starting point on every line, which is
+             what a display face is FOR on a wide screen and what it costs
+             on a narrow one — five ragged-both-sides words in a 375px
+             column read as a poster rather than a list of places to go. A
+             left edge gives the thumb one column to travel and the numerals
+             a straight rule to hang off. */
+          className="flex flex-1 flex-col items-start justify-center gap-[min(2vh,2.5rem)] py-[min(2vh,2.5rem)] sm:items-center"
         >
           {/* Generous vertical air. With the rules gone there is nothing
               between one word and the next but space, so the space has to
               do the separating — and these are the largest CTAs on the
               site, which need room to lift into. */}
-          <ul className="flex flex-col items-center gap-10 sm:gap-14">
+          {/* The left padding is the numerals' gutter. They hang outside
+              the word, so a stack flush to the panel's own padding would
+              hang them off the edge of the screen; from `sm` the stack is
+              centred and there is nothing to reserve. */}
+          <ul className="flex flex-col items-start gap-[min(1.6vh,1.5rem)] pl-7 sm:items-center sm:pl-0">
             {menu.primary.map((link, i) => {
               const here = pathname === link.href;
               return (
@@ -209,21 +252,25 @@ export function SiteMenu({
                   >
                     {NUMERALS[i]}
                   </span>
-                  <CtaLink
+                  <NavShuffleLink
                     href={link.href}
                     onClick={onClose}
                     style={STACK_STYLE}
-                    bare
-                    /* No rule to hold swept, so "you are here" is the
-                       accent colour — the CTA's own hover tone, held. */
-                    className={here ? "cta--here" : undefined}
+                    current={here}
+                    /* Apparel, Best Sellers and Blog & Press are still
+                       on the storefront. The link already knows what to do
+                       with an off-origin destination: a plain anchor in a
+                       new tab, since next/link has nothing to prefetch on
+                       another host. */
+                    external={link.external}
                   >
                     {link.label}
-                  </CtaLink>
+                  </NavShuffleLink>
                 </li>
               );
             })}
           </ul>
+
         </nav>
 
         {/* ---- the foot: one centred line of small print ----
@@ -239,7 +286,9 @@ export function SiteMenu({
             row from reading as one sentence, and they are `aria-hidden`
             because they are punctuation for the eye only. */}
         <ul
-          className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 motion-reduce:transform-none"
+          /* The small print follows the stack: flush left under it on a
+             phone, centred under it above. */
+          className="flex flex-wrap items-center justify-start gap-x-3 gap-y-2 motion-reduce:transform-none sm:justify-center"
           style={riseStyle(menu.primary.length)}
         >
           {menu.secondary.map((link, i) => (

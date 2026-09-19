@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import type { Offering } from "@/lib/product";
 import { CtaLink } from "@/components/cta-link";
 import { RevealText } from "@/components/reveal";
-import { ProductModel, preloadModels } from "@/components/product/product-model";
+import { preloadModels } from "@/components/product/product-model";
+import { ModelStill } from "@/components/product/model-still";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import { ConcreteField } from "@/components/vectors/ConcreteField";
 
@@ -74,8 +75,12 @@ export function ProductOffering({
      Where the slice is short, `moreNote` says so under the squares, so a
      row of three reads as a selection rather than as the whole house. See
      `turned` in lib/product.ts. */
-  const all = offering.view.kind === "model" ? offering.view.colorways : undefined;
-  const shown = all?.slice(0, offering.view.kind === "model" ? (offering.view.turned ?? all.length) : 0);
+  const all =
+    offering.view.kind === "model" ? offering.view.colorways : undefined;
+  const shown = all?.slice(
+    0,
+    offering.view.kind === "model" ? (offering.view.turned ?? all.length) : 0,
+  );
   /* One acetate is not a choice, so no squares are drawn for it. */
   const colorways = (shown?.length ?? 0) > 1 ? shown : undefined;
   const [chosen, setChosen] = useState(0);
@@ -206,9 +211,52 @@ export function ProductOffering({
           control, which ProductModel carries rather than this section: the
           label belongs to the thing that turns, not to the offer around
           it. */}
-      <div className="absolute inset-0">
-        {offering.view.kind === "model" ? (
-          /* Mounted on approach, not at page load.
+      {/* ---- The object's own room, and why it is not `inset-0` ----
+
+          It was absolutely positioned over the WHOLE section, which put
+          the frame's centre on the centre of the screen while the name,
+          the acetates and the CTA sat at the foot of that same box. The
+          object is fitted to the smaller of the stage's two dimensions at
+          0.86 — see the `scale` in ProductModel — so on any window wider
+          than it is tall the frame reached to within seven percent of the
+          section's bottom edge and ran straight through the type. The
+          scrim below hid the collision rather than preventing it: black
+          type-seating gradient over a black frame reads as a frame that
+          has been dipped in ink.
+
+          A flex child instead. The section is a column that ends with the
+          type block, so this takes exactly the room left above it — at
+          every window height, and for any length of copy, since the block
+          measures itself. The model then fits its 0.86 inside THAT box,
+          which is what makes the clearance automatic rather than a number
+          somebody has to keep in step with the heading.
+
+          `min-h-[45svh]` is the floor under that division. Sharing the
+          screen is right while there is a screen to share, but the type
+          block is the name, the acetates, the CTA and two notes — on a
+          short window it is most of the viewport, and a pure `flex-1`
+          handed the object whatever was left, which on a laptop in
+          landscape was a third of the section and falling. Below this the
+          section grows past `min-h-svh` and the offer scrolls instead,
+          which is the better of the two failures: the frame is the
+          argument here, and an argument nobody can see loses. */}
+      <div className="relative min-h-[45svh] flex-1">
+        {/* The room above decides HOW MUCH space the object gets; this
+            layer is what actually fills it.
+
+            Not merged into the parent. r3f sizes its drawing buffer from
+            the container's measured rect, and ModelStill's own root is
+            `h-full` — a percentage height, which against a flex item whose
+            height comes from flex layout rather than from a declared
+            length resolves to `auto`. The stage collapsed, the
+            ResizeObserver reported nothing, and the canvas sat at r3f's
+            300x150 default: a postage stamp in the top-left corner and no
+            frame on the page at all. An absolutely positioned child of a
+            relative box has a definite height whatever decided the box's
+            own, which is the one arrangement that cannot collapse. */}
+        <div className="absolute inset-0">
+          {offering.view.kind === "model" ? (
+            /* Mounted on approach, not at page load.
 
              The turntable is most of a page down and its Canvas used to be
              built during first paint along with everything else: measured
@@ -221,19 +269,24 @@ export function ProductOffering({
              bug that rule exists for. Not existing yet has no such
              problem, and the gate above gives it a screen and a half to
              build in. */
-          built ? <ProductModel src={pick?.src ?? offering.view.src} /> : null
-        ) : (
-          <Image
-            src={offering.view.image}
-            alt={offering.view.alt}
-            fill
-            sizes="100vw"
-            /* contain, not cover: this is a still life of one object, and
+            <ModelStill
+              src={pick?.src ?? offering.view.src}
+              alt={`${offering.name}${pick ? ` in ${pick.name}` : ""}`}
+              built={built}
+            />
+          ) : (
+            <Image
+              src={offering.view.image}
+              alt={offering.view.alt}
+              fill
+              sizes="100vw"
+              /* contain, not cover: this is a still life of one object, and
                cropping a product shot to fill a screen cuts the temples
                off the frame being sold. */
-            className="object-contain p-10 sm:p-20"
-          />
-        )}
+              className="object-contain p-10 sm:p-20"
+            />
+          )}
+        </div>
       </div>
 
       {/* Seats the type. Same mechanic as the colourway panels: only as
@@ -343,23 +396,15 @@ export function ProductOffering({
             </p>
           ) : null}
 
-          <CtaLink
-            href={href}
-            /* Filled and inverted below 1024px — see .cta--filled. This is the
-               page's offer, and on a phone a word with a rule under it is
-               indistinguishable from the label above it. */
-            className="cta--filled pointer-events-auto mt-5"
-          >
+          <CtaLink href={href} className="pointer-events-auto mt-5">
             {offering.cta}
           </CtaLink>
-
 
           <p className="mt-5 max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/40">
             {offering.registryNote}
           </p>
         </div>
       </div>
-
     </section>
   );
 }

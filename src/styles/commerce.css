@@ -1,0 +1,1319 @@
+/* ═══════════════════════════════════════════════════════════════════
+   COMMERCE INTERFACE
+   ═══════════════════════════════════════════════════════════════════
+
+   Everything the shop needs that the story pages never did: the chrome's
+   icons, search, breadcrumbs, the held list, the folding checkout step and
+   the field. Kept out of interactions.css because that file is about the
+   site's MOTION — how a word lifts, how a plate reveals — and none of this
+   moves much. It is furniture.
+
+   Every rule here is documented in STYLE-GUIDE.md. If the two disagree the
+   style guide is wrong, because this is what ships; fix it there.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── THE WAIT, FULL SCREEN ─────────────────────────────────────────
+   The route-level sibling of `.stage-loader` in interactions.css. Black
+   sheet, the mark drawing itself in the middle, nothing else. Fixed rather
+   than absolute: this is rendered INSTEAD of a page, so there is no
+   positioned parent to fill. */
+/* The EXIT is not here and cannot be: see `.route-wipe` in
+   interactions.css for why this sheet stops existing rather than leaves,
+   and what puts a second one up to do the wiping. */
+.site-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+}
+.site-loading-mark {
+  width: min(420px, 62vw);
+  height: auto;
+}
+/* The file animates itself and cannot be told not to, so the honest answer
+   for a reader who asked for less motion is the hairline the rest of the
+   site makes them wait behind. */
+@media (prefers-reduced-motion: reduce) {
+  .site-loading-mark {
+    display: none;
+  }
+  .site-loading::after {
+    content: "";
+    width: min(180px, 46vw);
+    height: var(--rule-weight);
+    background: var(--fg-rule);
+  }
+}
+
+/* ── THE CHROME'S ICONS ────────────────────────────────────────────
+   Search left, profile and bag right. Icons rather than words because the
+   header already spends itself on MENU and the wordmark, and a fourth and
+   fifth word would turn the band into a list.
+
+   1.125rem glyph in a 2.25rem target, 1.25 stroke, and NOTHING else at
+   rest: no fill, no radius, no plate. Hover and focus move opacity only —
+   the same move the quiet link makes — so the header keeps one hover
+   language across words and glyphs. */
+.nav-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: currentColor;
+  opacity: 0.86;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.nav-icon:hover,
+.nav-icon:focus-visible {
+  opacity: 1;
+}
+.nav-icon:focus-visible {
+  outline: var(--rule-weight) solid currentColor;
+  outline-offset: 2px;
+}
+.nav-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 1.25;
+}
+/* The tally, kept to a numeral at mono's smallest step rather than a
+   filled disc. A badge is a shop shouting about its own till; a small
+   number beside the bag answers "did that land" without raising its
+   voice. */
+/* ── A GLYPH THAT BECOMES A CROSS ──────────────────────────────────
+   Every control in this band that OPENS something closes it again with the
+   same tap, and the icon has to say so — otherwise the reader's only way
+   out of a panel is to find a word inside it, or to guess that the thing
+   they pressed is now the thing that undoes it.
+
+   The three bars of the menu already fold into a cross. This is the same
+   sentence for a single glyph: the icon turns a quarter turn out and
+   fades, the cross turns in behind it. Rotating rather than crossfading
+   alone is what makes it read as one object changing state — the search
+   glyph does not become a different icon, it becomes the way back.
+
+   The two live on top of each other in a grid cell rather than with
+   absolute positioning, so the button is sized by its contents and both
+   glyphs are centred on the same pixel with nothing to keep in sync. */
+.nav-icon--morph > * {
+  grid-area: 1 / 1;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.nav-icon--morph {
+  display: inline-grid;
+  place-items: center;
+}
+.nav-icon--morph .morph-out {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.7);
+}
+.nav-icon--morph[aria-expanded="true"] .morph-in {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.7);
+}
+.nav-icon--morph[aria-expanded="true"] .morph-out {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-icon--morph > * {
+    transition: none;
+  }
+}
+
+.nav-icon-count {
+  position: absolute;
+  top: 0.1rem;
+  right: 0.05rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.nav-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ── THE WAY IN ────────────────────────────────────────────────────
+   Three hairlines that become two. It inherits `.nav-icon` for its box,
+   its opacity and its focus ring, so the way in and the errands are the
+   same object at the same scale — the only difference is that this one
+   draws itself.
+
+   The rules are the site's own `--rule-weight`, not an icon set's stroke,
+   which is what keeps it in the same family as every hairline on the page
+   rather than looking like a glyph borrowed from somewhere else.
+
+   The close is drawn out of the SAME three bars rather than being a second
+   icon crossfaded in: the outer two rotate onto each other and the middle
+   one goes. The bars travel first and rotate second on the way in, and the
+   reverse on the way out, so the X is assembled rather than spun — one bar
+   never passes through the other. The delays are what sequence it. */
+.nav-burger {
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+.nav-burger span {
+  display: block;
+  width: 1.125rem;
+  height: var(--rule-weight);
+  background: currentColor;
+  transition:
+    transform var(--dur-fast) var(--ease-out) var(--dur-fast),
+    opacity var(--dur-fast) var(--ease-out);
+}
+/* The middle bar has nowhere to go, so it leaves. It goes first, in the
+   beat the outer two are using to travel, and comes back last. */
+.nav-burger span:nth-child(2) {
+  transition:
+    opacity var(--dur-fast) var(--ease-out) var(--dur-fast),
+    transform var(--dur-fast) var(--ease-out);
+}
+.nav-burger[aria-expanded="true"] span {
+  /* Half the gap plus half a bar: what it takes for the outer two to land
+     exactly on the middle one's line before they turn. */
+  transform: translateY(calc(0.3125rem + var(--rule-weight))) rotate(45deg);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+.nav-burger[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+  transform: none;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.nav-burger[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(calc(-0.3125rem - var(--rule-weight))) rotate(-45deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-burger span {
+    transition: none;
+  }
+}
+
+/* ── THE SHEET ─────────────────────────────────────────────────────
+   One surface, two tenants: the menu and search. Both come down from the
+   top edge over a page that is still there, and the reader should not have
+   to learn which is which.
+
+   Four fifths of the viewport, so the last fifth is the page showing under
+   frosted glass. The sheet SLIDES and does not fade — something leaving by
+   travelling out of frame does not also need to dissolve, and holding it
+   opaque is what makes its bottom edge read as a real edge moving. The
+   glass FADES and does not travel, because a full-height pane sliding
+   alongside the sheet would look like two panels racing.
+
+   This was the menu's own inline styling until search wanted the same
+   behaviour. Two consumers is what makes it a vocabulary rather than one
+   panel's private business. */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  visibility: hidden;
+  /* Delayed to the end of the close, so the sheet finishes leaving before
+     it stops existing. `display: none` would have nothing to animate. */
+  transition: visibility 0s linear var(--dur-base);
+}
+.sheet[data-open="true"] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+/* Also the close control: a click anywhere off the sheet dismisses it.
+   Lightened rather than dimmed — darkening would read as a second sheet of
+   ink under the first and the two would merge into one black screen with a
+   seam. */
+.sheet-glass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  cursor: default;
+  background: rgb(255 255 255 / 0.25);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.sheet[data-open="true"] .sheet-glass {
+  opacity: 1;
+}
+.sheet-panel {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  background: var(--ink);
+  transform: translateY(-100%);
+  transition: transform var(--dur-base) var(--ease-out);
+  /* The menu is sized to fit and never uses this; search has a result list
+     that genuinely can be longer than the panel. A bar drawn down the side
+     of either would be the sheet calling itself a document. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.sheet-panel::-webkit-scrollbar {
+  display: none;
+}
+.sheet[data-open="true"] .sheet-panel {
+  transform: none;
+}
+/* Search opts out of the panel's own scroll: its result list is the
+   scroller, so the field stays put under the reader's hands. */
+.sheet-panel--fixed {
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-glass,
+  .sheet-panel {
+    transition: none;
+  }
+}
+
+/* ── THE DRAWER ────────────────────────────────────────────────────
+   The bag, and the sheet's sibling rather than its cousin: same glass,
+   same delayed visibility, same rule that the panel travels and the glass
+   fades. What differs is the edge it hangs off.
+
+   A bag is not a destination. It is what you are already carrying, and
+   asking someone to leave the page they are shopping to look at it is the
+   oldest way to lose a sale — they see the till, not the frame. Coming in
+   from the side keeps the page they were reading on screen beside it.
+
+   Right edge, because that is the corner the bag glyph is in: the panel
+   comes out from under the control that opened it.
+
+   Full height, unlike the sheet's 80vh. A bag is a column of lines with a
+   total at the bottom, and a total that floats above the fold of a
+   three-quarter panel is a receipt with its last line torn off. */
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-base);
+}
+.drawer[data-open="true"] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.drawer-glass {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  cursor: default;
+  background: rgb(255 255 255 / 0.25);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.drawer[data-open="true"] .drawer-glass {
+  opacity: 1;
+}
+.drawer-panel {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(30rem, 100vw);
+  background: var(--ink);
+  transform: translateX(100%);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.drawer[data-open="true"] .drawer-panel {
+  transform: none;
+}
+/* The lines scroll; the head and the total do not. A subtotal that scrolls
+   away while you are deciding whether to remove something is the one line
+   the panel exists to hold still. */
+.drawer-lines {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.drawer-lines::-webkit-scrollbar {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer-glass,
+  .drawer-panel {
+    transition: none;
+  }
+}
+
+/* ── SEARCH ────────────────────────────────────────────────────────
+   A sheet of ink under the header: one rule, one field, the answers
+   directly beneath it. No modal card, no shadow, no radius. */
+/* Inside an 80vh panel now, so the top padding is header clearance and
+   nothing more, and the height is `min-height` — the field sits under the
+   header and the answers run down from it, growing the panel's own scroll
+   rather than being squeezed by a fixed height. */
+.search-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 5.5rem 1.5rem 2rem;
+}
+@media (min-width: 640px) {
+  .search-inner {
+    padding: 6.5rem 2.5rem 2.5rem;
+  }
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-primary);
+}
+.search-field svg {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 1.25;
+  opacity: 0.6;
+}
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.search-field input::placeholder {
+  color: var(--fg-quiet);
+}
+.search-field input:focus {
+  outline: none;
+}
+/* Chrome draws its own clear button in a `type="search"` field, as a blue
+   disc with a white cross — a fill, a radius and a colour from outside the
+   palette, all three, sitting next to the word CLOSE which does the same
+   job. The field keeps `type="search"` for the keyboard and the semantics
+   and loses the decoration. */
+.search-field input::-webkit-search-cancel-button,
+.search-field input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+/* The list scrolls, not the panel: the field has to stay under the
+   reader's hands while the answers move beneath it. So this is the one
+   scroller inside the sheet — `min-height: 0` is what lets a flex child
+   actually shrink enough to scroll — and its bar is hidden for the same
+   reason the panel's is. */
+.search-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  margin-top: 2.25rem;
+  padding-bottom: 4rem;
+}
+.search-results::-webkit-scrollbar {
+  display: none;
+}
+.search-group + .search-group {
+  margin-top: 2.5rem;
+}
+.search-hit {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 0;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-secondary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.search-hit:hover,
+.search-hit:focus-visible {
+  color: var(--fg-primary);
+  outline: none;
+}
+.search-hit[data-on="true"] {
+  color: var(--fg-primary);
+}
+.search-hit-note {
+  flex: none;
+  color: var(--fg-quiet);
+}
+
+/* ── THE TRAIL ──────────────────────────────────────────────────────
+   One strip directly under the band, on every page — see
+   components/site-crumbs. Label scale, the quiet colour, a bullet at 45%
+   between crumbs. Centred where there is room; on a phone it is one line
+   the reader swipes, with the scrollbar hidden, and it never wraps. */
+.site-crumbs {
+  position: absolute;
+  inset-inline: 0;
+  top: var(--nav-height, 5.5rem);
+  z-index: 60;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-quiet);
+}
+.site-crumbs-list {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0 1.5rem;
+  list-style: none;
+  white-space: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.site-crumbs-list::-webkit-scrollbar {
+  display: none;
+}
+.site-crumbs-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: none;
+}
+.site-crumbs-sep {
+  opacity: 0.45;
+}
+.site-crumbs a {
+  color: inherit;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.site-crumbs a:hover,
+.site-crumbs a:focus-visible {
+  color: var(--fg-primary);
+}
+.site-crumbs [aria-current="page"] {
+  color: var(--fg-secondary);
+}
+@media (min-width: 1024px) {
+  .site-crumbs-list {
+    justify-content: center;
+    overflow-x: visible;
+  }
+}
+
+/* ── THE HELD LIST ─────────────────────────────────────────────────
+   The heart is the only fill in the interface, and it is earned: filled
+   means held, outlined means not, and there is no third state to learn. */
+.hold-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--fg-tertiary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.hold-toggle:hover,
+.hold-toggle:focus-visible {
+  color: var(--fg-primary);
+}
+.hold-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.25;
+}
+.hold-toggle[data-held="true"] svg {
+  fill: currentColor;
+}
+.hold-card-remove {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  padding: 0.5rem;
+  color: var(--paper);
+}
+.hold-card-remove svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.25;
+  fill: currentColor;
+}
+
+/* ── THE FOLDING STEP ──────────────────────────────────────────────
+   An answered step folds to one line with CHANGE beside it; the open one
+   is the only thing with height. The flow this presents is written down in
+   docs/COMMERCE-FLOWS.md. */
+.step {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+  padding: 1.75rem 0;
+}
+.step:last-of-type {
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.step-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+  text-align: left;
+}
+.step-index {
+  margin-right: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: var(--fg-quiet);
+}
+.step[data-state="done"] .step-body {
+  display: none;
+}
+.step[data-state="open"] .step-summary {
+  display: none;
+}
+.step[data-state="waiting"] .step-body,
+.step[data-state="waiting"] .step-summary {
+  display: none;
+}
+.step[data-state="waiting"] .step-head {
+  opacity: 0.4;
+}
+.step-body {
+  margin-top: 1.75rem;
+}
+.step-summary {
+  margin-top: 0.6rem;
+  color: var(--fg-tertiary);
+}
+
+/* ── THE FIELD ─────────────────────────────────────────────────────
+   One underline, no box. The label sits above it at label scale and stays
+   there — a placeholder that disappears the moment you type is a label you
+   cannot check your own answer against. */
+.field {
+  display: block;
+}
+.field > span {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-quiet);
+}
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 0.6rem 0;
+  background: none;
+  border: 0;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-primary);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--fg-primary);
+}
+/* The rule goes accent AND the message says what to do about it. Colour is
+   never the only carrier of a state on this site. */
+.field[data-invalid="true"] input,
+.field[data-invalid="true"] textarea,
+.field[data-invalid="true"] select {
+  border-color: var(--fg-accent);
+}
+.field-error {
+  display: block;
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--fg-accent);
+}
+
+/* ── THE ARCHITECTURE ──────────────────────────────────────────────
+   `/sitemap`. A row per route: the name, its path in mono, what it is for,
+   and the one word for what state it is in. Four columns on a desk, a
+   stack on a phone — and the same hairline-per-row the bag and the fit
+   guide are set with, because this is another list and the site already
+   knows how to set a list. */
+.arch-row {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+.arch-row:last-child {
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.arch-link {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem 1.5rem;
+  padding: 1.1rem 0;
+  color: var(--fg-secondary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+@media (min-width: 768px) {
+  .arch-link {
+    grid-template-columns: 14rem 12rem 1fr 5rem;
+    align-items: baseline;
+  }
+}
+.arch-link:hover,
+.arch-link:focus-visible {
+  color: var(--fg-primary);
+  outline: none;
+}
+.arch-name {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  line-height: 1.2;
+}
+.arch-path,
+.arch-note,
+.arch-kind {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--fg-quiet);
+}
+.arch-path {
+  font-family: var(--font-mono);
+  word-break: break-all;
+}
+/* The state, as a word at eyebrow scale. Not a coloured dot: the state has
+   to survive being read aloud, and the only thing on this page that earns
+   the accent is a route that does not answer yet. */
+.arch-kind {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@media (min-width: 768px) {
+  .arch-kind {
+    text-align: right;
+  }
+}
+.arch-kind[data-kind="designed"] {
+  color: var(--fg-secondary);
+}
+.arch-kind[data-kind="tool"] {
+  color: var(--fg-accent);
+}
+
+/* ── THE DESK'S RAIL ───────────────────────────────────────────────
+   Orders / Held / Profile, as a row of words with the current one ruled
+   under. Not tabs in a strip: the site has no strips. */
+.desk-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  padding-bottom: 1rem;
+}
+.desk-rail button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-quiet);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.desk-rail button svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  stroke-width: 1.25;
+}
+.desk-rail button:hover,
+.desk-rail button:focus-visible {
+  color: var(--fg-primary);
+}
+.desk-rail button[aria-current="true"] {
+  color: var(--fg-primary);
+}
+.desk-rail button[aria-current="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1.05rem;
+  height: var(--rule-weight);
+  background: var(--fg-primary);
+}
+
+/* ── IN THE BAG ────────────────────────────────────────────────────
+   The confirmation sheet, over whatever page did the adding. See
+   BagAdded for what is on it and, more to the point, what is not. */
+.bag-added {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gutter);
+}
+@media (min-width: 640px) {
+  .bag-added {
+    padding: var(--gutter-wide);
+  }
+}
+
+/* Ground and dismiss target in one element. A button rather than a div
+   with a handler, so it is reachable and announced. */
+.bag-added-scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--ink) 82%, transparent);
+  backdrop-filter: blur(6px);
+  border: 0;
+  cursor: pointer;
+  animation: bag-added-in var(--dur-base) var(--ease-out) both;
+}
+
+.bag-added-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  width: min(46rem, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  /* Deeper at the top than the other three sides, and only on a phone.
+     The panel stacks to one column here, so the photograph is the first
+     thing in it and the close glyph would otherwise sit ON the plate —
+     a different colour per colourway, and mid-grey on a concrete shot,
+     where a white glyph disappears. Inverting it does not save it: the
+     mid-tones are exactly where `difference` returns the tone it started
+     from. So the corner gets ink of its own to stand on. A backing plate
+     behind the glyph would be the other fix and is the one the house does
+     not make — no fills. */
+  padding: 3.5rem 1.75rem 1.75rem;
+  background: var(--ink);
+  border: var(--rule-weight) solid var(--fg-rule);
+  animation: bag-added-rise var(--dur-slow) var(--ease-out) both;
+}
+.bag-added-panel:focus-visible {
+  outline: none;
+}
+@media (min-width: 640px) {
+  .bag-added-panel {
+    /* minmax(0, 1fr), never a bare 1fr: a bare 1fr is minmax(auto, 1fr)
+       and grows to fit its widest child, so a long house name took the
+       column past the edge of the panel. The column may be narrower than
+       its content; the content is what has to fit (see .bag-added-title). */
+    grid-template-columns: 20rem minmax(0, 1fr);
+    align-items: start;
+    gap: 2.25rem;
+    padding: 2.25rem;
+  }
+}
+
+/* 16:9, like every other plate on the buy page, and `contain` on the image
+   inside it — the point of this shot is that it is the RIGHT colour, which
+   a crop can undo. */
+.bag-added-shot {
+  position: relative;
+  /* The ratio is set inline from the plate — see bag-added.tsx. Capped
+     so a portrait plate does not make the sheet a portrait sheet: past
+     this the picture letterboxes on the acetate colour, which is the
+     colour the sheet is proving anyway. */
+  aspect-ratio: 16 / 9;
+  max-height: 22rem;
+  overflow: hidden;
+}
+
+/* The name fits its column, whatever the name.
+
+   The body is a container, and the title is capped in container units:
+   15cqw of a 300px column is 45px, at which the longest name on the
+   catalogue (MATRIARCA, PATRIARCA) is about 270px wide. On a phone the
+   column is the whole sheet and the page's size applies. A single word
+   cannot wrap, so a cap on size is the only thing that keeps it in. */
+.bag-added-body {
+  container-type: inline-size;
+  min-width: 0;
+}
+.bag-added-title {
+  font-size: min(var(--display-md), 15cqw);
+  overflow-wrap: anywhere;
+}
+
+.bag-added-rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: 0.6rem;
+}
+
+/* ---- the three ways on, in one row-reversed line ----
+
+   DOM order is Checkout, Keep looking, the bag glyph: primary first, which
+   is the order a screen reader and a tab key should meet them in. The eye
+   wants the opposite on a wide panel, where the filled block belongs at the
+   end of the line the reader is travelling along, so the ROW is reversed
+   rather than the markup. Nothing is re-ordered by hand and the two orders
+   cannot drift apart.
+
+   Phone first, because the phone is the harder case: the filled CTA takes
+   the full span on its own line and the two lesser ways out share the line
+   under it. */
+.bag-added-actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+  padding-top: 1.75rem;
+}
+/* Checkout, or the bag where the store cannot take the whole order —
+   whichever of the two is rendered is this panel's one main action, and it
+   spans. */
+.bag-added-actions > .cta-main {
+  grid-column: 1 / -1;
+}
+.bag-added-bag {
+  justify-self: end;
+}
+
+@media (min-width: 640px) {
+  .bag-added-actions {
+    /* Both columns of the panel, so the row has the sheet's full width to
+       lay three controls across rather than the body column's 306px. */
+    grid-column: 1 / -1;
+    display: flex;
+    /* Right to left: Checkout lands rightmost, Keep looking in the middle,
+       the glyph at the far left. */
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+}
+
+/* The exit, top right of the panel. Pulled half a glyph out toward the
+   corner so the 2.25rem target's optical edge lines up with the panel's
+   padding rather than its box — the same trick the header plays, where the
+   icon's air is part of the margin instead of sitting inside it. */
+.bag-added-close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  z-index: 1;
+}
+@media (min-width: 640px) {
+  .bag-added-close {
+    top: 1.6rem;
+    right: 1.6rem;
+  }
+}
+
+/* `.nav-icon` gives the glyph its box; this only stops flex from stretching
+   it to the height of the CTA beside it. */
+.bag-added-bag {
+  flex: 0 0 auto;
+}
+
+/* The page behind holds still. Lenis drives that scroll, so the lock is a
+   class on the root rather than a style on the body. */
+.bag-added-open,
+.bag-added-open body {
+  overflow: hidden;
+}
+
+@keyframes bag-added-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes bag-added-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bag-added-scrim,
+  .bag-added-panel {
+    animation-duration: 1ms;
+  }
+}
+
+/* ── THE CHECKOUT ──────────────────────────────────────────────────
+   Two columns on a desk: the four folding steps, and the order beside them
+   held still while the answers change. One column on a phone, with the
+   order under the steps — the total is in step 04's own foot, so nothing
+   the reader needs is below the fold they are working in. */
+.checkout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+@media (min-width: 1024px) {
+  .checkout {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    gap: 6rem;
+    align-items: start;
+  }
+  .checkout-aside {
+    position: sticky;
+    top: 7rem;
+  }
+}
+.checkout[data-busy="true"] .checkout-steps {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* A fourth state for the fold: answered before, reachable now, not the one
+   that is open. Drawn at full weight but with no body, so the reader can
+   see it is there to come back to. */
+.step[data-state="ready"] .step-body {
+  display: none;
+}
+
+/* ── THE SUMMARY ───────────────────────────────────────────────────── */
+.summary-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.summary-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.summary-swatch {
+  display: block;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  border: var(--rule-weight) solid var(--fg-rule);
+}
+.summary-money > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.35rem 0;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  color: var(--fg-tertiary);
+}
+.summary-money dd {
+  text-align: right;
+  color: var(--fg-secondary);
+}
+.summary-money .summary-total {
+  margin-top: 0.6rem;
+  padding-top: 1rem;
+  border-top: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-primary);
+  font-size: 0.9375rem;
+}
+.summary-money .summary-total dd {
+  color: var(--fg-primary);
+}
+
+/* ── THE FACTS ─────────────────────────────────────────────────────
+   A review, a confirmation, an order on the desk: three or four short
+   answers side by side, each under its own eyebrow. */
+.review-facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem 3rem;
+}
+@media (min-width: 640px) {
+  .review-facts {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+}
+.review-facts dd {
+  margin-top: 0.6rem;
+  color: var(--fg-secondary);
+}
+
+.confirmed {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+@media (min-width: 1024px) {
+  .confirmed {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 6rem;
+    align-items: start;
+  }
+}
+
+/* ── THE CHECK ─────────────────────────────────────────────────────
+   A checkbox or a radio and its line. The control is the platform's,
+   tinted; the line is body copy. */
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fg-secondary);
+}
+.check input {
+  flex: 0 0 auto;
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-top: 0.3rem;
+  accent-color: var(--fg-primary);
+}
+.check:hover {
+  color: var(--fg-primary);
+}
+.pay-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── THE ADDRESS CARDS ─────────────────────────────────────────────
+   One per saved address, on a hairline box rather than a filled card —
+   the only fill on the site is the heart. Chosen means a full-weight rule
+   and a mark in the corner. */
+.address-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 640px) {
+  .address-cards {
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+}
+.address-card {
+  position: relative;
+  padding: 1.25rem 1.25rem 1.1rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.address-card[role="radio"] {
+  cursor: pointer;
+}
+.address-card[role="radio"]:hover,
+.address-card[role="radio"]:focus-visible {
+  border-color: var(--fg-tertiary);
+  outline: none;
+}
+.address-card[data-chosen="true"] {
+  border-color: var(--fg-primary);
+}
+.address-card[data-chosen="true"]::after {
+  content: "";
+  position: absolute;
+  top: 1.35rem;
+  right: 1.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--fg-primary);
+}
+
+/* ── THE CARD FIELD ────────────────────────────────────────────────
+   Square's iframe on the house's rule. The iframe's own text is set by
+   CARD_STYLE in lib/square; this is the underline and the height. */
+.square-card {
+  min-height: 3rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.square-card[data-state="ready"]:focus-within {
+  border-color: var(--fg-primary);
+}
+.square-card iframe {
+  display: block;
+}
+
+/* ── THE WALLETS ───────────────────────────────────────────────────
+   Apple Pay and Google Pay, when the device has them. Apple's button is
+   the platform's own (-apple-pay-button); Google's is drawn by its SDK
+   into the div. Both sit above the card and are offered, not pushed. */
+.wallets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.wallet {
+  height: 2.75rem;
+  min-width: 10rem;
+}
+.wallet--apple {
+  -webkit-appearance: -apple-pay-button;
+  -apple-pay-button-type: plain;
+  -apple-pay-button-style: white-outline;
+  border-radius: 0;
+}
+.wallet--apple span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.wallet--google:empty {
+  display: none;
+}
+.wallets-or {
+  flex-basis: 100%;
+  margin-top: 0.5rem;
+}
+
+/* ── THE ACCESS MODES ──────────────────────────────────────────────
+   Sign in or new here: two words on a rule, the same object as the desk
+   rail, because it is the same decision — which of these am I. */
+.access-modes {
+  display: flex;
+  gap: 2rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  padding-bottom: 0.9rem;
+}
+.access-modes button {
+  position: relative;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-quiet);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.access-modes button:hover,
+.access-modes button:focus-visible,
+.access-modes button[aria-current="true"] {
+  color: var(--fg-primary);
+}
+.access-modes button[aria-current="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(-0.9rem - var(--rule-weight));
+  height: var(--rule-weight);
+  background: var(--fg-primary);
+}
+
+/* ── THE ORDERS ────────────────────────────────────────────────────
+   A row per order on a hairline, the way the bag and the sitemap are set.
+   Four columns on a desk — the number and date, the lines, where it is,
+   the money — and a stack on a phone. The row opens to the order itself. */
+.orders {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+.order {
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.order-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem 2rem;
+  width: 100%;
+  padding: 1.4rem 0;
+  text-align: left;
+  color: var(--fg-secondary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.order-head:hover,
+.order-head:focus-visible {
+  color: var(--fg-primary);
+  outline: none;
+}
+@media (min-width: 768px) {
+  .order-head {
+    grid-template-columns: 10rem minmax(0, 1fr) 11rem 6rem;
+    align-items: start;
+  }
+  .order-head > :last-child {
+    text-align: right;
+  }
+}
+.order-lines {
+  overflow-wrap: anywhere;
+}
+.order-body {
+  padding: 0.5rem 0 2.25rem;
+}
+
+/* The next slot in the address row: a dotted rule where the card will
+   stand, the plus at eyebrow weight. Same box as its neighbours so the
+   row does not change shape when it is filled. */
+.address-card--add {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 9.5rem;
+  width: 100%;
+  border-style: dashed;
+  color: var(--fg-quiet);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.address-card--add:hover,
+.address-card--add:focus-visible,
+.address-card--add[aria-expanded="true"] {
+  border-color: var(--fg-primary);
+  color: var(--fg-primary);
+  outline: none;
+}
+.address-card--add[aria-disabled] {
+  cursor: default;
+}
+.address-card-plus {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+/* The order column draws full product cards, one under another; the
+   column is wide enough for a card to be a card. */
+.summary-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}

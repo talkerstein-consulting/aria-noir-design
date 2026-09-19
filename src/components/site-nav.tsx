@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { nav } from "@/lib/content";
 import { AriaWordmark } from "@/components/aria-wordmark";
 import { SiteMenu } from "@/components/site-menu";
-import { CtaLink, CtaButton } from "@/components/cta-link";
+import { SiteSearch } from "@/components/site-search";
+import { BagDrawer } from "@/components/shop/bag-drawer";
+import { DeskDrawer } from "@/components/shop/desk-drawer";
 import { menu } from "@/lib/navigation";
-import { useSession } from "@/lib/session";
+import { useBag } from "@/lib/cart";
 
 type SiteNavProps = {
   /**
@@ -55,9 +58,24 @@ const PROBE_X = [0.12, 0.5, 0.88];
  * forgets to declare a ground fails safe to the legible option.
  */
 export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
-  const { signedIn } = useSession();
+  const { count, ready } = useBag();
   const ref = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [bagOpen, setBagOpen] = useState(false);
+  const [deskOpen, setDeskOpen] = useState(false);
+
+  /* One at a time. Four panels share this band and each one is a modal
+     over the same page: two of them open at once is two dialogs arguing
+     about who owns the scroll lock, and the second one to close would hand
+     the page back while the first is still over it. Opening any control
+     shuts the other three. */
+  const only = (which: "menu" | "search" | "bag" | "desk", next: boolean) => {
+    setMenuOpen(which === "menu" && next);
+    setSearchOpen(which === "search" && next);
+    setBagOpen(which === "bag" && next);
+    setDeskOpen(which === "desk" && next);
+  };
 
   useEffect(() => {
     const header = ref.current;
@@ -77,7 +95,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
          honestly come back light. Short-circuiting also stops the probe
          flickering the header to light on the frame the panel opens, while
          the page behind it is still the thing under the band. */
-      if (header.dataset.menu === "open") {
+      if (header.dataset.menu === "open" || header.dataset.sheet === "open") {
         header.dataset.tone = "dark";
         return;
       }
@@ -130,8 +148,9 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
     /* menuOpen is a real input to the probe, not just to the markup: the
        `data-menu` attribute is written during render, and without this the
        header would keep reporting the ground of the page underneath until
-       the next scroll event. */
-  }, [menuOpen]);
+       the next scroll event. So is `searchOpen`, for the same reason: the
+       search sheet is another full sheet of ink directly under the band. */
+  }, [menuOpen, searchOpen, bagOpen, deskOpen]);
 
   return (
     <>
@@ -141,6 +160,11 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
         /* Read by the tone probe above, and the reason the header can sit
            OVER the overlay rather than under it. */
         data-menu={menuOpen ? "open" : "closed"}
+        /* Same job as `data-menu`, for the search sheet. Two attributes
+           rather than one shared "something is open", because the menu's
+           own choreography reads `data-menu` and would start playing for a
+           panel that is not it. */
+        data-sheet={searchOpen || bagOpen || deskOpen ? "open" : "closed"}
         /* grid rather than flex space-between: with three children the middle
          one only sits truly centred if the two flanking it are the same
          width, which they aren't ("Log in" vs "Menu"). 1fr/auto/1fr pins the
@@ -148,34 +172,48 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
         className="site-nav fixed inset-x-0 top-0 z-[70] grid grid-cols-[1fr_auto_1fr] items-center px-8 py-6 transition-opacity duration-700"
         style={{ opacity: visible ? 1 : 0 }}
       >
-        {/* Accounts live on Shopify, so this is a link out rather than a
-          control with nothing behind it. It sits left because it is the
-          colder of the two: whoever wants it already knows they do, while
-          the reader who is browsing should find the way INTO the site on
-          the side their eye leaves the wordmark towards.
+        {/* ---- left: the way in ----
 
-          `tone="quiet"` is what puts the CTA at chrome scale — the quiet
-          voice is already the eyebrow size and weight, which is the same
-          step `t-label` sat at, so the header keeps its proportions and
-          gains the rule and the glyph wave. */}
-        {/* One control, two words. ACCESS to a stranger, BAG to someone
-            who has been through the door — the destination is the same
-            errand either way, so it is the same control rather than a
-            second one appearing beside it.
+            MENU used to be the one word in this band, on the argument that
+            the way in deserves a label. What it also was, was the only
+            control here that was not a glyph, and the close state had to be
+            a second word swapped into its place — a label changing under
+            the reader's cursor rather than the control showing them what it
+            had become.
 
-            No COUNT on it, which is the part worth keeping: a running cart
-            total in the chrome is a shop shouting about its own till on
-            every page, and this header spends itself on three words and a
-            wordmark. The word is a door, not a tally. */}
-        <CtaLink
-          href={signedIn ? "/bag" : "/access"}
-          tone="quiet"
-          bare
-          strong
-          className="justify-self-start"
-        >
-          {signedIn ? nav.bag : nav.right}
-        </CtaLink>
+            Three bars folding into a cross does that job with no words at
+            all, and it is the one icon on the internet that needs less
+            teaching than the magnifier next to it. The word survives as the
+            accessible name, which flips between MENU and CLOSE exactly as
+            it used to. */}
+        <div className="nav-cluster justify-self-start">
+          <button
+            type="button"
+            className="nav-icon nav-burger"
+            onClick={() => only("menu", !menuOpen)}
+            aria-expanded={menuOpen}
+            aria-controls="site-menu"
+            aria-label={menuOpen ? menu.close : nav.left}
+            title={menuOpen ? menu.close : nav.left}
+          >
+            <span aria-hidden />
+            <span aria-hidden />
+            <span aria-hidden />
+          </button>
+
+          {/* The same tap both ways: it opens the sheet and it closes it,
+              and the glyph turns into the cross that says so. */}
+          <button
+            type="button"
+            className="nav-icon nav-icon--morph"
+            onClick={() => only("search", !searchOpen)}
+            aria-expanded={searchOpen}
+            aria-label={searchOpen ? "Close search" : "Search"}
+          >
+            <Search className="morph-in" aria-hidden />
+            <X className="morph-out" aria-hidden />
+          </button>
+        </div>
 
         {showMark ? (
           <Link
@@ -191,32 +229,76 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
           <span aria-hidden />
         )}
 
-        {/* One control, two labels. CLOSE is not a second button living in
-            the overlay — it is the lower line of this one, so opening the
-            menu lifts MENU out and CLOSE in on exactly the pixels the
-            reader just clicked. Nothing moves, nothing re-mounts. That is
-            also why the header sits at z-70, above the panel: the panel
-            has no close control of its own to cover.
+        {/* ---- right: the errands ----
 
-            The travel is upward in BOTH directions — see CtaButton. Closing
-            is not the opening played backwards; it is the same lift again,
-            because the reader pressed the same button again. */}
-        <CtaButton
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-expanded={menuOpen}
-          aria-controls="site-menu"
-          tone="quiet"
-          bare
-          strong
-          alt={menu.close}
-          swapped={menuOpen}
-          className="justify-self-end"
-        >
-          {nav.left}
-        </CtaButton>
+            The desk and the bag, as glyphs. ACCESS and BAG used to be one
+            word in the left column that changed depending on whether the
+            reader had been through the door; they are two different
+            errands and now they are two different controls, which also
+            means the bag is reachable without signing in.
+
+            The profile glyph goes to the DESK, signed in or not. It used
+            to divert a stranger to /access, which meant the desk could not
+            be reached — or designed — without a session; the desk now
+            shows its own three views to anyone and offers the door at the
+            foot of them instead of in place of them.
+
+            The tally is a small numeral rather than a filled badge, and it
+            waits for `ready`: the bag lives in localStorage, so before
+            mount the count is unknown, not zero, and a 0 that becomes a 2
+            a frame later reads as the shop finding things it had lost. */}
+        <div className="nav-cluster justify-self-end">
+          {/* Opens the desk drawer rather than leaving for /desk. It was
+              the one control in this band that navigated, and beside two
+              glyphs that open a panel and close it again with the same tap,
+              a third that walks away is two rules for one row of icons. The
+              page still exists and the drawer links to it. */}
+          <button
+            type="button"
+            className="nav-icon nav-icon--morph"
+            onClick={() => only("desk", !deskOpen)}
+            aria-expanded={deskOpen}
+            aria-label={deskOpen ? "Close the desk" : "The desk"}
+            title="The desk"
+          >
+            <UserRound className="morph-in" aria-hidden />
+            <X className="morph-out" aria-hidden />
+          </button>
+
+          {/* Opens the drawer rather than going to /bag. The page still
+              exists and the drawer's own foot links to it — what changes is
+              that glancing at your own bag no longer costs you the page you
+              were reading. */}
+          <button
+            type="button"
+            className="nav-icon nav-icon--morph"
+            onClick={() => only("bag", !bagOpen)}
+            aria-expanded={bagOpen}
+            aria-label={
+              bagOpen
+                ? "Close the bag"
+                : ready && count
+                  ? `${nav.bag}, ${count} ${count === 1 ? "piece" : "pieces"}`
+                  : nav.bag
+            }
+            title={nav.bag}
+          >
+            <ShoppingBag className="morph-in" aria-hidden />
+            <X className="morph-out" aria-hidden />
+            {ready && count && !bagOpen ? (
+              <span className="nav-icon-count" aria-hidden>
+                {count}
+              </span>
+            ) : null}
+          </button>
+        </div>
+
       </header>
 
       <SiteMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <BagDrawer open={bagOpen} onClose={() => setBagOpen(false)} />
+      <DeskDrawer open={deskOpen} onClose={() => setDeskOpen(false)} />
     </>
   );
 }

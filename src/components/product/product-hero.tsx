@@ -25,6 +25,20 @@ const ENTER_MS = 1000;
 export function ProductHero({ hero }: { hero: Hero }) {
   return (
     <section className="on-ink relative flex min-h-svh flex-col justify-end overflow-hidden bg-ink">
+      {/* FULL BLEED, and the one plate on the page that is.
+
+          Every other film and photograph on a story page stands in the
+          page's column (see .plate-frame in interactions.css). The hero
+          does not, and the exception is the point: this is the first thing
+          on the screen and it is the whole screen, so the page opens as a
+          film and then resolves into a document. A hero held in the column
+          is a picture OF a film on a page; this is the film.
+
+          The poster rides with it, full bleed for the same reason and at
+          the same crop — HeroFilm lays the still underneath and fades the
+          footage up over it once it is genuinely playing, so the two are
+          one image and the handover is invisible. */}
+      <div className="absolute inset-0 overflow-hidden">
       {hero.video ? (
         <HeroFilm
           src={hero.video}
@@ -33,18 +47,36 @@ export function ProductHero({ hero }: { hero: Hero }) {
           className="object-cover object-[50%_30%]"
         />
       ) : (
-        <Image
-          src={hero.image}
-          alt={hero.alt}
-          fill
-          /* The one plate above the fold on this page, so it is the LCP
-             candidate — fetched eagerly rather than waiting on the
-             observer that governs every other image here. */
-          priority
-          sizes="100vw"
-          className="object-cover object-[50%_30%]"
-        />
+        <>
+          <Image
+            src={hero.image}
+            alt={hero.alt}
+            fill
+            /* The one plate above the fold on this page, so it is the LCP
+               candidate — fetched eagerly rather than waiting on the
+               observer that governs every other image here. */
+            priority
+            sizes="100vw"
+            style={{ objectPosition: hero.focus ?? "50% 30%" }}
+            className={`object-cover ${hero.imagePortrait ? "hidden sm:block" : ""}`}
+          />
+          {/* The portrait cut on a phone, where the wide plate would lose
+              the frame to the crop. Both are in the DOM and CSS picks one,
+              so there is no flash while a media query is read in JS. */}
+          {hero.imagePortrait ? (
+            <Image
+              src={hero.imagePortrait}
+              alt={hero.alt}
+              fill
+              priority
+              sizes="100vw"
+              style={{ objectPosition: hero.focusPortrait ?? "50% 40%" }}
+              className="object-cover sm:hidden"
+            />
+          ) : null}
+        </>
       )}
+      </div>
       {/* seats the type; the top stays clear so the architecture reads */}
       <div
         aria-hidden
@@ -67,9 +99,16 @@ export function ProductHero({ hero }: { hero: Hero }) {
                the line hold their position against the foot of the frame. */
             className="t-eyebrow mb-6 sm:mb-10"
           />
+          {/* `--display-hero` is 17vw, and it was set for a NAME: six
+              glyphs, one line, filling the frame. A hero line that is a
+              sentence breaks into three ragged lines at that size and
+              stands 470px tall. So the scale follows the length of what it
+              is given rather than the slot it sits in, and a house whose
+              deck puts the product name back in the H1 gets the big
+              treatment again with nothing here to change. */}
           <HeroName
             text={hero.name}
-            className="t-display-hero"
+            className={hero.name.length > 12 ? "t-display-xl" : "t-display-hero"}
           />
           {/* the atelier heading mechanic — italic lowercase set against
               roman caps — carried onto the hero's own line */}

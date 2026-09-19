@@ -120,11 +120,16 @@ export function BuyDetail({
           foot of a phone's screen reads this element's position to know
           when it has been scrolled past, and takes itself away after it.
           The class carries no rules of its own — see buy-hero. */}
-      <div className="buy-film relative aspect-[4/5] overflow-hidden bg-ink">
+      {/* Landscape, to match the column above it. The film is 16:9 and was
+          being shown in a portrait box, which cropped it exactly as hard as
+          the square box cropped the photographs. `contain` for the same
+          reason it is used up there: a house whose fallback plate is a
+          portrait gets it whole and centred rather than cut. */}
+      <div className="buy-film relative aspect-[16/9] overflow-hidden bg-ink">
         {video ? (
           <video
             ref={kickPlay}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
             src={video}
             poster={poster}
             /* Muted is what makes autoplay legal in every browser; a buy
@@ -143,7 +148,7 @@ export function BuyDetail({
             alt={alt}
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         ) : null}
       </div>

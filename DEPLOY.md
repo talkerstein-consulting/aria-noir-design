@@ -32,10 +32,15 @@ minutes for nothing.
 ## What this project costs to run
 
 **It is fully static.** No API routes, no middleware, no cron jobs, no
-`vercel.json`, nothing marked `force-dynamic`. All 26 routes are prerendered
+`vercel.json`, nothing marked `force-dynamic`. Every route is prerendered
 — `○ Static` or `● SSG` in the build output. That means **zero serverless
 functions**, which removes the largest and most unpredictable line on a
 Vercel bill.
+
+The one thing that is not a page is the **rewrite** in `next.config.ts`:
+`/api/house/:path*` → `HOUSE_API_URL/api/:path*`. A rewrite is routing,
+not a function — it costs nothing to run — and it is how the checkout and
+the desk reach the house API with a first-party cookie. See below.
 
 Keep it that way. Adding an API route, middleware, SSR, a cron job, Blob
 storage, Analytics or Speed Insights changes this project's cost class, and
@@ -118,3 +123,36 @@ the site and confirm:
 - on a phone, the page scrolls freely over the turntable and the frame only
   turns when you drag the frame itself
 - the footer ARIA mark draws itself in when it scrolls into view
+
+
+## The house API
+
+The checkout (`/checkout`) and the desk (`/desk`) talk to the commerce
+service from `talkerstein-consulting/amazingdonuts`
+(`apps/house-accounts`): Express, PostgreSQL, Square. It is a separate
+deployment with its own secrets; this site only knows its origin.
+
+| variable | where | what |
+|---|---|---|
+| `HOUSE_API_URL` | Vercel project env (server) | the service's origin, e.g. `https://house.arianoir.com`. Default `http://127.0.0.1:3101`. |
+| `NEXT_PUBLIC_HOUSE_TENANT` | Vercel project env | the tenant slug the service knows this store by. Default `aria-noir`. |
+
+Nothing Square-shaped lives here. The service answers `/storefront/config`
+with its own `applicationId` and `locationId`, and the browser loads
+Square's SDK from Square. If those are absent the card field draws a local
+stand-in and refuses to charge — which is what the mock does on purpose.
+
+### Locally
+
+```bash
+npm run dev:api:mock
+```
+
+starts `scripts/mock-house-api.mjs` on :3101 — every route the site uses,
+in memory, no Square, no database. Then `npm run dev` as usual; the rewrite
+points at it. Code `ARIA10`; card field accepts anything, `DECLINE` fails.
+
+To run the real service instead, follow its own `LOCAL_CHECKOUT.md` and
+set `HOUSE_API_URL` to wherever it listens. The service still needs the
+changes listed in `docs/COMMERCE-FLOWS.md` §0 before an Aria Noir order
+goes through it.

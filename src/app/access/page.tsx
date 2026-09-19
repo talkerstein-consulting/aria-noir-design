@@ -14,23 +14,24 @@ export const metadata: Metadata = {
 /**
  * Sign in, in the house's own voice.
  *
- * ---- What this page does and does not hold ----
+ * ---- What this page holds ----
  *
- * It holds the BRAND: the ground, the type, the rule under the field, the
- * words. It does not hold the credential. The email goes straight to
- * Shopify's customer-account authentication, which sends the code and owns
- * the session — this page never sees a password, never stores a token, and
- * has nothing worth stealing on it.
+ * The brand — the ground, the type, the rule under each field, the words —
+ * and the door. The credential goes to the house API (`/api/house/auth`),
+ * which hashes the password and sets an httpOnly session cookie on this
+ * origin; the page never stores it and never sees it again.
  *
- * That division is not a limitation to be engineered away later. Passwords
- * and sessions belong with the orders, and a headless storefront that
- * collected them here would be standing between a customer and their own
- * account for the sake of matching a typeface. What the reader gets instead
- * is a door that looks like the building, opening onto the same lock the
- * shop already uses.
+ * ---- Why this origin now owns the door ----
  *
- * `ACCOUNT_HOST` in lib/storefront is the one value that points it
- * somewhere real.
+ * It used to hand off to Shopify's customer accounts, because there was
+ * nothing here that needed a session. There is now: the checkout on
+ * `/checkout` and the desk on `/desk` read orders, addresses and a card on
+ * file from the house API, and those need to know who is asking.
+ *
+ * `?reset=<token>` arrives from the password-reset email; `?next=/path`
+ * is where to go once in; `?mode=new` opens on the account form. All three
+ * are read on the client by the form, so this page stays static — see
+ * DEPLOY.md on why nothing here should become a serverless function.
  */
 export default function AccessPage() {
   return (
@@ -44,8 +45,8 @@ export default function AccessPage() {
               <p className="t-eyebrow">Access</p>
               <h1 className="t-display-lg">Your bench.</h1>
               <p className="t-body t-body--lede mt-2">
-                Orders, addresses, and anything already cut for you. We send a
-                code — there is no password to remember or to lose.
+                Orders, addresses, and anything already cut for you. An
+                account is not needed to buy a frame — it is for afterwards.
               </p>
             </div>
 
@@ -54,10 +55,8 @@ export default function AccessPage() {
             </div>
 
             <div className="hairline mt-14 flex flex-wrap items-center gap-x-10 gap-y-4 pt-8">
-              <CtaLink href="/eyewear" tone="quiet">
-                See the frames
-              </CtaLink>
-              <CtaLink href="/contact" tone="quiet">
+              <CtaLink href="/eyewear">See the frames</CtaLink>
+              <CtaLink href="/contact" kind="secondary">
                 Talk to the studio
               </CtaLink>
             </div>

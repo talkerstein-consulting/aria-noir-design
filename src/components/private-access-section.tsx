@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 import { AccessModel, setAccessProgress } from "@/components/access-model";
 import { privateAccess } from "@/lib/content";
-import { CtaButton } from "@/components/cta-link";
-import { PreorderModal } from "@/components/ui/preorder-modal";
+import { AccessIntake } from "@/components/ui/access-intake";
 import { RevealText } from "@/components/reveal";
 
 /**
@@ -53,8 +52,15 @@ const TOP_VH = 7;
 const STAGE_VH = 72;
 
 /** How much scroll the section is given. One screen of it is the sticky
- *  stage standing still; the rest is the lamp's travel. */
-const SECTION_VH = 520;
+ *  stage standing still; the rest is the lamp's travel.
+ *
+ *  Halved, from 520. That took the lamp's travel from 420vh to 160vh: the
+ *  same sequence, spent over a screen and a half instead of four. Against
+ *  the 72 frames a wide screen samples that is a frame every 2.2vh rather
+ *  than every 5.8vh, so the turn gets FINER as it gets shorter, not
+ *  coarser. The sticky screen is untouched, which is the part that has to
+ *  be a screen. */
+const SECTION_VH = 260;
 
 /**
  * The same section on a phone.
@@ -65,10 +71,13 @@ const SECTION_VH = 520;
  * scrolling it is spread over, and a phone has no reason to spend four
  * screens on it.
  *
- * 300 leaves the sticky screen intact and gives the lamp two screens rather
- * than four. Against the 36 frames a phone samples, that is a frame every
- * 5.6vh of travel — FINER than the desktop's 7vh over 72 frames, so the
- * turn does not get coarser for being shorter.
+ * Halved along with the wide screen, from 300, so the phone stays the
+ * shorter of the two rather than overtaking it. 150 leaves the sticky
+ * screen intact and gives the lamp half a screen of travel. Against the 36
+ * frames a phone samples that is a frame every 1.4vh, so the sampling is
+ * fine and what changed is the SPEED: the light crosses the frame in one
+ * swipe rather than six. If that reads as too quick on a thumb, the number
+ * to raise is this one, and the sticky screen is the 100 inside it.
  *
  * The white iris is safe here and it is worth saying why: it is anchored to
  * this section but measured back from its BOTTOM (DOT_START_VH / DOT_END_VH
@@ -76,7 +85,7 @@ const SECTION_VH = 520;
  * however tall the section is. Shortening moves the iris up with it rather
  * than out of alignment.
  */
-const NARROW_SECTION_VH = 300;
+const NARROW_SECTION_VH = 150;
 
 /**
  * The stage on a phone: a 4:5 portrait plate, 1080×1350 in the shape the
@@ -127,14 +136,6 @@ export function PrivateAccessSection() {
      moving, which is the handover rather than a collision. */
   const wrap = useRef<HTMLElement>(null);
   useScrollProgress(wrap, setAccessProgress);
-
-  /* The sign-up. Held here rather than inside the modal so the trigger and
-     the dialog share one piece of truth, and so the dialog can be a
-     sibling of this section's layers rather than a child of them — it
-     portals out of the DOM either way, but the state has to live above
-     both. */
-  const [asking, setAsking] = useState(false);
-  const close = useCallback(() => setAsking(false), []);
 
   /* Read once, at mount, through the store React gives for exactly this:
      no state written from an effect, and a server render that matches the
@@ -220,7 +221,10 @@ export function PrivateAccessSection() {
 
           {/* The words sit against the foot of the SCREEN, not of the film —
               they are the section's floor, and the film is behind them. */}
-          <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-16 text-center sm:px-10 sm:pb-14">
+          {/* The phone's floor is deeper than the desk's: the sign-up grows
+              DOWN out of the button there (see AccessIntake), and the room
+              it grows into has to already exist so nothing above it moves. */}
+          <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-40 text-center sm:px-10 sm:pb-14">
           <div className="relative flex max-w-3xl flex-col items-center gap-5">
             <RevealText
               as="h2"
@@ -230,19 +234,14 @@ export function PrivateAccessSection() {
             <p className="max-w-xl font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base">
               {privateAccess.body}
             </p>
-            <CtaButton
-              onClick={() => setAsking(true)}
-              className="pointer-events-auto mt-6"
-            >
-              {privateAccess.cta}
-            </CtaButton>
+            {/* The sign-up grows out of the button in place; nothing opens
+                over the film. See AccessIntake. */}
+            <AccessIntake cta={privateAccess.cta} />
             </div>
           </div>
         </div>
       </div>
       </div>
-
-      {asking ? <PreorderModal onClose={close} /> : null}
     </section>
   );
 }

@@ -8,19 +8,18 @@ import { SHOP_URL } from "@/lib/shop";
 /**
  * The headless cart.
  *
- * ---- How this reaches a real checkout with no API token ----
+ * ---- Where it goes ----
  *
- * Shopify honours `/cart/<variantId>:<qty>,<variantId>:<qty>` as a
- * permalink that builds a cart server-side and drops the customer straight
- * into its checkout. That is the whole integration: the bag lives here, the
- * money lives there, and the handoff is a URL.
+ * `/checkout`, on this origin, which settles the order against the house
+ * API (lib/house-api). The bag is what that page reads.
  *
- * The alternative — the Storefront API cart mutations — needs a public
- * token, a server route to keep the cart id, and a webhook to stay in sync.
- * It buys server-side cart persistence across devices, which this store
- * does not need before it needs a working Buy button. The variant ids come
- * from the same sync that produces the prices, so a cart line cannot point
- * at something the store does not sell.
+ * `checkoutHref` below is the older road: Shopify honours
+ * `/cart/<variantId>:<qty>,…` as a permalink that builds a cart
+ * server-side and drops the customer into its checkout. It is kept, and
+ * the checkout page offers it, for the day the house API cannot be
+ * reached — a bag that can still be bought from somewhere is better than
+ * one that cannot. The variant ids come from the same sync that produces
+ * the prices, so a line cannot point at something the store does not sell.
  *
  * ---- Why the bag is local ----
  *
@@ -95,7 +94,7 @@ export function subtotal(resolved: readonly ResolvedLine[]) {
 }
 
 /**
- * The handoff. One permalink carrying every line.
+ * The fallback handoff. One permalink carrying every line.
  *
  * Lines the store no longer sells are dropped rather than sent — Shopify
  * rejects the whole permalink on one bad variant, so an unavailable line
@@ -186,7 +185,12 @@ export function useBag() {
     write(read().filter((l) => !(l.slug === slug && l.colorway === colorway)));
   }, []);
 
+  /* After an order is placed. The bag was an intention and the intention
+     has been acted on; keeping the lines would make the next visit look
+     like the order never happened. */
+  const clear = useCallback(() => write([]), []);
+
   const count = lines.reduce((n, l) => n + l.qty, 0);
 
-  return { lines, resolved: resolve(lines), count, ready, add, setQty, remove };
+  return { lines, resolved: resolve(lines), count, ready, add, setQty, remove, clear };
 }

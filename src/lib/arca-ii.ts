@@ -48,10 +48,10 @@ export const hero: Hero = {
     { text: "Cut for the darker room.", italic: true },
     { text: "NINETY-SEVEN PARTS DARK, THREE PARTS GOLD.", italic: false },
   ],
-  image: `${P}/hero-poster.jpg`,
+  image: `${P}/hero-poster.webp`,
   alt: "Aria and Noir in the dark in ARCA II, the room glowing behind them",
   video: "/video/arca-ii-hero.mp4",
-  poster: `${P}/hero-poster.jpg`,
+  poster: `${P}/hero-poster.webp`,
 };
 
 export const structure: Opening = {
@@ -62,8 +62,8 @@ export const structure: Opening = {
     "ARCA I was lit from outside. This room glows from within, and the lines cut into it appear only where the glow reaches.",
   ],
   images: [
-    { src: `${P}/structure-stair.jpg`, alt: "A stone stair rising out of a dark passage towards one lit window" },
-    { src: `${P}/structure-door.jpg`, alt: "An empty vaulted corridor, a single window burning at the far end of it" },
+    { src: `${P}/structure-stair.webp`, alt: "A stone stair rising out of a dark passage towards one lit window" },
+    { src: `${P}/structure-door.webp`, alt: "An empty vaulted corridor, a single window burning at the far end of it" },
   ],
 };
 
@@ -78,8 +78,8 @@ export const ariaNoir: AriaNoir = {
     "The room took a jawline, a shoulder, half a coat. It never took the frame.",
   ],
   images: [
-    { src: `${P}/aria.jpg`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
-    { src: `${P}/noir.jpg`, alt: "Noir front on under a carved stone arch, amber lenses" },
+    { src: `${P}/aria.webp`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
+    { src: `${P}/noir.webp`, alt: "Noir front on under a carved stone arch, amber lenses" },
   ],
 };
 
@@ -91,8 +91,8 @@ export const shoot: Shoot = {
     "The gold was the harder half. It had to catch light without ever being fully lit.",
   ],
   images: [
-    { src: `${P}/shoot-pair-door.jpg`, alt: "Aria and Noir at distance in a cloister colonnade, the arcade running away behind them" },
-    { src: `${P}/shoot-pair-bands.jpg`, alt: "Aria and Noir together in a stone room, the light coming from one side" },
+    { src: `${P}/shoot-pair-door.webp`, alt: "Aria and Noir at distance in a cloister colonnade, the arcade running away behind them" },
+    { src: `${P}/shoot-pair-bands.webp`, alt: "Aria and Noir together in a stone room, the light coming from one side" },
   ],
   note: {
     label: "A note on shadow",
@@ -101,7 +101,7 @@ export const shoot: Shoot = {
 };
 
 export const meaning: Meaning = {
-  image: `${P}/meaning-aria-deco.jpg`,
+  image: `${P}/meaning-aria-deco.webp`,
   alt: "Aria in ARCA II, close, black leather, lit out of the dark",
   eyebrow: "The Darker Room",
   heading: "A thing is not revealed by light so much as spent by it.",
@@ -114,7 +114,7 @@ export const meaning: Meaning = {
 };
 
 export const detail: Detail = {
-  image: `${P}/detail-lightfall.jpg`,
+  image: `${P}/detail-lightfall.webp`,
   alt: "An empty hall with window light laid in long bars across the floor",
 };
 
@@ -160,10 +160,10 @@ export const spec: Spec = {
     },
   ],
   macro: [
-    { src: `${P}/spec-macro-eye-gold.jpg`, alt: "Half a face, the gold temple plaque beside the eye behind an amber lens" },
-    { src: `${P}/spec-macro-temple.jpg`, alt: "The temple engraved ARCA-00003NFT-NR, 54â21â140, in tortoise acetate" },
-    { src: `${P}/spec-macro-eye.jpg`, alt: "Macro of the gold bridge plaque, its Deco fan cut into the acetate" },
-    { src: `${P}/object-front.jpg`, alt: "ARCA II on a stone sill, amber lenses catching the window" },
+    { src: `${P}/spec-macro-eye-gold.webp`, alt: "Half a face, the gold temple plaque beside the eye behind an amber lens" },
+    { src: `${P}/spec-macro-temple.webp`, alt: "The temple engraved ARCA-00003NFT-NR, 54â21â140, in tortoise acetate" },
+    { src: `${P}/spec-macro-eye.webp`, alt: "Macro of the gold bridge plaque, its Deco fan cut into the acetate" },
+    { src: `${P}/object-front.webp`, alt: "ARCA II on a stone sill, amber lenses catching the window" },
   ],
 };
 
@@ -188,11 +188,11 @@ const buyColour = (name: string) =>
 export const approach: Approach = {
   film: {
     src: "/video/arca-ii-hero.mp4",
-    poster: `${P}/hero-poster.jpg`,
+    poster: `${P}/hero-poster.webp`,
     alt: "The campaign film for ARCA II",
   },
   face: {
-    src: `${P}/noir.jpg`,
+    src: `${P}/noir.webp`,
     alt: "Noir front on under a carved stone arch, amber lenses",
   },
 };
@@ -262,22 +262,22 @@ export const worn: Worn = {
   cta: "Enter the Registry",
   columns: [
     [
-      { src: `${P}/worn-noir-front.jpg`, alt: "Noir full length in a vaulted stone hall" },
-      { src: `${P}/worn-aria-doorway.jpg`, alt: "Aria in a cloister, window light falling across her" },
-      { src: `${P}/worn-noir-profile.jpg`, alt: "Noir in profile, turned out of the dark" },
-      { src: `${P}/worn-aria-panel.jpg`, alt: "Aria turning, coat swinging, against black" },
+      { src: `${P}/worn-noir-front.webp`, alt: "Noir full length in a vaulted stone hall" },
+      { src: `${P}/worn-aria-doorway.webp`, alt: "Aria in a cloister, window light falling across her" },
+      { src: `${P}/worn-noir-profile.webp`, alt: "Noir in profile, turned out of the dark" },
+      { src: `${P}/worn-aria-panel.webp`, alt: "Aria turning, coat swinging, against black" },
     ],
     [
-      { src: `${P}/worn-pair-corridor.jpg`, alt: "Aria and Noir far down a cloister colonnade" },
-      { src: `${P}/worn-aria-concrete.jpg`, alt: "Aria in a black dress in the cloister, stone arches behind her" },
-      { src: `${P}/worn-noir-edge.jpg`, alt: "Noir out of the dark, two lights burning out of focus behind him" },
-      { src: `${P}/aria.jpg`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
+      { src: `${P}/worn-pair-corridor.webp`, alt: "Aria and Noir far down a cloister colonnade" },
+      { src: `${P}/worn-aria-concrete.webp`, alt: "Aria in a black dress in the cloister, stone arches behind her" },
+      { src: `${P}/worn-noir-edge.webp`, alt: "Noir out of the dark, two lights burning out of focus behind him" },
+      { src: `${P}/aria.webp`, alt: "Aria front on beneath carved stone, the lenses filling the frame" },
     ],
     [
-      { src: `${P}/worn-aria-trench.jpg`, alt: "Aria full length in the vaulted hall, the coat to the floor" },
-      { src: `${P}/worn-noir-panel.jpg`, alt: "Noir leaning in a stone window, the cloister bright behind him" },
-      { src: `${P}/noir.jpg`, alt: "Noir front on under a carved stone arch, amber lenses" },
-      { src: `${P}/meaning-aria-deco.jpg`, alt: "Aria close, black leather, lit out of the dark" },
+      { src: `${P}/worn-aria-trench.webp`, alt: "Aria full length in the vaulted hall, the coat to the floor" },
+      { src: `${P}/worn-noir-panel.webp`, alt: "Noir leaning in a stone window, the cloister bright behind him" },
+      { src: `${P}/noir.webp`, alt: "Noir front on under a carved stone arch, amber lenses" },
+      { src: `${P}/meaning-aria-deco.webp`, alt: "Aria close, black leather, lit out of the dark" },
     ],
   ],
 };
@@ -287,14 +287,14 @@ export const close: Close = {
   body: "The second door into the house. There are others.",
   cta: "Enter the Registry",
   trail: [
-    `${P}/hero-arca.jpg`,
-    `${P}/worn-noir-front.jpg`,
-    `${P}/meaning-aria-deco.jpg`,
-    `${P}/worn-noir-edge.jpg`,
-    `${P}/worn-aria-doorway.jpg`,
-    `${P}/worn-aria-concrete.jpg`,
-    `${P}/detail-lightfall.jpg`,
-    `${P}/worn-pair-corridor.jpg`,
-    `${P}/worn-noir-profile.jpg`,
+    `${P}/hero-arca.webp`,
+    `${P}/worn-noir-front.webp`,
+    `${P}/meaning-aria-deco.webp`,
+    `${P}/worn-noir-edge.webp`,
+    `${P}/worn-aria-doorway.webp`,
+    `${P}/worn-aria-concrete.webp`,
+    `${P}/detail-lightfall.webp`,
+    `${P}/worn-pair-corridor.webp`,
+    `${P}/worn-noir-profile.webp`,
   ],
 };

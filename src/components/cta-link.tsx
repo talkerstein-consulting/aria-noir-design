@@ -7,29 +7,22 @@ import type { CSSProperties, MouseEventHandler, ReactNode } from "react";
 type CtaCommon = {
   children: string;
   /**
-   * Which half of the page this sits on. Prefer leaving it alone and
-   * declaring `.on-ink` / `.on-paper` on the section instead — the CTA
-   * reads its colours from the ground it inherits. `"dark"` is for the
-   * closing block, which sets its ground on the CTA itself.
-   */
-  variant?: "light" | "dark";
-  /** Secondary voice, for a second action that must not fight the first. */
-  tone?: "primary" | "quiet";
-  /**
-   * Drops the rule entirely — label and glyph wave only.
+   * The site has exactly two CTAs, and they are the same box at two
+   * weights. `"main"` (default) is SOLID FILL — the one thing the screen
+   * wants done. `"secondary"` is the same box OUTLINED — the second action
+   * in a section, where two fills would fight.
    *
-   * The header chrome and the menu stack use it. In both places the CTA is
-   * the only thing on its ground, so the rule is not distinguishing it from
-   * anything; it just draws a line under the site's own furniture. The wave
-   * is still the affordance, and colour still answers hover and focus.
+   * One main per screen. There is no third style: "the current page" is
+   * `aria-current`, and which half of the page a CTA sits on is the
+   * section's own `.on-ink` / `.on-paper` ground.
    */
-  bare?: boolean;
+  kind?: "main" | "secondary";
   /**
    * A DIFFERENT word on the lower line, so the lift is a swap rather than a
-   * refresh of the same glyphs. Menu/Close is the only user: the control
-   * does not move, does not re-render into a second object, and does not
-   * cross-fade — the letters simply travel up and the other word is what
-   * was underneath them all along.
+   * refresh of the same glyphs. Menu/Close and Add to bag/Add again are
+   * the users: the control does not move, does not re-render into a second
+   * object, and does not cross-fade — the letters simply travel up and the
+   * other word is what was underneath them all along.
    *
    * On a button this also turns the lift into a FLIP — see CtaButton.
    */
@@ -38,22 +31,14 @@ type CtaCommon = {
    * Which of the two words should currently be showing: `false` for
    * `children`, `true` for `alt`. The control animates to it; it does not
    * jump. Owned by the parent, because the thing the label describes (an
-   * open overlay) is the parent's state, not the button's.
+   * open overlay, a bag that now holds something) is the parent's state,
+   * not the button's.
    */
   swapped?: boolean;
-  /**
-   * Chrome voice: `--quiet`'s size, but bold and at full foreground. For
-   * the header's two controls, which are the only words in the band.
-   */
-  strong?: boolean;
+  /** True on the destination the reader is already standing on — accent
+   *  colour, the CTA's own vocabulary, rather than a third style. */
+  current?: boolean;
   className?: string;
-  /**
-   * Size and face overrides, for the places a CTA is the page rather than
-   * an action on it — the header chrome and the menu stack. Inline rather
-   * than modifier classes so the recipe keeps exactly one size and the
-   * exceptions have to say so at the call site. `--cut` rides the font
-   * size, so the rule and the letter-spacing scale with it for free.
-   */
   style?: CSSProperties;
 };
 
@@ -68,6 +53,7 @@ type CtaButtonProps = CtaCommon & {
   onClick: MouseEventHandler<HTMLButtonElement>;
   "aria-expanded"?: boolean;
   "aria-controls"?: string;
+  disabled?: boolean;
 };
 
 /**
@@ -78,23 +64,24 @@ const STEP_MS = 22; // --stagger-char
 
 function classes(
   {
-    variant = "light",
-    tone = "primary",
-    bare = false,
-    strong = false,
+    kind = "main",
+    current = false,
     className = "",
   }: CtaCommon,
 ) {
   return [
-    "cta",
-    variant === "dark" && "cta--dark",
-    tone === "quiet" && "cta--quiet",
-    bare && "cta--bare",
-    strong && "cta--strong",
+    kind === "secondary" ? "cta-secondary" : "cta-main",
     className,
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+/** `aria-current="page"` both says "you are here" to assistive tech and is
+ *  what `.cta-main[aria-current="page"]` in interactions.css keys off of —
+ *  one signal, not a colour picked twice. */
+function currentProp(currentValue: boolean | undefined) {
+  return currentValue ? ("page" as const) : undefined;
 }
 
 /**
@@ -176,8 +163,8 @@ function CtaChars({
  * letter a beat behind the last (`--d`, set per index above), so the word
  * reads as a wave rather than a single jump-cut.
  *
- * `variant="dark"` is for the closing section (light --paper background,
- * --ink text); everywhere else sits on --ink.
+ * Colour always comes from the section's own `.on-ink` / `.on-paper`
+ * ground — never from a prop on the CTA itself.
  */
 export function CtaLink({
   href,
@@ -186,11 +173,13 @@ export function CtaLink({
   external,
   style,
   alt,
+  current,
   ...rest
 }: CtaLinkProps) {
   const common = {
     style,
-    className: classes({ children, style, alt, ...rest }),
+    className: classes({ children, style, alt, current, ...rest }),
+    "aria-current": currentProp(current),
   };
 
   /* An off-origin destination is a plain anchor: next/link's prefetching
@@ -210,6 +199,57 @@ export function CtaLink({
   return (
     <Link href={href} onClick={onClick} {...common}>
       <CtaChars alt={alt}>{children}</CtaChars>
+    </Link>
+  );
+}
+
+/**
+ * The menu stack, and only the menu stack.
+ *
+ * A destination in the menu is NAVIGATION, not a call to action: six filled
+ * blocks stacked down the middle of a black page is a form, not a menu, and
+ * at display size the fill is most of the screen. So this takes no box — no
+ * fill, no outline, no padding — and borrows only the house's glyph shuffle,
+ * which is the affordance doing its job.
+ *
+ * It is deliberately NOT a third CTA style. The CTA vocabulary is two:
+ * `.cta-main` filled, `.cta-secondary` outlined. This belongs to the
+ * navigation family alongside `.link-quiet`.
+ */
+export function NavShuffleLink({
+  href,
+  children,
+  onClick,
+  external,
+  style,
+  current,
+  className = "",
+}: {
+  href: string;
+  children: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  external?: boolean;
+  style?: CSSProperties;
+  current?: boolean;
+  className?: string;
+}) {
+  const common = {
+    style,
+    className: `menu-link ${className}`.trim(),
+    "aria-current": currentProp(current),
+  };
+
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" {...common}>
+        <CtaChars>{children}</CtaChars>
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} onClick={onClick} {...common}>
+      <CtaChars>{children}</CtaChars>
     </Link>
   );
 }
@@ -286,6 +326,7 @@ export function CtaButton({
   style,
   alt,
   swapped = false,
+  disabled,
   "aria-expanded": expanded,
   "aria-controls": controls,
   ...rest
@@ -354,6 +395,7 @@ export function CtaButton({
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       aria-expanded={expanded}
       aria-controls={controls}
       style={style}

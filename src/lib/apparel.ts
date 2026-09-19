@@ -67,7 +67,7 @@ export const apparel: readonly ApparelCollection[] = [
         cents: 10000,
         compareAtCents: 12500,
         available: true,
-        image: `${A}/pastel-01.jpg`,
+        image: `${A}/pastel-01.webp`,
         swatch: "#d8cfc2",
       },
       {
@@ -77,7 +77,7 @@ export const apparel: readonly ApparelCollection[] = [
         cents: 10000,
         compareAtCents: 12500,
         available: true,
-        image: `${A}/perdiz-01.jpg`,
+        image: `${A}/perdiz-01.webp`,
         swatch: "#7d6a56",
       },
       {
@@ -87,7 +87,7 @@ export const apparel: readonly ApparelCollection[] = [
         cents: 10000,
         compareAtCents: 12500,
         available: true,
-        image: `${A}/pink-01.jpg`,
+        image: `${A}/pink-01.webp`,
         swatch: "#c79aa2",
       },
       {
@@ -97,7 +97,7 @@ export const apparel: readonly ApparelCollection[] = [
         cents: 10000,
         compareAtCents: 12500,
         available: true,
-        image: `${A}/tweed-01.jpg`,
+        image: `${A}/tweed-01.webp`,
         swatch: "#6f6f6a",
       },
       {
@@ -107,7 +107,7 @@ export const apparel: readonly ApparelCollection[] = [
         cents: 10000,
         compareAtCents: 12500,
         available: true,
-        image: `${A}/x-01.jpg`,
+        image: `${A}/x-01.webp`,
         swatch: "#2f2f31",
       },
     ],

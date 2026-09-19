@@ -4,6 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRenderGate } from "@/hooks/use-on-screen";
+import { fitScale } from "@/lib/model-fit";
 import * as THREE from "three";
 
 /** Three quarters: enough yaw to read the temple and the hinge, and a
@@ -264,10 +265,10 @@ function Model({
   }, [scene]);
 
   /* Fit that sphere inside the SMALLER of the two viewport dimensions, so
-     the plate's shape can never clip it top-to-bottom either. 0.86 leaves a
-     margin the frame turns inside of, rather than skimming the edges of. */
-  const scale =
-    (Math.min(viewport.width, viewport.height) * 0.86) / (radius * 2);
+     the plate's shape can never clip it top-to-bottom either. The margin
+     the frame turns inside of, rather than skimming the edges of, is the
+     house's and is decided in lib/model-fit. */
+  const scale = fitScale(viewport, radius);
 
   /* Eases `at` toward `to` and writes the one rotation this object has.
      Frame-rate independent, and it settles rather than oscillating: at rest
@@ -304,11 +305,84 @@ function Model({
   );
 }
 
+/** The still, for a glb.
+ *
+ *  `/models/houses/arca-i-k-black.glb` → `/images/posters/arca-i-k-black.webp`
+ *
+ *  The posters are rendered from these same files through the same rig, by
+ *  `/poster` in development — see scripts/POSTERS.md. They are the story
+ *  page's placeholder while the geometry arrives and its failsafe if the
+ *  geometry never does, which is the only reason a still of a turntable is
+ *  worth keeping in the repository at all. */
+export function posterFor(src: string) {
+  return `/images/posters/${src.split("/").pop()!.replace(/\.glb$/i, "")}.webp`;
+}
+
+/** The poster's edge, in device pixels. Square — see poster-rig. */
+const CAPTURE_SIZE = 1140;
+
+/**
+ * Take the canvas as a PNG, once, after the frame has actually been drawn.
+ *
+ * ---- Why it sets its own size ----
+ *
+ * The buffer is told what to be rather than measured from the page. A
+ * capture has to produce the same square whatever window it was run in, and
+ * — the part that actually forced this — r3f sizes itself from a
+ * ResizeObserver, which in a tab that is not being composited reports
+ * nothing at all and leaves the canvas at its 300x150 default. A poster
+ * rendered from that is a thumbnail of a thumbnail. `setSize` from the r3f
+ * store rather than `gl.setSize`: the store's version also updates the
+ * camera and the `viewport` that the model's own fit is computed from, so
+ * the object is framed for the buffer it is actually being drawn into.
+ *
+ * ---- Why it waits ----
+ *
+ * Six frames, not one. `onReady` fires when the geometry has loaded, but
+ * the environment map is convolved on the render AFTER that, and the resize
+ * above needs a render of its own before the fit has caught up. Capturing
+ * early gives a black object under no light, framed for the wrong box.
+ *
+ * The explicit `gl.render` before reading is belt and braces for
+ * `preserveDrawingBuffer`: it guarantees the buffer being serialised was
+ * drawn in this same task, rather than trusting what the compositor left
+ * behind.
+ */
+function Capture({ onCapture }: { onCapture: (png: string) => void }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  const setSize = useThree((s) => s.setSize);
+  const setDpr = useThree((s) => s.setDpr);
+
+  const frames = useRef(0);
+  const done = useRef(false);
+
+  useFrame(() => {
+    if (done.current) return;
+    const n = frames.current++;
+
+    if (n === 0) {
+      setDpr(1);
+      setSize(CAPTURE_SIZE, CAPTURE_SIZE);
+      return;
+    }
+    if (n < 6) return;
+
+    done.current = true;
+    gl.render(scene, camera);
+    onCapture(gl.domElement.toDataURL("image/png"));
+  });
+
+  return null;
+}
+
 export function ProductModel({
   src,
   yaw,
   zoom,
   onReady,
+  onCapture,
 }: {
   src: string;
   /** Extra yaw, in radians, driven from outside per frame. The buy page's
@@ -322,6 +396,11 @@ export function ProductModel({
   /** Called once the glb is loaded and the frame is about to be drawn.
    *  Callers that fade the viewer in wait on this rather than on a timer. */
   onReady?: () => void;
+  /** Development only: hand back the drawn frame as a PNG data URL. This
+   *  is how the posters in `/images/posters` are made, and passing it
+   *  switches the context to `preserveDrawingBuffer`, which no reader
+   *  should ever pay for. See `/poster`. */
+  onCapture?: (png: string) => void;
 }) {
   const dragging = useRef<{ id: number; x: number } | null>(null);
 
@@ -371,7 +450,12 @@ export function ProductModel({
              rotation eases every frame), so there is no discrete moment to
              invalidate on — the question is simply whether anyone is
              looking. */
-          frameloop={live ? "always" : "never"}
+          /* A capture renders regardless of what an observer thinks:
+             the gate below asks whether anyone is LOOKING, and nobody is
+             looking at the poster kitchen's stage — in a tab that is not
+             being composited the observer never fires at all, and the
+             scene would sit at "never" forever. */
+          frameloop={live || onCapture ? "always" : "never"}
           /* Capped at 1.5 rather than 2. At dpr 2 a full-screen
              antialiased scene draws four times the pixels of a CSS-pixel
              buffer, every frame, while the reader is scrolling past it.
@@ -383,7 +467,14 @@ export function ProductModel({
              on the origin and the fit leaves an even margin all round, so
              any camera offset just spends that margin on one side. */
           camera={{ position: [0, 0, 5], fov: 40 }}
-          gl={{ antialias: true, alpha: true }}
+          gl={{
+            antialias: true,
+            alpha: true,
+            /* Only for a capture: keeping the buffer costs memory on every
+               frame of every visit, and toDataURL is the one thing that
+               cannot read a discarded one. */
+            preserveDrawingBuffer: Boolean(onCapture),
+          }}
           /* ACES rolls the specular highlights off instead of clipping them
              to flat white. Exposure is back to 1: the sky below does the
              lifting now, and pushing it further only blows the sheen on the
@@ -404,6 +495,7 @@ export function ProductModel({
           <directionalLight position={[-4, 2, 3]} intensity={0.2} />
           <Suspense fallback={null}>
             <Model src={src} yaw={yaw} zoom={zoom} onReady={onReady} />
+            {onCapture ? <Capture onCapture={onCapture} /> : null}
             {/* A white sky, built as one enormous soft source overhead and
                 large low-intensity panels all round.
 

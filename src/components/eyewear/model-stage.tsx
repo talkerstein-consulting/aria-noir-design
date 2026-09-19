@@ -9,6 +9,7 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CtaLink } from "@/components/cta-link";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
+import { MODEL_MARGIN } from "@/lib/model-fit";
 
 /**
  * The turntable index.
@@ -335,7 +336,11 @@ export function ModelStage({
        mid-rotation even when it is edge-on and longest. That already
        builds slack in at rest, where you are looking at the front, so the
        margin on top of it stays small. */
-    const MARGIN = 1.12;
+    /* 1.12 by hand before. Stated from the camera's end rather than the
+       object's, but it is the same rule and it now comes from the same
+       place: a camera this far back leaves the frame at MODEL_AIR of the
+       stage, like every other glb on the site. */
+    const MARGIN = MODEL_MARGIN;
     const fitCamera = () => {
       const vFov = (camera.fov * Math.PI) / 180;
       const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);

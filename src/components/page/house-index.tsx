@@ -1,9 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
 import { houses, colorwayCount, shopPath } from "@/lib/navigation";
 import { apparel } from "@/lib/apparel";
 import { formatPrice, priceOf, SHOP_ALL_URL } from "@/lib/shop";
 import { CtaLink } from "@/components/cta-link";
+import { ProductCard } from "@/components/product-card";
 
 /**
  * Everything the house makes, at the top of the house's own page.
@@ -66,87 +65,46 @@ export function HouseIndex() {
 
         <div className="house-index grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
           {houses.map((house) => (
-            <div key={house.slug} className="flex flex-col gap-4">
-              <Link
-                href={house.href ?? shopPath(house)}
-                className="group flex flex-col gap-3"
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
-                  {house.plate ? (
-                    <Image
-                      src={house.plate}
-                      alt={`${house.name} — ${house.material}`}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                    />
-                  ) : (
-                    <div
-                      className="h-full w-full"
-                      style={{
-                        background: `linear-gradient(160deg, ${house.swatch ?? "#2a2a2a"} 0%, var(--ink) 82%)`,
-                      }}
-                    />
-                  )}
-                </div>
-                <div>
-                  <h2 className="t-display-xs">{house.name}</h2>
-                  <p className="t-label mt-1">
-                    {house.index} — {house.material}
-                  </p>
-                </div>
-              </Link>
-
+            <div key={house.slug} className="flex">
               {/* How deep the range goes and what it opens at — not the
-                    colourways themselves. See the note at the top of this
-                    file for why they are not listed here. */}
-              <div className="hairline flex items-baseline justify-between gap-4 pt-3">
-                <p className="t-caption">
-                  {house.models === 1
+                  colourways themselves. See the note at the top of this
+                  file for why they are not listed here. */}
+              <ProductCard
+                href={house.href ?? shopPath(house)}
+                image={house.plate}
+                swatch={house.swatch}
+                name={house.name}
+                as="h2"
+                meta={`${house.index} — ${house.material}`}
+                detail={
+                  house.models === 1
                     ? `One cut · ${colorwayCount(house)} colourways`
-                    : `${house.models} cuts · ${colorwayCount(house)} colourways`}
-                </p>
-                <p className="t-caption tabular-nums">from {priceOf(house)}</p>
-              </div>
+                    : `${house.models} cuts · ${colorwayCount(house)} colourways`
+                }
+                price={`from ${priceOf(house)}`}
+              />
             </div>
           ))}
 
-          {/* ---- the apparel ---- */}
+          {/* ---- the apparel ----
+              No page of its own yet, so the card carries no link. It keeps
+              the shape of the six beside it regardless. */}
           {apparel.map((line) => (
-            <div key={line.slug} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
-                  {line.colourways[0]?.image ? (
-                    <Image
-                      src={line.colourways[0].image}
-                      alt={`${line.name} — ${line.material}`}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover"
-                    />
-                  ) : null}
-                </div>
-                <div>
-                  <h2 className="t-display-xs">{line.name}</h2>
-                  <p className="t-label mt-1">07 — {line.material}</p>
-                </div>
-              </div>
-
-              <div className="hairline flex items-baseline justify-between gap-4 pt-3">
-                <p className="t-caption">
-                  One cut · {line.colourways.length} colourways ·{" "}
-                  {line.sizes.length} sizes
-                </p>
-                <p className="t-caption tabular-nums">
-                  from {formatPrice(line.colourways[0]?.cents ?? 0)}
-                </p>
-              </div>
+            <div key={line.slug} className="flex">
+              <ProductCard
+                image={line.colourways[0]?.image}
+                name={line.name}
+                as="h2"
+                meta={`07 — ${line.material}`}
+                detail={`One cut · ${line.colourways.length} colourways · ${line.sizes.length} sizes`}
+                price={`from ${formatPrice(line.colourways[0]?.cents ?? 0)}`}
+              />
             </div>
           ))}
         </div>
 
         <div className="mt-16">
-          <CtaLink href={SHOP_ALL_URL} external tone="quiet">
+          <CtaLink href={SHOP_ALL_URL} external>
             Shop all
           </CtaLink>
         </div>

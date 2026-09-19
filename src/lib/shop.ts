@@ -1,4 +1,5 @@
 import { allHouses, type House } from "@/lib/navigation";
+import { PLATE_SIZES } from "./plate-sizes";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
 
 /**
@@ -182,15 +183,37 @@ export const COLLECTION_LABEL = "Eyewear";
  * regardless. Where even that is missing the caller renders the acetate.
  */
 export function galleryFor(house: House, colorway?: string): readonly string[] {
+  /* The campaign's own frame of this acetate closes the scroll, where the
+     house has been shot that way. Appended here rather than written into
+     every `colorwayGallery` by hand: it is one rule ("the sill goes last")
+     and it was being restated once per colourway, which is twenty-odd
+     chances for a house to be wired inconsistently with the one beside it.
+     Already-listed sills are not repeated. */
+  const sill = sillFor(house, colorway);
+  const close = (set: readonly string[]) =>
+    sill && !set.includes(sill) ? [...set, sill] : set;
+
   const perColour = colorway ? house.colorwayGallery?.[colorway] : undefined;
-  if (perColour?.length) return perColour;
+  if (perColour?.length) return close(perColour);
   const shot = colorway ? house.colorwayPlates?.[colorway] : undefined;
-  if (shot) return [shot];
+  if (shot) return close([shot]);
+  /* A colourway shot for the campaign and nowhere else still has one
+     photograph of itself, which beats the house plate standing in. */
+  if (sill) return [sill];
   /* No photograph of THIS colour. A house that has a colourway set at all
      shows nothing rather than a sibling's picture; one that has none has
      never claimed to be showing a colourway, so its plate still stands. */
   if (house.colorwayPlates || house.colorwayGallery) return [];
   return house.plate ? [house.plate] : [];
+}
+
+/**
+ * The campaign's own frame of one acetate, where the house has been shot
+ * that way. Undefined otherwise, which is the signal every caller uses to
+ * fall back rather than to show a sibling colour's photograph.
+ */
+export function sillFor(house: House, colorway?: string) {
+  return colorway ? house.colorwaySills?.[colorway] : undefined;
 }
 
 /** The macro crop for a colourway's thumbnail — the photograph AND where
@@ -211,6 +234,30 @@ export function macroFor(house: House, colorway: string) {
  * asks next/image for a 384px file rather than a 96px one — a thumbnail
  * magnified four times needs the pixels to survive it.
  */
+/**
+ * A plate's own aspect ratio, as a number, or undefined for anything not
+ * under public/images.
+ *
+ * This is what lets a column of mixed-ratio photographs be ONE WIDTH. Held
+ * in a fixed box, a set that is part 16:9 and part square either crops or
+ * renders at two different widths; given each plate's own ratio the box
+ * takes the full column and the height follows the picture.
+ *
+ * Measured at author time rather than read from the loaded image, so the
+ * space is reserved before the plate arrives and the column does not jump
+ * as it fills. See scripts/measure-plates.mjs.
+ */
+export function plateRatio(src: string) {
+  /* Next rewrites plate URLs through /_next/image on the client, and a
+     caller may hand us one straight from a DOM node. The key is the source
+     path, which is the `url` parameter. */
+  const key = src.startsWith("/_next/")
+    ? decodeURIComponent(new URLSearchParams(src.split("?")[1]).get("url") ?? "")
+    : src;
+  const size = PLATE_SIZES[key];
+  return size ? size[0] / size[1] : undefined;
+}
+
 export const MACRO_ZOOM = 4;
 
 /**

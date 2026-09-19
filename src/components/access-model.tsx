@@ -6,6 +6,7 @@ import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { privateAccess } from "@/lib/content";
 import { useRenderGate } from "@/hooks/use-on-screen";
+import { fitScale } from "@/lib/model-fit";
 
 /**
  * The unreleased frame, under a light that walks across it as you scroll.
@@ -199,8 +200,12 @@ function Frame() {
     return { object, radius: sphere.radius };
   }, [scene]);
 
-  const scale =
-    (Math.min(viewport.width, viewport.height) * 0.95) / (radius * 2);
+  /* 0.95 before, and this is the stage the house rule was written for: the
+     heading, three lines of body and the CTA all sit on this screen with
+     the frame, and on a phone — where the shorter dimension is the width —
+     0.95 ran the temples to within a few pixels of both edges and left the
+     type looking like it was holding the object up. */
+  const scale = fitScale(viewport, radius);
 
   /* THE FRAME DOES NOT MOVE. Only the lamp does — see SweepLight.
 

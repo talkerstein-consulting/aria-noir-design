@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { BuyHero } from "@/components/shop/buy-hero";
 import { BuyDetail, type DetailTab } from "@/components/shop/buy-detail";
+import { BuyCampaign } from "@/components/shop/buy-campaign";
+import { ColourwayCards } from "@/components/shop/colourway-cards";
 import { AlsoLike } from "@/components/shop/also-like";
 import { colorwayCount, houses, type House } from "@/lib/navigation";
 import { houseBySlug, priceOf } from "@/lib/shop";
@@ -35,7 +37,10 @@ import { shipping } from "@/lib/policies";
  *   3. re-run `scripts/import-colourway-photography.mjs`, which brings the
  *      shop's per-colourway photography into `public/` at web weight and
  *      prints the `colorwayPlates` / `colorwayGallery` wiring to paste back;
- *   4. add `heroColorway` — the acetate the page opens turning.
+ *   4. add `heroColorway` — the acetate the page opens turning;
+ *   5. re-run `scripts/import-campaign-photography.mjs`, which brings the
+ *      house's own campaign shoot in at web weight, and choose the three
+ *      plates and the one line that become its `campaign`.
  *
  * Nothing in this file, in BuyHero, in BuyDetail or in AlsoLike needs to be
  * touched by any of that. If a house ever seems to need a change HERE, the
@@ -180,8 +185,23 @@ export default async function ShopHousePage({
       <main className="buy-page relative">
         {/* ---- the transaction: photographs left, offer sticky right ---- */}
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
+          {/* The trail is the strip under the band, from the layout — see
+              components/site-crumbs. */}
           <BuyHero house={house} />
         </section>
+
+        {/* ---- the house's own world, where it has been shot as one ----
+
+            Between the transaction and the questions on purpose. A reader
+            who is buying has already stopped at the panel above; a reader
+            who is deciding needs the argument, and for the four houses
+            with no story page this is the only place it is made. A house
+            without a campaign renders nothing here. */}
+        {house.campaign ? (
+          <section className="on-ink section bg-ink">
+            <BuyCampaign house={house} />
+          </section>
+        ) : null}
 
         {/* ---- the detail, beside the film ---- */}
         <section className="on-ink section bg-ink">
@@ -192,6 +212,16 @@ export default async function ShopHousePage({
             image={house.ground ?? house.plate}
             alt={`${house.name}, ${house.material}`}
           />
+        </section>
+
+        {/* ---- the run, one card per acetate ----
+
+            After the detail and before the rest of the catalogue: a reader
+            who has read the panels and is choosing between colours is
+            still shopping this house, and sending them to other houses
+            first would answer a question they have not asked. */}
+        <section className="on-ink section bg-ink">
+          <ColourwayCards house={house} />
         </section>
 
         {/* ---- the rest of the catalogue ---- */}

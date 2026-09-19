@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { CtaLink, CtaButton } from "@/components/cta-link";
 import { CartTable } from "@/components/shop/cart-table";
-import { ACCOUNT_URL } from "@/lib/navigation";
-import { useSession, RETURN_PARAM, SIGN_OUT_URL } from "@/lib/session";
+import { useSession, RETURN_PARAM } from "@/lib/session";
+import { announceSession, house } from "@/lib/house-api";
 import { useBag } from "@/lib/cart";
 
 /**
@@ -69,20 +69,24 @@ export function BagView() {
         {signedIn ? (
           <>
             <p className="t-body t-body--tight max-w-xl">
-              Orders, addresses and anything already on the bench are kept
-              with the orders themselves.
+              Orders, addresses, the card on file and anything already on
+              the bench are on the desk.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-              <CtaLink href={ACCOUNT_URL} external>
-                Orders &amp; addresses
-              </CtaLink>
-              {/* Signs out of Shopify, which ends the thing that actually
-                  matters, and drops the local hint on the way so the header
-                  does not keep saying Bag. */}
-              <CtaLink href={SIGN_OUT_URL} external tone="quiet">
+              <CtaLink href="/desk">The desk</CtaLink>
+              {/* Ends the house API session and drops the local hint on
+                  the way so the header does not keep saying Bag. */}
+              <CtaButton
+                kind="secondary"
+                onClick={async () => {
+                  await house.logout().catch(() => {});
+                  announceSession();
+                  set(false);
+                }}
+              >
                 Sign out
-              </CtaLink>
-              <CtaButton onClick={() => set(false)} tone="quiet">
+              </CtaButton>
+              <CtaButton kind="secondary" onClick={() => set(false)}>
                 Not you?
               </CtaButton>
             </div>
@@ -94,8 +98,8 @@ export function BagView() {
               check out — the bag above will go through either way.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-              <CtaLink href="/access">Sign in</CtaLink>
-              <CtaLink href="/contact" tone="quiet">
+              <CtaLink href="/access?next=/bag">Sign in</CtaLink>
+              <CtaLink href="/contact" kind="secondary">
                 Talk to the studio
               </CtaLink>
             </div>

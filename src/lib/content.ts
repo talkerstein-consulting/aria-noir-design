@@ -76,17 +76,26 @@ export const atelier = {
      frame being worn now. Five masters no other page uses, so nothing on
      the site is showing the same photograph twice.
 
-     The sticky column is the Together Shot: the two of them in one frame,
-     which is what this column is for. It is a 16:9 master in a slot the
-     height of the viewport, so object-cover holds the centre and loses
-     the sides. The pair sit centre, which is what makes that survivable
-     rather than a crop through somebody's face. See the note on this
-     entry in scripts/import-arca-photography.mjs. */
-  stickyImage: "/images/arca-ii/home/pair-lit-dark.jpg",
-  stickyAlt: "Aria and Noir together, both wearing ARCA II",
+     The sticky column was the Together Shot, `pair-lit-dark`, and it was
+     the one soft picture on the home page. Not the master's fault: it is
+     1920x1072, and this column is a PORTRAIT slot the height of the
+     viewport. `object-cover` was throwing away about sixty percent of the
+     frame's width to fill it, so roughly four hundred pixels of source
+     were being stretched across a six-hundred-pixel box, and further than
+     that again on a retina screen. A landscape master in a tall slot
+     cannot be sharp, whatever is served to it.
+
+     `frame-window-shadow` is 1547x1920 — the slot's own shape, so the
+     whole frame lands in it and the picture is oversampled rather than
+     stretched. It is also the right picture for this beat: the section
+     says nothing here is moulded, and this is the object alone on poured
+     concrete under hard window light, which is the claim rather than an
+     illustration of it. Nothing else on the site uses it. */
+  stickyImage: "/images/arca-i/home/frame-window-shadow.webp",
+  stickyAlt: "ARCA I on poured concrete, under hard window shadow",
   pairOne: [
-    "/images/arca-i/home/noir-corridor-stand.jpg",
-    "/images/arca-ii/home/aria-cloister-full.jpg",
+    "/images/arca-i/home/noir-corridor-stand.webp",
+    "/images/arca-ii/home/aria-cloister-full.webp",
   ],
   feature: {
     heading: "The block comes first.",
@@ -95,8 +104,8 @@ export const atelier = {
     cta: "See the process",
   },
   pairTwo: [
-    "/images/arca-i/home/aria-layered.jpg",
-    "/images/arca-ii/home/aria-cloister-turn.jpg",
+    "/images/arca-i/home/aria-layered.webp",
+    "/images/arca-ii/home/aria-cloister-turn.webp",
   ],
   quote: "A frame should disappear on the face and survive the century.",
   quoteAttribution: "Aria Noir, founding note",
@@ -151,19 +160,19 @@ export const gallery = {
      photographs shaken out. */
   columns: [
     [
-      "/images/arca-i/home/aria-doorway-coat.jpg",
-      "/images/arca-i/home/noir-doorway-coat.jpg",
-      "/images/arca-i/home/aria-striped-light.jpg",
+      "/images/arca-i/home/aria-doorway-coat.webp",
+      "/images/arca-i/home/noir-doorway-coat.webp",
+      "/images/arca-i/home/aria-striped-light.webp",
     ],
     [
-      "/images/arca-i/home/aria-fisheye-close.jpg",
-      "/images/arca-i/home/noir-bust-close.jpg",
-      "/images/arca-i/home/frame-portrait.jpg",
+      "/images/arca-i/home/aria-fisheye-close.webp",
+      "/images/arca-i/home/noir-bust-close.webp",
+      "/images/arca-i/home/frame-portrait.webp",
     ],
     [
-      "/images/arca-ii/home/noir-vaulted.jpg",
-      "/images/arca-ii/home/aria-cloister.jpg",
-      "/images/arca-ii/home/aria-close-dark.jpg",
+      "/images/arca-ii/home/noir-vaulted.webp",
+      "/images/arca-ii/home/aria-cloister.webp",
+      "/images/arca-ii/home/aria-close-dark.webp",
     ],
   ],
 };
@@ -197,15 +206,15 @@ export const finale = {
   /** Pulled by the pointer trail. Nine, from both cuts: the frame at macro
    *  range, and the faces wearing it. */
   trail: [
-    "/images/arca-i/home/aria-bokeh-close.jpg",
-    "/images/arca-i/home/aria-face-fisheye.jpg",
-    "/images/arca-i/home/noir-fisheye-desat.jpg",
-    "/images/arca-i/home/noir-door-bokeh.jpg",
-    "/images/arca-i/home/frame-macro-concrete.jpg",
-    "/images/arca-i/home/macro-nose-front.jpg",
-    "/images/arca-i/home/stairwell-spiral.jpg",
-    "/images/arca-ii/home/eye-macro.jpg",
-    "/images/arca-ii/home/aria-dark-coat.jpg",
+    "/images/arca-i/home/aria-bokeh-close.webp",
+    "/images/arca-i/home/aria-face-fisheye.webp",
+    "/images/arca-i/home/noir-fisheye-desat.webp",
+    "/images/arca-i/home/noir-door-bokeh.webp",
+    "/images/arca-i/home/frame-macro-concrete.webp",
+    "/images/arca-i/home/macro-nose-front.webp",
+    "/images/arca-i/home/stairwell-spiral.webp",
+    "/images/arca-ii/home/eye-macro.webp",
+    "/images/arca-ii/home/aria-dark-coat.webp",
   ],
 };
 
@@ -302,7 +311,8 @@ export const footer = {
   legalLinks: [
     { label: "Privacy", href: "/policies/privacy" },
     { label: "Terms", href: "/policies/terms" },
-    /* No cookie page exists, and the site sets no cookies to write one
-       about. It was in this list because footers usually have three. */
+    /* The data-sharing opt-out, which the storefront also carries. The
+       site sets one cookie now (the session) and the switches live here. */
+    { label: "Privacy preferences", href: "/policies/privacy-preferences" },
   ],
 };

@@ -207,6 +207,68 @@ export const privacy: Policy = {
       title: "Your rights",
       body: [
         "You may request to view, correct, or delete your data by contacting admin@arianoir.com. We comply with GDPR, CCPA, and other international privacy standards.",
+        "The desk on this site lets you do two of those yourself: the details and addresses on the account can be edited there, and the account itself can be deleted there. Records of completed orders are kept in anonymised form, as the law requires.",
+      ],
+    },
+    {
+      id: "sharing",
+      title: "Data sharing, and opting out",
+      body: [
+        "We do not sell your personal information. We share it only with the parties needed to complete an order — the payment processor that reads your card, and the courier that carries the parcel — and with analytics tools that report on how the site is used.",
+        "You may ask us not to share your information for anything beyond fulfilling your orders, and you may withdraw consent to marketing at any time. Both are done from the privacy preferences page, or by writing to admin@arianoir.com.",
+      ],
+    },
+    {
+      id: "contact",
+      title: "Who to write to",
+      body: [
+        "The controller of the data described here is Aria Noir, trading as Aria Noir, at 12 York Street, Suite 5009, Toronto ON M5J 0A9, Canada. Telephone +1 641 818 8317. Email admin@arianoir.com.",
+      ],
+    },
+  ],
+};
+
+/**
+ * Privacy preferences — the house's data-sharing opt-out, as a page of its
+ * own so the choice is a switch and not a paragraph.
+ *
+ * The storefront's page at /pages/data-sharing-opt-out is the route this
+ * corresponds to. What that page actually carries is the brand statement
+ * (The Brand · The Company · The Vision) and Shopify's own preferences
+ * widget; the substantive positions are the privacy policy's, so the copy
+ * here restates those and the controls live in the page component that
+ * renders this slug.
+ */
+export const privacyPreferences: Policy = {
+  slug: "privacy-preferences",
+  eyebrow: "Legal",
+  title: "Privacy Preferences",
+  updated: UPDATED,
+  sections: [
+    {
+      id: "what",
+      title: "What is kept, and why",
+      body: [
+        "An order needs a name, an address, an email for the receipt and a number for the courier. That is kept with the order. A card is read by the payment processor inside its own field and is never held by the house; if you choose to keep one on file, it is kept there, and the house holds the last four digits.",
+        "The bag and the held list live in this browser and nowhere else until an order is placed.",
+      ],
+    },
+    {
+      id: "choices",
+      title: "Your choices",
+      body: [
+        [
+          "Marketing: the newsletter and launch notes are sent only to addresses that asked for them, and every one carries a way off the list.",
+          "Sharing: nothing is shared beyond the payment processor, the courier and the site's own analytics. You may opt out of the analytics share below; the other two are what an order is.",
+          "Access and deletion: the desk edits the details on the account and deletes the account. Anything else, write to admin@arianoir.com and it will be answered within thirty days.",
+        ],
+      ],
+    },
+    {
+      id: "cookies",
+      title: "Cookies and local storage",
+      body: [
+        "This site sets one cookie, for the session, when you sign in. It uses the browser's local storage for the bag, the held list and the choice you make on this page. Analytics, where enabled, sets its own; the switch below turns it off for this browser.",
       ],
     },
   ],
@@ -278,5 +340,6 @@ export const policies: readonly Policy[] = [
   shipping,
   returns,
   privacy,
+  privacyPreferences,
   terms,
 ];

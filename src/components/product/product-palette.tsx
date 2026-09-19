@@ -1,4 +1,4 @@
-import type { OfferingColorway } from "@/lib/product";
+import type { PaletteColour } from "@/lib/product";
 
 /**
  * The house's colour scheme, as an accent under the opening.
@@ -15,15 +15,18 @@ import type { OfferingColorway } from "@/lib/product";
  * full screen and a masthead would be a third argument between the
  * structure and the campaign.
  *
- * It takes the same `OfferingColorway[]` the turntable's squares take, so
- * the colours here and the colours on the frame are one list. A house that
- * adds a ninth acetate adds it once.
+ * It takes a name and a hex per colour, and nothing else. It used to take
+ * the turntable's own `OfferingColorway[]`, which carried a glb and a buy
+ * link as well — so a house with one export between its whole run could
+ * not paint a strip of its own acetate. StoryPage builds the list from the
+ * catalogue now, which is where the colours were all along. A house that
+ * adds a ninth acetate adds it once, in lib/navigation.
  */
 export function ProductPalette({
   colorways,
   label = "The Acetates",
 }: {
-  colorways: readonly OfferingColorway[];
+  colorways: readonly PaletteColour[];
   label?: string;
 }) {
   if (!colorways.length) return null;

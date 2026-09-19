@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CtaLink } from "@/components/cta-link";
-import { useBag, subtotal, checkoutHref } from "@/lib/cart";
+import { BagFoot } from "@/components/shop/bag-foot";
+import { useBag, subtotal } from "@/lib/cart";
 import { formatPrice, priceOf, swatchFor, SHOP_ALL_URL } from "@/lib/shop";
 import { houses, shopPath } from "@/lib/navigation";
 
@@ -21,7 +22,6 @@ import { houses, shopPath } from "@/lib/navigation";
 export function CartTable() {
   const { resolved, ready, setQty, remove } = useBag();
   const total = subtotal(resolved);
-  const href = checkoutHref(resolved);
 
   /* Before mount the bag is unknown, not empty. Rendering "nothing here"
      and then replacing it a frame later reads as the cart losing things. */
@@ -56,7 +56,7 @@ export function CartTable() {
                 href={house.href ?? shopPath(house)}
                 className="card-link group flex flex-col gap-3"
               >
-                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
+                <div className="card-shot bg-ink">
                   {house.plate ? (
                     <Image
                       src={house.plate}
@@ -85,7 +85,7 @@ export function CartTable() {
 
         <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/eyewear">See all the frames</CtaLink>
-          <CtaLink href={SHOP_ALL_URL} external tone="quiet">
+          <CtaLink href={SHOP_ALL_URL} external kind="secondary">
             Shop all
           </CtaLink>
         </div>
@@ -156,30 +156,18 @@ export function CartTable() {
         })}
       </ul>
 
-      <div className="hairline mt-4 flex flex-wrap items-end justify-between gap-6 pt-8">
-        <div>
-          <p className="t-eyebrow">Subtotal</p>
-          <p className="t-display-xs mt-2 tabular-nums">{formatPrice(total)}</p>
-          <p className="t-caption mt-2">
-            Shipping and tax are calculated at checkout.
-          </p>
-        </div>
+      {/* The subtotal and the way on. The three questions this row used to
+          ask (guest or not, where, what) are the checkout's own first three
+          steps now, on this origin — see checkout-view. */}
+      <BagFoot lines={resolved} subtotal={total} />
 
-        <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
-          <Link href="/eyewear" className="link-quiet">
-            Keep looking
-          </Link>
-          {href ? (
-            /* Out to Shopify. The permalink rebuilds these lines against
-               live inventory, so the store — not this page — has the last
-               word on price and availability. */
-            <CtaLink href={href} external>
-              Checkout
-            </CtaLink>
-          ) : (
-            <p className="t-caption">Nothing in the bag can be checked out.</p>
-          )}
-        </div>
+      <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
+        <Link href="/eyewear" className="link-quiet">
+          Keep looking
+        </Link>
+        <Link href="/held" className="link-quiet">
+          What you are holding
+        </Link>
       </div>
     </div>
   );

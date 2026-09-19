@@ -529,7 +529,10 @@ function Label({
           /* mt-6 rather than leaning on the stack's gap: a CTA needs more
              air above it than a caption does, or the rule-less label and
              the action underneath it read as one three-line block. */
-          <CtaLink href={href} className="mt-6">
+          /* Outlined, not filled: a panel is one of six sliding past, so
+             six solid fills in a row would each claim to be the one thing
+             the screen wants done. */
+          <CtaLink href={href} kind="secondary" className="mt-6">
             {cta}
           </CtaLink>
         ) : null}

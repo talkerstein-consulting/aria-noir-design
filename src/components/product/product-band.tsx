@@ -16,7 +16,7 @@ import { RevealText, RevealPlate } from "@/components/reveal";
 export function ProductBand({ detail }: { detail: Detail }) {
   return (
     <section className="relative h-[70svh] min-h-[420px] overflow-hidden bg-ink sm:h-[85svh]">
-      <RevealPlate className="absolute inset-0">
+      <RevealPlate className="plate-frame">
         <Image
           src={detail.image}
           alt={detail.alt}

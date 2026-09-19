@@ -22,9 +22,11 @@ the ground:
 <footer  className="on-paper section">…</footer>   // past the iris
 ```
 
-Set it once per section, and `t-eyebrow`, `t-body`, `cta`, `link-quiet`,
-`hairline` all resolve themselves. This is what `variant="dark"` used to do
-by hand, one component at a time.
+Set it once per section, and `t-eyebrow`, `t-body`, `cta-main`,
+`cta-secondary`, `link-quiet`, `hairline` all resolve themselves. This is
+what a `variant` prop on the CTA used to do by hand, one component at a
+time — and the filled CTA makes it load-bearing rather than tidy: it labels
+itself in `--ground`, so an undeclared section paints white on white.
 
 ## Colour
 
@@ -95,16 +97,26 @@ Durations run `--dur-fast` (colour) → `--dur-scene` (a section rising).
 `--stagger-char` and `--stagger-word` are the same wave gesture at two
 scales — the CTA hover and the scroll reveals are deliberately one hand.
 
-## Interactions — three objects, no buttons
+## Interactions — two CTAs, filled and outlined
 
-There are no fills, borders, pills or radii anywhere. An action is a word
-with a rule under it, and **the rule is what moves**.
+No radii and no shadows anywhere. Fill is spent only on the main CTA. The
+two are the same box — same padding, type, square corners and shuffle — and
+fill versus outline is the only difference.
 
-**`cta`** — the primary action. Label over a continuous hairline; on
-hover/focus a gold rule sweeps left to right while the glyphs lift and
-swap, each letter one `--stagger-char` behind the last.
-`<CtaLink tone="quiet">` is the second action in a section, the one that
-must not fight the first.
+**`cta-main`** — solid fill, the one thing the screen wants done. Fills with
+`--fg-primary`, labels in `--ground`, so it inverts correctly on ink and on
+paper. On hover the fill goes gold and the glyphs lift and swap, each letter
+one `--stagger-char` behind the last. `aria-current="page"` holds the accent
+fill instead of a separate "current page" style.
+
+**`cta-secondary`** — the same box, outlined: hairline border, no fill. The
+second action in a section, where two fills would fight.
+
+**One main per screen.** A section that paints `bg-paper` MUST declare
+`.on-paper`, or the main CTA fills white on a white page.
+
+**`menu-link`** — the menu stack. Navigation, not a CTA: no box, just the
+shuffle.
 
 **`link-quiet`** — nav, footer columns, legal, socials. Colour shift only.
 These are wayfinding, not invitations; giving them the CTA's wave would

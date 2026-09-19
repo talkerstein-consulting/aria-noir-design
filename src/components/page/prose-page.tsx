@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { RevealText } from "@/components/reveal";
 
 export type ProseSection = {
@@ -30,9 +31,13 @@ export type ProseSection = {
 export function ProsePage({
   updated,
   sections,
+  children,
 }: {
   updated: string;
   sections: readonly ProseSection[];
+  /** Anything the document needs that is not prose — the preferences
+   *  page's switches, after its sections and before the sign-off. */
+  children?: ReactNode;
 }) {
   return (
     <section className="on-paper section bg-paper">
@@ -77,6 +82,8 @@ export function ProsePage({
               )}
             </div>
           ))}
+
+          {children}
 
           <p className="t-micro">
             Questions about this document?{" "}

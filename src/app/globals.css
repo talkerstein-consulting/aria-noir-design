@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/typography.css";
 @import "../styles/interactions.css";
+@import "../styles/commerce.css";
 
 body {
   background: var(--ink);
