@@ -3,7 +3,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
 import { allHouses, type House } from "@/lib/navigation";
-import { SHOP_URL } from "@/lib/shop";
 
 /**
  * The headless cart.
@@ -13,18 +12,16 @@ import { SHOP_URL } from "@/lib/shop";
  * `/checkout`, on this origin, which settles the order against the house
  * API (lib/house-api). The bag is what that page reads.
  *
- * `checkoutHref` below is the older road: Shopify honours
- * `/cart/<variantId>:<qty>,…` as a permalink that builds a cart
- * server-side and drops the customer into its checkout. It is kept, and
- * the checkout page offers it, for the day the house API cannot be
- * reached — a bag that can still be bought from somewhere is better than
- * one that cannot. The variant ids come from the same sync that produces
- * the prices, so a line cannot point at something the store does not sell.
+ * There is no second road. A Shopify `/cart/<variantId>:<qty>,…`
+ * permalink used to be offered when the house API could not be reached;
+ * it is gone, because the sale now lives here and a checkout that hands
+ * the reader to another store is not this build's checkout failing over,
+ * it is this build giving the order away.
  *
  * ---- Why the bag is local ----
  *
  * Nothing about a cart is authoritative here. Price, stock and tax are all
- * decided at the permalink, by Shopify, against live inventory. What this
+ * decided at checkout, by the house API, against live inventory. What this
  * holds is an INTENTION — "these, this many" — which is exactly the kind of
  * state a browser should own. If it disagrees with the store, the store
  * wins at checkout, which is the correct direction for that argument.
@@ -91,20 +88,6 @@ export function subtotal(resolved: readonly ResolvedLine[]) {
     (n, r) => n + (r.entry ? r.entry.cents * r.line.qty : 0),
     0,
   );
-}
-
-/**
- * The fallback handoff. One permalink carrying every line.
- *
- * Lines the store no longer sells are dropped rather than sent — Shopify
- * rejects the whole permalink on one bad variant, so an unavailable line
- * would take the entire cart down with it.
- */
-export function checkoutHref(resolved: readonly ResolvedLine[]) {
-  const parts = resolved
-    .filter((r) => r.entry?.available)
-    .map((r) => `${r.entry!.variantId}:${r.line.qty}`);
-  return parts.length ? `${SHOP_URL}/cart/${parts.join(",")}` : null;
 }
 
 /* ── The store ───────────────────────────────────────────────────────

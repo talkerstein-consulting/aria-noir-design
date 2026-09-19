@@ -17,10 +17,10 @@ import { markKnown } from "@/lib/session";
  *
  * ---- What it replaces ----
  *
- * The Shopify permalink handoff (`checkoutHref` in lib/cart) and the
- * `account.arianoir.com` doorway. Both are still exported, both still work,
- * but the bag now goes to `/checkout` on this origin, and the desk reads
- * real orders, addresses and a card on file from here.
+ * The Shopify permalink handoff (once `checkoutHref` in lib/cart, now
+ * removed) and the `account.arianoir.com` doorway. The bag goes to
+ * `/checkout` on this origin, and the desk reads real orders, addresses
+ * and a card on file from here.
  *
  * ---- How it is reached ----
  *

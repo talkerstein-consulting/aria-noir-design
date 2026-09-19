@@ -14,7 +14,7 @@ import {
 } from "@/components/shop/address-form";
 import { CardField } from "@/components/shop/card-field";
 import { OrderSummary } from "@/components/shop/order-summary";
-import { checkoutHref, subtotal as bagSubtotal, useBag, type ResolvedLine } from "@/lib/cart";
+import { subtotal as bagSubtotal, useBag, type ResolvedLine } from "@/lib/cart";
 import {
   announceSession,
   house,
@@ -464,20 +464,22 @@ export function CheckoutView() {
     );
   }
 
+  /* No handoff to the storefront here any more. This used to offer the
+     Shopify permalink as a way to finish the sale while this checkout was
+     down; the sale now lives entirely in the build, so a failure is a
+     failure and the honest thing is to say so and keep the bag safe rather
+     than send the reader somewhere this build cannot follow them. */
   if (configError || sessionError) {
-    const fallback = checkoutHref(resolved);
     return (
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">The studio&rsquo;s checkout is not answering.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-          {configError || sessionError} The bag is kept on this device, so nothing is lost. The
-          store&rsquo;s own secure checkout can take it in the meantime.
+          {configError || sessionError} The bag is kept on this device, so nothing is lost —
+          it will be here when the desk answers again.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-          {fallback ? (
-            <CtaLink href={fallback} external>Continue at the store</CtaLink>
-          ) : null}
-          <CtaLink href="/bag" kind="secondary">Back to the bag</CtaLink>
+          <CtaLink href="/bag">Back to the bag</CtaLink>
+          <CtaLink href="/contact" kind="secondary">Write to the house</CtaLink>
         </div>
       </div>
     );
