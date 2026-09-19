@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
@@ -187,7 +188,14 @@ export default async function ShopHousePage({
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
           {/* The trail is the strip under the band, from the layout — see
               components/site-crumbs. */}
-          <BuyHero house={house} />
+          {/* BuyHero reads `?colourway=` to open on the acetate a link
+              meant. `useSearchParams` needs a boundary on a route that is
+              prerendered by generateStaticParams — without one, the whole
+              page opts out of the prerender. No fallback: the param only
+              re-seeds a picker that already has a sane default. */}
+          <Suspense>
+            <BuyHero house={house} />
+          </Suspense>
         </section>
 
         {/* ---- the house's own world, where it has been shot as one ----

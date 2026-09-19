@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CtaLink } from "@/components/cta-link";
 import { BagFoot } from "@/components/shop/bag-foot";
 import { useBag, subtotal } from "@/lib/cart";
-import { formatPrice, priceOf, swatchFor, SHOP_ALL_URL } from "@/lib/shop";
+import { formatPrice, priceOf, swatchFor } from "@/lib/shop";
 import { houses, shopPath } from "@/lib/navigation";
 
 /**
@@ -84,10 +84,10 @@ export function CartTable() {
         </ul>
 
         <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-4">
+          {/* One way on, not two. "Shop all" used to sit here as a second
+              CTA out to the storefront; now that the frames index is this
+              build's own, the pair would have been the same room twice. */}
           <CtaLink href="/eyewear">See all the frames</CtaLink>
-          <CtaLink href={SHOP_ALL_URL} external kind="secondary">
-            Shop all
-          </CtaLink>
         </div>
       </div>
     );

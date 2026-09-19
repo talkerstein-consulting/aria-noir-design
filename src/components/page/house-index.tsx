@@ -1,6 +1,6 @@
 import { houses, colorwayCount, shopPath } from "@/lib/navigation";
 import { apparel } from "@/lib/apparel";
-import { formatPrice, priceOf, SHOP_ALL_URL } from "@/lib/shop";
+import { formatPrice, priceOf } from "@/lib/shop";
 import { CtaLink } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
 
@@ -104,7 +104,7 @@ export function HouseIndex() {
         </div>
 
         <div className="mt-16">
-          <CtaLink href={SHOP_ALL_URL} external>
+          <CtaLink href="/eyewear">
             Shop all
           </CtaLink>
         </div>

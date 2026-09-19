@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import type { CSSProperties } from "react";
+import { useSearchParams } from "next/navigation";
 import type { House } from "@/lib/navigation";
 import {
   COLLECTION_LABEL,
@@ -147,9 +148,26 @@ export function BuyHero({ house }: { house: House }) {
   /* Seeded with the house's hero colourway, and with the SAME rule the
      picker uses — see defaultColorway. The opening turns a specific
      acetate; the panel beside it has to name that one. */
-  const [chosen, setChosen] = useState<string | null>(
-    () => defaultColorway(house) || null,
-  );
+  /* A link from elsewhere in the build can name the acetate it meant:
+     `/shop/<slug>?colourway=…`, which is what `shopHref` writes and what
+     the story pages' `buyColour` has been writing since before anything
+     read it.
+
+     DERIVED, not copied into state by an effect. `picked` is only what
+     this reader has chosen with the picker; until they choose, the
+     selection follows the URL. Seeding state from the param in an effect
+     would be the same value stored twice, one render late, and would fight
+     the picker on every back-navigation. */
+  const [picked, setPicked] = useState<string | null>(null);
+  const params = useSearchParams();
+  /* The American spelling is accepted too: the codebase's own identifiers
+     use it, and a link that silently does nothing is the worse failure. */
+  const asked = params.get("colourway") ?? params.get("colorway");
+  /* `defaultColorway` is the picker's own rule, so a param naming a
+     colourway the house does not carry — or has sold out of — falls back
+     to the hero acetate rather than showing an empty picker. */
+  const chosen = picked ?? (defaultColorway(house, asked) || null);
+
   const [qty, setQty] = useState(1);
 
   /* The buy control, and the box that holds its place while it is pinned. */
@@ -826,7 +844,7 @@ export function BuyHero({ house }: { house: House }) {
               place beside the control that spends it. */}
           <div className="mt-6">
             <Suspense fallback={null}>
-              <ColourwayPicker house={house} onChoose={setChosen} />
+              <ColourwayPicker house={house} onChoose={setPicked} />
             </Suspense>
           </div>
 

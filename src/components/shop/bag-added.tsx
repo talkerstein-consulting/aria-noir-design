@@ -12,7 +12,7 @@ import {
   priceOf,
   swatchFor,
 } from "@/lib/shop";
-import { checkoutHref, subtotal, useBag } from "@/lib/cart";
+import { subtotal, useBag } from "@/lib/cart";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 
 /**
@@ -44,9 +44,9 @@ import { CtaButton, CtaLink } from "@/components/cta-link";
  * is why this is a sheet over the page rather than a route: a confirmation
  * that navigates has thrown away the state the reader built.
  *
- * Where the store no longer carries a line, `checkoutHref` returns null
- * for the whole bag. The sheet then offers the bag instead, which is the
- * surface that can actually show which line is the problem.
+ * Where the store no longer carries a single sellable line, the sheet
+ * offers the bag instead, which is the surface that can actually show
+ * which line is the problem.
  */
 export function BagAdded({
   house,
@@ -69,7 +69,11 @@ export function BagAdded({
   const shot = galleryFor(house, colorway)[0];
   const acetate = swatchFor(colorway);
   const total = subtotal(resolved);
-  const href = checkoutHref(resolved);
+  /* Whether there is anything to check out — the same test the permalink
+     used to make, kept because the answer still decides which of the two
+     CTAs below is shown. A bag whose every line has gone out of the
+     workshop should offer the bag, not a checkout with nothing in it. */
+  const sellable = resolved.some((r) => r.entry?.available);
 
   const close = useCallback(() => {
     onClose();
@@ -196,10 +200,8 @@ export function BagAdded({
             width — three controls abreast never fit in it, at any screen
             size. Spanning both columns is what lets the row be a row. */}
         <div className="bag-added-actions hairline">
-          {href ? (
-            <CtaLink href={href} external>
-              Checkout
-            </CtaLink>
+          {sellable ? (
+            <CtaLink href="/checkout">Checkout</CtaLink>
           ) : (
             <CtaLink href="/bag">Open the bag</CtaLink>
           )}

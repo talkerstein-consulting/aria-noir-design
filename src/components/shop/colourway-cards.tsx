@@ -71,7 +71,6 @@ export function ColourwayCards({ house }: { house: House }) {
             <li key={colorway} className="flex">
               <ProductCard
                 href={shopHref(house, colorway)}
-                external
                 image={sillFor(house, colorway)}
                 swatch={swatchFor(colorway)}
                 focal={COLOURWAY_FOCAL}

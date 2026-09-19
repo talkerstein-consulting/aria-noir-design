@@ -46,20 +46,23 @@ export function entryFor(house: House, colorway: string) {
 }
 
 /**
- * A colourway's product page.
+ * A colourway's product page — this build's own, not the storefront's.
  *
- * Every colourway is its own Shopify PRODUCT, not a variant of one, and the
- * handles do not follow a rule — `ahava` is Root Beer Float, `arca` is
- * ARCA II Noir, `matriarca` is Brown. Guessing `/products/<slug>` 404s for
- * all six houses, which is why the handle is synced rather than derived.
+ * The buy page at `/shop/<slug>` is the master template for every house, so
+ * a product link stays inside the build rather than handing the reader to
+ * Shopify mid-journey. The colourway rides along as a query param, because
+ * the storefront models each colourway as its own PRODUCT while this build
+ * models it as a choice on one page — without the param the link would land
+ * on the house and silently lose which acetate was being pointed at.
  *
- * Falls back to the collection rather than to a broken product URL: a
- * reader who lands on the eyewear collection can still find the frame; one
- * who lands on a 404 has been thrown out of the shop.
+ * Falls back to the bare house page for a colourway the catalogue does not
+ * carry: the reader still arrives at the right frame and picks again.
  */
 export function shopHref(house: House, colorway?: string) {
-  const entry = colorway ? entryFor(house, colorway) : stockFor(house)[0];
-  return entry ? `${SHOP_URL}/products/${entry.handle}` : SHOP_ALL_URL;
+  const entry = colorway ? entryFor(house, colorway) : undefined;
+  return entry
+    ? `/shop/${house.slug}?colourway=${encodeURIComponent(entry.colorway)}`
+    : `/shop/${house.slug}`;
 }
 
 /**

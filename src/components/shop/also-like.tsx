@@ -1,7 +1,7 @@
 import { CtaLink } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
 import { houses, shopPath, type House } from "@/lib/navigation";
-import { SHOP_ALL_URL, swatchFor } from "@/lib/shop";
+import { swatchFor } from "@/lib/shop";
 
 /**
  * The rest of the catalogue, one card each, second photograph on hover.
@@ -31,7 +31,7 @@ export function AlsoLike({ current }: { current: House }) {
     <div className="mx-auto max-w-7xl">
       <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
         <h2 className="t-display-md">You may also like</h2>
-        <CtaLink href={SHOP_ALL_URL} external kind="secondary">
+        <CtaLink href="/eyewear" kind="secondary">
           Shop all
         </CtaLink>
       </div>

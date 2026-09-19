@@ -154,14 +154,12 @@ export function HeldView() {
 
               {gone && house ? (
                 <p className="t-caption mt-2">
-                  <a
+                  <Link
                     href={shopHref(house, line.colorway)}
-                    target="_blank"
-                    rel="noreferrer"
                     className="link-quiet"
                   >
                     Ask to be written to
-                  </a>
+                  </Link>
                 </p>
               ) : null}
             </article>
