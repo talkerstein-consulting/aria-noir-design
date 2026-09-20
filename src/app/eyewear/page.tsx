@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ModelStage } from "@/components/eyewear/model-stage";
 import { HouseGrid } from "@/components/page/house-grid";
-import { houses, shopPath, housesOnShow } from "@/lib/navigation";
+import { houses, shopPath } from "@/lib/navigation";
 import { eyewear } from "@/lib/pages";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
@@ -34,15 +34,6 @@ export const metadata: Metadata = {
 export default function EyewearPage() {
   const stage = houses.map((house) => ({
     name: house.name,
-    /* Index and material, and nothing else.
-       The colourways used to run here — three names and a "+5" — and it
-       was the wrong line in the wrong place twice over: the stage is
-       showing ONE frame in ONE colourway, so listing five it is not
-       currently wearing is a caption arguing with its own picture; and at
-       phone width it wrapped to two lines of wide-tracked caps and pushed
-       the house name off its baseline. The colourways are named in full on
-       the grid below, where you can see them side by side. */
-    meta: `${house.index} · ${house.material}`,
     image: house.ground ?? house.plate ?? undefined,
     swatch: house.swatch,
     model: house.model,
@@ -83,9 +74,6 @@ export default function EyewearPage() {
               <h1 className="mt-5 font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl">
                 {eyewear.hero.title}
               </h1>
-              <p className="mt-6 font-ui text-[11px] tracking-[0.42em] text-paper/55 uppercase">
-                {housesOnShow()} · {eyewear.stage.subYear}
-              </p>
             </>
           }
         />

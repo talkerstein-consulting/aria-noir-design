@@ -348,12 +348,6 @@ export const eyewear = {
   intro:
     "Each house is a single cut, held in the colourways it earns. ARCA I is the exception: the founding model, and the only one the bench has taken in four directions.",
 
-  /** The stage is the hero, so this is the line under the page title —
-   *  it turntables away with it as the first frame forms. The count is
-   *  supplied by the page from `housesOnShow()`; see the title above. */
-  stage: {
-    subYear: "MMXXVI",
-  },
 } as const;
 
 /* ── Contact ──────────────────────────────────────────────────────── */

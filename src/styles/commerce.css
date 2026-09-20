@@ -1754,3 +1754,59 @@
 .country-empty {
   padding: 0.75rem 0.9rem;
 }
+
+/* The mirrored native <select> that address autofill writes to. Off
+   screen rather than `display: none`: a hidden control is one the
+   browser will not fill, which would defeat the whole point of keeping
+   it. Same trick as `.sr-only`, without the announcement. */
+.country-autofill {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  pointer-events: none;
+}
+
+/* ── THE SHORT WAY ─────────────────────────────────────────────────
+   Above the four steps, and told apart from them by ground rather than
+   by a box: the steps are hairlines on ink, so this is the one block
+   with a fill behind it, at the faintest weight that still separates.
+   No radius, no shadow, and the rule under it is the same hairline
+   every step carries. */
+.express {
+  padding: 1.5rem 1.5rem 1.75rem;
+  background: color-mix(in srgb, var(--fg-primary) 4%, transparent);
+  margin-bottom: 2.5rem;
+}
+.express-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+/* The express cards are the same control as the three in step 03, on
+   the page's ground rather than the block's, so they read as objects
+   ON this panel rather than more panel. */
+.express-method {
+  background: var(--ink);
+}
+/* The line back to the long way. A rule with a word in it, which is the
+   same device the search sheet uses to head a group. */
+.express-rule {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  color: var(--fg-quiet);
+}
+.express-rule::after {
+  content: "";
+  flex: 1 1 auto;
+  height: var(--rule-weight);
+  background: var(--fg-rule);
+}

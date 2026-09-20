@@ -186,8 +186,6 @@ export default async function ShopHousePage({
       <main className="buy-page relative">
         {/* ---- the transaction: photographs left, offer sticky right ---- */}
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
-          {/* The trail is the strip under the band, from the layout — see
-              components/site-crumbs. */}
           {/* BuyHero reads `?colourway=` to open on the acetate a link
               meant. `useSearchParams` needs a boundary on a route that is
               prerendered by generateStaticParams — without one, the whole

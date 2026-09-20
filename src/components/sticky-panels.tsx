@@ -128,7 +128,10 @@ const easeInOutCubic = (t: number) =>
 
 export type PanelItem = {
   name: string;
-  meta: string;
+  /** The small caps line over the name. Optional: the house panels carry
+   *  no such line any more — see lib/product-cards on why the numeral and
+   *  the material went. */
+  meta?: string;
   /** Full-bleed plate. Omit where the house has no photograph yet. */
   image?: string;
   /**
@@ -532,9 +535,11 @@ function Label({
             : "items-center justify-center"
         }`}
       >
-        <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
-          {meta}
-        </p>
+        {meta ? (
+          <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+            {meta}
+          </p>
+        ) : null}
         {href ? (
           <Link href={href} className="transition-opacity hover:opacity-80">
             <h3 className="font-display text-6xl tracking-tight text-paper sm:text-8xl">

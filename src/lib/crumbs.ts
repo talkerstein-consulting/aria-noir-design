@@ -4,9 +4,9 @@ import { COLLECTION_LABEL } from "./shop";
 /**
  * The trail for a path.
  *
- * One resolver, read by the strip under the navbar on every page, so no
- * page carries its own trail and no two pages can disagree about the
- * shape of one. The frames are special-cased because they are the one
+ * One resolver, read by the first eyebrow of every page (see
+ * components/crumb-eyebrow), so no page carries its own trail and no two
+ * pages can disagree about the shape of one. The frames are special-cased because they are the one
  * three-deep path on the site — the index, the story, the counter — and
  * everything else is read off `architecture`, which already lists every
  * route under the group it belongs to.
@@ -23,6 +23,7 @@ export type Trail = {
   current: string;
 };
 
+const HOME: Crumb = { label: "Home", href: "/" };
 const EYEWEAR: Crumb = { label: COLLECTION_LABEL, href: "/eyewear" };
 
 export function crumbsFor(pathname: string): Trail | null {
@@ -31,11 +32,12 @@ export function crumbsFor(pathname: string): Trail | null {
 
   for (const house of houses) {
     if (house.href && path === house.href) {
-      return { trail: [EYEWEAR], current: house.name };
+      return { trail: [HOME, EYEWEAR], current: house.name };
     }
     if (path === shopPath(house)) {
       return {
         trail: [
+          HOME,
           EYEWEAR,
           ...(house.href ? [{ label: "The story", href: house.href }] : []),
         ],
@@ -44,18 +46,24 @@ export function crumbsFor(pathname: string): Trail | null {
     }
   }
 
+  /* Everything else is one step below the front door, so that is what the
+     trail says: HOME · EYEWEAR.
+
+     It used to name the MENU GROUP the route is filed under — "The frames"
+     over Eyewear, "The transaction" over The Bag — and those are headings
+     in the menu, not places: they have no page, so the crumb above you was
+     one you could not go to. A trail whose parent is not a destination is
+     a label wearing a breadcrumb's clothes. Home is a real parent, it is
+     one click, and it is the honest shape of these URLs.
+
+     (The trail used to leave Home out, on the argument that the logo
+     directly above it already goes home. That was true while this was a
+     strip pinned under the navbar; it is not the trail's neighbour any
+     more — see components/crumb-eyebrow.) */
   for (const group of architecture) {
     const route = group.routes.find((r) => r.href === path);
     if (!route) continue;
-    /* The door has no group worth naming above it. */
-    if (group.title === "The door") return { trail: [], current: route.label };
-    /* A group whose name IS the page's name — "The house" over "The
-       House" — is a stutter, not a trail. Drop the parent and let the
-       page stand on its own. */
-    if (group.title.toLowerCase() === route.label.toLowerCase()) {
-      return { trail: [], current: route.label };
-    }
-    return { trail: [{ label: group.title }], current: route.label };
+    return { trail: [HOME], current: route.label };
   }
 
   return null;

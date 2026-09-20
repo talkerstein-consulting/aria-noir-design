@@ -1,12 +1,6 @@
 import type { ProductCardProps } from "@/components/product-card";
 import type { ApparelCollection } from "@/lib/apparel";
-import { apparel } from "@/lib/apparel";
-import {
-  colorwayCount,
-  houses,
-  shopPath,
-  type House,
-} from "@/lib/navigation";
+import { colorwayCount, shopPath, type House } from "@/lib/navigation";
 import {
   formatPrice,
   isAvailable,
@@ -73,18 +67,21 @@ import {
 export type CardVariant = "index" | "grid" | "cross-sell";
 
 /**
- * The separator between the index numeral and the material.
+ * The separator between two facts of equal weight on a card.
  *
- * A middot, which is what the rest of the site sets between facts of equal
- * weight; the house index's em dash was the odd one out. One constant
- * because the choice is typographic and belongs in one place.
+ * A middot, which is what the rest of the site sets between them; the
+ * house index's em dash was the odd one out. One constant because the
+ * choice is typographic and belongs in one place.
  */
 const META_SEP = "·";
 
-/** "01 · Block acetate" — what it is, at a glance. */
-export function cardMeta(house: House) {
-  return `${house.index} ${META_SEP} ${house.material}`;
-}
+/* The "01 · Block acetate" line that used to sit over every card is gone,
+   on every product and every grid. The numeral is the order the bench cut
+   them in — house bookkeeping, not a fact a reader is shopping on — and
+   the material was the same two words under all six frames, which is a
+   line that stops being information the second time you read it. What the
+   card says now is what distinguishes one house from the next: the name,
+   the cuts and colourways, and the price where the grid carries one. */
 
 /**
  * "One cut · seven colourways" — how deep the range goes.
@@ -149,7 +146,6 @@ export function houseCard(
     /* A grid of products is a list of products, and each name is that
        list's heading. Both full-page grids sit under the page's h1. */
     as: "h2",
-    meta: cardMeta(house),
     detail: cardDetail(house),
   } satisfies ProductCardProps;
 
@@ -178,13 +174,6 @@ export function houseCard(
  * garment gets a page, one line here gives it to every grid at once.
  */
 export function apparelCard(line: ApparelCollection): ProductCardProps {
-  /* The numeral continues the houses' own sequence rather than being typed
-     as "07" — the index is the order things were made in, and a seventh
-     house would otherwise silently collide with the garment. */
-  const index = String(houses.length + apparel.indexOf(line) + 1).padStart(
-    2,
-    "0",
-  );
   const opening = line.colourways[0];
 
   return {
@@ -192,7 +181,6 @@ export function apparelCard(line: ApparelCollection): ProductCardProps {
     swatch: opening?.swatch,
     name: line.name,
     as: "h2",
-    meta: `${index} ${META_SEP} ${line.material}`,
     detail: `One cut ${META_SEP} ${line.colourways.length} colourways ${META_SEP} ${line.sizes.length} sizes`,
     price: `from ${formatPrice(opening?.cents ?? 0)}`,
   };

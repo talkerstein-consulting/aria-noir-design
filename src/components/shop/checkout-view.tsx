@@ -378,8 +378,18 @@ export function CheckoutView() {
   }, [quoteKey]);
 
   /* ── wallets ── */
+  /* Mounted as soon as there is a total to charge, NOT when the reader
+     reaches step 03.
+
+     A wallet already holds the name, the email and the card, so for
+     anyone whose address is known at page load — signed in with a
+     default on the desk, or back on a device that kept the last one —
+     every question below has an answer before the page has been read.
+     Waiting until step 03 to offer it meant walking that reader through
+     three steps to reach the one control that made the other two
+     pointless. */
   const walletKey =
-    config && (open === "pay" || open === "review") && quote?.order?.total
+    config && quote?.order?.total
       ? `${quote.order.currency}:${quote.order.total}:${address.country}`
       : "";
   const wallets =
@@ -428,6 +438,12 @@ export function CheckoutView() {
     // The key carries everything the request depends on.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletKey]);
+
+  /* Everything a wallet cannot supply: who is buying, and where it
+     goes. A wallet brings the card and the billing name; it does not
+     know which of the reader's addresses this order is for. When both
+     are already answered the press below finishes the order. */
+  const expressReady = Boolean(identified && whereComplete && quote);
 
   /* ── placing it ── */
   const [busy, setBusy] = useState(false);
@@ -613,6 +629,57 @@ export function CheckoutView() {
   return (
     <div className="checkout checkout-has-foot" data-busy={busy} aria-busy={busy}>
       <div className="checkout-steps">
+        {/* ── the short way, for anyone the page already knows ────────
+            Above 01 on purpose: it is not a step, it is the way past
+            all four of them. Drawn only when a wallet is actually
+            offered by this device AND there is a total to charge,
+            which together mean the press can finish the order rather
+            than start a conversation about where it goes.
+
+            The steps below stay exactly as they are. This adds a door;
+            it does not move the corridor. */}
+        {wallets.apple || wallets.google ? (
+          <div className="express">
+            <p className="t-eyebrow">One press</p>
+            <p className="t-body t-body--tight mt-2 max-w-md text-[var(--fg-tertiary)]">
+              {expressReady
+                ? "Everything below is already answered."
+                : "Answer 01 and 02 and this finishes the rest."}
+            </p>
+            <div className="express-row mt-6">
+              {wallets.apple ? (
+                <button
+                  type="button"
+                  className="pay-method express-method"
+                  disabled={busy || !expressReady}
+                  onClick={() => {
+                    setMethod("apple");
+                    payWithWallet(applePay.current);
+                  }}
+                >
+                  <ApplePayMark />
+                  <span className="t-eyebrow">Apple Pay</span>
+                </button>
+              ) : null}
+              {wallets.google ? (
+                <button
+                  type="button"
+                  className="pay-method express-method"
+                  disabled={busy || !expressReady}
+                  onClick={() => {
+                    setMethod("google");
+                    payWithWallet(googlePay.current);
+                  }}
+                >
+                  <GooglePayMark />
+                  <span className="t-eyebrow">Google Pay</span>
+                </button>
+              ) : null}
+            </div>
+            <p className="express-rule t-eyebrow">or answer four questions</p>
+          </div>
+        ) : null}
+
         {/* ── 01 ── */}
         <section id="step-who" className="step scroll-mt-28" data-state={state("who", identified, true)}>
           <button type="button" className="step-head" onClick={() => setOpen("who")} aria-expanded={open === "who"}>
@@ -645,6 +712,7 @@ export function CheckoutView() {
                       onChange={setDialCountry}
                       dial
                       label="Country dialling code"
+                      autoComplete="off"
                     />
                     <input
                       type="tel"
@@ -719,6 +787,7 @@ export function CheckoutView() {
                       onChange={setDialCountry}
                       dial
                       label="Country dialling code"
+                      autoComplete="off"
                     />
                       <input
                         type="tel"

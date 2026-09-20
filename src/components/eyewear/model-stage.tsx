@@ -54,7 +54,9 @@ import { MODEL_MARGIN } from "@/lib/model-fit";
 
 export type StageItem = {
   name: string;
-  meta: string;
+  /** The small caps line over the name, where the caller has one. The
+   *  houses no longer do — see lib/product-cards. */
+  meta?: string;
   /** The ground. Blurred and sunk almost to black — see PLATE_FILTER. */
   image?: string;
   swatch?: string;
@@ -822,12 +824,14 @@ export function ModelStage({
           >
             {items.map((item, i) => (
               <div key={item.name} data-i={i} className="stage-name-item">
-                {/* The colourway list is long and the tracking is wide, so
-                    on a narrow screen it wraps rather than being clipped —
-                    and drops a step of tracking so it wraps less often. */}
-                <p className="font-ui text-[10px] tracking-[0.22em] text-gold uppercase sm:text-[11px] sm:tracking-[0.35em]">
-                  {item.meta}
-                </p>
+                {/* Where a caller gives the stage a line over the name it
+                    is set here: narrow tracking on a narrow screen, so it
+                    wraps rather than being clipped. */}
+                {item.meta ? (
+                  <p className="font-ui text-[10px] tracking-[0.22em] text-gold uppercase sm:text-[11px] sm:tracking-[0.35em]">
+                    {item.meta}
+                  </p>
+                ) : null}
                 <h3 className="mt-3 font-display text-[clamp(2rem,11vw,6rem)] leading-[1.05] tracking-tight text-paper text-balance">
                   {item.href ? (
                     <Link

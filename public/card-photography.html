@@ -1,0 +1,297 @@
+<!doctype html><meta charset="utf-8"><title>Aria Noir — card photography</title>
+<style>
+:root{--bg:#0d0d0e;--fg:#ece8e2;--quiet:#8b867e;--line:#26262a;--bad:#c96a5c}
+*{box-sizing:border-box}
+body{margin:0;padding:40px 32px 80px;background:var(--bg);color:var(--fg);
+ font:14px/1.5 ui-sans-serif,-apple-system,"Helvetica Neue",sans-serif}
+h1{font-size:28px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px}
+.sub{color:var(--quiet);margin:0 0 40px;max-width:70ch}
+section{border-top:1px solid var(--line);padding:28px 0 8px}
+h2{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px}
+.where{color:var(--quiet);font-weight:400;letter-spacing:.04em;text-transform:none;margin-left:10px}
+.lede{color:var(--quiet);margin:0 0 20px;max-width:75ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:26px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;border:1px solid var(--line);padding:10px}
+figure{margin:0;min-width:0}
+img{width:100%;aspect-ratio:1;object-fit:cover;background:#1a1a1c;display:block}
+.miss{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;color:var(--quiet);background:linear-gradient(160deg,#3a3a3a,#0d0d0e);padding:10px}
+.gap img,.gap .miss{outline:1px dashed var(--bad);outline-offset:-1px}
+figcaption{padding-top:7px;display:flex;flex-direction:column;gap:2px}
+figcaption b{font-weight:600;letter-spacing:.04em}
+figcaption span{color:var(--quiet)}
+code{font:11px/1.45 ui-monospace,Menlo,monospace;color:#6f6a63;word-break:break-all}
+code.bad{color:var(--bad)}
+.gapnote{color:var(--bad)}
+</style>
+<h1>Card photography</h1>
+<p class="sub">Every photograph the product cards actually load, pulled from the rendered pages on the dev server — one block per card variant, then the colourway wall for each house. A dashed red frame marks a card with no hover image; a red path marks a file that is declared but missing from <code>public/</code>.</p>
+<section><h2>Variant <code>grid</code> <span class="where">/eyewear</span></h2>
+<p class="lede">Resting plate, and the frame worn on hover. Six houses.</p><div class="row"><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/arca-i/cover/square.webp" alt="">
+    <figcaption><b>ARCA I</b><span>resting</span>
+    <code>/images/arca-i/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/arca-i/lifestyle/aria-low-angle.webp" alt="">
+    <figcaption><b>ARCA I</b><span>on hover</span>
+    <code>/images/arca-i/lifestyle/aria-low-angle.webp</code></figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/arca-ii/cover/square.webp" alt="">
+    <figcaption><b>ARCA II</b><span>resting</span>
+    <code>/images/arca-ii/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/arca-ii/lifestyle/noir-cloister.webp" alt="">
+    <figcaption><b>ARCA II</b><span>on hover</span>
+    <code>/images/arca-ii/lifestyle/noir-cloister.webp</code></figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/ahava/cover/square.webp" alt="">
+    <figcaption><b>AHAVA</b><span>resting</span>
+    <code>/images/ahava/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/ahava/campaign/worn-aria-reading-chair-night.webp" alt="">
+    <figcaption><b>AHAVA</b><span>on hover</span>
+    <code>/images/ahava/campaign/worn-aria-reading-chair-night.webp</code></figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/matriarca/cover/square.webp" alt="">
+    <figcaption><b>MATRIARCA</b><span>resting</span>
+    <code>/images/matriarca/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/matriarca/campaign/worn-aria-obelisk-courtyard.webp" alt="">
+    <figcaption><b>MATRIARCA</b><span>on hover</span>
+    <code>/images/matriarca/campaign/worn-aria-obelisk-courtyard.webp</code></figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/patriarca/cover/square.webp" alt="">
+    <figcaption><b>PATRIARCA</b><span>resting</span>
+    <code>/images/patriarca/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/patriarca/campaign/worn-aria-marble-staircase.webp" alt="">
+    <figcaption><b>PATRIARCA</b><span>on hover</span>
+    <code>/images/patriarca/campaign/worn-aria-marble-staircase.webp</code></figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/monarca/cover/square.webp" alt="">
+    <figcaption><b>MONARCA</b><span>resting</span>
+    <code>/images/monarca/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/monarca/campaign/worn-aria-lantern-bridge.webp" alt="">
+    <figcaption><b>MONARCA</b><span>on hover</span>
+    <code>/images/monarca/campaign/worn-aria-lantern-bridge.webp</code></figcaption>
+  </figure>
+</div></div></section><section><h2>Variant <code>index</code> <span class="where">/house/about</span></h2>
+<p class="lede">Plate only, no hover. Seven products — the six houses and the garment.</p><div class="grid"><figure class="">
+    <img loading="lazy" src="/images/arca-i/cover/square.webp" alt="">
+    <figcaption><b>ARCA I</b><span>4 cuts · 4 colourways  ·  from $100</span>
+    <code>/images/arca-i/cover/square.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/cover/square.webp" alt="">
+    <figcaption><b>ARCA II</b><span>One cut · 8 colourways  ·  from $125</span>
+    <code>/images/arca-ii/cover/square.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/ahava/cover/square.webp" alt="">
+    <figcaption><b>AHAVA</b><span>One cut · 6 colourways  ·  from $200</span>
+    <code>/images/ahava/cover/square.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/matriarca/cover/square.webp" alt="">
+    <figcaption><b>MATRIARCA</b><span>One cut · 3 colourways  ·  from $150</span>
+    <code>/images/matriarca/cover/square.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/patriarca/cover/square.webp" alt="">
+    <figcaption><b>PATRIARCA</b><span>One cut · 3 colourways  ·  from $175</span>
+    <code>/images/patriarca/cover/square.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/cover/square.webp" alt="">
+    <figcaption><b>MONARCA</b><span>One cut · 7 colourways  ·  from $150</span>
+    <code>/images/monarca/cover/square.webp</code></figcaption>
+  </figure></div></section><section><h2>Variant <code>cross-sell</code> <span class="where">the rail under every /shop page</span></h2>
+<p class="lede">Picture only. The hover layer is <code>house.gallery?.[0]</code> — declared on two houses of six.</p><div class="row"><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/arca-ii/cover/square.webp" alt="">
+    <figcaption><b>ARCA II</b><span>resting</span>
+    <code>/images/arca-ii/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/arca-ii/object-front.webp" alt="">
+    <figcaption><b>ARCA II</b><span>on hover</span>
+    <code>/images/arca-ii/object-front.webp</code></figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/ahava/cover/square.webp" alt="">
+    <figcaption><b>AHAVA</b><span>resting</span>
+    <code>/images/ahava/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="gap">
+    <div class="miss">no photograph<br><small>renders the flat acetate swatch</small></div>
+    <figcaption><b>AHAVA</b><span>on hover</span>
+    </figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/matriarca/cover/square.webp" alt="">
+    <figcaption><b>MATRIARCA</b><span>resting</span>
+    <code>/images/matriarca/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="gap">
+    <div class="miss">no photograph<br><small>renders the flat acetate swatch</small></div>
+    <figcaption><b>MATRIARCA</b><span>on hover</span>
+    </figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/patriarca/cover/square.webp" alt="">
+    <figcaption><b>PATRIARCA</b><span>resting</span>
+    <code>/images/patriarca/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="gap">
+    <div class="miss">no photograph<br><small>renders the flat acetate swatch</small></div>
+    <figcaption><b>PATRIARCA</b><span>on hover</span>
+    </figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/monarca/cover/square.webp" alt="">
+    <figcaption><b>MONARCA</b><span>resting</span>
+    <code>/images/monarca/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="gap">
+    <div class="miss">no photograph<br><small>renders the flat acetate swatch</small></div>
+    <figcaption><b>MONARCA</b><span>on hover</span>
+    </figcaption>
+  </figure>
+</div><div class="pair">
+  <figure class="">
+    <img loading="lazy" src="/images/arca-i/cover/square.webp" alt="">
+    <figcaption><b>ARCA I</b><span>resting</span>
+    <code>/images/arca-i/cover/square.webp</code></figcaption>
+  </figure>
+  <figure class="">
+    <img loading="lazy" src="/images/arca-i/object-lowangle.webp" alt="">
+    <figcaption><b>ARCA I</b><span>on hover</span>
+    <code>/images/arca-i/object-lowangle.webp</code></figcaption>
+  </figure>
+</div></div></section><section><h2>Colourway wall — ARCA I <span class="where">/shop/arca-i</span></h2><p class="lede gapnote">No wall on this page — this house declares no <code>colorwaySills</code>, so the section does not render.</p></section><section><h2>Colourway wall — ARCA II <span class="where">/shop/arca-ii</span></h2><p class="lede">8 acetates, one composition across the run.</p><div class="grid"><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/caramel-stripe-sill.webp" alt="">
+    <figcaption><b>Caramel Stripe</b><span>ARCA II  ·  $202.50</span>
+    <code>/images/arca-ii/variants/caramel-stripe-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/dark-tortoise-sill.webp" alt="">
+    <figcaption><b>Dark Tortoise</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/dark-tortoise-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/dreamy-rose-sill.webp" alt="">
+    <figcaption><b>Dreamy Rose</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/dreamy-rose-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/noir-sill.webp" alt="">
+    <figcaption><b>Noir</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/noir-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/pixie-dust-sill.webp" alt="">
+    <figcaption><b>Pixie Dust</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/pixie-dust-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/root-beer-float-sill.webp" alt="">
+    <figcaption><b>Root Beer Float</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/root-beer-float-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/tutti-frutti-sill.webp" alt="">
+    <figcaption><b>Tutti Frutti</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/tutti-frutti-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/arca-ii/variants/velvet-rose-sill.webp" alt="">
+    <figcaption><b>Velvet Rose</b><span>ARCA II  ·  $125</span>
+    <code>/images/arca-ii/variants/velvet-rose-sill.webp</code></figcaption>
+  </figure></div></section><section><h2>Colourway wall — AHAVA <span class="where">/shop/ahava</span></h2><p class="lede">6 acetates, one composition across the run.</p><div class="grid"><figure class="">
+    <img loading="lazy" src="/images/ahava/variants/caramel-stripe-sill.webp" alt="">
+    <figcaption><b>Caramel Stripe</b><span>AHAVA  ·  $200</span>
+    <code>/images/ahava/variants/caramel-stripe-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/ahava/variants/dark-tortoise-sill.webp" alt="">
+    <figcaption><b>Dark Tortoise</b><span>AHAVA  ·  $225</span>
+    <code>/images/ahava/variants/dark-tortoise-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/ahava/variants/noir-sill.webp" alt="">
+    <figcaption><b>Noir</b><span>AHAVA  ·  $200</span>
+    <code>/images/ahava/variants/noir-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/ahava/variants/root-beer-float-sill.webp" alt="">
+    <figcaption><b>Root Beer Float</b><span>AHAVA  ·  $200</span>
+    <code>/images/ahava/variants/root-beer-float-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/ahava/variants/rose-sill.webp" alt="">
+    <figcaption><b>Rose</b><span>AHAVA  ·  $200</span>
+    <code>/images/ahava/variants/rose-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/ahava/variants/tutti-frutti-sill.webp" alt="">
+    <figcaption><b>Tutti Frutti</b><span>AHAVA  ·  $200</span>
+    <code>/images/ahava/variants/tutti-frutti-sill.webp</code></figcaption>
+  </figure></div></section><section><h2>Colourway wall — MATRIARCA <span class="where">/shop/matriarca</span></h2><p class="lede">3 acetates, one composition across the run.</p><div class="grid"><figure class="">
+    <div class="miss">no photograph<br><small>renders the flat acetate swatch</small></div>
+    <figcaption><b>Black Wood</b><span>MATRIARCA  ·  Out of the workshop  ·  $150</span>
+    </figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/matriarca/variants/brown-sill.webp" alt="">
+    <figcaption><b>Brown</b><span>MATRIARCA  ·  $175</span>
+    <code>/images/matriarca/variants/brown-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/matriarca/variants/midnight-noir-sill.webp" alt="">
+    <figcaption><b>Midnight Noir</b><span>MATRIARCA  ·  $175</span>
+    <code>/images/matriarca/variants/midnight-noir-sill.webp</code></figcaption>
+  </figure></div></section><section><h2>Colourway wall — PATRIARCA <span class="where">/shop/patriarca</span></h2><p class="lede">3 acetates, one composition across the run.</p><div class="grid"><figure class="">
+    <img loading="lazy" src="/images/patriarca/variants/black-sill.webp" alt="">
+    <figcaption><b>Black</b><span>PATRIARCA  ·  $175</span>
+    <code>/images/patriarca/variants/black-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/patriarca/variants/brown-sill.webp" alt="">
+    <figcaption><b>Brown</b><span>PATRIARCA  ·  $175</span>
+    <code>/images/patriarca/variants/brown-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/patriarca/variants/midnight-noir-sill.webp" alt="">
+    <figcaption><b>Midnight Noir</b><span>PATRIARCA  ·  $175</span>
+    <code>/images/patriarca/variants/midnight-noir-sill.webp</code></figcaption>
+  </figure></div></section><section><h2>Colourway wall — MONARCA <span class="where">/shop/monarca</span></h2><p class="lede">7 acetates, one composition across the run.</p><div class="grid"><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/caramel-stripe-sill.webp" alt="">
+    <figcaption><b>Caramel Stripe</b><span>MONARCA  ·  $150</span>
+    <code>/images/monarca/variants/caramel-stripe-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/dark-tortoise-sill.webp" alt="">
+    <figcaption><b>Dark Tortoise</b><span>MONARCA  ·  $150</span>
+    <code>/images/monarca/variants/dark-tortoise-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/dreamy-rose-sill.webp" alt="">
+    <figcaption><b>Dreamy Rose</b><span>MONARCA  ·  $150</span>
+    <code>/images/monarca/variants/dreamy-rose-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/noir-sill.webp" alt="">
+    <figcaption><b>Noir</b><span>MONARCA  ·  $150</span>
+    <code>/images/monarca/variants/noir-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/pixie-dust-sill.webp" alt="">
+    <figcaption><b>Pixie Dust</b><span>MONARCA  ·  $150</span>
+    <code>/images/monarca/variants/pixie-dust-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/tutti-frutti-sill.webp" alt="">
+    <figcaption><b>Tutti Frutti</b><span>MONARCA  ·  $150</span>
+    <code>/images/monarca/variants/tutti-frutti-sill.webp</code></figcaption>
+  </figure><figure class="">
+    <img loading="lazy" src="/images/monarca/variants/velvet-rose-sill.webp" alt="">
+    <figcaption><b>Velvet Rose</b><span>MONARCA  ·  $247.50</span>
+    <code>/images/monarca/variants/velvet-rose-sill.webp</code></figcaption>
+  </figure></div></section>

@@ -28,10 +28,6 @@ import { StickyPanels, type PanelItem } from "@/components/sticky-panels";
 export function CollectionsSection() {
   const items: PanelItem[] = houses.map((house) => ({
     name: house.name,
-    /* Middot, not an em-dash. The house does not use em-dashes in
-       copy, and this line is copy: it is set under the house's name on
-       every panel. The same separator the buy pages already use. */
-    meta: `${house.index} · ${house.material}`,
     /* The house's own cover plate, whichever shoot it came from. Every
        one of the six has a photograph of its own now — the four that used
        to fall back to a flat acetate swatch were shot for their own

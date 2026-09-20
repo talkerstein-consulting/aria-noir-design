@@ -51,6 +51,10 @@ export function CountrySelect({
   dial = false,
   /** What the button reads when it is not the visible label of a field. */
   label,
+  /** The autofill token for the mirrored native control. A phone's
+   *  country is not the address's country, so a dial picker takes
+   *  `off` rather than competing for the same fill. */
+  autoComplete = "country",
 }: {
   value: string;
   onChange: (code: string) => void;
@@ -58,6 +62,7 @@ export function CountrySelect({
   id?: string;
   dial?: boolean;
   label?: string;
+  autoComplete?: string;
 }) {
   const auto = useId();
   const listId = `${id ?? auto}-list`;
@@ -166,6 +171,35 @@ export function CountrySelect({
 
   return (
     <div className="country" ref={root}>
+      {/* ---- The browser's own address autofill ----
+
+          A custom combobox is a <button> and a <ul>, and no browser has
+          ever filled one. Replacing the native <select> here quietly cost
+          this form `autocomplete="country"`, and with it the one-tap fill
+          of a whole address from the reader's address book, which is by
+          far the fastest way through this step.
+
+          So the native control is still here, off screen and mirrored.
+          Autofill writes to it and fires `change`; that is read back into
+          the real value. It is `aria-hidden` and out of the tab order so
+          a keyboard or screen-reader user meets the combobox and never
+          this, and it carries no label of its own for the same reason. */}
+      <select
+        className="country-autofill"
+        autoComplete={autoComplete}
+        tabIndex={-1}
+        aria-hidden
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {COUNTRIES.map((c) => (
+          <option key={c.code} value={c.code}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+
       <button
         type="button"
         ref={button}
