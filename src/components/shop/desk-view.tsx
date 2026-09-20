@@ -57,9 +57,19 @@ import { countryName } from "@/lib/validation";
  * data: the API answers a signed-out session with nulls.
  */
 
-type View = "orders" | "held" | "profile" | "addresses" | "payment";
+export type View = "orders" | "held" | "profile" | "addresses" | "payment";
 
-const VIEWS: readonly { id: View; label: string; Icon: typeof UserRound }[] = [
+/**
+ * The desk's rooms, in the order it lists them.
+ *
+ * Exported because the profile drawer offers the same rooms and used to
+ * keep its own hand-written copy of four of the five. Payment was the one
+ * it forgot: the desk has had a card-on-file view the whole time, the
+ * drawer's own opening line promised it, and nothing in the drawer went
+ * there. One list now, read by both, so the next room added to the desk
+ * appears in the drawer without anyone remembering to add it.
+ */
+export const VIEWS: readonly { id: View; label: string; Icon: typeof UserRound }[] = [
   { id: "orders", label: "Orders", Icon: Package },
   { id: "held", label: "Held", Icon: Heart },
   { id: "profile", label: "Profile", Icon: UserRound },

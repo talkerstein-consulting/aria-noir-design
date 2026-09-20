@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useBag, subtotal } from "@/lib/cart";
-import { formatPrice, swatchFor } from "@/lib/shop";
+import { formatPrice, galleryFor, swatchFor } from "@/lib/shop";
 import { shopPath } from "@/lib/navigation";
 import { CtaLink } from "@/components/cta-link";
 
@@ -125,20 +126,35 @@ export function BagDrawer({
             </div>
           ) : (
             <ul>
-              {resolved.map(({ line, house, entry }) => (
-                <li
-                  key={`${line.slug}-${line.colorway}`}
-                  className="flex gap-4 border-b border-[var(--fg-rule)] py-5 first:pt-0"
-                >
-                  {/* The acetate as a swatch, not a photograph: the frame
-                      is the same shape in every colourway, so the colour
-                      says more about which one this is than a thumbnail at
-                      this size ever could. */}
-                  <span
-                    aria-hidden
-                    className="mt-1 h-10 w-10 flex-none"
+              {resolved.map(({ line, house, entry }) => {
+                const shot = house ? galleryFor(house, line.colorway)[0] : undefined;
+                return (
+                <li key={`${line.slug}-${line.colorway}`} className="line-row">
+                  {/* The frame itself, lying on its acetate.
+
+                      This was a 40px square of colour, on the argument
+                      that the shape is the same in every colourway so the
+                      colour said more than a thumbnail could. At 40px
+                      that was true. At the card's own size it is not: the
+                      reader chose a photograph and this is the last place
+                      they see it before the till, so it should be the
+                      thing they chose. The acetate stays underneath, as
+                      the ground, which is what carries a colourway the
+                      shoot has not reached yet. */}
+                  <div
+                    className="line-row-shot"
                     style={{ background: swatchFor(line.colorway) }}
-                  />
+                  >
+                    {shot ? (
+                      <Image
+                        src={shot}
+                        alt={`${house?.name ?? line.slug} in ${line.colorway}`}
+                        fill
+                        sizes="6rem"
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
@@ -201,7 +217,8 @@ export function BagDrawer({
                     </div>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>

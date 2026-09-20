@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { CtaLink } from "@/components/cta-link";
+import { Heart, UserRoundPlus } from "lucide-react";
+import { VIEWS } from "@/components/shop/desk-view";
 import { useSession } from "@/lib/session";
 import { announceSession, house } from "@/lib/house-api";
 import { useHeld } from "@/lib/held";
@@ -76,6 +78,11 @@ export function DeskDrawer({
   }, [open, onClose]);
 
   const heldCount = ready ? lines.length : null;
+  /* One hairline's worth of nothing until the store is ready, never the
+     empty state: a "Nothing saved yet" that becomes "3 saved" a frame
+     later reads as the shop finding things it had lost. STYLE-GUIDE 10. */
+  const heldNote =
+    heldCount === null ? "" : heldCount ? `${heldCount} saved` : "Nothing saved yet";
 
   return (
     <div
@@ -106,43 +113,23 @@ export function DeskDrawer({
                 this browser is holding is below.
               </p>
 
+              {/* Read from the desk's own VIEWS rather than restated.
+                  This list used to be four rows written by hand, and the
+                  desk has five rooms: Payment was missing, although the
+                  line above this one promises the card on file. It also
+                  ended with "Open the full desk", which went to the same
+                  place as Orders and so was the same row twice. */}
               <ul className="mt-10">
-                <DeskLine
-                  href="/desk"
-                  onClick={onClose}
-                  label="Orders"
-                  note="And their tracking"
-                />
-                <DeskLine
-                  href="/desk#addresses"
-                  onClick={onClose}
-                  label="Addresses"
-                  note=""
-                />
-                <DeskLine
-                  href="/desk#profile"
-                  onClick={onClose}
-                  label="Details"
-                  note=""
-                />
-                <DeskLine
-                  href="/desk#held"
-                  onClick={onClose}
-                  label="Held"
-                  note={
-                    heldCount === null
-                      ? ""
-                      : heldCount
-                        ? `${heldCount} saved`
-                        : "Nothing saved yet"
-                  }
-                />
-                <DeskLine
-                  href="/desk"
-                  onClick={onClose}
-                  label="Open the full desk"
-                  note=""
-                />
+                {VIEWS.map(({ id, label, Icon }) => (
+                  <DeskLine
+                    key={id}
+                    href={id === "orders" ? "/desk" : `/desk#${id}`}
+                    onClick={onClose}
+                    label={label}
+                    Icon={Icon}
+                    note={id === "held" ? heldNote : ""}
+                  />
+                ))}
               </ul>
             </>
           ) : (
@@ -162,19 +149,15 @@ export function DeskDrawer({
                   href="/access?mode=new"
                   onClick={onClose}
                   label="New here"
+                  Icon={UserRoundPlus}
                   note="Make an account"
                 />
                 <DeskLine
                   href="/desk#held"
                   onClick={onClose}
                   label="Held"
-                  note={
-                    heldCount === null
-                      ? ""
-                      : heldCount
-                        ? `${heldCount} saved`
-                        : "Nothing saved yet"
-                  }
+                  Icon={Heart}
+                  note={heldNote}
                 />
               </ul>
             </>
@@ -213,19 +196,27 @@ function DeskLine({
   href,
   label,
   note,
+  Icon,
   external,
   onClick,
 }: {
   href: string;
   label: string;
   note: string;
+  /** The desk's own glyph for this room, so the drawer and the desk
+   *  name it the same way twice. Chrome weight, per STYLE-GUIDE 4. */
+  Icon?: typeof Heart;
   external?: boolean;
   onClick?: () => void;
 }) {
   const body = (
-    <span className="flex items-baseline justify-between gap-4">
-      <span className="t-caption">{label}</span>
-      <span className="t-micro text-[var(--fg-quiet)]">{note}</span>
+    <span className="desk-line">
+      {Icon ? <Icon className="desk-line-glyph" aria-hidden /> : null}
+      <span className="t-caption desk-line-label">{label}</span>
+      {/* Drawn only when there is something to say. Three of these rows
+          carried an empty span, which reserved the gap for a note that
+          never came and left the labels floating short of the rule. */}
+      {note ? <span className="t-micro text-[var(--fg-quiet)]">{note}</span> : null}
     </span>
   );
 
