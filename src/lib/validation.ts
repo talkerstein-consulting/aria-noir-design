@@ -86,6 +86,41 @@ export const COUNTRIES: readonly { code: string; name: string; region?: string }
   { code: "AE", name: "United Arab Emirates" },
 ];
 
+/** The dialling code for each country the house sends to, in the same
+ *  order and with the same codes as COUNTRIES above. Kept beside that
+ *  list rather than derived: there is no rule that turns "AE" into "971",
+ *  and a wrong guess here is a number the courier cannot ring. */
+export const DIAL_CODES: Readonly<Record<string, string>> = {
+  US: "+1",
+  CA: "+1",
+  GB: "+44",
+  AU: "+61",
+  AT: "+43",
+  BE: "+32",
+  DK: "+45",
+  FI: "+358",
+  FR: "+33",
+  DE: "+49",
+  HK: "+852",
+  IE: "+353",
+  IL: "+972",
+  IT: "+39",
+  JP: "+81",
+  MX: "+52",
+  NL: "+31",
+  NZ: "+64",
+  NO: "+47",
+  PT: "+351",
+  SG: "+65",
+  KR: "+82",
+  ES: "+34",
+  SE: "+46",
+  CH: "+41",
+  AE: "+971",
+};
+
+export const dialCode = (code: string) => DIAL_CODES[code] ?? "";
+
 export const countryName = (code: string) =>
   COUNTRIES.find((c) => c.code === code)?.name ?? code;
 

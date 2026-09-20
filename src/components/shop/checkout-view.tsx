@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Apple, CreditCard, Wallet } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CtaButton, CtaLink } from "@/components/cta-link";
@@ -29,7 +30,9 @@ import {
 import { formatPrice } from "@/lib/shop";
 import { cardErrorMessage, ensureSquare } from "@/lib/square";
 import {
+  COUNTRIES,
   countryName,
+  dialCode,
   emailError,
   isValidEmail,
   isValidPhone,
@@ -56,10 +59,10 @@ import {
  * house accounts and PINs. A frame is shipped, once, to an address, and is
  * paid for by card. So this asks four:
  *
- *   01  Who is buying       guest, or signed in
- *   02  Where it goes       an address; the country decides the estimate
- *   03  How you pay         card, or a wallet, or the card on file
- *   04  What you are buying the lines, the total, the one press
+ *   01  Your number         guest, or signed in
+ *   02  Your address        an address; the country decides the estimate
+ *   03  Payment Method      a card, or a wallet, or the card on file
+ *   04  Your Order(s)       the lines, the total, the one press
  *
  * The quote comes from the house API against live stock and the address,
  * which is why 04 cannot fold until 02 has. Tax is the store's number,
@@ -185,7 +188,32 @@ export function CheckoutView() {
   const phone = phoneDraft ?? session?.profile?.default_phone ?? session?.user?.phone ?? "";
   const setPhone = setPhoneDraft;
   const [asGuest, setAsGuest] = useState(false);
-  const contactPhone = signedIn ? phone : guest.phone;
+
+  /* The country the number rings in, chosen beside the number itself.
+     Deliberately NOT bound to the shipping country: a number is not an
+     address, and someone having a frame sent to a hotel in Milan is
+     usually still carrying the phone they had at home. It follows the
+     address only until the reader touches it, which is what the draft
+     below is for. */
+  const [dialDraft, setDialDraft] = useState<string | null>(null);
+  const dialCountry = dialDraft ?? BLANK_ADDRESS.country;
+  const setDialCountry = setDialDraft;
+
+  /* What goes to the courier: the code and the number, in that order.
+     Stored apart so the selector can stay a selector, joined here so
+     nothing downstream has to know the field was ever two controls. */
+  const withDial = (national: string) => {
+    const trimmed = national.trim();
+    if (!trimmed) return "";
+    /* A number the reader typed in full already carries its country. */
+    if (trimmed.startsWith("+")) return trimmed;
+    const code = dialCode(dialCountry);
+    /* The trunk zero is for dialling inside the country and is wrong in
+       front of a country code: +44 020 … does not ring. */
+    return code ? `${code} ${trimmed.replace(/^0+/, "")}` : trimmed;
+  };
+
+  const contactPhone = withDial(signedIn ? phone : guest.phone);
   const contact = signedIn
     ? {
         firstName: session!.user!.firstName,
@@ -261,7 +289,12 @@ export function CheckoutView() {
   const cardOnFile = signedIn && session?.houseAccount?.status === "active" ? session.houseAccount.card : undefined;
   /* The card on file is the answer until the reader says otherwise, the
      same way the default address is. */
-  const [methodDraft, setMethodDraft] = useState<"" | "card" | "saved_card">("");
+  /* `apple` and `google` join the two card methods so the three cards in
+     the row are one choice with one selected state, rather than two
+     buttons that do something and a radio group that records something.
+     A wallet still authorises through Square the moment it is pressed;
+     recording it here is what keeps the card marked while it does. */
+  const [methodDraft, setMethodDraft] = useState<"" | "card" | "saved_card" | "apple" | "google">("");
   const method = methodDraft || (cardOnFile ? "saved_card" : "");
   const setMethod = setMethodDraft;
   const card = useRef<SquareCard | undefined>(undefined);
@@ -269,6 +302,10 @@ export function CheckoutView() {
   const applePay = useRef<SquareWallet | undefined>(undefined);
   const googlePay = useRef<SquareWallet | undefined>(undefined);
   const [walletsFor, setWalletsFor] = useState<{ key: string; apple: boolean; google: boolean }>();
+  /* A wallet is never "complete" here: pressing its card opens the
+     sheet, and the order is placed from inside that flow rather than
+     from the review below. Only the two card methods carry the reader on
+     to step 04. */
   const payComplete = method === "saved_card" || (method === "card" && cardReady);
 
   /* ── the quote ── */
@@ -577,7 +614,7 @@ export function CheckoutView() {
         <section id="step-who" className="step scroll-mt-28" data-state={state("who", identified, true)}>
           <button type="button" className="step-head" onClick={() => setOpen("who")} aria-expanded={open === "who"}>
             <span className="t-eyebrow">
-              <span className="step-index">01</span>Who is buying
+              <span className="step-index">01</span>Your number
             </span>
             {open === "who" || !identified ? null : (
               <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
@@ -597,14 +634,31 @@ export function CheckoutView() {
                   Signed in as {contact.email}. The order and the receipt go on your desk.
                 </p>
                 <label className="field mt-8 max-w-sm" data-invalid={Boolean(phoneError(phone))}>
-                  <span>Telephone</span>
-                  <input
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
+                  <span>Phone</span>
+                  <div className="field-dial">
+                    <select
+                      aria-label="Country dialling code"
+                      value={dialCountry}
+                      onChange={(e) => setDialCountry(e.target.value)}
+                    >
+                      {/* The country code as well as the dialling code:
+                          the US and Canada are both +1, and a list with
+                          "+1" twice in it is a list that cannot be
+                          chosen from. */}
+                      {COUNTRIES.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.code} {dialCode(c.code)}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
                   <em className="t-caption mt-2 block not-italic text-[var(--fg-quiet)]">
                     For the courier, on the day. Nothing else.
                   </em>
@@ -612,7 +666,7 @@ export function CheckoutView() {
                 </label>
                 <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
                   <CtaButton disabled={!isValidPhone(phone)} onClick={() => setOpen("where")}>
-                    That is right
+                    Submit
                   </CtaButton>
                   <button
                     type="button"
@@ -663,15 +717,28 @@ export function CheckoutView() {
                     ) : null}
                   </label>
                   <label className="field" data-invalid={Boolean(guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()))}>
-                    <span>Telephone</span>
-                    <input
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      value={guest.phone}
-                      onChange={(e) => setGuest((g) => ({ ...g, phone: e.target.value }))}
-                      onBlur={() => setGuestTouched((t) => ({ ...t, phone: true }))}
-                    />
+                    <span>Phone</span>
+                    <div className="field-dial">
+                      <select
+                        aria-label="Country dialling code"
+                        value={dialCountry}
+                        onChange={(e) => setDialCountry(e.target.value)}
+                      >
+                        {COUNTRIES.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.code} {dialCode(c.code)}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel-national"
+                        value={guest.phone}
+                        onChange={(e) => setGuest((g) => ({ ...g, phone: e.target.value }))}
+                        onBlur={() => setGuestTouched((t) => ({ ...t, phone: true }))}
+                      />
+                    </div>
                     {guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()) ? (
                       <em className="field-error" role="alert">
                         {phoneError(guest.phone) || "A number the courier can reach on the day."}
@@ -710,7 +777,7 @@ export function CheckoutView() {
             disabled={!identified}
           >
             <span className="t-eyebrow">
-              <span className="step-index">02</span>Where it goes
+              <span className="step-index">02</span>Your address
             </span>
             {open === "where" || !(whereComplete && whereConfirmed) ? null : (
               <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
@@ -774,7 +841,7 @@ export function CheckoutView() {
             disabled={!(whereComplete && whereConfirmed)}
           >
             <span className="t-eyebrow">
-              <span className="step-index">03</span>How you pay
+              <span className="step-index">03</span>Payment Method
             </span>
             {open === "pay" || !payComplete ? null : (
               <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
@@ -783,30 +850,78 @@ export function CheckoutView() {
           <p className="step-summary t-caption">
             {method === "saved_card" && cardOnFile
               ? `${(cardOnFile.brand || "Card").toUpperCase()} ending ${cardOnFile.last4}`
-              : method === "card"
-                ? "A card, entered once."
-                : "Not answered yet."}
+              : method === "apple"
+                ? "Apple Pay"
+                : method === "google"
+                  ? "Google Pay"
+                  : method === "card"
+                    ? "Card"
+                    : "Not answered yet."}
           </p>
           <div className="step-body">
             {config ? (
               <>
-                <div className="wallets" hidden={!(wallets.apple || wallets.google)}>
-                    {wallets.apple ? (
-                      <button
-                        type="button"
-                        className="wallet wallet--apple"
-                        aria-label="Pay with Apple Pay"
-                        disabled={busy || !quote}
-                        onClick={() => payWithWallet(applePay.current)}
-                      >
-                        <span>Pay</span>
-                      </button>
-                    ) : null}
-                    <div id="google-pay" className="wallet wallet--google" hidden={!wallets.google} />
-                    <p className="t-caption wallets-or">or a card</p>
+                {/* Three cards, one row, no prose. The step's title says
+                    what is being chosen and each card says which one it
+                    is; a paragraph between them was the page explaining
+                    a choice the reader can see.
+
+                    Apple Pay and Google Pay are still Square's to
+                    authorise. The card is the affordance; `tokenize()`
+                    runs from this click, which is the user gesture the
+                    wallet requires. A wallet the device cannot offer is
+                    drawn disabled rather than removed, so the row does
+                    not change shape between devices and the reader is
+                    never left wondering what used to be there. */}
+                <div className="pay-methods" role="radiogroup" aria-label="Payment method">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={method === "apple"}
+                    className="pay-method"
+                    disabled={!wallets.apple || busy || !quote}
+                    onClick={() => {
+                      setMethod("apple");
+                      payWithWallet(applePay.current);
+                    }}
+                  >
+                    <Apple aria-hidden />
+                    <span className="t-eyebrow">Apple Pay</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={method === "google"}
+                    className="pay-method"
+                    disabled={!wallets.google || busy || !quote}
+                    onClick={() => {
+                      setMethod("google");
+                      payWithWallet(googlePay.current);
+                    }}
+                  >
+                    <Wallet aria-hidden />
+                    <span className="t-eyebrow">Google Pay</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={method === "card" || method === "saved_card"}
+                    className="pay-method"
+                    onClick={() => setMethod(cardOnFile ? "saved_card" : "card")}
+                  >
+                    <CreditCard aria-hidden />
+                    <span className="t-eyebrow">
+                      {cardOnFile ? `Ending ${cardOnFile.last4}` : "Card"}
+                    </span>
+                  </button>
                 </div>
 
-                {cardOnFile ? (
+                {/* The card on file and a new one are the same card, so
+                    the choice between them belongs under it rather than
+                    beside the wallets. */}
+                {cardOnFile && (method === "saved_card" || method === "card") ? (
                   <div className="pay-options">
                     <label className="check">
                       <input
@@ -831,11 +946,16 @@ export function CheckoutView() {
                   </div>
                 ) : null}
 
+                {/* Square mounts its own Google Pay button here. Kept in
+                    the tree, out of the layout: detaching it would make
+                    `wallets.google` a promise nothing could keep. */}
+                <div id="google-pay" hidden />
+
                 {/* Mounted only while the reader is on this step or the
                     review after it. The fold hides bodies with CSS, and a
                     card field that mounted behind a closed step would
                     answer "ready" to a question nobody had reached. */}
-                {(open === "pay" || open === "review") && (method === "card" || !cardOnFile) ? (
+                {(open === "pay" || open === "review") && method === "card" ? (
                   <div className="mt-8 max-w-md">
                     <CardField
                       config={config}
@@ -846,10 +966,6 @@ export function CheckoutView() {
                       }}
                       onError={setError}
                     />
-                    <p className="t-caption mt-4 max-w-md">
-                      The card is read by Square inside that field and never by this site. The house keeps the
-                      last four digits and nothing else.
-                    </p>
                   </div>
                 ) : null}
 
@@ -877,7 +993,8 @@ export function CheckoutView() {
             disabled={!payComplete}
           >
             <span className="t-eyebrow">
-              <span className="step-index">04</span>What you are buying
+              <span className="step-index">04</span>
+              {sendable.length === 1 ? "Your Order" : "Your Orders"}
             </span>
           </button>
           <p className="step-summary t-caption">
@@ -919,21 +1036,16 @@ export function CheckoutView() {
 
             {error && open === "review" ? <p className="field-error mt-8" role="alert">{error}</p> : null}
 
-            <div className="hairline mt-10 flex flex-wrap items-end justify-between gap-6 pt-8">
-              <div>
-                <p className="t-eyebrow">Total</p>
-                <p className="t-display-xs mt-2 tabular-nums">
-                  {quote ? formatPrice(quote.order.total) : quoteError ? "—" : "…"}
-                </p>
-                <p className="t-caption mt-2">
-                  {quote
-                    ? "Tax included, against your address. Shipping is free."
-                    : quoteError || "Calculating against live stock and your address."}
-                </p>
-              </div>
-              <CtaButton disabled={busy || !quote || !payComplete} onClick={() => void place()}>
-                {busy ? "Placing the order" : "Place the order"}
-              </CtaButton>
+            <div className="hairline mt-10 pt-8">
+              <p className="t-eyebrow">Total</p>
+              <p className="t-display-xs mt-2 tabular-nums">
+                {quote ? formatPrice(quote.order.total) : quoteError ? "—" : "…"}
+              </p>
+              <p className="t-caption mt-2">
+                {quote
+                  ? "Tax included, against your address. Shipping is free."
+                  : quoteError || "Calculating against live stock and your address."}
+              </p>
             </div>
             <p className="t-caption mt-6 max-w-xl">
               By placing the order you agree to the{" "}
@@ -942,6 +1054,17 @@ export function CheckoutView() {
               What the house keeps is in the{" "}
               <Link href="/policies/privacy" className="link-quiet link-quiet--micro">privacy policy</Link>.
             </p>
+            {/* Last on the page, under the terms it commits to. The
+                button used to sit beside the total with the terms
+                printed beneath it, which put the press above the
+                sentence it agreed to. */}
+            <CtaButton
+              className="mt-10"
+              disabled={busy || !quote || !payComplete}
+              onClick={() => void place()}
+            >
+              {busy ? "Placing the order" : "Place the order"}
+            </CtaButton>
           </div>
         </section>
       </div>

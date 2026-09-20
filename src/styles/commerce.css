@@ -673,6 +673,42 @@
 .field[data-invalid="true"] select {
   border-color: var(--fg-accent);
 }
+/* ── A NUMBER AND THE COUNTRY IT RINGS IN ──────────────────────────
+   One rule under both, so the pair reads as one field rather than two
+   that happen to be adjacent. The code is set in mono because it is a
+   number being compared, which is the same reason prices are.
+   
+   `auto` on the code column, not a fixed width: "+1" and "+971" are two
+   and four characters, and a fixed column would either clip the long
+   one or leave a gap after the short one. */
+.field-dial {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: end;
+  gap: 0.75rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+/* The rule now belongs to the pair, so the two controls give theirs up. */
+.field-dial select,
+.field-dial input {
+  border-bottom: 0;
+}
+.field-dial:focus-within {
+  border-color: var(--fg-primary);
+}
+.field[data-invalid="true"] .field-dial {
+  border-color: var(--fg-accent);
+}
+.field-dial select {
+  width: auto;
+  font-family: var(--font-mono);
+  color: var(--fg-secondary);
+  /* The native arrow is the platform's affordance and stays; this only
+     keeps it from crowding the number beside it. */
+  padding-right: 0.25rem;
+}
+
 .field-error {
   display: block;
   margin-top: 0.5rem;
@@ -1193,6 +1229,15 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+  /* Every card the height of the tallest in its row. Without this the
+     add slot cannot ask for `height: 100%` and mean the row. */
+  align-items: stretch;
+}
+.address-cards > li {
+  display: flex;
+}
+.address-cards > li > .address-card {
+  width: 100%;
 }
 @media (min-width: 640px) {
   .address-cards {
@@ -1245,6 +1290,78 @@
    Apple Pay and Google Pay, when the device has them. Apple's button is
    the platform's own (-apple-pay-button); Google's is drawn by its SDK
    into the div. Both sit above the card and are offered, not pushed. */
+/* ── THE THREE WAYS TO PAY ─────────────────────────────────────────
+   One card each, in a row, chosen the way the addresses above are
+   chosen: same box, same hairline, same square corners, same mark in
+   the upper right for the one that is selected. A reader who has just
+   picked an address already knows how this works.
+
+   The glyphs are lucide at the chrome's own weight. They are NOT the
+   state: every card is also a word, and the selected one is also ruled
+   and marked. See STYLE-GUIDE 1.2. */
+.pay-methods {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+@media (min-width: 560px) {
+  .pay-methods {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.pay-method {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.75rem;
+  min-height: 7rem;
+  padding: 1.25rem;
+  background: none;
+  border: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-quiet);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.pay-method:hover:not(:disabled),
+.pay-method:focus-visible {
+  border-color: var(--fg-tertiary);
+  color: var(--fg-secondary);
+  outline: none;
+}
+.pay-method:focus-visible {
+  outline: var(--rule-weight) solid currentColor;
+  outline-offset: 2px;
+}
+.pay-method[aria-checked="true"] {
+  border-color: var(--fg-primary);
+  color: var(--fg-primary);
+}
+/* The same dot, in the same corner, as a chosen address. */
+.pay-method[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: 1.35rem;
+  right: 1.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--fg-primary);
+}
+.pay-method:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+.pay-method svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  stroke-width: 1.25;
+}
+
 .wallets {
   display: flex;
   flex-wrap: wrap;
@@ -1358,8 +1475,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 0.75rem;
+  /* The row's height, not its own. `min-height` was a guess at what a
+     saved card comes to, and a guess is wrong the moment an address has
+     a second line: the slot stood short beside the cards it was going to
+     join. The grid stretches every item to the tallest, so taking 100%
+     of the cell is the only way to be exactly as tall as the card that
+     will stand here. */
+  height: 100%;
   min-height: 9.5rem;
   width: 100%;
   border-style: dashed;
@@ -1380,7 +1504,14 @@
 .address-card--add[aria-disabled] {
   cursor: default;
 }
+/* Upper right, where the chosen card puts its own mark. The two never
+   appear on the same card, so the corner is free, and a plus that sits
+   where the state dot sits keeps one corner meaning "this card's
+   status" across the whole row. */
 .address-card-plus {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.25rem;
   font-family: var(--font-display);
   font-size: 1.75rem;
   line-height: 1;

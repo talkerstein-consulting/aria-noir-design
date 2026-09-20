@@ -205,7 +205,7 @@ export function SiteMenu({
         className="sheet-glass"
       />
 
-      {/* px-8 py-6 is the header's own padding, and the empty band at the
+      {/* The padding mirrors the header's own, step for step, and the empty band at the
           top is the header itself showing through from above — the panel
           reserves its height rather than drawing anything into it.
 
@@ -214,7 +214,7 @@ export function SiteMenu({
           menu rather than pushing the small print off the bottom of it.
           The panel's own overflow is the safety net under that, for the
           landscape phone where no type size would fit. */}
-      <div className="sheet-panel on-ink px-8 py-6">
+      <div className="sheet-panel on-ink px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6">
         <div className="min-h-8" aria-hidden />
 
         {/* ---- the stack, centred on both axes ---- */}

@@ -1,13 +1,7 @@
 import { ProductCard } from "@/components/product-card";
 import type { House } from "@/lib/navigation";
-import {
-  isAvailable,
-  priceOf,
-  shopHref,
-  sillFor,
-  stockFor,
-  swatchFor,
-} from "@/lib/shop";
+import { colourwayCard } from "@/lib/product-cards";
+import { sillFor, stockFor } from "@/lib/shop";
 
 /**
  * The run, one card per acetate.
@@ -38,17 +32,6 @@ import {
  *
  * A house that has not been shot this way renders nothing at all.
  */
-/**
- * Where the frame sits in the colourway shoot.
- *
- * One number for the whole run, because the run is one composition: the
- * frame centred left to right and resting a little below the middle of the
- * picture, with the table under it and the room above. Squaring a 16:9
- * still on its own centre crops to the tabletop and cuts both temples;
- * this aims the square at the eyewear.
- */
-const COLOURWAY_FOCAL = "50% 45%";
-
 export function ColourwayCards({ house }: { house: House }) {
   /* The STORE's list, in the store's order — the same source the picker
      reads. A colourway the storefront has never heard of is not an offer. */
@@ -65,27 +48,14 @@ export function ColourwayCards({ house }: { house: House }) {
       </div>
 
       <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-        {stock.map(({ colorway }) => {
-          const out = !isAvailable(house, colorway);
-          return (
-            <li key={colorway} className="flex">
-              <ProductCard
-                href={shopHref(house, colorway)}
-                image={sillFor(house, colorway)}
-                swatch={swatchFor(colorway)}
-                focal={COLOURWAY_FOCAL}
-                name={colorway}
-                meta={house.name}
-                /* The price is per colourway, which is the fact this grid
-                   exists to carry. */
-                price={priceOf(house, colorway)}
-                detail={out ? "Out of the workshop" : undefined}
-                soldOut={out}
-                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 45vw"
-              />
-            </li>
-          );
-        })}
+        {stock.map(({ colorway }) => (
+          <li key={colorway} className="flex">
+            {/* What each acetate's card says — its own name, its own price,
+                its own photograph — is `colourwayCard` in
+                lib/product-cards, beside every other product's. */}
+            <ProductCard {...colourwayCard(house, colorway)} />
+          </li>
+        ))}
       </ul>
     </div>
   );

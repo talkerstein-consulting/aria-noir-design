@@ -1,8 +1,8 @@
-import { houses, colorwayCount, shopPath } from "@/lib/navigation";
+import { houses, colorwayCount } from "@/lib/navigation";
 import { apparel } from "@/lib/apparel";
-import { formatPrice, priceOf } from "@/lib/shop";
 import { CtaLink } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
+import { apparelCard, houseCard } from "@/lib/product-cards";
 
 /**
  * Everything the house makes, at the top of the house's own page.
@@ -68,21 +68,9 @@ export function HouseIndex() {
             <div key={house.slug} className="flex">
               {/* How deep the range goes and what it opens at — not the
                   colourways themselves. See the note at the top of this
-                  file for why they are not listed here. */}
-              <ProductCard
-                href={house.href ?? shopPath(house)}
-                image={house.plate}
-                swatch={house.swatch}
-                name={house.name}
-                as="h2"
-                meta={`${house.index} — ${house.material}`}
-                detail={
-                  house.models === 1
-                    ? `One cut · ${colorwayCount(house)} colourways`
-                    : `${house.models} cuts · ${colorwayCount(house)} colourways`
-                }
-                price={`from ${priceOf(house)}`}
-              />
+                  file for why they are not listed here, and
+                  lib/product-cards for the facts themselves. */}
+              <ProductCard {...houseCard(house, "index")} />
             </div>
           ))}
 
@@ -91,14 +79,7 @@ export function HouseIndex() {
               the shape of the six beside it regardless. */}
           {apparel.map((line) => (
             <div key={line.slug} className="flex">
-              <ProductCard
-                image={line.colourways[0]?.image}
-                name={line.name}
-                as="h2"
-                meta={`07 — ${line.material}`}
-                detail={`One cut · ${line.colourways.length} colourways · ${line.sizes.length} sizes`}
-                price={`from ${formatPrice(line.colourways[0]?.cents ?? 0)}`}
-              />
+              <ProductCard {...apparelCard(line)} />
             </div>
           ))}
         </div>

@@ -1,12 +1,15 @@
-import { houses, colorwayCount, shopPath } from "@/lib/navigation";
+import { houses } from "@/lib/navigation";
 import { ProductCard } from "@/components/product-card";
+import { houseCard } from "@/lib/product-cards";
 
 /**
  * The six houses, as a grid.
  *
  * The card is `ProductCard` — the same object the house index, the
- * cross-sell rail and the colourway wall render. This file decides only
- * which houses appear, what each card says, and where it goes.
+ * cross-sell rail and the colourway wall render — filled by
+ * `houseCard(house, "grid")` in lib/product-cards, which is where each
+ * product's facts are written. This file decides only which houses appear
+ * and how the grid is laid out.
  *
  * A house with no photograph in the pool renders as its acetate rather
  * than being dropped or given a borrowed plate: a complete row with an
@@ -41,34 +44,12 @@ export function HouseGrid() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
         {houses.map((house, i) => (
           <div key={house.slug} className="flex">
-            {/* The object at rest, and the frame being WORN on hover where
-                there is such a photograph. See `lifestyle` in lib/navigation.
-
-                No price. These pages are the argument for a frame and the
-                catalogue is on Shopify — a "from $100" here would be the
-                only number on a page with no cart behind it. The count of
-                cuts and colourways, and the colourways by NAME, are the
-                useful figures at index level: "six colourways" is true of
-                every house on the page, where Noir, Caramel Stripe and
-                Pixie Dust are the actual product. */}
-            <ProductCard
-              href={house.href ?? shopPath(house)}
-              image={house.plate}
-              hoverImage={house.lifestyle}
-              swatch={house.swatch}
-              swatchNote="Photography in progress"
-              name={house.name}
-              as="h2"
-              meta={`${house.index} · ${house.material}`}
-              detail={
-                house.models === 1
-                  ? `One cut · ${colorwayCount(house)} colourways`
-                  : `${house.models} cuts · ${colorwayCount(house)} colourways`
-              }
-              note={house.note}
-              reveal
-              revealDelay={i * 70}
-            />
+            {/* What the card SAYS is `houseCard(house, "grid")` — the
+                worn photograph on hover, the house's note, and no price.
+                See lib/product-cards for why this grid carries no number.
+                The stagger stays here: it depends on where the card sits
+                in this list, which is the one thing only this file knows. */}
+            <ProductCard {...houseCard(house, "grid")} reveal revealDelay={i * 70} />
           </div>
         ))}
       </div>

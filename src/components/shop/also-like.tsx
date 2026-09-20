@@ -1,14 +1,16 @@
 import { CtaLink } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
-import { houses, shopPath, type House } from "@/lib/navigation";
-import { swatchFor } from "@/lib/shop";
+import { houses, type House } from "@/lib/navigation";
+import { houseCard } from "@/lib/product-cards";
 
 /**
  * The rest of the catalogue, one card each, second photograph on hover.
  *
- * The card itself is `ProductCard` — the same object the house index, the
- * eyewear grid and the colourway wall render. This file decides only WHICH
- * houses appear and WHAT each card is allowed to say.
+ * The card itself is `ProductCard`, filled by
+ * `houseCard(other, "cross-sell")` — the same object and the same facts
+ * the house index, the eyewear grid and the colourway wall render. This
+ * file decides only WHICH houses appear; what a cross-sell card is allowed
+ * to say is the variant, in lib/product-cards.
  *
  * ---- These link to another BUY page, not to the story ----
  *
@@ -39,25 +41,7 @@ export function AlsoLike({ current }: { current: House }) {
       <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
         {others.map((other) => (
           <li key={other.slug} className="flex">
-            {/* The house's own card picture, not galleryFor: that returns
-                the CHOSEN COLOURWAY's frames and nothing else, which is
-                right for the column being scrolled and empty for a card
-                with no colourway selected. The second picture is the
-                house's editorial set, which is a fair thing to show on a
-                card — it is not claiming to be any particular acetate.
-
-                No price and no colourway count here: a cross-sell card
-                carrying a second offer competes with the one being made
-                above it, and this card's whole job is to be a picture
-                worth following. */}
-            <ProductCard
-              href={shopPath(other)}
-              image={other.plate}
-              hoverImage={other.gallery?.[0]}
-              swatch={other.swatch ?? swatchFor(other.colorwayNames[0])}
-              name={other.name}
-              sizes="(min-width: 1024px) 20vw, 45vw"
-            />
+            <ProductCard {...houseCard(other, "cross-sell")} />
           </li>
         ))}
       </ul>
