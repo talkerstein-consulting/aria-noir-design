@@ -128,6 +128,15 @@ export function CheckoutView() {
   const sessionError = FURNISHING ? "" : liveSessionError;
   const [error, setError] = useState("");
 
+  /* The pinned total stands in for the real one while the real one is
+     still below the reader. It takes itself away the moment the summary's
+     own total is reached, and stays away past it, so the band is never
+     sitting over the footer repeating a number already on the page.
+     STYLE-GUIDE 13: a sticky element that covers content is worse than no
+     sticky element. */
+  const totalMark = useRef<HTMLDivElement>(null);
+  const [totalBelow, setTotalBelow] = useState(true);
+
   const [config, setConfig] = useState<Config>();
   const [configError, setConfigError] = useState("");
   useEffect(() => {
@@ -136,6 +145,30 @@ export function CheckoutView() {
       .then(setConfig)
       .catch((cause) => setConfigError(cause instanceof Error ? cause.message : "Unavailable."));
   }, []);
+
+  /* No dependency array, deliberately: the summary is not rendered at all
+     while the bag is still being read, so a one-shot effect would look for
+     the mark before it exists and never look again. Re-reading a ref and
+     rebinding two listeners is cheaper than the bug. */
+  useEffect(() => {
+    const mark = totalMark.current;
+    if (!mark) return;
+    /* Measured rather than trusted to `isIntersecting`: the band should go
+       when the total is on screen AND stay gone below it, which is one
+       comparison and not two states. The observer is only the thing that
+       asks the question at the right moments. */
+    const ask = () => setTotalBelow(mark.getBoundingClientRect().top > window.innerHeight);
+    const io = new IntersectionObserver(ask, { threshold: [0, 1] });
+    io.observe(mark);
+    ask();
+    window.addEventListener("scroll", ask, { passive: true });
+    window.addEventListener("resize", ask);
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", ask);
+      window.removeEventListener("resize", ask);
+    };
+  });
 
   const sendable = useMemo(() => resolved.filter((l) => l.entry?.available), [resolved]);
   const withheld = resolved.length - sendable.length;
@@ -252,7 +285,9 @@ export function CheckoutView() {
   const [quoted, setQuoted] = useState<{ key: string; quote?: Quote; error: string }>();
   const items = (): CheckoutItem[] =>
       sendable.map(({ line, house: h, entry }) => ({
-        name: `${h?.name ?? line.slug} — ${line.colorway}`,
+        /* Middot, not an em dash: this name is read back on the receipt
+           and the house does not set em dashes in copy. See COPY.md. */
+        name: `${h?.name ?? line.slug} · ${line.colorway}`,
         quantity: line.qty,
         /* For the house API's catalogue lookup; the Donuts service resolves
            by name and ignores the rest, a successor can key on these. */
@@ -367,7 +402,7 @@ export function CheckoutView() {
       return;
     }
     if (!presetSource && !method) {
-      setError("Choose how you would like to pay.");
+      setError("Choose how to pay.");
       setOpen("pay");
       return;
     }
@@ -521,8 +556,8 @@ export function CheckoutView() {
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">The studio&rsquo;s checkout is not answering.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-          {configError || sessionError} The bag is kept on this device, so nothing is lost —
-          it will be here when the desk answers again.
+          {configError || sessionError} The bag is kept on this device. It will be here
+          when the desk answers again.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/bag">Back to the bag</CtaLink>
@@ -536,7 +571,7 @@ export function CheckoutView() {
     open === id ? "open" : done ? "done" : reachable ? "ready" : "waiting";
 
   return (
-    <div className="checkout" data-busy={busy} aria-busy={busy}>
+    <div className="checkout checkout-has-foot" data-busy={busy} aria-busy={busy}>
       <div className="checkout-steps">
         {/* ── 01 ── */}
         <section id="step-who" className="step scroll-mt-28" data-state={state("who", identified, true)}>
@@ -911,6 +946,27 @@ export function CheckoutView() {
         </section>
       </div>
 
+      {/* The number, pinned, for the widths where the column beside the
+          questions has become a band beneath them. See .checkout-foot. */}
+      <div className="checkout-foot" hidden={!totalBelow}>
+        <dl className="checkout-foot-sum">
+          <dt className="t-eyebrow">Total</dt>
+          <dd className="tabular-nums">
+            {quote?.order
+              ? formatPrice(quote.order.total)
+              : whereComplete && !quoteError
+                ? "…"
+                : formatPrice(subtotal)}
+          </dd>
+        </dl>
+        {/* Not a second commit. The step's own button is the commit; this
+            is the way to the lines the number is counting, which on a
+            phone are a long way down the page. */}
+        <a href="#your-order" className="link-quiet link-quiet--micro">
+          {sendable.length === 1 ? "One frame" : `${sendable.length} frames`}
+        </a>
+      </div>
+
       <aside className="checkout-aside">
         <OrderSummary
           lines={sendable}
@@ -930,6 +986,10 @@ export function CheckoutView() {
           }}
           estimate={whereComplete ? transitFor(address.country) : undefined}
         />
+        {/* The foot of the summary, which is where its total sits. What
+            the pinned band watches for, and the point at which the band
+            has nothing left to say. */}
+        <div ref={totalMark} aria-hidden />
       </aside>
     </div>
   );

@@ -40,7 +40,11 @@ export function LineCard({
             src={image}
             alt={`${name} in ${colorway}`}
             fill
-            sizes="(min-width: 1024px) 24rem, (min-width: 640px) 50vw, 100vw"
+            /* Two up in the checkout's 24rem aside, so about 11rem there
+               rather than the 24rem this asked for before: a card that
+               downloads twice the plate it draws is the summary paying
+               for a photograph nobody sees at that size. */
+            sizes="(min-width: 1024px) 11rem, (min-width: 480px) 45vw, 100vw"
             className="object-cover"
             loading="lazy"
           />

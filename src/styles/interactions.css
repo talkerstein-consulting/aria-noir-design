@@ -1444,18 +1444,23 @@
    NARROW_FRAMES_PER_VH in lib/timeline — and an inline style would have to
    re-render the whole page to follow it.
 
-   The desktop figure covers the last beat (frame 380 at 100 frames per
-   screen, so 3.8 screens) with a landing. The phone plays the same beats at
-   150 frames per screen, so the same beat lands at 2.53 screens and the
+   The desktop figure covers the last beat (frame 400 at 100 frames per
+   screen, so 4 screens) with a landing. The phone plays the same beats at
+   150 frames per screen, so the same beat lands at 2.67 screens and the
    runway follows it down — which is also what removes the third of a screen
    of dead black that used to sit between the scene ending and the next
-   section's heading. */
+   section's heading.
+
+   The landing is a tenth of a screen, not four tenths. It was 420 here
+   against a scene ending at 3.8, and the difference was black with nothing
+   in it — the seam read as the page having stopped rather than as one
+   section handing over to the next. */
 .home-runway {
-  height: 420vh;
+  height: 410vh;
 }
 @media (max-width: 1023px) {
   .home-runway {
-    height: 270vh;
+    height: 280vh;
   }
 }
 

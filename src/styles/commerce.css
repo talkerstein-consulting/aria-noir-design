@@ -143,6 +143,14 @@
   align-items: center;
   gap: 1rem;
 }
+/* On a phone the band is competing with the wordmark for a 375px line, and
+   1rem between two 2.25rem targets spends a sixth of it on air. The targets
+   themselves do not shrink — only the space between them. */
+@media (max-width: 639px) {
+  .nav-cluster {
+    gap: 0.5rem;
+  }
+}
 
 /* ── THE WAY IN ────────────────────────────────────────────────────
    Three hairlines that become two. It inherits `.nav-icon` for its box,
@@ -466,6 +474,24 @@
    components/site-crumbs. Label scale, the quiet colour, a bullet at 45%
    between crumbs. Centred where there is room; on a phone it is one line
    the reader swipes, with the scrollbar hidden, and it never wraps. */
+/* The band is shorter on a phone (see site-nav: the vertical padding steps
+   down), and the trail hangs off its foot — so the height it hangs from has
+   to step down with it, or the crumbs float in the gap. One tap target
+   (2.25rem) plus the padding above and below. */
+:root {
+  --nav-height: 5.5rem;
+}
+@media (max-width: 639px) {
+  :root {
+    --nav-height: 3.75rem;
+  }
+}
+@media (min-width: 640px) and (max-width: 767px) {
+  :root {
+    --nav-height: 4.25rem;
+  }
+}
+
 .site-crumbs {
   position: absolute;
   inset-inline: 0;
@@ -987,6 +1013,63 @@
     top: 7rem;
   }
 }
+/* ── THE RUNNING TOTAL, ON A PHONE ─────────────────────────────────
+   Above 1024px the summary is a column beside the questions and the
+   total is on screen the whole way down. Below it the summary stacks
+   UNDER all four steps, so the reader answered every question with no
+   idea what the number was. Same fault the drawer's own note names: a
+   total below the fold is a receipt with its last line torn off.
+   
+   A band, not a card: hairline over ink, square, no shadow, which is
+   the same treatment the header uses at the other end of the screen.
+   It carries the number and the way to the lines, and nothing else. The
+   step's own commit button stays in the step, where the answer is. */
+.checkout-foot {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.875rem var(--gutter);
+  /* Opaque, not a blur. Glass here would put the photographs of the
+     frames through the number that says what they cost. */
+  background: var(--ink);
+  border-top: var(--rule-weight) solid var(--fg-rule);
+  /* Clear of the home indicator on a phone that has one. */
+  padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  .checkout-foot {
+    display: none;
+  }
+}
+/* `display: flex` above would otherwise beat the UA's [hidden] rule. */
+.checkout-foot[hidden] {
+  display: none;
+}
+/* The page ends above the band rather than behind it. */
+.checkout-has-foot {
+  padding-bottom: 5.5rem;
+}
+@media (min-width: 1024px) {
+  .checkout-has-foot {
+    padding-bottom: 0;
+  }
+}
+.checkout-foot-sum {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.checkout-foot-sum dd {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--fg-primary);
+}
+
 .checkout[data-busy="true"] .checkout-steps {
   opacity: 0.6;
   pointer-events: none;
@@ -1305,15 +1388,28 @@
 
 /* The order column draws full product cards, one under another; the
    column is wide enough for a card to be a card. */
+/* Two up, at every width the column is wide enough for.
+   
+   One up in a 24rem aside meant a 24rem photograph per line: four frames
+   made the summary 2429px tall beside 569px of questions, and `position:
+   sticky` on something taller than the screen does not stick, so the
+   total, the one number the reader is here to watch, scrolled away.
+   
+   Two up is the same card at half the plate. Still the object it was
+   chosen from, shot, name, colourway and price, and NOT the 36px chip
+   this column used to shrink it to: a frame should look like itself all
+   the way to the receipt. */
 .summary-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 1.25rem;
 }
-@media (min-width: 640px) and (max-width: 1023px) {
+/* Two up on a phone as well. The summary stacks under all four steps
+   there, so one card per row put four full-bleed photographs between
+   the last question and the total: the reader scrolls past the frames
+   they already chose to reach the number they are waiting on. */
+@media (max-width: 479px) {
   .summary-cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem;
+    gap: 1.5rem 1rem;
   }
 }

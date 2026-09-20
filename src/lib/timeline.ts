@@ -6,9 +6,9 @@
  * and the on-screen HUD reads the same table — so a label can never drift from
  * what the page actually does. To re-time a beat, change it here only.
  *
- * The choreography finishes at `sceneShiftEnd`; everything after that is
+ * The choreography finishes at `modelEntryEnd`; everything after that is
  * ordinary document flow (see AtelierSection) and needs no frames at all.
- * The runway spacer is RUNWAY_VH tall, which is comfortably past that.
+ * The runway spacer is sized to that last beat plus a short landing.
  */
 
 export const FRAMES_PER_VH = 100;
@@ -36,8 +36,8 @@ export const FRAMES_PER_VH = 100;
  * and getting to break one of them by accident.
  *
  * The runway shrinks with it, and has to: it is the scroll distance the
- * fixed scene needs, and the last beat is `modelEntryEnd` at 380. At 150
- * frames per screen that is 2.53 screens, against 3.8 on a desktop — which
+ * fixed scene needs, and the last beat is `modelEntryEnd` at 400. At 150
+ * frames per screen that is 2.67 screens, against 4 on a desktop — which
  * is also what removes the third of a screen of dead black that used to sit
  * between the scene ending and the next section's heading. The runway
  * itself is `.home-runway` in the stylesheet; see the note above `F`.
@@ -50,10 +50,17 @@ export const NARROW_FRAMES_PER_VH = 150;
    query. Two copies of one number is how they drift; there is one, and this
    is the note that says where.
 
-   It is sized to the last beat, `F.modelEntryEnd` at 380, plus a short
+   It is sized to the last beat, `F.modelEntryEnd` at 400, plus a short
    landing. The 3D model and the ARCA I block that used to run to frame 620
-   have both been removed from this page, which is why it is not sized to
-   `sceneShiftEnd`. */
+   have both been removed from this page, and so have their frame numbers:
+   a table that runs to 620 when the scene ends at 400 reads as if there is
+   half a page of choreography left that nothing plays.
+
+   410vh against 400 frames is that landing, and 280vh against 2.67 screens
+   on a phone. It was 420 against 380 and 270 against 2.53, which left four
+   tenths of a screen of dead black between the scene ending and the next
+   section's heading — a seam with nothing in it. A tenth of a screen is
+   enough to land on; four tenths is a pause the page never asked for. */
 
 /** One vertical rhythm for every flow section, so the gaps between them read
  *  as a single system rather than per-section guesses. */
@@ -65,16 +72,24 @@ export const F = {
   videoLiftStart: 94, // video BEGINS moving up here (shrink already underway)
   h2Start: 94,
   videoShrinkEnd: 200, // video reaches its resting size + height
-  hangEnd: 320, // heading + body hang in the middle until here
-  modelStart: 320, // model rises, video exits
-  modelEntryEnd: 380,
-  productStart: 400, // heading group out, ARCA I in
-  h2FadeEnd: 460,
-  productFull: 470,
-  modelEnd: 560, // rotation completes 360°
-  sceneShiftStart: 560, // whole scene scrolls up and off, like normal flow
-  sceneShiftEnd: 620,
+  /* ---- why the hang is shorter than it was, and the exit longer ----
 
+     These two beats used to be 200→320 and 320→380: one and a fifth
+     screens of scrolling with NOTHING moving, and then the video's whole
+     120vh exit spent in six tenths of a screen. Per screen of scroll the
+     shrink moves about 25vh of content and that exit moved 200 — an
+     eightfold change of gear, taken immediately after the longest still
+     moment on the page. Scrolled at an even speed the section read as
+     move, stop, snap.
+
+     At 280 and 400 the hold is eight tenths of a screen and the exit gets
+     one and a fifth, which puts the fastest and slowest beats within about
+     three times each other — close enough that an even scroll feels even.
+     The hang is still the longest pause here, and should be: it is the
+     beat where the heading is meant to be read. */
+  hangEnd: 280, // heading + body hang in the middle until here
+  modelStart: 280, // video exits
+  modelEntryEnd: 400,
 } as const;
 
 /* ---- dark → light handoff ----
@@ -99,12 +114,8 @@ export const TRIGGERS: Trigger[] = [
   { frame: F.heroStart, label: "hero · video full bleed" },
   { frame: F.logoDocked, label: "logo docked · video starts rising" },
   { frame: F.videoShrinkEnd, label: "video at rest · heading + body settled" },
-  { frame: F.hangEnd, label: "hang ends · model rises · video exits" },
-  { frame: F.modelEntryEnd, label: "model in · video gone" },
-  { frame: F.productStart, label: "heading out · ARCA I rises" },
-  { frame: F.productFull, label: "ARCA I full" },
-  { frame: F.modelEnd, label: "rotation 360°" },
-  { frame: F.sceneShiftStart, label: "scene scrolls up · atelier follows" },
+  { frame: F.hangEnd, label: "hang ends · video exits" },
+  { frame: F.modelEntryEnd, label: "video gone · scene ends" },
   /* Informational: where the gallery-anchored dot lands at the design
      viewport. The behaviour derives from DOT_*_FRAC, not from these. */
   { frame: 1321, label: "white dot opens over the gallery" },
@@ -113,8 +124,6 @@ export const TRIGGERS: Trigger[] = [
 
 /* ---------- transform constants ---------- */
 export const EXIT_VH = 120; // video's total upward travel once fully exited
-export const MODEL_Y_OFF = -3; // world units: below frustum at z=5, fov=40
-export const PRODUCT_RISE_VH = 30; // ARCA I block rises from below the fold
 
 /* Video's resting state at F.videoShrinkEnd. It parks in the UPPER half so
    there is real room beneath it. The heading group is anchored to the video's

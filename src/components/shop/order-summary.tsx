@@ -57,7 +57,7 @@ export function OrderSummary({
         setPromoNote({ tone: "bad", text: "That code is not one the house knows." });
         onPromo("");
       } else {
-        setPromoNote({ tone: "ok", text: `${result.code}${result.name ? ` — ${result.name}` : ""} applied.` });
+        setPromoNote({ tone: "ok", text: `${result.code}${result.name ? ` · ${result.name}` : ""} applied.` });
         onPromo(result.code);
       }
     } catch (cause) {
@@ -75,7 +75,7 @@ export function OrderSummary({
   const tax = o?.tax ?? 0;
 
   return (
-    <div className="summary">
+    <div className="summary" id="your-order">
       <p className="t-eyebrow">Your order</p>
 
       <div className="summary-cards mt-6">

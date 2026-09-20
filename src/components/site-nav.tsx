@@ -169,7 +169,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
          one only sits truly centred if the two flanking it are the same
          width, which they aren't ("Log in" vs "Menu"). 1fr/auto/1fr pins the
          mark to the page's centre regardless. */
-        className="site-nav fixed inset-x-0 top-0 z-[70] grid grid-cols-[1fr_auto_1fr] items-center px-8 py-6 transition-opacity duration-700"
+        className="site-nav fixed inset-x-0 top-0 z-[70] grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3 transition-opacity duration-700 sm:px-6 sm:py-4 md:px-8 md:py-6"
         style={{ opacity: visible ? 1 : 0 }}
       >
         {/* ---- left: the way in ----
