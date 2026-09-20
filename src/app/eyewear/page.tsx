@@ -6,6 +6,7 @@ import { ModelStage } from "@/components/eyewear/model-stage";
 import { HouseGrid } from "@/components/page/house-grid";
 import { houses, shopPath, housesOnShow } from "@/lib/navigation";
 import { eyewear } from "@/lib/pages";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "Eyewear — Aria Noir",
@@ -72,9 +73,13 @@ export default function EyewearPage() {
           items={stage}
           intro={
             <>
-              <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
-                {eyewear.hero.eyebrow}
-              </p>
+              {/* This masthead writes its eyebrow in gold rather than
+                  with `.t-eyebrow`, so the trail is handed those classes
+                  and looks like the line it replaced. */}
+              <CrumbEyebrow
+                label={eyewear.hero.eyebrow}
+                className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase"
+              />
               <h1 className="mt-5 font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl">
                 {eyewear.hero.title}
               </h1>

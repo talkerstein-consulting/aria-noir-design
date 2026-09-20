@@ -24,6 +24,7 @@ import {
 } from "@/lib/shop";
 import { useBag } from "@/lib/cart";
 import { CtaButton } from "@/components/cta-link";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { RevealPlate } from "@/components/reveal";
 import {
   ProductModel,
@@ -768,7 +769,10 @@ export function BuyHero({ house }: { house: House }) {
               hidden from the accessibility tree rather than competing with
               it for the page's one h1. */}
           <div ref={titleRef} className="buy-opening-title" aria-hidden>
-            <p className="t-eyebrow">{COLLECTION_LABEL}</p>
+            {/* Decorative: the trail's words with none of its
+                semantics, so the hidden copy does not hand the keyboard a
+                second set of crumb links. */}
+            <CrumbEyebrow decorative label={COLLECTION_LABEL} className="t-eyebrow" />
             <p className="t-display-lg mt-3">{house.name}</p>
           </div>
         </div>
@@ -831,7 +835,9 @@ export function BuyHero({ house }: { house: House }) {
           <div ref={panelInnerRef} className="buy-panel-inner">
           {/* The name arrives WITH the offer, and stays. The opening's
               centred copy is decorative; this is the page's h1. */}
-          <p className="t-eyebrow">{COLLECTION_LABEL}</p>
+          {/* The trail, in the eyebrow over the page's h1 — this is the
+              one that carries the links. */}
+          <CrumbEyebrow label={COLLECTION_LABEL} className="t-eyebrow" />
           <h1 className="t-display-lg mt-3">{house.name}</h1>
           <p className="buy-colourway mt-2">{chosen}</p>
 

@@ -49,6 +49,12 @@ export function crumbsFor(pathname: string): Trail | null {
     if (!route) continue;
     /* The door has no group worth naming above it. */
     if (group.title === "The door") return { trail: [], current: route.label };
+    /* A group whose name IS the page's name — "The house" over "The
+       House" — is a stutter, not a trail. Drop the parent and let the
+       page stand on its own. */
+    if (group.title.toLowerCase() === route.label.toLowerCase()) {
+      return { trail: [], current: route.label };
+    }
     return { trail: [{ label: group.title }], current: route.label };
   }
 

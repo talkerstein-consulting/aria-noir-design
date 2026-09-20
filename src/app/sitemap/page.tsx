@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { architecture, routeCount, type RouteKind } from "@/lib/navigation";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "All pages — Aria Noir",
@@ -56,7 +57,7 @@ export default function SitemapPage() {
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
           <div className="mx-auto max-w-5xl">
             <div className="stack stack--sm mb-16">
-              <p className="t-eyebrow">The architecture</p>
+              <CrumbEyebrow label="The architecture" className="t-eyebrow" />
               <h1 className="t-display-lg">All pages.</h1>
               <p className="t-body t-body--lede mt-2">
                 Every room the house answers on, whether or not anything

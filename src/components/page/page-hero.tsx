@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { RevealText } from "@/components/reveal";
 
 type Segment = { text: string; italic?: boolean };
@@ -50,7 +51,10 @@ export function PageHero({
 
       <div className="relative px-6 pb-16 sm:px-10 sm:pb-24">
         <div className="stack stack--sm mx-auto max-w-5xl items-center text-center">
-          <RevealText as="p" text={eyebrow} className="t-eyebrow" />
+          {/* The trail, where this page's eyebrow used to be — and the
+              eyebrow again on any route with no trail. See
+              components/crumb-eyebrow. */}
+          <CrumbEyebrow reveal label={eyebrow} className="t-eyebrow" />
           <RevealText as="h1" text={title} delay={120} className="t-display-xl" />
           {line && (
             <RevealText

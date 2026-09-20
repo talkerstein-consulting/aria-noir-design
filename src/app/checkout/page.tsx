@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { CheckoutView } from "@/components/shop/checkout-view";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "Checkout — Aria Noir",
@@ -28,7 +29,7 @@ export default function CheckoutPage() {
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
-              <p className="t-eyebrow">Checkout</p>
+              <CrumbEyebrow label="Checkout" className="t-eyebrow" />
               <h1 className="t-display-lg">Nearly yours.</h1>
               {/* No lede. The four steps below name themselves and the
                   step indices say how many are left, so a sentence here

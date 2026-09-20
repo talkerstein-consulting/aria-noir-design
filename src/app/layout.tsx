@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
 import { RouteWipe } from "@/components/route-wipe";
-import { SiteCrumbs } from "@/components/site-crumbs";
 import "./globals.css";
 
 const libreBodoni = Libre_Bodoni({
@@ -83,10 +82,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>
       <body className="min-h-full bg-ink text-paper">
-        {/* Under the band on every page, from one resolver — see
-            components/site-crumbs. Before the page so it is under the
-            band in the tree as well as on the screen. */}
-        <SiteCrumbs />
         {children}
         {/* Last in the body, so it is over the page without needing to
             out-rank anything on it. See RouteWipe. */}

@@ -6,6 +6,7 @@ import { CartTable } from "@/components/shop/cart-table";
 import { useSession, RETURN_PARAM } from "@/lib/session";
 import { announceSession, house } from "@/lib/house-api";
 import { useBag } from "@/lib/cart";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 /**
  * The bag, and the desk under it.
@@ -50,7 +51,7 @@ export function BagView() {
   return (
     <>
       <div className="stack stack--sm mb-16">
-        <p className="t-eyebrow">The Bag</p>
+        <CrumbEyebrow label="The Bag" className="t-eyebrow" />
         <h1 className="t-display-lg">
           {signedIn ? "Welcome back." : "What you are holding."}
         </h1>

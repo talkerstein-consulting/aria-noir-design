@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Apple, CreditCard, Wallet } from "lucide-react";
+import { CountrySelect } from "@/components/shop/country-select";
+import { ApplePayMark, CardMark, GooglePayMark } from "@/components/shop/pay-marks";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CtaButton, CtaLink } from "@/components/cta-link";
@@ -30,7 +31,6 @@ import {
 import { formatPrice } from "@/lib/shop";
 import { cardErrorMessage, ensureSquare } from "@/lib/square";
 import {
-  COUNTRIES,
   countryName,
   dialCode,
   emailError,
@@ -283,7 +283,10 @@ export function CheckoutView() {
       live = false;
     };
   }, [session]);
-  const whereComplete = identified && addressComplete(address);
+  /* True while the address book has an editor open. The order cannot be
+     sent to a selection the reader is in the middle of replacing. */
+  const [addressEditing, setAddressEditing] = useState(false);
+  const whereComplete = identified && addressComplete(address) && !addressEditing;
 
   /* ── 03 ── */
   const cardOnFile = signedIn && session?.houseAccount?.status === "active" ? session.houseAccount.card : undefined;
@@ -628,6 +631,7 @@ export function CheckoutView() {
                 : "Not answered yet."}
           </p>
           <div className="step-body">
+            <div className="step-body-inner">
             {signedIn ? (
               <>
                 <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
@@ -636,21 +640,12 @@ export function CheckoutView() {
                 <label className="field mt-8 max-w-sm" data-invalid={Boolean(phoneError(phone))}>
                   <span>Phone</span>
                   <div className="field-dial">
-                    <select
-                      aria-label="Country dialling code"
+                    <CountrySelect
                       value={dialCountry}
-                      onChange={(e) => setDialCountry(e.target.value)}
-                    >
-                      {/* The country code as well as the dialling code:
-                          the US and Canada are both +1, and a list with
-                          "+1" twice in it is a list that cannot be
-                          chosen from. */}
-                      {COUNTRIES.map((c) => (
-                        <option key={c.code} value={c.code}>
-                          {c.code} {dialCode(c.code)}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setDialCountry}
+                      dial
+                      label="Country dialling code"
+                    />
                     <input
                       type="tel"
                       inputMode="tel"
@@ -719,17 +714,12 @@ export function CheckoutView() {
                   <label className="field" data-invalid={Boolean(guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()))}>
                     <span>Phone</span>
                     <div className="field-dial">
-                      <select
-                        aria-label="Country dialling code"
-                        value={dialCountry}
-                        onChange={(e) => setDialCountry(e.target.value)}
-                      >
-                        {COUNTRIES.map((c) => (
-                          <option key={c.code} value={c.code}>
-                            {c.code} {dialCode(c.code)}
-                          </option>
-                        ))}
-                      </select>
+                    <CountrySelect
+                      value={dialCountry}
+                      onChange={setDialCountry}
+                      dial
+                      label="Country dialling code"
+                    />
                       <input
                         type="tel"
                         inputMode="tel"
@@ -764,6 +754,7 @@ export function CheckoutView() {
                 </div>
               </>
             )}
+            </div>
           </div>
         </section>
 
@@ -789,6 +780,7 @@ export function CheckoutView() {
               : "Not answered yet."}
           </p>
           <div className="step-body">
+            <div className="step-body-inner">
             {signedIn ? (
               <>
                 <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
@@ -803,6 +795,8 @@ export function CheckoutView() {
                     selected={address}
                     onSelect={(a) => setAddress({ ...BLANK_ADDRESS, ...a })}
                     startOpen={savedLoaded && saved.length === 0}
+                    onEditing={setAddressEditing}
+                    key={savedLoaded ? "book" : "waiting"}
                   />
                 </div>
               </>
@@ -817,17 +811,22 @@ export function CheckoutView() {
                 </div>
               </>
             )}
-            {whereComplete ? (
-              <CtaButton
-                className="mt-10"
-                onClick={() => {
-                  setWhereConfirmed(true);
-                  setOpen("pay");
-                }}
-              >
-                Send it here
-              </CtaButton>
-            ) : null}
+            {/* Disabled while the address is short of an answer, never
+                removed. STYLE-GUIDE 6: a control that disappears leaves
+                the reader wondering what they did. It used to vanish
+                until the last field was right, so the way on to step 03
+                was a button nobody had seen yet. */}
+            <CtaButton
+              className="mt-10"
+              disabled={!whereComplete}
+              onClick={() => {
+                setWhereConfirmed(true);
+                setOpen("pay");
+              }}
+            >
+              Send it here
+            </CtaButton>
+            </div>
           </div>
         </section>
 
@@ -859,6 +858,7 @@ export function CheckoutView() {
                     : "Not answered yet."}
           </p>
           <div className="step-body">
+            <div className="step-body-inner">
             {config ? (
               <>
                 {/* Three cards, one row, no prose. The step's title says
@@ -885,7 +885,7 @@ export function CheckoutView() {
                       payWithWallet(applePay.current);
                     }}
                   >
-                    <Apple aria-hidden />
+                    <ApplePayMark />
                     <span className="t-eyebrow">Apple Pay</span>
                   </button>
 
@@ -900,7 +900,7 @@ export function CheckoutView() {
                       payWithWallet(googlePay.current);
                     }}
                   >
-                    <Wallet aria-hidden />
+                    <GooglePayMark />
                     <span className="t-eyebrow">Google Pay</span>
                   </button>
 
@@ -911,7 +911,7 @@ export function CheckoutView() {
                     className="pay-method"
                     onClick={() => setMethod(cardOnFile ? "saved_card" : "card")}
                   >
-                    <CreditCard aria-hidden />
+                    <CardMark />
                     <span className="t-eyebrow">
                       {cardOnFile ? `Ending ${cardOnFile.last4}` : "Card"}
                     </span>
@@ -980,6 +980,7 @@ export function CheckoutView() {
             ) : (
               <p className="t-caption" role="status">Loading secure payment</p>
             )}
+            </div>
           </div>
         </section>
 
@@ -1001,6 +1002,7 @@ export function CheckoutView() {
             {sendable.length} {sendable.length === 1 ? "piece" : "pieces"} · {formatPrice(subtotal)}
           </p>
           <div className="step-body">
+            <div className="step-body-inner">
             <ReviewLines lines={sendable} />
             {withheld > 0 ? (
               <p className="t-caption mt-6 text-[var(--fg-accent)]">
@@ -1065,6 +1067,7 @@ export function CheckoutView() {
             >
               {busy ? "Placing the order" : "Place the order"}
             </CtaButton>
+            </div>
           </div>
         </section>
       </div>

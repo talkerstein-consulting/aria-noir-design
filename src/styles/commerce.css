@@ -470,81 +470,65 @@
 }
 
 /* ── THE TRAIL ──────────────────────────────────────────────────────
-   One strip directly under the band, on every page — see
-   components/site-crumbs. Label scale, the quiet colour, a bullet at 45%
-   between crumbs. Centred where there is room; on a phone it is one line
-   the reader swipes, with the scrollbar hidden, and it never wraps. */
-/* The band is shorter on a phone (see site-nav: the vertical padding steps
-   down), and the trail hangs off its foot — so the height it hangs from has
-   to step down with it, or the crumbs float in the gap. One tap target
-   (2.25rem) plus the padding above and below. */
-:root {
-  --nav-height: 5.5rem;
-}
-@media (max-width: 639px) {
-  :root {
-    --nav-height: 3.75rem;
-  }
-}
-@media (min-width: 640px) and (max-width: 767px) {
-  :root {
-    --nav-height: 4.25rem;
-  }
-}
+   The breadcrumb, which is not a strip of its own any more — it is the
+   first eyebrow of the page. See components/crumb-eyebrow for why.
 
-.site-crumbs {
-  position: absolute;
-  inset-inline: 0;
-  top: var(--nav-height, 5.5rem);
-  z-index: 60;
-  font-family: var(--font-ui);
-  font-size: 0.6875rem;
-  line-height: 1;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg-quiet);
-}
-.site-crumbs-list {
+   Which means there is almost nothing to style: the caller hands the
+   trail the eyebrow classes that slot already used, so scale, colour,
+   tracking and case all arrive from `.t-eyebrow` (or from whatever that
+   particular hero writes its eyebrow with). What is left here is the row
+   itself — the crumbs laid out in a line, the separator's weight, and the
+   two-state colour a list of links needs and a plain label does not.
+
+   `display: contents` on the `ol` is deliberate: the eyebrow's own class
+   may set margins, alignment or a reveal on the element ABOVE this, and a
+   list box in between would sit inside that box rather than being it. */
+.crumb-eyebrow-list {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin: 0;
-  padding: 0 1.5rem;
+  padding: 0;
   list-style: none;
   white-space: nowrap;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
 }
-.site-crumbs-list::-webkit-scrollbar {
-  display: none;
-}
-.site-crumbs-item {
+.crumb-eyebrow-item {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   flex: none;
 }
-.site-crumbs-sep {
+/* On a phone the trail is one line the reader drags rather than a line
+   that wraps under the heading it introduces — a two-line eyebrow reads
+   as a subtitle, which is the one thing it is not. The scrollbar goes;
+   the overscroll is contained so dragging the trail never turns into
+   dragging the page sideways. */
+.crumb-eyebrow {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.crumb-eyebrow::-webkit-scrollbar {
+  display: none;
+}
+/* A bullet at 45%, not a chevron: a chevron is a second glyph weight
+   inside the smallest type on the page. */
+.crumb-eyebrow-sep {
   opacity: 0.45;
 }
-.site-crumbs a {
-  color: inherit;
+/* The crumbs behind you are quiet and the page you are on is not. Both
+   resolve `--fg-*`, so the trail follows the ground of whatever hero it
+   has been set into without being told which one it is. */
+.crumb-eyebrow a,
+.crumb-eyebrow .crumb-eyebrow-group {
+  color: var(--fg-quiet);
   transition: color var(--dur-fast) var(--ease-out);
 }
-.site-crumbs a:hover,
-.site-crumbs a:focus-visible {
+.crumb-eyebrow a:hover,
+.crumb-eyebrow a:focus-visible {
   color: var(--fg-primary);
-}
-.site-crumbs [aria-current="page"] {
-  color: var(--fg-secondary);
-}
-@media (min-width: 1024px) {
-  .site-crumbs-list {
-    justify-content: center;
-    overflow-x: visible;
-  }
 }
 
 /* ── THE HELD LIST ─────────────────────────────────────────────────
@@ -610,21 +594,76 @@
   letter-spacing: 0.12em;
   color: var(--fg-quiet);
 }
-.step[data-state="done"] .step-body {
-  display: none;
+/* ── THE FOLD, OPENING ─────────────────────────────────────────────
+   `display: none` cannot be animated, so a step used to appear at full
+   height in one frame and the three below it jumped down to make room.
+   The reader's eye had to find the new question rather than follow it.
+
+   `grid-template-rows: 0fr -> 1fr` is the one technique that animates to
+   a height nobody has to measure: the row is the content's own size, and
+   the transition runs between none of it and all of it. The wrapper
+   inside is what has the height to give, which is why .step-body is a
+   grid of exactly one row and .step-body-inner is that row.
+
+   It is a layout property, knowingly. The alternative is a fixed pixel
+   height that is wrong for every step, or a transform that slides the
+   body over the steps beneath it instead of moving them. */
+.step-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  transition:
+    grid-template-rows var(--dur-base) var(--ease-out),
+    margin-top var(--dur-base) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
+  opacity: 0;
+}
+.step-body-inner {
+  overflow: hidden;
+  /* The body's own content slides a little further than the box does, so
+     the fields arrive behind the edge rather than with it. */
+  transform: translateY(-0.5rem);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.step[data-state="open"] .step-body {
+  grid-template-rows: 1fr;
+  margin-top: 1.75rem;
+  opacity: 1;
+}
+.step[data-state="open"] .step-body-inner {
+  transform: none;
+}
+/* Closed states keep their height at zero. `visibility` rather than
+   `display` so the transition has something to run on, and so nothing
+   inside a folded step is reachable by keyboard while it is folded. */
+.step[data-state="done"] .step-body-inner,
+.step[data-state="ready"] .step-body-inner,
+.step[data-state="waiting"] .step-body-inner {
+  visibility: hidden;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    visibility 0s linear var(--dur-base);
 }
 .step[data-state="open"] .step-summary {
   display: none;
 }
-.step[data-state="waiting"] .step-body,
 .step[data-state="waiting"] .step-summary {
   display: none;
 }
 .step[data-state="waiting"] .step-head {
   opacity: 0.4;
 }
-.step-body {
-  margin-top: 1.75rem;
+
+/* The house honours this everywhere. A fold that snaps is the old
+   behaviour, which was never wrong, only abrupt. */
+@media (prefers-reduced-motion: reduce) {
+  .step-body,
+  .step-body-inner {
+    transition: none;
+  }
+  .step-body-inner {
+    transform: none;
+  }
 }
 .step-summary {
   margin-top: 0.6rem;
@@ -1114,9 +1153,7 @@
 /* A fourth state for the fold: answered before, reachable now, not the one
    that is open. Drawn at full weight but with no body, so the reader can
    see it is there to come back to. */
-.step[data-state="ready"] .step-body {
-  display: none;
-}
+
 
 /* ── THE SUMMARY ───────────────────────────────────────────────────── */
 .summary-lines {
@@ -1299,26 +1336,25 @@
    The glyphs are lucide at the chrome's own weight. They are NOT the
    state: every card is also a word, and the selected one is also ruled
    and marked. See STYLE-GUIDE 1.2. */
+/* One column, always. Three abreast made each card a tall box with a
+   glyph stranded above a word, and the row read as three things to
+   compare rather than one choice to make. Stacked, each is a line the
+   reader runs down, which is the shape the addresses above it have. */
 .pay-methods {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 2rem;
-}
-@media (min-width: 560px) {
-  .pay-methods {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  max-width: 28rem;
 }
 .pay-method {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.75rem;
-  min-height: 7rem;
-  padding: 1.25rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  min-height: 0;
+  padding: 1rem 1.25rem;
   background: none;
   border: var(--rule-weight) solid var(--fg-rule);
   color: var(--fg-quiet);
@@ -1356,10 +1392,16 @@
   cursor: default;
   opacity: 0.4;
 }
-.pay-method svg {
-  width: 1.375rem;
-  height: 1.375rem;
-  stroke-width: 1.25;
+.pay-mark {
+  flex: 0 0 auto;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+/* The corner dot would crowd a row this short; the chosen card is marked
+   at the end of its own line instead, and still ruled and coloured. */
+.pay-method[aria-checked="true"]::after {
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .wallets {
@@ -1543,4 +1585,172 @@
   .summary-cards {
     gap: 1.5rem 1rem;
   }
+}
+
+/* ── THE COUNTRY PICKER ────────────────────────────────────────────
+   A combobox, because a list of twenty-six cannot be typed into when
+   it is a native select. Built on the house's own parts: the button is
+   the field's underline, the sheet is a hairline box on ink, the rows
+   are one line each with a rule between none of them. No radius, no
+   shadow; the sheet is told apart from the page by its rule and by
+   sitting over it, which is the same way the search sheet is. */
+.country {
+  position: relative;
+}
+.country-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  background: none;
+  border: 0;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-primary);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.country-button:hover:not(:disabled),
+.country-button[aria-expanded="true"] {
+  border-color: var(--fg-primary);
+}
+.country-button:focus-visible {
+  outline: var(--rule-weight) solid currentColor;
+  outline-offset: 2px;
+  border-color: var(--fg-primary);
+}
+.country-button:disabled {
+  color: var(--fg-quiet);
+  cursor: default;
+}
+.field[data-invalid="true"] .country-button {
+  border-color: var(--fg-accent);
+}
+.country-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The dial field's picker is a code beside a number, so it sets in mono
+   and takes only the width it needs. */
+.field-dial .country {
+  width: auto;
+}
+.field-dial .country-button {
+  border-bottom: 0;
+  padding-right: 0.25rem;
+  font-family: var(--font-mono);
+  color: var(--fg-secondary);
+}
+.field-dial .country-value {
+  flex: 0 0 auto;
+}
+.country-flag {
+  font-size: 1rem;
+  line-height: 1;
+  /* The emoji flags carry their own colour and are the one place on the
+     site that is not the house's palette. Held small and beside a word
+     that says the same thing, so they read as a marker rather than as
+     decoration. */
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+.country-caret {
+  flex: 0 0 auto;
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.25;
+  color: var(--fg-quiet);
+}
+
+.country-sheet {
+  position: absolute;
+  z-index: 80;
+  top: calc(100% + var(--rule-weight));
+  left: 0;
+  width: max(100%, 17rem);
+  background: var(--ground, var(--ink));
+  border: var(--rule-weight) solid var(--fg-rule);
+  animation: country-in var(--dur-fast) var(--ease-out) both;
+}
+@keyframes country-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .country-sheet {
+    animation: none;
+  }
+}
+.country-search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.country-search svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  stroke-width: 1.25;
+  color: var(--fg-quiet);
+}
+.country-search input {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--fg-primary);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+}
+.country-search input:focus {
+  outline: none;
+}
+.country-list {
+  max-height: 15rem;
+  overflow-y: auto;
+  padding: 0.25rem 0;
+}
+.country-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.9rem;
+  background: none;
+  border: 0;
+  color: var(--fg-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+}
+/* The highlight is a ground, and the chosen row is ALSO marked by its
+   code going bright and by aria-selected. Never colour alone. */
+.country-option[data-active="true"] {
+  background: color-mix(in srgb, var(--fg-primary) 10%, transparent);
+  color: var(--fg-primary);
+}
+.country-option[aria-selected="true"] .country-option-code {
+  color: var(--fg-primary);
+}
+.country-option-name {
+  flex: 1 1 auto;
+}
+.country-option-code {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--fg-quiet);
+}
+.country-empty {
+  padding: 0.75rem 0.9rem;
 }

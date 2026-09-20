@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { AccessForm } from "@/components/shop/access-form";
 import { CtaLink } from "@/components/cta-link";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "Access — Aria Noir",
@@ -42,7 +43,7 @@ export default function AccessPage() {
         <section className="on-ink relative flex min-h-svh flex-col justify-center bg-ink px-6 py-32 sm:px-10">
           <div className="mx-auto w-full max-w-md">
             <div className="stack stack--sm">
-              <p className="t-eyebrow">Access</p>
+              <CrumbEyebrow label="Access" className="t-eyebrow" />
               <h1 className="t-display-lg">Your bench.</h1>
               <p className="t-body t-body--lede mt-2">
                 Orders, addresses, and anything already cut for you. An

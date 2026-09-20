@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { Address } from "@/lib/house-api";
-import { COUNTRIES, postalError, transitFor } from "@/lib/validation";
+import { CountrySelect } from "@/components/shop/country-select";
+import { postalError, transitFor } from "@/lib/validation";
 
 /**
  * One address, as the house's fields.
@@ -95,19 +96,12 @@ export function AddressFields({
     <div className="stack">
       <label className="field max-w-sm" data-invalid={false}>
         <span>Country</span>
-        <select
+        <CountrySelect
           id={`${idPrefix}-country`}
-          autoComplete="country"
           value={value.country}
           disabled={disabled}
-          onChange={(e) => set("country", e.target.value)}
-        >
-          {COUNTRIES.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          onChange={(code) => set("country", code)}
+        />
         <em className="t-caption mt-2 block not-italic text-[var(--fg-quiet)]">
           Standard shipping is free · {transitFor(value.country)}
         </em>

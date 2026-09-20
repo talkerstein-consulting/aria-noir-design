@@ -136,7 +136,11 @@ function observe(el: Element) {
   }, 1200);
 }
 
-function useReveal<T extends Element>() {
+/** Exported for the one thing RevealText cannot render: a line made of
+ *  LINKS rather than a string. The crumb eyebrow needs the same trigger
+ *  and the same per-word boxes, so it borrows the hook rather than
+ *  growing a second reveal that could drift out of step with this one. */
+export function useReveal<T extends Element>() {
   const ref = useRef<T>(null);
   useEffect(() => {
     const el = ref.current;

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Hero } from "@/lib/product";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { RevealText } from "@/components/reveal";
 import { HeroName } from "./hero-name";
 import { HeroFilm } from "./hero-film";
@@ -90,9 +91,11 @@ export function ProductHero({ hero }: { hero: Hero }) {
           masthead it has a name to carry. */}
       <div className="relative px-6 pb-16 sm:px-10 sm:pb-24">
         <div className="stack stack--sm mx-auto max-w-5xl items-center text-center">
-          <RevealText
-            as="p"
-            text={hero.eyebrow}
+          {/* The trail, where this house's eyebrow used to be — see
+              components/crumb-eyebrow. */}
+          <CrumbEyebrow
+            reveal
+            label={hero.eyebrow}
             delay={ENTER_MS}
             /* Lifted clear of the name. The block is bottom-anchored, so
                margin BELOW the eyebrow is what raises it while the name and

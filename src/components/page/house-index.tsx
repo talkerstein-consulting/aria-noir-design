@@ -3,6 +3,7 @@ import { apparel } from "@/lib/apparel";
 import { CtaLink } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
 import { apparelCard, houseCard } from "@/lib/product-cards";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 /**
  * Everything the house makes, at the top of the house's own page.
@@ -52,7 +53,7 @@ export function HouseIndex() {
     <section className="on-ink section relative bg-ink pt-32 sm:pt-40">
       <div className="mx-auto max-w-7xl">
         <div className="stack stack--sm mb-16">
-          <p className="t-eyebrow">The House</p>
+          <CrumbEyebrow label="The House" className="t-eyebrow" />
           {/* This page's h1. The argument below opens with its own heading,
               which is a h2 — a page has one h1 and this is the top of the
               page now. */}

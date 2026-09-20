@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { DeskView } from "@/components/shop/desk-view";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "The Desk — Aria Noir",
@@ -26,7 +27,7 @@ export default function DeskPage() {
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
-              <p className="t-eyebrow">The Desk</p>
+              <CrumbEyebrow label="The Desk" className="t-eyebrow" />
               <h1 className="t-display-lg">Yours.</h1>
             </div>
             <DeskView />

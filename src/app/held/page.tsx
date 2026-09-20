@@ -3,6 +3,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { HeldView } from "@/components/shop/held-view";
+import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "Held — Aria Noir",
@@ -29,7 +30,7 @@ export default function HeldPage() {
         <section className="on-ink section bg-ink pt-32 sm:pt-40">
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
-              <p className="t-eyebrow">Kept in view</p>
+              <CrumbEyebrow label="Kept in view" className="t-eyebrow" />
               <h1 className="t-display-lg">Held.</h1>
               <p className="t-body t-body--lede mt-2">
                 Not bought, not forgotten. The workshop cuts to order, so a

@@ -44,6 +44,7 @@ export function AddressBook({
   selected,
   onSelect,
   startOpen = false,
+  onEditing,
 }: {
   addresses: SavedAddress[];
   onChange: (next: SavedAddress[]) => void;
@@ -52,8 +53,26 @@ export function AddressBook({
   onSelect?: (a: SavedAddress) => void;
   /** Open the editor on mount — for a checkout with nothing saved yet. */
   startOpen?: boolean;
+  /**
+   * Whether an address is part-written in the editor below the cards.
+   *
+   * The checkout's "Send it here" reads the SELECTED address, which is
+   * still the old one while a new one is being typed. Without this, a
+   * reader halfway through adding an address could press on and have the
+   * order go somewhere they had already moved on from. The page disables
+   * the way forward until this is false again.
+   */
+  onEditing?: (editing: boolean) => void;
 }) {
-  const [panel, setPanel] = useState<Panel>(startOpen ? { mode: "new" } : null);
+  const [panelRaw, setPanelRaw] = useState<Panel>(startOpen ? { mode: "new" } : null);
+  const panel = panelRaw;
+  /* Reported from the events that change it, not from an effect and not
+     during render: the panel only opens and closes because someone did
+     something, so the moment it changes is the moment to say so. */
+  const setPanel = (next: Panel) => {
+    setPanelRaw(next);
+    onEditing?.(next !== null);
+  };
   const [draft, setDraft] = useState<Address>(BLANK_ADDRESS);
   const [label, setLabel] = useState("");
   const [type, setType] = useState<SavedAddress["addressType"]>("home");
