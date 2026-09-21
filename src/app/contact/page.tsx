@@ -52,8 +52,11 @@ export default function ContactPage() {
               </dl>
             </div>
 
-            {/* ---- the intake ---- */}
-            <div>
+            {/* ---- the intake, in a box ----
+                The one hairline box on the page: the intake is the thing
+                to be used here, and a rule around it is what tells it
+                apart from the addresses it sits beside. */}
+            <div className="border border-[var(--fg-rule)] p-6 sm:p-10">
               <p className="t-eyebrow">{contact.intake.eyebrow}</p>
               <div className="mt-6">
                 <ContactIntake />

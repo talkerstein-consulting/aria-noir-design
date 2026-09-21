@@ -6,11 +6,17 @@
 .tcg-plaque {
   --w: min(300px, 70vw);             /* sits in the legal row at micro-label scale */
   --pad-x: 8px;
+  /* The hit area, over and under the lettering. The strip itself is under
+     20px tall; this makes the thing a thumb can land on 44px and more,
+     without moving the lettering, which stays centred in the box. */
+  --pad-y: 14px;
   position: relative;
   display: block;
   width: var(--w);
   aspect-ratio: 16 / 1;              /* the plaque's box */
-  box-sizing: border-box;
+  box-sizing: content-box;
+  padding-block: var(--pad-y);
+  margin-block: calc(-1 * var(--pad-y)); /* the padding is hit area, not layout */
   color: inherit;
   text-decoration: none;
   background: none;
@@ -36,8 +42,43 @@
    pointer. Gold instead — the house's one accent, and the same thing the
    trail's current crumb and a focused control already do. */
 .tcg-plaque:hover .tcg-text,
-.tcg-plaque:focus-visible .tcg-text {
+.tcg-plaque:focus-visible .tcg-text,
+.tcg-plaque.is-hot .tcg-text {
   background: var(--fg-accent);
+}
+
+/* The coin: fixed to the middle of the SCREEN, big, over everything.
+   The plaque is the last line of the page and a coin its own height
+   would be a trinket; this one arrives the size of the mark above it.
+   Hidden until the plaque is hot, then fades in; the canvas inside is
+   mounted on the first hover (see tcg-badge.tsx) and this is what fades
+   it. Pointer events off, so the coin appearing under the pointer can
+   never end the hover that summoned it. */
+.tcg-coin {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: min(18vmin, 170px);
+  height: min(18vmin, 170px);
+  transform: translate(-50%, -50%) scale(0.92);
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--dur-base, .4s) var(--ease-out, ease),
+    transform var(--dur-base, .4s) var(--ease-out, ease);
+}
+.tcg-coin > div,
+.tcg-coin canvas {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+}
+.tcg-plaque:hover .tcg-coin,
+.tcg-plaque:focus-visible .tcg-coin,
+.tcg-plaque.is-hot .tcg-coin {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 
@@ -50,5 +91,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tcg-text { transition: none !important; }
+  .tcg-text, .tcg-coin { transition: none !important; }
+  /* A spinning coin is motion the reader asked not to have. */
+  .tcg-coin { display: none; }
 }
