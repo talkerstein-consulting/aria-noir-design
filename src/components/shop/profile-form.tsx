@@ -176,7 +176,7 @@ export function ProfileForm({
                   <span>
                     {f.label}
                     {f.optional ? (
-                      <em className="not-italic opacity-60"> · optional</em>
+                      <em className="not-italic text-[var(--fg-quiet)]"> · optional</em>
                     ) : null}
                   </span>
                   <input

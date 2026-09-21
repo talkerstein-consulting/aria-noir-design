@@ -20,25 +20,43 @@ export function LineCard({
   qty,
   cents,
   linked = true,
+  name: nameIn,
+  image: imageIn,
+  meta,
+  href,
 }: {
   house: House | undefined;
   slug: string;
   colorway: string;
   qty: number;
   cents?: number;
+  /* ---- The four overrides, and why they exist ----
+     A bag line is no longer always a frame: El Patrón sells here too, and
+     a garment has no `House`, no `galleryFor` and a colourway that carries
+     a size beside it. Rather than branch on eyewear-or-garment inside this
+     component, the caller — which has the resolved line and `lineName`,
+     `lineMeta`, `lineImage`, `lineHref` to read it with — hands over what
+     it already knows. Left out, every one of them falls back to the
+     eyewear behaviour this card has always had. */
+  name?: string;
+  image?: string;
+  meta?: string;
+  href?: string;
   /** Off on the confirmation, where the order is done and the card is a
    *  record rather than a way back to the shop. */
   linked?: boolean;
 }) {
-  const image = house ? galleryFor(house, colorway)[0] : undefined;
-  const name = house?.name ?? slug;
+  const image = imageIn ?? (house ? galleryFor(house, colorway)[0] : undefined);
+  const name = nameIn ?? house?.name ?? slug;
+  const sub = meta ?? colorway;
+  const to = href ?? (house ? `${shopPath(house)}?colourway=${encodeURIComponent(colorway)}` : undefined);
   const body = (
     <>
       <div className="card-shot" style={{ background: swatchFor(colorway) }}>
         {image ? (
           <Image
             src={image}
-            alt={`${name} in ${colorway}`}
+            alt={`${name} in ${sub}`}
             fill
             /* Two up in the checkout's 24rem aside, so about 11rem there
                rather than the 24rem this asked for before: a card that
@@ -52,7 +70,7 @@ export function LineCard({
       </div>
       <h3 className="card-name mt-5">{name}</h3>
       <p className="t-caption mt-1">
-        {colorway}
+        {sub}
         {qty > 1 ? ` · ${qty}` : ""}
       </p>
     </>
@@ -60,11 +78,8 @@ export function LineCard({
 
   return (
     <article>
-      {linked && house ? (
-        <Link
-          href={`${shopPath(house)}?colourway=${encodeURIComponent(colorway)}`}
-          className="card-link group block"
-        >
+      {linked && to ? (
+        <Link href={to} className="card-link group block">
           {body}
         </Link>
       ) : (

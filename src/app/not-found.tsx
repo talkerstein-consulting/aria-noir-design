@@ -17,7 +17,7 @@ export default function NotFound() {
   return (
     <>
       <SiteNav />
-      <main className="on-ink relative flex min-h-svh flex-col items-center justify-center bg-ink px-6 text-center">
+      <main id="main" tabIndex={-1} className="on-ink relative flex min-h-svh flex-col items-center justify-center bg-ink px-6 text-center">
         <div className="flex max-w-lg flex-col items-center gap-6">
           <p className="t-figure text-[color:var(--fg-accent)]">
             {notFound.code}

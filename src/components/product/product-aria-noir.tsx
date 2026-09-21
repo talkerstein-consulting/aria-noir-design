@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { StoryBuy } from "@/components/product/story-buy";
 import type { AriaNoir } from "@/lib/product";
 import { RevealText, RevealPlate } from "@/components/reveal";
 
@@ -7,7 +8,15 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  * portraits sit as a pair rather than a sticky/scroll pairing since neither
  * one is the "reference" plate here — the point is that they're equals.
  */
-export function ProductAriaNoir({ ariaNoir }: { ariaNoir: AriaNoir }) {
+export function ProductAriaNoir({
+  ariaNoir,
+  buyHref,
+  buyLabel,
+}: {
+  ariaNoir: AriaNoir;
+  buyHref: string;
+  buyLabel?: string;
+}) {
   return (
     <section className="on-ink section relative bg-ink">
       <div className="mx-auto max-w-7xl">
@@ -52,6 +61,7 @@ export function ProductAriaNoir({ ariaNoir }: { ariaNoir: AriaNoir }) {
               {para}
             </p>
           ))}
+          <StoryBuy href={buyHref} label={buyLabel} />
         </div>
       </div>
     </section>

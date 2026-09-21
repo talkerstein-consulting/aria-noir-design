@@ -3,26 +3,12 @@
   "configurations": [
     {
       "name": "aria-noir",
-      "url": "http://localhost:3000",
-      "autoPort": false
-    },
-    {
-      "name": "aria-noir-verify",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run",
         "dev"
       ],
-      "autoPort": true
-    },
-    {
-      "name": "aria-noir-prod",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "start"
-      ],
-      "autoPort": true
+      "port": 3000
     }
   ]
 }

@@ -832,7 +832,14 @@ export function ModelStage({
                     {item.meta}
                   </p>
                 ) : null}
-                <h3 className="mt-3 font-display text-[clamp(2rem,11vw,6rem)] leading-[1.05] tracking-tight text-paper text-balance">
+                {/* h2, not h3. These are the page's own sections — one
+                    per house, under the page's h1 — and they were an h3
+                    arriving BEFORE the first h2 on the page, which is a
+                    level skipped and, on this page, skipped by the largest
+                    type on screen. The grid below already reasons this way
+                    for the same six houses: see `as: "h2"` in
+                    lib/product-cards. */}
+                <h2 className="mt-3 font-display text-[clamp(2rem,11vw,6rem)] leading-[1.05] tracking-tight text-paper text-balance">
                   {item.href ? (
                     <Link
                       href={item.href}
@@ -843,7 +850,7 @@ export function ModelStage({
                   ) : (
                     item.name
                   )}
-                </h3>
+                </h2>
                 {item.href && item.cta ? (
                   <div className="pointer-events-auto mt-6 flex justify-center">
                     <CtaLink href={item.href}>{item.cta}</CtaLink>

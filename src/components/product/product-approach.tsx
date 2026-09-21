@@ -26,7 +26,8 @@ export type Approach = {
   /**
    * The mood film. Muted, looping, no controls: it is a moving plate.
    *
-   * Optional, because four of the six houses have not been filmed. Where
+   * Optional, because a house may not have been filmed (the four beyond
+   * the ARCAs run on placeholder teasers for now). Where
    * there is none the approach is the face alone, which is still an
    * approach — one step shorter. The alternative was borrowing another
    * house's footage, and a film of a different frame is not this frame's

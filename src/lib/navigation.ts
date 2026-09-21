@@ -18,17 +18,6 @@
  */
 export const ACCOUNT_URL = "https://account.arianoir.com";
 
-/**
- * The live storefront, for the menu entries this build has no room of its
- * own for yet.
- *
- * Declared here rather than imported from lib/shop, which owns the same
- * string: shop.ts already imports the house list from THIS file, and
- * importing back would put a cycle between two modules that both build
- * objects at load time. One duplicated origin is cheaper than that.
- */
-const SHOP_URL = "https://arianoir.com";
-
 /* For `architecture` at the foot of this file, which lists every policy
    page from the policies themselves rather than by hand. A value import,
    which is safe here: policies.ts imports one TYPE and nothing else, so
@@ -74,22 +63,22 @@ export const menu = {
      that has to be closed rather than used.
 
      The showcase is the eyewear, which is what this house makes. Shop All
-     is everything including the garment, and it is the one entry that
-     leaves: the full inventory screen lives on the storefront, and here it
-     appears only inside /house/about, which is already About us. Pointing
-     both words at one route would be the menu saying the same thing
-     twice. */
+     is everything including the garment, priced, and it no longer leaves:
+     it used to hand the reader to the storefront's /collections/all
+     because this build had no room for the full inventory, and then the
+     inventory sat at the top of About us instead. It has its own room
+     now (/shop), About us is about the house again, and the Gallery is
+     the six campaigns walked as six rooms. */
   primary: [
     { label: "Home", href: "/" },
     { label: "Our Showcase", href: "/eyewear" },
-    {
-      label: "Shop All",
-      href: `${SHOP_URL}/collections/all`,
-      external: true,
-    },
+    { label: "Shop All", href: "/shop" },
+    { label: "Gallery", href: "/gallery" },
     { label: "About us", href: "/house/about" },
     { label: "Contact", href: "/contact" },
-  ] satisfies readonly MenuLink[],
+    /* Typed, not `satisfies`: nothing in the stack leaves the site any
+       more, and the menu still reads `external` off every entry. */
+  ] as readonly MenuLink[],
 
   /* The storefront's footer, which is where the policies live there too.
      Warranty, terms and privacy map one to one; the storefront's single
@@ -97,7 +86,7 @@ export const menu = {
      rather than picking one. "All pages" is this build's own addition and
      the way to every room the storefront has no equivalent for. */
   secondary: [
-    { label: "Fit & Care", href: "/care" },
+    { label: "Care", href: "/care" },
     { label: "Shipping", href: "/policies/shipping" },
     { label: "Returns", href: "/policies/returns" },
     { label: "Warranty", href: "/policies/warranty" },
@@ -201,6 +190,19 @@ export type House = {
   from: number;
   plate: string | null;
   /**
+   * The same cover shot for a phone, 1536x2752. The home plates fill a
+   * portrait screen there and the square would crop the frame's temples
+   * away; every house has one.
+   */
+  plateNarrow?: string;
+  /**
+   * How far a phone leans into `plateNarrow`, and on what. A cover shot
+   * wide enough to hold a room leaves the frame small on a phone; this is
+   * the crop that brings it forward. `scale` is the magnification and
+   * `origin` the CSS transform-origin, which is where the frame sits.
+   */
+  plateNarrowZoom?: { scale: number; origin: string };
+  /**
    * A photograph of the frame being WORN, in the place it was shot.
    *
    * Separate from `plate`, which is the object alone. The eyewear index
@@ -224,6 +226,25 @@ export type House = {
    * showing `plate`, and nothing anywhere has to know the difference.
    */
   colorwayPlates?: Readonly<Record<string, string>>;
+  /**
+   * The SQUARE card render per colourway, for a house the sill shoot never
+   * reached.
+   *
+   * Houses shot on the sill get theirs from `COLOURWAY_CARD_ART`, which a
+   * script writes from what actually came out of the render. ARCA I was
+   * never shot that way, and its `colorwayPlates` are 16:9 masters — a
+   * square card crops those on the LEFT AND RIGHT, which on eyewear is the
+   * temples, the widest and most identifying part of the frame.
+   *
+   * These point at the portrait cut of the same shoot instead. Cropping
+   * 9:16 to a square takes off the top and bottom and keeps the full
+   * width, so the frame arrives whole.
+   *
+   * Written down rather than derived from `colorwayPlates` by string: a
+   * path built by pattern is a claim that a photograph exists, and the
+   * first colourway shot without one would render a broken image.
+   */
+  colorwayCardPlates?: Readonly<Record<string, string>>;
   /**
    * The buy page's left column, which is a SCROLL rather than a hero: the
    * frame from several distances, in the order someone actually inspects
@@ -401,11 +422,21 @@ export const allHouses: readonly House[] = [
        shoot, which is the most recent and best-lit frame in the pool — the
        old object-front plate predates it. */
     plate: "/images/arca-i/cover/square.webp",
+    plateNarrow: "/images/arca-i/cover/mobile.webp",
     colorwayPlates: {
       "Z White": "/images/arca-i/variants/z-white-main.webp",
       "K Black": "/images/arca-i/variants/k-black-main.webp",
       "Proceso Brown": "/images/arca-i/variants/proceso-brown-main.webp",
       "309 Blue": "/images/arca-i/variants/309-blue-main.webp",
+    },
+    /* The portrait cut of the same shoot, for the square card. See
+       `colorwayCardPlates` on the type for why the 16:9 masters above
+       cannot be the card: a square crop of those cuts the temples off. */
+    colorwayCardPlates: {
+      "Z White": "/images/arca-i/variants/tall/z-white.webp",
+      "K Black": "/images/arca-i/variants/tall/k-black.webp",
+      "Proceso Brown": "/images/arca-i/variants/tall/proceso-brown.webp",
+      "309 Blue": "/images/arca-i/variants/tall/309-blue.webp",
     },
     /* The only house with a colourway shoot, so the only one whose left
        column re-shoots itself when the picker moves. Each entry is that
@@ -474,7 +505,17 @@ export const allHouses: readonly House[] = [
     },
     video: "/video/arca-i-hero.mp4",
     videoPoster: "/images/arca-i/hero-poster.webp",
-    model: "/models/houses/arca-i-z-white.glb",
+    /* K Black on the stage, not Z White.
+    
+       The turntable draws its frame against a ground blurred almost to
+       black, and the white cut disappeared into it from the side: the two
+       legs read as nothing at all through half of every revolution. The
+       black cut holds its silhouette against that ground through the whole
+       turn, and it is already the house's own card picture — see `plate`
+       below — so the index and the grid now show the reader the same
+       frame. The other three cuts are named on the grid and each has its
+       own export in `colorwayModels`. */
+    model: "/models/houses/arca-i-k-black.glb",
     /* The ground behind the turning frame. Was `object-lightshaft.webp` —
        the object again, behind the object, which at 96px and ten pixels of
        blur left the stage looking like it had no background at all. The
@@ -508,69 +549,27 @@ export const allHouses: readonly House[] = [
     ],
     from: 125,
     plate: "/images/arca-ii/cover/square.webp",
-    /* ---- the colourway shoot ----
-       Imported from the storefront's own per-colourway set by
-       scripts/import-colourway-photography.mjs. The numbers are the
-       SHOP's display order, not angle names: `-02` means the second
-       picture the store shows, which is the only ordering the source
-       carries. Regenerate rather than hand-edit. */
-    colorwayPlates: {
-      "Caramel Stripe": "/images/arca-ii/variants/caramel-stripe-01.webp",
-      "Dark Tortoise": "/images/arca-ii/variants/dark-tortoise-01.webp",
-      "Dreamy Rose": "/images/arca-ii/variants/dreamy-rose-01.webp",
-      Noir: "/images/arca-ii/variants/noir-01.webp",
-      "Pixie Dust": "/images/arca-ii/variants/pixie-dust-01.webp",
-      "Root Beer Float": "/images/arca-ii/variants/root-beer-float-01.webp",
-      "Tutti Frutti": "/images/arca-ii/variants/tutti-frutti-01.webp",
-      "Velvet Rose": "/images/arca-ii/variants/velvet-rose-01.webp",
-    },
-    colorwayGallery: {
-      "Caramel Stripe": [
-        "/images/arca-ii/variants/caramel-stripe-01.webp",
-        "/images/arca-ii/variants/caramel-stripe-02.webp",
-        "/images/arca-ii/variants/caramel-stripe-03.webp",
-      ],
-      "Dark Tortoise": [
-        "/images/arca-ii/variants/dark-tortoise-01.webp",
-        "/images/arca-ii/variants/dark-tortoise-02.webp",
-        "/images/arca-ii/variants/dark-tortoise-03.webp",
-        "/images/arca-ii/variants/dark-tortoise-04.webp",
-      ],
-      "Dreamy Rose": [
-        "/images/arca-ii/variants/dreamy-rose-01.webp",
-        "/images/arca-ii/variants/dreamy-rose-02.webp",
-        "/images/arca-ii/variants/dreamy-rose-03.webp",
-      ],
-      Noir: [
-        "/images/arca-ii/variants/noir-01.webp",
-        "/images/arca-ii/variants/noir-02.webp",
-        "/images/arca-ii/variants/noir-03.webp",
-        "/images/arca-ii/variants/noir-04.webp",
-      ],
-      "Pixie Dust": [
-        "/images/arca-ii/variants/pixie-dust-01.webp",
-        "/images/arca-ii/variants/pixie-dust-02.webp",
-        "/images/arca-ii/variants/pixie-dust-03.webp",
-      ],
-      "Root Beer Float": [
-        "/images/arca-ii/variants/root-beer-float-01.webp",
-        "/images/arca-ii/variants/root-beer-float-02.webp",
-        "/images/arca-ii/variants/root-beer-float-03.webp",
-      ],
-      "Tutti Frutti": [
-        "/images/arca-ii/variants/tutti-frutti-01.webp",
-        "/images/arca-ii/variants/tutti-frutti-02.webp",
-        "/images/arca-ii/variants/tutti-frutti-03.webp",
-      ],
-      "Velvet Rose": [
-        "/images/arca-ii/variants/velvet-rose-01.webp",
-        "/images/arca-ii/variants/velvet-rose-02.webp",
-        "/images/arca-ii/variants/velvet-rose-03.webp",
-      ],
-    },
-    /* One composition across the whole run - see `colorwaySills`. The
+    plateNarrow: "/images/arca-ii/cover/mobile.webp",
+            /* One composition across the whole run - see `colorwaySills`. The
        closing counter re-shoots itself from these, and they close out each
        colourway's gallery on the buy page. */
+    /* ---- The landscape sill is the ONLY variant photograph ----
+    
+       `colorwayPlates` and `colorwayGallery` are deliberately absent. They
+       held the portrait `-tall` cut and, on ARCA II, the numbered `-01`
+       renders — the frame on a white ledge, which is a different shoot to
+       the room this house is photographed in, and putting the two in one
+       column showed the same frame twice in two worlds.
+    
+       With both gone, `galleryFor` falls through to `sillFor` and returns
+       exactly one picture per acetate: this landscape. The square CARD is
+       unaffected — it comes from COLOURWAY_CARD_ART, which is generated
+       from the outpainted square of this same sill, so the card and the
+       page are the same photograph at two crops.
+    
+       (Only ARCA I and ARCA II carry a glb per variant; these houses have
+       one model for the whole house, which is the other reason the
+       photograph has to carry the colour here.) */
     colorwaySills: {
       Noir: "/images/arca-ii/variants/noir-sill.webp",
       "Dark Tortoise": "/images/arca-ii/variants/dark-tortoise-sill.webp",
@@ -593,7 +592,17 @@ export const allHouses: readonly House[] = [
       "/images/arca-ii/spec-macro-temple.webp",
       "/images/arca-ii/worn-noir-front.webp",
     ],
-    model: "/models/houses/arca-ii-noir.glb",
+    colorwayModels: {
+      "Caramel Stripe": "/models/houses/arca-ii-caramel-stripe-baked.glb",
+      "Dark Tortoise": "/models/houses/arca-ii-dark-tortoise-baked.glb",
+      "Dreamy Rose": "/models/houses/arca-ii-dreamy-rose-baked.glb",
+      "Noir": "/models/houses/arca-ii-noir-baked.glb",
+      "Pixie Dust": "/models/houses/arca-ii-pixie-dust-baked.glb",
+      "Root Beer Float": "/models/houses/arca-ii-root-beer-float-baked.glb",
+      "Tutti Frutti": "/models/houses/arca-ii-tutti-frutti-baked.glb",
+      "Velvet Rose": "/models/houses/arca-ii-velvet-rose-baked.glb",
+    },
+    model: "/models/houses/arca-ii-noir-baked.glb",
     /* The pair in a lit doorway, which blurs down to exactly what this cut
        is: a bright centre and everything else given away to the dark. */
     /* The vaulted hall, light laid across the floor in bars. Warm stone
@@ -629,34 +638,29 @@ export const allHouses: readonly House[] = [
        is photographed as itself now, so its card is one of its own
        pictures. */
     plate: "/images/ahava/cover/square.webp",
-    /* ---- the colourway shoot ----
-       The campaign's own frame of each acetate, one composition for the whole
-       run. This REPLACED the storefront's product stills: the house is shot as
-       its own world now, and a page that mixed the two put a frame on a white
-       ledge directly above the same frame in a room. Imported by
-       scripts/import-campaign-photography.mjs; regenerate rather than
-       hand-edit. */
-    colorwayPlates: {
-      "Dark Tortoise": "/images/ahava/variants/dark-tortoise-tall.webp",
-      "Caramel Stripe": "/images/ahava/variants/caramel-stripe-tall.webp",
-      "Rose": "/images/ahava/variants/rose-tall.webp",
-      "Noir": "/images/ahava/variants/noir-tall.webp",
-      "Root Beer Float": "/images/ahava/variants/root-beer-float-tall.webp",
-      "Tutti Frutti": "/images/ahava/variants/tutti-frutti-tall.webp",
-    },
-    /* The portrait frame of this acetate, which is what the column opens on.
-       `galleryFor` closes every colourway scroll with that colourway's sill, so
-       the landscape below is not listed here as well. */
-    colorwayGallery: {
-      "Dark Tortoise": ["/images/ahava/variants/dark-tortoise-tall.webp"],
-      "Caramel Stripe": ["/images/ahava/variants/caramel-stripe-tall.webp"],
-      "Rose": ["/images/ahava/variants/rose-tall.webp"],
-      "Noir": ["/images/ahava/variants/noir-tall.webp"],
-      "Root Beer Float": ["/images/ahava/variants/root-beer-float-tall.webp"],
-      "Tutti Frutti": ["/images/ahava/variants/tutti-frutti-tall.webp"],
-    },
-    /* The same setup in landscape, held across the whole run: the picker
+    plateNarrow: "/images/ahava/cover/mobile.webp",
+    /* Shot across the whole room; the frame is a hand's width on the
+       table. Pulled in on the frame so it is the plate's subject. */
+    plateNarrowZoom: { scale: 1.75, origin: "55% 57%" },
+            /* The same setup in landscape, held across the whole run: the picker
        moves and only the colour of the frame changes. */
+    /* ---- The landscape sill is the ONLY variant photograph ----
+    
+       `colorwayPlates` and `colorwayGallery` are deliberately absent. They
+       held the portrait `-tall` cut and, on ARCA II, the numbered `-01`
+       renders — the frame on a white ledge, which is a different shoot to
+       the room this house is photographed in, and putting the two in one
+       column showed the same frame twice in two worlds.
+    
+       With both gone, `galleryFor` falls through to `sillFor` and returns
+       exactly one picture per acetate: this landscape. The square CARD is
+       unaffected — it comes from COLOURWAY_CARD_ART, which is generated
+       from the outpainted square of this same sill, so the card and the
+       page are the same photograph at two crops.
+    
+       (Only ARCA I and ARCA II carry a glb per variant; these houses have
+       one model for the whole house, which is the other reason the
+       photograph has to carry the colour here.) */
     colorwaySills: {
       "Dark Tortoise": "/images/ahava/variants/dark-tortoise-sill.webp",
       "Caramel Stripe": "/images/ahava/variants/caramel-stripe-sill.webp",
@@ -667,12 +671,26 @@ export const allHouses: readonly House[] = [
     },
     /* The house prices this one highest and photographs it first; the plate below is its front-on frame. */
     heroColorway: "Noir",
-    model: "/models/houses/ahava-ahava-noir.glb",
+        /* Five of the six. There is no `Dark Tortoise` blend in the shoot — the
+       folder carries an `AHAVA-Black`, which is a different acetate and is
+       not in the catalogue, so it is left unwired rather than guessed at.
+       Dark Tortoise falls back to `model` below. */
+    colorwayModels: {
+      "Caramel Stripe": "/models/houses/ahava-caramel-stripe.glb",
+      "Noir": "/models/houses/ahava-noir.glb",
+      "Root Beer Float": "/models/houses/ahava-root-beer-float.glb",
+      "Rose": "/models/houses/ahava-rose.glb",
+      "Tutti Frutti": "/models/houses/ahava-tutti-frutti.glb",
+    },
+    model: "/models/houses/ahava-noir.glb",
     /* Was the house plate, which is a photograph of the frame - the object
        standing behind the object. This is the room with nothing in it,
        which is what a turntable's ground is for. */
     ground: "/images/ahava/campaign/vibe-dust-in-window-light.webp",
     lifestyle: "/images/ahava/campaign/worn-aria-reading-chair-night.webp",
+    /* Placeholder teaser until the campaign is cut; see lib/ahava. */
+    video: "/video/ahava/closing.mp4",
+    videoPoster: "/video/ahava/closing-poster.webp",
     campaign: {
       place: "Paris. A sixth floor, before the street is awake.",
       line: "Nothing in the room competes with it.",
@@ -700,6 +718,7 @@ export const allHouses: readonly House[] = [
     from: 150,
     /* The hero acetate from the house's own shoot, in portrait. See AHAVA. */
     plate: "/images/matriarca/cover/square.webp",
+    plateNarrow: "/images/matriarca/cover/mobile.webp",
     /* ---- the colourway shoot ----
        The campaign's own frame of each acetate, one composition for the whole
        run. This REPLACED the storefront's product stills: the house is shot as
@@ -726,12 +745,19 @@ export const allHouses: readonly House[] = [
     },
     /* The polished black is the frame the house leads with, and the only one of the three with a full set. */
     heroColorway: "Midnight Noir",
+        colorwayModels: {
+      "Brown": "/models/houses/matriarca-brown.glb",
+      "Midnight Noir": "/models/houses/matriarca-midnight-noir.glb",
+    },
     model: "/models/houses/matriarca-midnight-noir.glb",
     /* Was the house plate, which is a photograph of the frame. This is
        window light across bare stone: no subject, which is what a turning
        frame needs behind it. */
     ground: "/images/matriarca/campaign/vibe-vibe-01-window-shadows.webp",
     lifestyle: "/images/matriarca/campaign/worn-aria-obelisk-courtyard.webp",
+    /* Placeholder teaser until the campaign is cut; see lib/matriarca. */
+    video: "/video/matriarca/closing.mp4",
+    videoPoster: "/video/matriarca/closing-poster.webp",
     campaign: {
       place: "Karnak. Abu Simbel. Giza.",
       line: "The monuments are enormous. The object is not.",
@@ -755,28 +781,26 @@ export const allHouses: readonly House[] = [
     from: 175,
     /* The hero acetate from the house's own shoot, in portrait. See AHAVA. */
     plate: "/images/patriarca/cover/square.webp",
-    /* ---- the colourway shoot ----
-       The campaign's own frame of each acetate, one composition for the whole
-       run. This REPLACED the storefront's product stills: the house is shot as
-       its own world now, and a page that mixed the two put a frame on a white
-       ledge directly above the same frame in a room. Imported by
-       scripts/import-campaign-photography.mjs; regenerate rather than
-       hand-edit. */
-    colorwayPlates: {
-      "Black": "/images/patriarca/variants/black-tall.webp",
-      "Brown": "/images/patriarca/variants/brown-tall.webp",
-      "Midnight Noir": "/images/patriarca/variants/midnight-noir-tall.webp",
-    },
-    /* The portrait frame of this acetate, which is what the column opens on.
-       `galleryFor` closes every colourway scroll with that colourway's sill, so
-       the landscape below is not listed here as well. */
-    colorwayGallery: {
-      "Black": ["/images/patriarca/variants/black-tall.webp"],
-      "Brown": ["/images/patriarca/variants/brown-tall.webp"],
-      "Midnight Noir": ["/images/patriarca/variants/midnight-noir-tall.webp"],
-    },
-    /* The same setup in landscape, held across the whole run: the picker
+    plateNarrow: "/images/patriarca/cover/mobile.webp",
+            /* The same setup in landscape, held across the whole run: the picker
        moves and only the colour of the frame changes. */
+    /* ---- The landscape sill is the ONLY variant photograph ----
+    
+       `colorwayPlates` and `colorwayGallery` are deliberately absent. They
+       held the portrait `-tall` cut and, on ARCA II, the numbered `-01`
+       renders — the frame on a white ledge, which is a different shoot to
+       the room this house is photographed in, and putting the two in one
+       column showed the same frame twice in two worlds.
+    
+       With both gone, `galleryFor` falls through to `sillFor` and returns
+       exactly one picture per acetate: this landscape. The square CARD is
+       unaffected — it comes from COLOURWAY_CARD_ART, which is generated
+       from the outpainted square of this same sill, so the card and the
+       page are the same photograph at two crops.
+    
+       (Only ARCA I and ARCA II carry a glb per variant; these houses have
+       one model for the whole house, which is the other reason the
+       photograph has to carry the colour here.) */
     colorwaySills: {
       "Black": "/images/patriarca/variants/black-sill.webp",
       "Brown": "/images/patriarca/variants/brown-sill.webp",
@@ -784,11 +808,19 @@ export const allHouses: readonly House[] = [
     },
     /* Same rule as MATRIARCA: the polished black leads, and it carries the longest set. */
     heroColorway: "Midnight Noir",
+        colorwayModels: {
+      "Black": "/models/houses/patriarca-black.glb",
+      "Brown": "/models/houses/patriarca-brown.glb",
+      "Midnight Noir": "/models/houses/patriarca-midnight-noir.glb",
+    },
     model: "/models/houses/patriarca-midnight-noir.glb",
     /* Was the house plate. This is a corridor with light coming down it
        and nobody in it, which is the ground a turntable wants. */
     ground: "/images/patriarca/campaign/vibe-vibe-04-corridor-light.webp",
     lifestyle: "/images/patriarca/campaign/worn-aria-marble-staircase.webp",
+    /* Placeholder teaser until the campaign is cut; see lib/patriarca. */
+    video: "/video/patriarca/closing.mp4",
+    videoPoster: "/video/patriarca/closing-poster.webp",
     campaign: {
       place: "Rome. Marble, and the last hour of the light.",
       line: "Worn like something issued rather than bought.",
@@ -826,24 +858,26 @@ export const allHouses: readonly House[] = [
     /* The hero acetate from the house's own shoot. Landscape, because this
        is the one house whose colourway set was shot 16:9 only. */
     plate: "/images/monarca/cover/square.webp",
-    /* ---- the colourway shoot ----
-       The campaign's own frame of each acetate, one composition for the whole
-       run. This REPLACED the storefront's product stills: the house is shot as
-       its own world now, and a page that mixed the two put a frame on a white
-       ledge directly above the same frame in a room. Imported by
-       scripts/import-campaign-photography.mjs; regenerate rather than
-       hand-edit. */
-    colorwayPlates: {
-      "Caramel Stripe": "/images/monarca/variants/caramel-stripe-sill.webp",
-      "Dark Tortoise": "/images/monarca/variants/dark-tortoise-sill.webp",
-      "Dreamy Rose": "/images/monarca/variants/dreamy-rose-sill.webp",
-      "Noir": "/images/monarca/variants/noir-sill.webp",
-      "Pixie Dust": "/images/monarca/variants/pixie-dust-sill.webp",
-      "Tutti Frutti": "/images/monarca/variants/tutti-frutti-sill.webp",
-      "Velvet Rose": "/images/monarca/variants/velvet-rose-sill.webp",
-    },
-    /* The same setup in landscape, held across the whole run: the picker
+    plateNarrow: "/images/monarca/cover/mobile.webp",
+        /* The same setup in landscape, held across the whole run: the picker
        moves and only the colour of the frame changes. */
+    /* ---- The landscape sill is the ONLY variant photograph ----
+    
+       `colorwayPlates` and `colorwayGallery` are deliberately absent. They
+       held the portrait `-tall` cut and, on ARCA II, the numbered `-01`
+       renders — the frame on a white ledge, which is a different shoot to
+       the room this house is photographed in, and putting the two in one
+       column showed the same frame twice in two worlds.
+    
+       With both gone, `galleryFor` falls through to `sillFor` and returns
+       exactly one picture per acetate: this landscape. The square CARD is
+       unaffected — it comes from COLOURWAY_CARD_ART, which is generated
+       from the outpainted square of this same sill, so the card and the
+       page are the same photograph at two crops.
+    
+       (Only ARCA I and ARCA II carry a glb per variant; these houses have
+       one model for the whole house, which is the other reason the
+       photograph has to carry the colour here.) */
     colorwaySills: {
       "Caramel Stripe": "/images/monarca/variants/caramel-stripe-sill.webp",
       "Dark Tortoise": "/images/monarca/variants/dark-tortoise-sill.webp",
@@ -856,13 +890,25 @@ export const allHouses: readonly House[] = [
     /* The house had no photograph at all until this run; Noir is where its own listing starts. */
     heroColorway: "Noir",
     swatch: "#8d5b6a",
-    model: "/models/houses/monarca-monarca-noir.glb",
+        colorwayModels: {
+      "Caramel Stripe": "/models/houses/monarca-caramel-stripe.glb",
+      "Dark Tortoise": "/models/houses/monarca-dark-tortoise.glb",
+      "Dreamy Rose": "/models/houses/monarca-dreamy-rose.glb",
+      "Noir": "/models/houses/monarca-noir.glb",
+      "Pixie Dust": "/models/houses/monarca-pixie-dust.glb",
+      "Tutti Frutti": "/models/houses/monarca-tutti-frutti.glb",
+      "Velvet Rose": "/models/houses/monarca-velvet-rose.glb",
+    },
+    model: "/models/houses/monarca-noir.glb",
     /* No longer borrowed from ARCA I. The campaign shot this house's own
        rooms empty, so the quiet ground it needed is now a MONARCA
        photograph with no frame in it: still water, and the far side of a
        canal. */
     ground: "/images/monarca/campaign/wide-canal-still-water.webp",
     lifestyle: "/images/monarca/campaign/worn-aria-lantern-bridge.webp",
+    /* Placeholder teaser until the campaign is cut; see lib/monarca. */
+    video: "/video/monarca/closing.mp4",
+    videoPoster: "/video/monarca/closing-poster.webp",
     campaign: {
       place: "A palazzo out of season. Canals, lantern light, rain.",
       line: "Nobody says what happened in the room before.",
@@ -950,15 +996,13 @@ export const sitemap: readonly SitemapGroup[] = [
     title: "The House",
     links: [
       { label: "About", href: "/house/about" },
-      { label: "The Process", href: "/house/process" },
-      { label: "Lookbook SS26", href: "/lookbook/ss26" },
       { label: "Contact", href: "/contact" },
     ],
   },
   {
     title: "Client",
     links: [
-      { label: "Fit & Care", href: "/care" },
+      { label: "Care", href: "/care" },
       { label: "Shipping", href: "/policies/shipping" },
       { label: "Returns", href: "/policies/returns" },
       { label: "Warranty", href: "/policies/warranty" },
@@ -1051,6 +1095,12 @@ export const architecture: readonly RouteGroup[] = [
         note: `The index. ${housesOnShow()}, with a turntable above the grid.`,
         kind: "designed",
       },
+      {
+        label: "Shop all",
+        href: "/shop",
+        note: "Every piece, priced: the colourways of six houses and the garment, with a rail and a filter.",
+        kind: "designed",
+      },
       ...allHouses.flatMap((house): Route[] => [
         ...(house.href
           ? [
@@ -1084,15 +1134,9 @@ export const architecture: readonly RouteGroup[] = [
         kind: "designed",
       },
       {
-        label: "The Process",
-        href: "/house/process",
-        note: "How a frame is made. Was reachable only from inside The House; now on the menu.",
-        kind: "built",
-      },
-      {
-        label: "Lookbook SS26",
-        href: "/lookbook/ss26",
-        note: "The season, shot.",
+        label: "Gallery",
+        href: "/gallery",
+        note: "Six houses, six rooms. The campaigns, walked.",
         kind: "designed",
       },
       {
@@ -1144,7 +1188,7 @@ export const architecture: readonly RouteGroup[] = [
     note: "The pages people go looking for rather than browse into.",
     routes: [
       {
-        label: "Fit & Care",
+        label: "Care",
         href: "/care",
         note: "Adjustable at five points. The answer to most of what a return would be.",
         kind: "built",

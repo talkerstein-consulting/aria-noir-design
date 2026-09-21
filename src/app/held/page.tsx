@@ -26,8 +26,8 @@ export default function HeldPage() {
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
-        <section className="on-ink section bg-ink pt-32 sm:pt-40">
+      <main id="main" tabIndex={-1} className="relative">
+        <section className="on-ink section bg-ink pt-20 sm:pt-40">
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
               <CrumbEyebrow label="Kept in view" className="t-eyebrow" />

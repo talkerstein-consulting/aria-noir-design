@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { StoryBuy } from "@/components/product/story-buy";
 import type { Shoot } from "@/lib/product";
 import { SECTION_PAD } from "@/lib/timeline";
 import { RevealText, RevealPlate } from "@/components/reveal";
@@ -10,7 +11,15 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  * palette everywhere else. A house whose deck carries no note renders the
  * column without it rather than with an empty disclosure under the body.
  */
-export function ProductShoot({ shoot }: { shoot: Shoot }) {
+export function ProductShoot({
+  shoot,
+  buyHref,
+  buyLabel,
+}: {
+  shoot: Shoot;
+  buyHref: string;
+  buyLabel?: string;
+}) {
   return (
     <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-2">
@@ -32,6 +41,7 @@ export function ProductShoot({ shoot }: { shoot: Shoot }) {
                 {para}
               </p>
             ))}
+            <StoryBuy href={buyHref} label={buyLabel} />
           </div>
 
           {shoot.note ? (

@@ -38,6 +38,24 @@ type CtaCommon = {
   /** True on the destination the reader is already standing on — accent
    *  colour, the CTA's own vocabulary, rather than a third style. */
   current?: boolean;
+  /**
+   * A glyph before the label, inside the box.
+   *
+   * The CTA is a label first and stays one — most of them take no icon at
+   * all. This exists for a LIST of CTAs that name rooms rather than
+   * actions: the desk's five, where the glyph is how you find Payment
+   * without reading, and where the same five glyphs already name the same
+   * five rooms elsewhere in the chrome.
+   */
+  icon?: ReactNode;
+  /**
+   * A quiet word on the right edge, inside the box: a count, a state.
+   *
+   * Never the action — the label is the action. "Held" is what the box
+   * does, "3 saved" is what is in there, and hanging that under the box
+   * instead broke the column into uneven pairs.
+   */
+  trailing?: ReactNode;
   className?: string;
   style?: CSSProperties;
 };
@@ -66,15 +84,35 @@ function classes(
   {
     kind = "main",
     current = false,
+    icon,
+    trailing,
     className = "",
   }: CtaCommon,
 ) {
   return [
     kind === "secondary" ? "cta-secondary" : "cta-main",
+    /* A plain CTA centres its label. One carrying a glyph or a count is a
+       ROW — glyph, label, count — and centring that would leave the
+       glyphs of a stacked list at five different x positions. */
+    (icon || trailing) && "cta--row",
     className,
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+/** The glyph, before the label. */
+function CtaGlyph({ icon }: { icon?: ReactNode }) {
+  return icon ? (
+    <span className="cta-glyph" aria-hidden>
+      {icon}
+    </span>
+  ) : null;
+}
+
+/** The count, after it. */
+function CtaTrailing({ trailing }: { trailing?: ReactNode }) {
+  return trailing ? <span className="cta-trailing">{trailing}</span> : null;
 }
 
 /** `aria-current="page"` both says "you are here" to assistive tech and is
@@ -174,11 +212,13 @@ export function CtaLink({
   style,
   alt,
   current,
+  icon,
+  trailing,
   ...rest
 }: CtaLinkProps) {
   const common = {
     style,
-    className: classes({ children, style, alt, current, ...rest }),
+    className: classes({ children, style, alt, current, icon, trailing, ...rest }),
     "aria-current": currentProp(current),
   };
 
@@ -187,7 +227,9 @@ export function CtaLink({
   if (external) {
     return (
       <a href={href} target="_blank" rel="noreferrer" {...common}>
+        <CtaGlyph icon={icon} />
         <CtaChars alt={alt}>{children}</CtaChars>
+        <CtaTrailing trailing={trailing} />
       </a>
     );
   }
@@ -198,7 +240,9 @@ export function CtaLink({
      hrefs still behave as plain in-page jumps. */
   return (
     <Link href={href} onClick={onClick} {...common}>
+      <CtaGlyph icon={icon} />
       <CtaChars alt={alt}>{children}</CtaChars>
+      <CtaTrailing trailing={trailing} />
     </Link>
   );
 }
@@ -327,6 +371,9 @@ export function CtaButton({
   alt,
   swapped = false,
   disabled,
+  current,
+  icon,
+  trailing,
   "aria-expanded": expanded,
   "aria-controls": controls,
   ...rest
@@ -398,15 +445,21 @@ export function CtaButton({
       disabled={disabled}
       aria-expanded={expanded}
       aria-controls={controls}
+      /* Same signal the link has carried all along, and now the button
+         does too: a tabbed rail is a set of buttons where one of them IS
+         the page you are looking at, and it had no way to say so. */
+      aria-current={currentProp(current)}
       style={style}
-      className={`${classes({ children, style, alt, ...rest })} ${flip}`.trim()}
+      className={`${classes({ children, style, alt, current, icon, trailing, ...rest })} ${flip}`.trim()}
     >
       {/* Without `alt` the two lines are never anything but `children`, and
           reading them out of state would just make an ordinary CTA's label
           stale the first time a caller changed it. */}
+      <CtaGlyph icon={icon} />
       <CtaChars alt={alt ? lines[1] : undefined} columns={columns}>
         {alt ? lines[0] : children}
       </CtaChars>
+      <CtaTrailing trailing={trailing} />
     </button>
   );
 }

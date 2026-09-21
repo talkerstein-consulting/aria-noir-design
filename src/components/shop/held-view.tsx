@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Heart } from "lucide-react";
 import { CtaLink, CtaButton } from "@/components/cta-link";
+import { ProductCard } from "@/components/product-card";
 import { useHeld } from "@/lib/held";
-import { useBag } from "@/lib/cart";
+import { lineHref, lineImage, lineName, useBag } from "@/lib/cart";
 import { formatPrice, galleryFor, shopHref, swatchFor } from "@/lib/shop";
 import { shopPath } from "@/lib/navigation";
 
@@ -17,7 +16,7 @@ import { shopPath } from "@/lib/navigation";
  * A saved frame is a frame the reader is still deciding about, which means
  * the list has two jobs: show it as well as the grid they saved it from —
  * a favourite should never look less like itself than it did when they
- * pressed the heart — and let the decision be finished from here. So every
+ * pressed the bookmark — and let the decision be finished from here. So every
  * card is a live control: it can go to the bag without a detour through
  * the buy page, and it can be let go.
  *
@@ -27,7 +26,10 @@ import { shopPath } from "@/lib/navigation";
  * rather than implying a sync that does not happen. See lib/held.
  */
 export function HeldView() {
-  const { resolved, ready, remove } = useHeld();
+  /* No `remove` here any more: the card's own bookmark is the control that
+     takes a line off this list, the same control that put it on. A second
+     remove in this file would be a second way to do one thing. */
+  const { resolved, ready } = useHeld();
   const { add } = useBag();
 
   if (!ready) {
@@ -41,7 +43,7 @@ export function HeldView() {
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">Nothing is being held.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-          Press the heart on any colourway and it waits here. The list lives
+          Press the bookmark on any colourway and it waits here. The list lives
           in this browser, not on your account, so it will not follow you to
           another machine.
         </p>
@@ -58,8 +60,16 @@ export function HeldView() {
   /* Only what the workshop can actually send. "Add all" that silently
      skips two of five is a button that lies about what it did, so the
      count is on the label and the skipped ones are named underneath. */
-  const addable = resolved.filter((r) => r.entry?.available);
-  const skipped = resolved.length - addable.length;
+  /* A garment is held without a size — the bookmark on a card knows the
+     colour and nothing else — and a size cannot be guessed on the reader's
+     behalf, so the sweater is never part of "Add all". It gets a way back
+     to its own page instead, where the size is asked for. */
+  const addable = resolved.filter((r) => r.entry?.available && !r.garment);
+  /* Only the genuinely gone. A garment sits outside "Add all" because it
+     needs a size, not because the workshop is out of it — counting it here
+     put "one held colourway is out of the workshop" under a sweater that
+     is in stock, which is the interface calling a stocked piece sold. */
+  const skipped = resolved.filter((r) => !r.entry?.available).length;
 
   return (
     <>
@@ -89,80 +99,58 @@ export function HeldView() {
       ) : null}
 
       <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-        {resolved.map(({ line, house, entry }) => {
+        {resolved.map((r) => {
+          const { line, house, entry } = r;
           const image = house
             ? galleryFor(house, line.colorway)[0]
-            : undefined;
+            : lineImage(r);
           const gone = !entry || !entry.available;
           return (
-            <article key={`${line.slug}:${line.colorway}`} className="relative">
-              <button
-                type="button"
-                className="hold-card-remove"
-                onClick={() => remove(line.slug, line.colorway)}
-                aria-label={`Stop holding ${house?.name ?? line.slug}, ${line.colorway}`}
-                title="Let go"
-              >
-                <Heart aria-hidden />
-              </button>
-
-              <Link
-                href={
-                  house
-                    ? `${shopPath(house)}?colourway=${encodeURIComponent(line.colorway)}`
-                    : "/eyewear"
-                }
-                className="block"
-              >
-                <div
-                  className="card-shot"
-                  /* The acetate under the photograph, for the colourways
-                     the shoot has not reached. Honest about being an
-                     approximation rather than showing a sibling colour. */
-                  style={{ background: swatchFor(line.colorway) }}
-                >
-                  {image ? (
-                    <Image
-                      src={image}
-                      alt={`${house?.name ?? ""} in ${line.colorway}`}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover"
-                      /* Below the fold on every screen this list fits on. */
-                      loading="lazy"
-                    />
-                  ) : null}
-                </div>
-                <h2 className="card-name mt-5">{house?.name ?? line.slug}</h2>
-                <p className="t-caption mt-1">{line.colorway}</p>
-              </Link>
-
-              <div className="mt-4 flex items-baseline justify-between gap-4">
-                <p className="t-caption tabular-nums">
-                  {entry ? formatPrice(entry.cents) : "—"}
-                </p>
-                {gone ? (
-                  <span className="t-caption text-[var(--fg-quiet)]">
-                    Out of the workshop
-                  </span>
-                ) : (
+            /* The SAME card the rest of the site is built from.
+            
+               This list used to hand-roll its own: a plate, a name, a
+               caption and a price, assembled here and drifting from the
+               grids every time one of them was touched. The bookmark was
+               the visible symptom — pinned to the corner of the photograph
+               on this page and beside the name everywhere else — but the
+               spacing, the hover and the heading level were all its own
+               too. `ProductCard` now draws it, and the only thing this file
+               still decides is what the card SAYS. */
+            <ProductCard
+              key={`${line.slug}:${line.colorway}`}
+              href={house || r.garment ? lineHref(r) : "/eyewear"}
+              image={image}
+              /* The acetate under the photograph, for the colourways the
+                 shoot has not reached. */
+              swatch={swatchFor(line.colorway)}
+              name={lineName(r)}
+              as="h2"
+              meta={line.colorway}
+              price={entry ? formatPrice(entry.cents) : undefined}
+              soldOut={gone}
+              holdSlug={line.slug}
+              holdColorway={line.colorway}
+              detail={gone ? "Out of the workshop" : undefined}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              action={
+                gone && house ? (
+                  <Link href={shopHref(house, line.colorway)} className="link-quiet link-quiet--micro">
+                    Ask to be written to
+                  </Link>
+                ) : !gone && r.garment ? (
+                  /* See the note on `addable`: the size is chosen on the
+                     garment's own page, so this is a door and not a
+                     purchase. */
+                  <Link href={lineHref(r)} className="link-quiet link-quiet--micro">
+                    Choose a size
+                  </Link>
+                ) : !gone ? (
                   <CtaButton onClick={() => add(line.slug, line.colorway, 1)}>
                     Add to bag
                   </CtaButton>
-                )}
-              </div>
-
-              {gone && house ? (
-                <p className="t-caption mt-2">
-                  <Link
-                    href={shopHref(house, line.colorway)}
-                    className="link-quiet"
-                  >
-                    Ask to be written to
-                  </Link>
-                </p>
-              ) : null}
-            </article>
+                ) : null
+              }
+            />
           );
         })}
       </div>

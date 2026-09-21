@@ -52,6 +52,16 @@ export type Hero = {
   /** Campaign film. Omit and the hero renders the still alone. */
   video?: string;
   /**
+   * The same film cut 9:16 for a phone, the way `imagePortrait` is the
+   * plate cut for one. `video` is wide, and `object-cover` on a portrait
+   * viewport keeps only its middle third. Omit and the wide film runs at
+   * every width.
+   */
+  videoPortrait?: string;
+  /** Frame 0 of `videoPortrait`, for the same reason `poster` is frame 0
+   *  of `video`. Omit and `poster` is held under both. */
+  posterPortrait?: string;
+  /**
    * What is held under the film until it can actually play. Defaults to
    * `image`, which is a different photograph from the one the film opens
    * on — so the hero visibly CUT when the video took over. A frame pulled

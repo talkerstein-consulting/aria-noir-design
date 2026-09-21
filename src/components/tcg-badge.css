@@ -1,0 +1,54 @@
+.tcg-footer {
+  display: block;
+  color: var(--fg-primary);          /* the ground's ink: black on paper, paper on ink */
+}
+
+.tcg-plaque {
+  --w: min(300px, 70vw);             /* sits in the legal row at micro-label scale */
+  --pad-x: 8px;
+  position: relative;
+  display: block;
+  width: var(--w);
+  aspect-ratio: 16 / 1;              /* the plaque's box */
+  box-sizing: border-box;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+}
+
+/* text: glyph SVG as mask, painted with currentColor → centred by construction */
+.tcg-text {
+  position: absolute;
+  left: var(--pad-x); right: var(--pad-x);
+  top: 50%; transform: translateY(-50%);
+  display: block;
+  aspect-ratio: 1101.46 / 34.94;     /* viewBox of tcg-outline.svg */
+  -webkit-mask: url("/tcg-outline.svg") center / contain no-repeat;
+          mask: url("/tcg-outline.svg") center / contain no-repeat;
+  background: currentColor;
+  transition: background-color var(--dur-fast, .18s) var(--ease-out, ease);
+}
+
+/* hover -------------------------------------------------------------------
+   It used to flip the lettering to the GROUND colour — readable only
+   because a block of particles had gathered behind it. With the block
+   gone that rule paints ink on ink and the credit disappears under the
+   pointer. Gold instead — the house's one accent, and the same thing the
+   trail's current crumb and a focused control already do. */
+.tcg-plaque:hover .tcg-text,
+.tcg-plaque:focus-visible .tcg-text {
+  background: var(--fg-accent);
+}
+
+
+@media (max-width: 640px) {
+  /* The last line of the page, under the ARIA mark, as wide as the screen
+     allows: let out past the gutters so the lettering is the width of
+     the mark above it rather than a stamp in a corner. */
+  .tcg-footer { width: calc(100% + 2rem); margin-inline: -1rem; }
+  .tcg-plaque { --w: 100%; --pad-x: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tcg-text { transition: none !important; }
+}

@@ -39,7 +39,7 @@ import { CtaButton, CtaLink } from "@/components/cta-link";
  *
  * ---- Two ways out, and they are not equal ----
  *
- * Checkout is the offer. Keep looking is the way back to exactly where
+ * Checkout is the offer. Explore more is the way back to exactly where
  * they were, same page, same scroll, same colourway still selected, which
  * is why this is a sheet over the page rather than a route: a confirmation
  * that navigates has thrown away the state the reader built.
@@ -210,7 +210,7 @@ export function BagAdded({
               sheet for the way back to the page they were on. One filled
               and one outlined is the house's pair. */}
           <CtaButton kind="secondary" onClick={close}>
-            Keep looking
+            Explore more
           </CtaButton>
 
           {/* The bag itself, as the glyph the header already uses for it.

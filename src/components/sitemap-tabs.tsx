@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { sitemap } from "@/lib/navigation";
+import { sitemap, type SitemapGroup } from "@/lib/navigation";
 
 /**
  * The footer's sitemap. One markup, two objects.
@@ -36,9 +36,17 @@ import { sitemap } from "@/lib/navigation";
  * sitemap that renders a quarter of itself is one a crawler reads a
  * quarter of, which defeats the point of putting it in the footer.
  */
-export function SitemapTabs() {
+export function SitemapTabs({
+  narrowExtra,
+}: {
+  /** One more group, phone only. The footer's socials go here so they
+   *  are a tab like the rest of the map rather than a link on its own
+   *  under the field; on the wide layout they stay by the desk. */
+  narrowExtra?: SitemapGroup;
+} = {}) {
   /** Which group is open on the phone. One at a time, FAQ-style. */
   const [open, setOpen] = useState(0);
+  const groups = narrowExtra ? [...sitemap, narrowExtra] : sitemap;
 
   /* Starts false so the server and the first client render agree — the
      stylesheet is what makes the wide layout correct on paint, and this
@@ -54,10 +62,10 @@ export function SitemapTabs() {
 
   return (
     <div className="sitemap flex flex-col gap-0 sm:flex-row sm:justify-between sm:gap-10">
-      {sitemap.map((group, i) => (
+      {groups.map((group, i) => (
         <div
           key={group.title}
-          className="sitemap-group"
+          className={`sitemap-group${group === narrowExtra ? " sm:hidden" : ""}`}
           data-open={i === open}
         >
           {wide ? (

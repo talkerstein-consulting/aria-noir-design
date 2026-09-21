@@ -64,7 +64,14 @@ export const NARROW_FRAMES_PER_VH = 150;
 
 /** One vertical rhythm for every flow section, so the gaps between them read
  *  as a single system rather than per-section guesses. */
-export const SECTION_PAD = "py-32 sm:py-48";
+/* `section-pad` carries no padding of its own — the two utilities beside
+   it do that. It is a MARKER, so the stylesheet can recognise a section
+   built this way as the same kind of thing as one built with the `.section`
+   class, which sets the identical 5rem/12rem rhythm from `--section-pad`.
+   Both exist, both are used, and without a shared hook the seam-collapsing
+   rule in typography.css could only see half the sections on a page —
+   which is why /arca-i still had doubled gaps after that rule landed. */
+export const SECTION_PAD = "section-pad py-20 sm:py-48";
 
 export const F = {
   heroStart: 0,
@@ -108,19 +115,30 @@ export const F = {
 export const DOT_START_VH = 1.05;
 export const DOT_END_VH = 0.1;
 
-export type Trigger = { frame: number; label: string };
-
-export const TRIGGERS: Trigger[] = [
-  { frame: F.heroStart, label: "hero · video full bleed" },
-  { frame: F.logoDocked, label: "logo docked · video starts rising" },
-  { frame: F.videoShrinkEnd, label: "video at rest · heading + body settled" },
-  { frame: F.hangEnd, label: "hang ends · video exits" },
-  { frame: F.modelEntryEnd, label: "video gone · scene ends" },
-  /* Informational: where the gallery-anchored dot lands at the design
-     viewport. The behaviour derives from DOT_*_FRAC, not from these. */
-  { frame: 1321, label: "white dot opens over the gallery" },
-  { frame: 1421, label: "screen covered · light mode" },
-];
+/* ---- The frame map, for reading ----
+ *
+ * This was a `TRIGGERS` array, exported for a dev HUD (components/scroll-hud)
+ * that nothing imported. The HUD is gone and so is the array: it drove no
+ * behaviour — every one of these frames is read from `F` above, or from
+ * DOT_*_FRAC — so it was a second copy of the timeline that could disagree
+ * with the timeline.
+ *
+ * The labels were the useful part, so they stay here as prose. Nothing reads
+ * them, which is the point: a comment cannot drift out of sync with the
+ * constants beside it in the way a duplicate table can.
+ *
+ *   F.heroStart        hero · video full bleed
+ *   F.logoDocked       logo docked · video starts rising
+ *   F.videoShrinkEnd   video at rest · heading + body settled
+ *   F.hangEnd          hang ends · video exits
+ *   F.modelEntryEnd    video gone · scene ends
+ *
+ * And, at the design viewport only — these two follow the gallery via
+ * DOT_START_VH / DOT_END_VH rather than any fixed frame:
+ *
+ *   ~1321             white dot opens over the gallery
+ *   ~1421             screen covered · light mode
+ */
 
 /* ---------- transform constants ---------- */
 export const EXIT_VH = 120; // video's total upward travel once fully exited

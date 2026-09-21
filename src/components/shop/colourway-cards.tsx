@@ -1,7 +1,8 @@
 import { ProductCard } from "@/components/product-card";
 import type { House } from "@/lib/navigation";
+import { COLOURWAY_CARD_ART, colourwayKey } from "@/lib/colourway-cards.generated";
 import { colourwayCard } from "@/lib/product-cards";
-import { sillFor, stockFor } from "@/lib/shop";
+import { stockFor } from "@/lib/shop";
 
 /**
  * The run, one card per acetate.
@@ -32,27 +33,59 @@ import { sillFor, stockFor } from "@/lib/shop";
  *
  * A house that has not been shot this way renders nothing at all.
  */
+/**
+ * Which colourways of this house are ON the wall.
+ *
+ * A colourway with no card render is not on it — not a flat swatch
+ * standing in for a frame, and not a photograph from a different session.
+ * MATRIARCA's Black Wood is the only one this drops today. The wall is one
+ * composition across a run, and a card that breaks it costs more than the
+ * card is worth.
+ *
+ * The STORE's list, in the store's order — the same source the picker
+ * reads. A colourway the storefront has never heard of is not an offer.
+ */
+function wallFor(house: House) {
+  const art = COLOURWAY_CARD_ART[house.slug];
+  return stockFor(house).filter(({ colorway }) => art?.[colourwayKey(colorway)]);
+}
+
+/**
+ * Whether this house has a wall at all.
+ *
+ * Exported because the PAGE has to know before it lays a section out. The
+ * component returning `null` is not enough on its own: the `<section>`
+ * around it still renders, and a `.section` is 12rem of padding whether or
+ * not anything is inside it — which is exactly the 192px of dead air ARCA I
+ * carried between its detail panels and The Collection.
+ *
+ * One predicate, read by the guard and by the component, so a house can
+ * never be laid out as having a wall it does not have.
+ */
+export function hasColourwayCards(house: House) {
+  return wallFor(house).length > 0;
+}
+
 export function ColourwayCards({ house }: { house: House }) {
-  /* The STORE's list, in the store's order — the same source the picker
-     reads. A colourway the storefront has never heard of is not an offer. */
-  const stock = stockFor(house);
-  if (!stock.some(({ colorway }) => sillFor(house, colorway))) return null;
+  const shown = wallFor(house);
+  if (!shown.length) return null;
 
   return (
     <div className="mx-auto max-w-7xl">
       <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
         <h2 className="t-display-md">The run</h2>
         <p className="t-caption">
-          {house.material} · one cut, {stock.length} colourways
+          {house.material} · one cut, {shown.length} colourways
         </p>
       </div>
 
       <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-        {stock.map(({ colorway }) => (
+        {shown.map(({ colorway }) => (
           <li key={colorway} className="flex">
             {/* What each acetate's card says — its own name, its own price,
                 its own photograph — is `colourwayCard` in
-                lib/product-cards, beside every other product's. */}
+                lib/product-cards, beside every other product's. No hover
+                swap here: the wall zooms. */}
             <ProductCard {...colourwayCard(house, colorway)} />
           </li>
         ))}

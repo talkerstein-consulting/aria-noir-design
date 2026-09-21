@@ -3,41 +3,38 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { PageHero } from "@/components/page/page-hero";
-import { ContactForm } from "@/components/page/contact-form";
-import Contact12 from "@/components/contact-12";
+import { ContactIntake } from "@/components/page/contact-intake";
 import { contact } from "@/lib/pages";
 
 export const metadata: Metadata = {
   title: "Contact — Aria Noir",
   description:
-    "Support, adjustments, returns and warranty. Write to the studio in Los Angeles.",
+    "Support, adjustments and warranty. Write to the studio.",
 };
 
-/** Shared section-page shell — see house/about/page.tsx. */
+/**
+ * The contact page, cut to what a contact page is for: the addresses,
+ * and a way to write.
+ *
+ * It used to run three screens: the masthead, a six-tile block of routes
+ * explaining which desk is which, and then a form on paper. The routes
+ * are now the first question of the intake, so the block is gone; and
+ * the page stays on ink from top to bottom, because one ground is quieter
+ * than two and there is nothing here that needs the light to be read.
+ */
 export default function ContactPage() {
   return (
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
         <PageHero {...contact.hero} />
 
-        {/* Light from the first section down. A contact page is somewhere
-            people arrive with a problem, and reading a form on black over
-            photography is the site admiring itself while someone is trying
-            to describe a broken hinge. No iris either — there is no dark
-            stretch above it for the circle to cut through. */}
-        {/* The routes, before the form. A contact page that opens on a
-            form assumes the reader already knows which desk they want; six
-            named routes answer that first, and most of them resolve without
-            anyone filling anything in. The form is for whatever is left. */}
-        <Contact12 />
-
-        <section className="on-paper section bg-paper">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-14 lg:grid-cols-[1fr_1.15fr] lg:gap-24">
-            <div className="stack stack--sm lg:sticky lg:top-28">
+        <section className="on-ink section bg-ink">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-16 lg:grid-cols-[1fr_1.4fr] lg:gap-24">
+            {/* ---- the addresses ---- */}
+            <div className="lg:sticky lg:top-28">
               <p className="t-body t-body--lede">{contact.intro}</p>
-
               <dl className="mt-8 flex flex-col">
                 {contact.desks.map((desk) => (
                   <div key={desk.value} className="hairline py-5">
@@ -52,16 +49,16 @@ export default function ContactPage() {
                     </dd>
                   </div>
                 ))}
-                <div className="hairline py-5">
-                  <dt className="t-label">{contact.studio.label}</dt>
-                  <dd className="t-body t-body--tight mt-2">
-                    {contact.studio.value}
-                  </dd>
-                </div>
               </dl>
             </div>
 
-            <ContactForm />
+            {/* ---- the intake ---- */}
+            <div>
+              <p className="t-eyebrow">{contact.intake.eyebrow}</p>
+              <div className="mt-6">
+                <ContactIntake />
+              </div>
+            </div>
           </div>
         </section>
       </main>

@@ -35,12 +35,45 @@ export type ApparelColourway = {
   compareAtCents?: number;
   available: boolean;
   image?: string;
+  /** The second photograph, for the card's hover. Always the SAME
+   *  colourway — the rule every card on the site follows. */
+  hover?: string;
   swatch: string;
+  /**
+   * Whether this colourway is being SOLD yet.
+   *
+   * The data carries all five yarns the collection was designed in, and
+   * the storefront has a handle and a variant id for each — but only the
+   * Tweed is in the first run. The shop was listing five El Patróns,
+   * which told a reader that four things they cannot have are in stock.
+   *
+   * Unlisted is not the same as `available: false`. Out of stock means
+   * the workshop has run out of something it makes; this means the run
+   * has not been cut. So it is not a sold-out badge — the colourway
+   * simply is not offered, on the wall or in the picker.
+   *
+   * An old bag line still resolves against the full list (see `resolve`
+   * in lib/cart), because a reader who bought one before it was pulled
+   * must still see what they bought.
+   */
+  listed?: boolean;
 };
 
 export type ApparelCollection = {
   name: string;
   slug: string;
+  /**
+   * The campaign run — the garment's own photography, in the order the
+   * shoot filed it: the cover, the model alone, the pair, the knit, the
+   * room.
+   *
+   * It is the COLLECTION's, not a colourway's. The shoot produced nine
+   * pictures and none of them is a plain product shot of each colour, so
+   * this is what the buy page shows whichever acetate — whichever yarn —
+   * the reader has chosen. The colour is named in the offer and carried
+   * by the swatch; the photographs are the garment.
+   */
+  run: readonly { src: string; alt: string }[];
   /** What it is made of, in the voice the houses use for their material. */
   material: string;
   note: string;
@@ -49,11 +82,54 @@ export type ApparelCollection = {
 };
 
 const A = "/images/alpaca-sweater/variants";
+/** The campaign run, imported from the shoot. */
+const R = "/images/alpaca-sweater/run";
 
 export const apparel: readonly ApparelCollection[] = [
   {
     name: "El Patrón",
     slug: "alpaca-sweater",
+    /* Imported from the shoot by scripts/import-alpaca-photography.mjs.
+       The order is the shoot's own: hero, the model alone, the pair, the
+       knit up close, the room. */
+    run: [
+      {
+        src: `${R}/hero-aria-solo-gallery.webp`,
+        alt: "El Patrón worn in a gallery, alone",
+      },
+      {
+        src: `${R}/hero-aria-solo-perdiz-colorway.webp`,
+        alt: "El Patrón in Perdiz, full length",
+      },
+      {
+        src: `${R}/noir-sculpture-hall-stand.webp`,
+        alt: "El Patrón worn in a sculpture hall",
+      },
+      {
+        src: `${R}/aria-sculpture-hall-walk.webp`,
+        alt: "El Patrón in motion through the hall",
+      },
+      {
+        src: `${R}/cover-duo-tweed-magazine-style.webp`,
+        alt: "Two El Patrón sweaters, Tweed leading",
+      },
+      {
+        src: `${R}/duo-grand-staircase.webp`,
+        alt: "El Patrón on the staircase, a pair",
+      },
+      {
+        src: `${R}/macro-01-knit-texture.webp`,
+        alt: "The baby alpaca knit, close",
+      },
+      {
+        src: `${R}/duo-glass-pyramid-dusk.webp`,
+        alt: "El Patrón at dusk, under glass",
+      },
+      {
+        src: `${R}/vibe-01-noir-moody-gallery.webp`,
+        alt: "El Patrón in the low light of the gallery",
+      },
+    ],
     material: "100% baby alpaca · Peru",
     note: "Knitted in Peru from baby alpaca — softer than cashmere, warmer than wool, and naturally hypoallergenic.",
     /* One garment, three sizes, and the same three on every colourway. Held
@@ -68,6 +144,7 @@ export const apparel: readonly ApparelCollection[] = [
         compareAtCents: 12500,
         available: true,
         image: `${A}/pastel-01.webp`,
+        hover: `${A}/pastel-02.webp`,
         swatch: "#d8cfc2",
       },
       {
@@ -78,6 +155,7 @@ export const apparel: readonly ApparelCollection[] = [
         compareAtCents: 12500,
         available: true,
         image: `${A}/perdiz-01.webp`,
+        hover: `${A}/perdiz-02.webp`,
         swatch: "#7d6a56",
       },
       {
@@ -88,9 +166,12 @@ export const apparel: readonly ApparelCollection[] = [
         compareAtCents: 12500,
         available: true,
         image: `${A}/pink-01.webp`,
+        hover: `${A}/pink-02.webp`,
         swatch: "#c79aa2",
       },
       {
+        /* The first run, and for now the only one. See `listed`. */
+        listed: true,
         name: "Tweed",
         handle: "alpaca-sweater-tweed",
         variantId: 45585268211906,
@@ -98,6 +179,7 @@ export const apparel: readonly ApparelCollection[] = [
         compareAtCents: 12500,
         available: true,
         image: `${A}/tweed-01.webp`,
+        hover: `${A}/tweed-02.webp`,
         swatch: "#6f6f6a",
       },
       {
@@ -108,8 +190,59 @@ export const apparel: readonly ApparelCollection[] = [
         compareAtCents: 12500,
         available: true,
         image: `${A}/x-01.webp`,
+        hover: `${A}/x-02.webp`,
         swatch: "#2f2f31",
       },
     ],
   },
 ];
+
+/**
+ * The garment's photograph, from the RUN and nowhere else.
+ *
+ * ---- Why not `colourway.image` ----
+ *
+ * That set — `variants/pastel-01.webp` and its siblings — is the packshot
+ * series: the sweater on white, cut out, catalogue-style. It is the one
+ * thing on this site that looks like a marketplace listing, and it is not
+ * what the shoot delivered. The run is: the garment worn, in rooms, lit.
+ * The instruction is to use the run and only the run, so every surface
+ * that draws this collection — the shop cards, the bag, the held list, the
+ * checkout summary — comes through here.
+ *
+ * ---- Why a colourway can still fall back ----
+ *
+ * The run photographed two of the five by name (Perdiz solo, Tweed on the
+ * cover) and shot the rest as a campaign rather than a colour study. Where
+ * a colour has its own frame it gets it; where it does not, it gets the
+ * hero. Inventing a match — handing Pink a photograph of the grey — would
+ * be a lie about what is being bought, and the swatch beside the name is
+ * what actually states the colour.
+ */
+const RUN_BY_COLOURWAY: Record<string, string> = {
+  Perdiz: "hero-aria-solo-perdiz-colorway",
+  Tweed: "cover-duo-tweed-magazine-style",
+};
+
+export function runShot(line: ApparelCollection, colourway?: string) {
+  const named = colourway ? RUN_BY_COLOURWAY[colourway] : undefined;
+  return (
+    (named && line.run.find((p) => p.src.includes(named))?.src) ??
+    line.run[0]?.src
+  );
+}
+
+/** The second frame, for a card's hover. Never the same one twice. */
+export function runHover(line: ApparelCollection, colourway?: string) {
+  const first = runShot(line, colourway);
+  return line.run.find((p) => p.src !== first)?.src;
+}
+
+/**
+ * The colourways actually on offer. Every wall, picker and count reads
+ * this rather than `line.colourways`, so pulling a run out of the shop is
+ * one flag and not a search.
+ */
+export function listedColourways(line: ApparelCollection) {
+  return line.colourways.filter((c) => c.listed);
+}

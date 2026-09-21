@@ -126,7 +126,7 @@ export function AddressFields({
         <label className="field">
           <span>
             Apartment, floor
-            <em className="not-italic opacity-60"> · optional</em>
+            <em className="not-italic text-[var(--fg-quiet)]"> · optional</em>
           </span>
           <input
             id={`${idPrefix}-line2`}

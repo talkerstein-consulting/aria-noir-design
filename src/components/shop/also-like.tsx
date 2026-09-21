@@ -32,7 +32,7 @@ export function AlsoLike({ current }: { current: House }) {
   return (
     <div className="mx-auto max-w-7xl">
       <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
-        <h2 className="t-display-md">You may also like</h2>
+        <h2 className="t-display-md">The Collection</h2>
         <CtaLink href="/eyewear" kind="secondary">
           Shop all
         </CtaLink>

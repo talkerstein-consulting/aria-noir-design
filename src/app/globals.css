@@ -312,6 +312,26 @@ html.lenis {
   --fg-accent: var(--text-accent-light);
   --fg-rule: var(--rule-light);
 }
+/* ── The band as a lid, on the checkout, on a phone ───────────────────
+   Everywhere else the nav floats over a section that was composed with it
+   in mind. The checkout is a column of fields and a sticky phase rail, and
+   below 1024px both run straight under the band — a number sliding through
+   the wordmark at the moment the reader is typing their card. So once the
+   page has moved, the band takes the ink it is already lettered for and
+   blocks what passes behind it. At rest it stays transparent: the top of
+   the page is the title, and there is nothing to block yet. */
+@media (max-width: 1023px) {
+  .site-nav[data-route="checkout"] {
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      opacity 0.7s var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+  .site-nav[data-route="checkout"][data-scrolled="true"] {
+    background: var(--ink);
+  }
+}
+
 /* The wordmark is an inline SVG painted with `currentColor`, so it follows
    the ground for free — but only because the rule above sets `color` as
    well as the tokens. Both, not either. */

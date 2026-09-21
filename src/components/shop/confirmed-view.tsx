@@ -73,7 +73,7 @@ export function ConfirmedView() {
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/desk">The desk</CtaLink>
-          <CtaLink href="/eyewear" kind="secondary">Keep looking</CtaLink>
+          <CtaLink href="/eyewear" kind="secondary">Explore more</CtaLink>
         </div>
       </div>
     );
@@ -94,8 +94,19 @@ export function ConfirmedView() {
 
       <div className="confirmed">
         <div>
-          <p className="t-eyebrow">The order</p>
-          <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
+          {/* h2, not p. The lines beneath are `card-name` h3s, and with
+              nothing between them and the page's h1 the outline skipped a
+              level — on the region that says what was actually bought. The
+              eyebrow class still draws it; only the element changed. Same
+              fix as the checkout's order summary. */}
+          <h2 className="t-eyebrow">The order</h2>
+          {/* `mt-6 sm:mt-8`: the heading had NO space under it and sat
+              flush on the first plate — an 11px label touching a 415px
+              photograph, at both widths. The checkout's own summary already
+              sets its cards `mt-6` below the same heading; this is that
+              interval, opened a step further because these plates are the
+              larger ones. */}
+          <div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-12 sm:mt-8 sm:grid-cols-2">
             {order.lines.map((l) => (
               <LineCard
                 key={`${l.name}:${l.colorway}`}
@@ -184,7 +195,7 @@ export function ConfirmedView() {
       ) : (
         <div className="mt-16 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/desk">Orders on your desk</CtaLink>
-          <CtaLink href="/eyewear" kind="secondary">Keep looking</CtaLink>
+          <CtaLink href="/eyewear" kind="secondary">Explore more</CtaLink>
         </div>
       )}
     </>

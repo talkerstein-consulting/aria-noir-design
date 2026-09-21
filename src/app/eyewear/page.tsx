@@ -58,7 +58,7 @@ export default function EyewearPage() {
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
         <ModelStage
           id="frames"
           items={stage}

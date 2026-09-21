@@ -2,9 +2,9 @@
  * MONARCA — product page copy and plate assignments.
  *
  * The house's approved copy deck, in the shape lib/product.ts sets and
- * components/product/story-page.tsx renders. No film and one turntable
- * export, as with every house but the two ARCAs: the approach runs
- * face-only and the offering turns a single glb. The seven acetates are
+ * components/product/story-page.tsx renders. One turntable export; the
+ * films are placeholder teasers (see the note at `hero`) until the house
+ * cuts its own, and the offering turns a single glb. The seven acetates are
  * painted by the palette band, which StoryPage builds from
  * `colorwayNames` in lib/navigation.
  *
@@ -27,6 +27,8 @@ import type {
 } from "./product";
 
 const C = "/images/monarca/campaign";
+/** The closeup pass — see scripts/import-closeup-photography. */
+const CU = "/images/monarca/closeup";
 const V = "/images/monarca/variants";
 
 export const hero: Hero = {
@@ -36,6 +38,15 @@ export const hero: Hero = {
   image: "/images/monarca/cover/desktop.webp",
   imagePortrait: "/images/monarca/cover/mobile.webp",
   alt: "MONARCA in Noir, low light",
+  /* ---- Placeholder teasers, Sep 2026 ----
+     Three Kling cuts stand in until the house films the campaign: the
+     hero above the title, the establishing shot at the approach, the
+     closing shot beside the buy page's detail tabs (lib/navigation).
+     Each poster is frame 0 of its own film, so the handover is invisible
+     (see the `poster` note in lib/product.ts). Swap the files under
+     public/video/monarca/ and the page needs nothing else. */
+  video: "/video/monarca/hero.mp4",
+  poster: "/video/monarca/hero-poster.webp",
 };
 
 export const structure: Opening = {
@@ -44,9 +55,18 @@ export const structure: Opening = {
   body: [
     "MONARCA carries a softer kind of authority. Sculptural lines and expressive finishes give the frame a distinct presence, shifting naturally between shadow, light, and reflection.",
   ],
+  /* Worn, not shelved.
+  
+     This section is called The Form and its line is "a silhouette in the
+     dark" — and it was illustrated by the frame at a second angle and the
+     frame on a windowsill: two product stills, neither of which contains
+     a silhouette or a person to cast one. The shoot delivered both figures
+     standing in a doorway in exactly that light, and they were sitting
+     unused. The claim is about presence, so the evidence has to have
+     somebody in it. */
   images: [
-    { src: `${C}/hero-hero-noir-02.webp`, alt: "The frame, second angle, in the dark" },
-    { src: `${V}/noir-sill.webp`, alt: "MONARCA in Noir, on the sill" },
+    { src: `${C}/worn-noir-doorway-between-rooms.webp`, alt: "Noir in the doorway between two rooms" },
+    { src: `${C}/worn-aria-alley-doorway.webp`, alt: "Aria in the alley doorway, lit from behind" },
   ],
 };
 
@@ -127,19 +147,31 @@ export const spec: Spec = {
         "A refined proportion keeps the frame wearable while preserving the distinctive presence of the MONARCA silhouette.",
     },
   ],
-  /* The temple symbol close, then the frame across three finishes on the
-     same sill. The sheet's longest claim is about how the acetates take
-     light, so the evidence for it is the same setup three times with only
-     the material changed. */
+  /* The CLOSEUP pass, not the sill stills that were here.
+  
+     The sheet's longest claim is about how these acetates take light, and
+     the evidence for it was the frame on a windowsill in three finishes —
+     the material named three times at a distance that cannot show what it
+     does. The extreme closeups are the claim: the same surface, worn, at
+     the range where the shifts in tone are actually visible. The shoot
+     delivered them and nothing was reading them; see
+     scripts/import-closeup-photography. */
   macro: [
-    { src: `${C}/macro-temple-symbol-close.webp`, alt: "The house mark on the temple, close" },
-    { src: `${V}/dark-tortoise-sill.webp`, alt: "MONARCA in Dark Tortoise, on the sill" },
-    { src: `${V}/dreamy-rose-sill.webp`, alt: "MONARCA in Dreamy Rose, on the sill" },
-    { src: `${V}/velvet-rose-sill.webp`, alt: "MONARCA in Velvet Rose, on the sill" },
+    { src: `${CU}/aria-extreme-closeup-eyewear.webp`, alt: "MONARCA at the eye, extreme close" },
+    { src: `${CU}/noir-closeup-portrait.webp`, alt: "The frame worn, close" },
+    { src: `${CU}/noir-extreme-closeup-eyewear.webp`, alt: "The acetate at the temple, extreme close" },
+    { src: `${CU}/aria-closeup-portrait.webp`, alt: "The frame worn, close" },
   ],
 };
 
 export const approach: Approach = {
+  /* The establishing teaser: wide, and a different cut from the hero's,
+     so the approach is not the opening frame a second time. */
+  film: {
+    src: "/video/monarca/establishing.mp4",
+    poster: "/video/monarca/establishing-poster.webp",
+    alt: "The teaser film for MONARCA",
+  },
   face: {
     src: `${C}/worn-noir-extreme-closeup-eyewear.webp`,
     alt: "Noir, extreme close, wearing MONARCA",
@@ -153,7 +185,7 @@ export const offering: Offering = {
   registryNote: "Each acquisition is registered. The piece is yours, permanently.",
   view: {
     kind: "model",
-    src: "/models/houses/monarca-monarca-noir.glb",
+    src: "/models/houses/monarca-noir.glb",
   },
 };
 

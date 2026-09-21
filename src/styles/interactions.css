@@ -127,6 +127,54 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* The one you are standing on. The outline CTA is the site's tab: a rail
+   of them sets the rooms of the desk, and the live one goes gold — border
+   and label both — while the rest stay the section's own white. Same move
+   the filled CTA already makes for `aria-current`, at the outline's
+   weight, so it is still the object's own vocabulary and not a third
+   style. It is not merely hover-coloured: hover is a state that leaves,
+   and this one is where you ARE. */
+.cta-secondary[aria-current="page"] {
+  border-color: var(--fg-accent);
+  color: var(--fg-accent);
+}
+
+/* ── The row layout — glyph, label, count ────────────────────────────
+   A CTA is a centred label by default. Give it a glyph or a trailing word
+   and it becomes a row instead: the glyph pinned left, the label taking
+   the slack, the count on the right edge. In a STACK of them — the desk's
+   rooms in the profile drawer — that is what puts every glyph on one x
+   and every label on another, which centring cannot do. */
+.cta--row {
+  justify-content: flex-start;
+  gap: 0.9rem;
+  text-align: left;
+}
+.cta--row .cta-chars {
+  flex: 1 1 auto;
+}
+.cta-glyph {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+.cta-glyph svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 1.25;
+}
+/* The state, not the action: a step down in size and never the accent,
+   so it cannot be mistaken for the thing the box does. Its colour is
+   inherited from the box, which is already handling hover and current —
+   one less thing to keep in sync. */
+.cta-trailing {
+  flex: 0 0 auto;
+  font-size: var(--text-micro, 0.625rem);
+  font-weight: 400;
+  letter-spacing: var(--track-label);
+  text-transform: none;
+  opacity: 0.6;
+}
 
 /* ── The shuffle ─────────────────────────────────────────────────────
    The house gesture, and it belongs to BOTH: every glyph stacked over a
@@ -891,8 +939,10 @@
   /* The name sits in the upper third, not dead centre: the frame is pulled
      to the middle of the SCREEN, and two things centred on the same point
      is the name hidden behind a canvas. */
-  padding-top: 8vh;
-  height: 78vh;
+  padding-top: 6vh;
+  /* The scroll budget of the choreography, in step with OPENING in
+     buy-hero: this plus the offer's own height is the first screen. */
+  height: 40vh;
   text-align: center;
   /* The frame is pulled into the middle of the screen from BELOW this
      block, so nothing here may sit on top of it. */
@@ -1021,10 +1071,10 @@
        separate section above it. */
     row-gap: var(--stack-sm);
   }
-  .buy-grid-model {
-    grid-column: 1;
-    grid-row: 1;
-  }
+  /* `.buy-grid-model` used to hold row 1 of this column. The turntable
+     is gone and its row went with it — leaving the rule in place kept an
+     empty 130px track above the photographs, which put the plate 147px
+     below the eyebrow it is supposed to line up with. */
   /* Stretched to the full height of both rows, with the OFFER sticking
      inside it.
 
@@ -1043,12 +1093,39 @@
   }
   .buy-panel-inner {
     position: sticky;
-    /* The section's own top padding — see the note in buy-hero. */
-    top: var(--section-pad-wide);
+    /* The section's own top padding — see the note in buy-hero and
+       .buy-section below. */
+    top: var(--buy-top);
   }
+  /* Row 1: the plate's top edge lines up with the offer's first line —
+     the EYEWEAR eyebrow — because both columns now start on the same
+     grid row. */
   .buy-grid-photos {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 1;
+  }
+}
+
+/* The buy section's own top padding, shorter than the house's section
+   pad. At 12rem the offer's Add to bag sat at 700px on a laptop screen,
+   under the fold; at this it clears it. The sticky offer reads the same
+   number, so it is already at its pinned position on the first frame.
+   The phone's is the nav bar plus a breath, since the lead photograph is
+   the first thing on the page and wants no gulf above it. */
+/* ---- The plate is flush to the top ----
+   `--buy-top` was 5rem/7rem of air above the whole grid, which was the
+   runway the opening choreography needed. There is no opening now, so it
+   is header clearance and nothing else: the variant photograph starts
+   directly under the chrome, and the offer beside it pins at the same
+   line. The value is the nav's own height. */
+.buy-section {
+  --buy-top: 5.25rem;
+  padding-top: var(--buy-top);
+}
+@media (min-width: 640px) {
+  .buy-section {
+    --buy-top: 5.25rem;
+    padding-top: var(--buy-top);
   }
 }
 
@@ -1124,7 +1201,7 @@
   .buy-opening {
     height: auto;
     padding-top: 0;
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
   }
   .buy-opening-title,
   .buy-model,
@@ -1256,16 +1333,143 @@
    falls through to the user agent's ring, whose colour on this build
    resolves to WHITE — the one stroke on the page that belongs to no
    design decision, and which lingers after the pointer has left. */
-.card-link:focus-visible {
+/* ---- The turntable leaving ----
+   The reader has pressed a second acetate, so the frame that was
+   introduced is no longer the frame being considered — see the note in
+   buy-hero. It goes out the way it came in, sideways, and the column
+   closes up behind it.
+
+   `position: absolute` during the exit so the grid does not hold its cell
+   open while it travels: the photographs move up into the space as it
+   leaves, rather than after it. */
+.buy-model[data-leaving] {
+  pointer-events: none;
+  transform: translateX(-12%) scale(0.96);
+  opacity: 0;
+  transition:
+    transform 600ms var(--ease-out),
+    opacity 420ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .buy-model[data-leaving] {
+    transform: none;
+    transition: opacity 200ms linear;
+  }
+}
+
+/* ---- The morph, and the page around it ----
+   The named photograph animates between the two pages; everything else
+   cross-fades. The root pair is shortened from the browser's default
+   250ms so the page under the frame has resolved by the time the frame
+   arrives, rather than the two finishing together and reading as one
+   slow dissolve. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+/* The frame itself travels on the house's own curve, and slower than the
+   page: it is the thing being followed. */
+::view-transition-group(*) {
+  animation-duration: var(--dur-reveal);
+  animation-timing-function: var(--ease-out);
+}
+/* A reader who has asked for less motion gets the navigation and none of
+   the travel. The pages still change; nothing flies. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ---- The card, and the two controls inside it ----
+ *
+ * The shell is a plain box now: the anchor moved onto the NAME and covers
+ * the card from there with a stretched pseudo-element. That is what lets a
+ * bookmark live on the card at all — a button cannot be nested inside a link,
+ * and while the whole card was the anchor there was nowhere to put one.
+ *
+ * `position: relative` is what the overlay is measured against, so it is
+ * load-bearing rather than tidiness. */
+.card-link {
+  position: relative;
+}
+/* The ring belongs to whatever inside the card has focus — the name or the
+ * bookmark — and is drawn around the whole card either way, because that is
+ * the object the reader is on. */
+.card-link:focus-within {
   outline: var(--rule-weight) solid var(--fg-accent);
   outline-offset: var(--focus-offset);
 }
-.card-link:focus:not(:focus-visible) {
+.card-link:focus-within:not(:has(:focus-visible)) {
   outline: none;
+}
+/* The overlay. `z-index: 0` rather than a positive one: it needs to sit
+ * over the picture and under anything that raises itself, which is the
+ * bookmark and nothing else. */
+.card-name-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+/* One row across the card: the name on the left, the price across from it,
+ * and the bookmark last so it lands on the card's right edge.
+ *
+ * The price and the bookmark are grouped (`.card-name-end`) rather than
+ * being two more flex children — otherwise `space-between` would spread
+ * three items evenly and the price would float somewhere in the middle of
+ * the card instead of reading against its right margin.
+ *
+ * `min-width: 0` on the name is what lets a long colourway ellipsize
+ * rather than push the price and the bookmark off the card. */
+.card-name-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.card-name-row > :first-child {
+  min-width: 0;
+}
+/* The second line: the acetate on the left, its price across from it. The
+ * empty `<span>` the card renders when there is no meta is what keeps a
+ * lone price against the right edge — `space-between` on a single child
+ * would put it on the left. */
+.card-meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+/* Above the overlay. The 32px target is centred on the name's baseline and
+ * its own box is pulled back with a negative margin, so the hit area is
+ * full size without the row growing to fit it. */
+/* Above the overlay, and pulled to the card's true right edge: the 32px
+ * target is wider than the glyph, so without the negative margin the mark
+ * would sit a quarter-inch short of the margin the name is set to. */
+/* Above the overlay, and pulled to the card's true right edge: the 32px
+ * target is wider than the glyph, so without the negative margins the mark
+ * would sit short of the margin the name is set to, and the price below it
+ * would be pushed down by the target's own height. */
+.card-hold {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  /* Top only. The 32px target is taller than the glyph, so pulling the top
+     up seats the mark on the name's own line — but pulling the BOTTOM up
+     too dragged the price underneath it into the target's box, overlapping
+     the two by 6px. The bottom stays where the box ends, and the price
+     begins after it. */
+  margin-block: -0.5rem 0;
+  /* The glyph is inset within its target, so the box overhangs the card to
+     put the MARK on the same right edge the price below it is set to. */
+  margin-right: -0.5rem;
 }
 
 /* The card's photograph. SQUARE, and declared once — the bag's cross-sell,
-   You may also like, the held list and both index grids all read this, so
+   The Collection (also-like), the held list and both index grids all read this, so
    the catalogue's proportion is one number rather than six copies of a
    utility class that drift apart the first time one of them is touched.
 
@@ -1276,6 +1480,67 @@
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
+}
+
+/* ---- The card's photograph under the pointer ----
+ *
+ * This was `duration-700` with Tailwind's default easing, written inline on
+ * the element: a linear-ish 700ms on transform AND opacity at once, which
+ * is why it read as slow and mechanical rather than as the picture leaning
+ * in. It now uses the house's own motion tokens, like everything else that
+ * moves here — see STYLE-GUIDE §1.
+ *
+ * `--dur-reveal` with `--ease-out` on the transform: the move starts fast
+ * and settles, so the zoom is felt at the beginning and has stopped
+ * mattering by the end. The crossfade runs SHORTER, at `--dur-base`, so the
+ * second photograph is fully there while the zoom is still arriving —
+ * fading the two over the same 700ms was what made the swap look like a
+ * dissolve rather than a change of picture.
+ *
+ * `will-change` is deliberately absent: a grid of thirty-six cards each
+ * promoted to its own layer costs more than the hover is worth, and the
+ * transform alone already composites. */
+.card-img {
+  object-fit: cover;
+  transform: scale(1);
+  transition:
+    transform var(--dur-reveal) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
+}
+/* A card with a second photograph moves less, because the swap is doing
+   the talking. One with only a single picture goes further — the zoom is
+   the whole gesture there. */
+.card-link:hover .card-img--swaps,
+.card-link:focus-within .card-img--swaps {
+  transform: scale(1.04);
+  opacity: 0;
+}
+.card-link:hover .card-img--zooms,
+.card-link:focus-within .card-img--zooms {
+  transform: scale(1.06);
+}
+.card-img--under {
+  opacity: 0;
+}
+.card-link:hover .card-img--under,
+.card-link:focus-within .card-img--under {
+  transform: scale(1.04);
+  opacity: 1;
+}
+/* Travel is decoration; the picture arriving is not. Reduced motion keeps
+   the swap and drops the zoom. */
+@media (prefers-reduced-motion: reduce) {
+  .card-img {
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .card-link:hover .card-img--swaps,
+  .card-link:focus-within .card-img--swaps,
+  .card-link:hover .card-img--zooms,
+  .card-link:focus-within .card-img--zooms,
+  .card-link:hover .card-img--under,
+  .card-link:focus-within .card-img--under {
+    transform: none;
+  }
 }
 
 .card-name {

@@ -343,6 +343,48 @@
 .drawer[data-open="true"] .drawer-panel {
   transform: none;
 }
+
+/* ---- The controls inside a bag line ----
+ *
+ * The quantity buttons measured 12x21px: a glyph with no box around it,
+ * and about a quarter of the 24x24 a control has to be to be hit reliably.
+ * They are also the most-used controls in the whole shop — changing a
+ * quantity is the one thing a bag is FOR — so they were the smallest
+ * targets in the build doing the heaviest work.
+ *
+ * The box is the fix, not a bigger glyph: the type stays at micro scale,
+ * and a 32px square is drawn around it. That square is invisible, which is
+ * why the row still reads as three quiet marks rather than a toolbar, and
+ * `margin: -0.5rem` on the group pulls the added padding back out of the
+ * layout so nothing below it moves.
+ */
+.bag-qty {
+  display: inline-flex;
+  align-items: center;
+  margin: -0.5rem;
+}
+.bag-qty-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  color: var(--fg-quiet);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.bag-qty-btn:hover,
+.bag-qty-btn:focus-visible {
+  color: var(--fg-primary);
+}
+.bag-qty-btn:disabled {
+  opacity: 0.35;
+}
+/* The count sits between them and needs no hit area, only room enough that
+   a two-digit quantity does not shove the buttons apart. */
+.bag-qty-count {
+  min-width: 1.5rem;
+  text-align: center;
+}
 /* The lines scroll; the head and the total do not. A subtotal that scrolls
    away while you are deciding whether to remove something is the one line
    the panel exists to hold still. */
@@ -446,6 +488,81 @@
 .search-group + .search-group {
   margin-top: 2.5rem;
 }
+/* ── PAGING A CARD ──────────────────────────────────────────────────
+   Two chevrons inside the square, held at the edges, brought up when the
+   pointer is on the card. At rest a grid is photographs and names, and a
+   pair of arrows drawn over every tile would be the grid asking to be
+   operated before it has been read.
+
+   Ink at low opacity rather than a disc: the frames are shot on stone and
+   linen and a white pill over one is a control from another shop. The
+   glyph is the same weight as the search field's, which is the only
+   other 1.25-stroke icon the sheet carries.
+
+   They are spans (see card-shots) — `pointer-events` is what makes them
+   clickable inside a link that covers the same pixels. */
+.card-chevrons {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+  pointer-events: none;
+}
+.card-link:hover .card-chevrons,
+.card-link:focus-within .card-chevrons {
+  opacity: 1;
+}
+/* A touch screen has no hover to reveal them with, and a card the reader
+   cannot page is a card with one picture as far as they are concerned. */
+@media (hover: none) {
+  .card-chevrons {
+    opacity: 1;
+  }
+}
+.card-chevron {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--fg-primary);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background var(--dur-instant) var(--ease-out);
+}
+.card-chevron:hover {
+  background: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+.card-chevron svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.25;
+}
+
+/* The answers, as products.
+
+   Two up on a phone and three from the small breakpoint — the panel is
+   56rem at its widest, so the site's four-column grids would draw the
+   frames at thumbnail size. The gap is the grid gap the catalogue uses,
+   one step tighter, because these tiles sit inside a sheet rather than on
+   a page. */
+.search-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.25rem;
+}
+@media (min-width: 640px) {
+  .search-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+}
+
 .search-hit {
   display: flex;
   align-items: baseline;
@@ -483,8 +600,22 @@
    `display: contents` on the `ol` is deliberate: the eyebrow's own class
    may set margins, alignment or a reveal on the element ABOVE this, and a
    list box in between would sit inside that box rather than being it. */
+/* `inline-flex`, and that is the alignment fix, not a tidy-up.
+ *
+ * As a BLOCK flex container this row filled its parent and packed its
+ * crumbs to the flex-start edge — and flex children do not read
+ * `text-align`, so the trail sat hard left inside a centred hero while the
+ * h1 directly beneath it was centred. /eyewear was the visible case.
+ *
+ * Setting `justify-content: center` would only move the problem to the
+ * left-aligned heroes, which are most of them. An INLINE-level box is
+ * placed by the parent's own `text-align` instead — centred under a
+ * centred masthead, flush left under a left one — so the trail inherits
+ * whatever alignment the page it is set into already uses, with nothing
+ * passed to it and no modifier class to remember. `gap`, `nowrap` and the
+ * scroll row all survive unchanged. */
 .crumb-eyebrow-list {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   margin: 0;
@@ -513,6 +644,28 @@
 .crumb-eyebrow::-webkit-scrollbar {
   display: none;
 }
+/* On a phone the trail is one line the reader can drag, and when it is
+   longer than the screen it opens SCROLLED TO ITS END: the page you are
+   on is the crumb that must be visible, so it is the crumbs behind you
+   that are cut off, on the left, under a fade. The order is the order a
+   breadcrumb is; nothing is reversed. See CrumbTrail for the scroll. */
+@media (max-width: 639px) {
+  .crumb-eyebrow {
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%);
+            mask-image: linear-gradient(to right, transparent, #000 12%);
+  }
+  .crumb-eyebrow-list {
+    /* Symmetric, so a centred trail stays centred. It was `padding-left`
+       alone, which is right for the overflow case it was written for — room
+       before the first crumb, under the fade — but on a trail short enough
+       to fit it shifted the whole row off the centre line by half of it. */
+    padding-inline: 1.5rem;
+  }
+  .crumb-eyebrow-item {
+    scroll-snap-align: end;
+  }
+}
 /* A bullet at 45%, not a chevron: a chevron is a second glyph weight
    inside the smallest type on the page. */
 .crumb-eyebrow-sep {
@@ -531,8 +684,117 @@
   color: var(--fg-primary);
 }
 
+/* ── THE OFFER, UNDER THE COPY ──────────────────────────────────────
+   The last line of a section's body — see components/product/story-buy.
+   No ground and no rule: it belongs to the paragraph above it. `inherit`
+   on the alignment is what lets one component sit correctly under a
+   centred masthead and under a left-aligned column without being told
+   which it is in. */
+.story-buy {
+  margin-top: 2rem;
+  text-align: inherit;
+}
+
+/* ── THE TURNTABLE, AS A PLATE ──────────────────────────────────────
+   One item in the buy page's column of photographs — see
+   components/product/model-plate. */
+
+/* The loader: a ring of hairline that sweeps, in the house's own
+   vocabulary rather than a borrowed spinner. It sits OVER the poster, so
+   what the reader sees is the object with something arriving on top of it,
+   not an empty box with a spinner in it. */
+.model-plate-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  backdrop-filter: blur(2px);
+}
+.model-plate-ring {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  /* One lit edge is what makes the rotation legible on a ring this quiet;
+     four would read as a solid square. */
+  border-top-color: var(--fg-accent);
+  border-radius: 50%;
+  animation: model-plate-turn 0.9s linear infinite;
+}
+@keyframes model-plate-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* The cue. Bottom-left, over the object's own ground, at the scale every
+   other quiet label on the site uses. */
+.model-plate-hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  color: var(--fg-secondary);
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.model-plate-hint svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  stroke-width: 1.25;
+}
+/* It has been read the moment the frame is touched. A hint that outlives
+   its gesture stops being a hint and becomes a caption. */
+.model-plate:hover .model-plate-hint,
+.model-plate:focus-within .model-plate-hint {
+  opacity: 0;
+}
+
+/* The turning is decoration; the arrival is not. Reduced motion keeps the
+   loader visible and still, so the state still reads. */
+@media (prefers-reduced-motion: reduce) {
+  .model-plate-ring {
+    animation: none;
+    border-top-color: var(--fg-accent);
+  }
+  .model-plate-hint {
+    transition: none;
+  }
+}
+
+/* The acetate on a colour filter chip. A square, not a dot: every mark on
+   this site that stands for a material is square — the picker's swatches,
+   the bag line's chip — and a circle here would be the one round thing in
+   the interface. Hairline border so a near-black acetate still reads as a
+   mark on a near-black chip rather than as a hole in it. */
+.shop-chip-swatch {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+}
+
+/* The bookmark on a card: icon only, and a proper target around it. The
+   printed word is dropped in a grid (see HoldToggle's `compact`), so the
+   box has to come from here — 2rem square, the same minimum the bag's
+   quantity keys use, with the glyph centred in it. */
+.hold-toggle--compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  gap: 0;
+}
+
 /* ── THE HELD LIST ─────────────────────────────────────────────────
-   The heart is the only fill in the interface, and it is earned: filled
+   The bookmark is the only fill in the interface, and it is earned: filled
    means held, outlined means not, and there is no third state to learn. */
 .hold-toggle {
   display: inline-flex;
@@ -553,21 +815,6 @@
 .hold-toggle[data-held="true"] svg {
   fill: currentColor;
 }
-.hold-card-remove {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2;
-  padding: 0.5rem;
-  color: var(--paper);
-}
-.hold-card-remove svg {
-  width: 1rem;
-  height: 1rem;
-  stroke-width: 1.25;
-  fill: currentColor;
-}
-
 /* ── THE FOLDING STEP ──────────────────────────────────────────────
    An answered step folds to one line with CHANGE beside it; the open one
    is the only thing with height. The flow this presents is written down in
@@ -684,7 +931,19 @@
   font-size: 0.6875rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--fg-quiet);
+  /* `--fg-secondary` (9.96:1), not `--fg-quiet` (4.75:1).
+   *
+   * The label sat one step off the floor, which left nothing underneath it:
+   * the " · optional" qualifier was drawn by multiplying this colour by
+   * `opacity-60`, and 0.6 x 47% is 28% — 2.29:1, less than half the minimum
+   * and on the one word that tells somebody whether they have to fill a
+   * field in. There is no passing value below 47%, so the qualifier could
+   * not simply be nudged; the LABEL had to make room.
+   *
+   * A form label is also the wrong thing to have been whispering. It now
+   * reads at secondary weight and the qualifier sits at `--fg-quiet`, which
+   * keeps the two distinguishable and puts both above AA. */
+  color: var(--fg-secondary);
 }
 .field input,
 .field textarea,
@@ -827,45 +1086,15 @@
 /* ── THE DESK'S RAIL ───────────────────────────────────────────────
    Orders / Held / Profile, as a row of words with the current one ruled
    under. Not tabs in a strip: the site has no strips. */
+/* The desk's rooms. The buttons inside are `.cta-secondary` — the site's
+   own second-weight CTA, and the live one is gold by `aria-current`, both
+   from the interaction system. So all that is left here is the row: they
+   wrap on a narrow screen rather than scrolling, because a tab you cannot
+   see is a room you do not know the desk has. */
 .desk-rail {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
-  border-bottom: var(--rule-weight) solid var(--fg-rule);
-  padding-bottom: 1rem;
-}
-.desk-rail button {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--font-ui);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg-quiet);
-  transition: color var(--dur-fast) var(--ease-out);
-}
-.desk-rail button svg {
-  width: 0.9rem;
-  height: 0.9rem;
-  stroke-width: 1.25;
-}
-.desk-rail button:hover,
-.desk-rail button:focus-visible {
-  color: var(--fg-primary);
-}
-.desk-rail button[aria-current="true"] {
-  color: var(--fg-primary);
-}
-.desk-rail button[aria-current="true"]::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1.05rem;
-  height: var(--rule-weight);
-  background: var(--fg-primary);
+  gap: 0.75rem;
 }
 
 /* ── IN THE BAG ────────────────────────────────────────────────────
@@ -976,7 +1205,7 @@
 
 /* ---- the three ways on, in one row-reversed line ----
 
-   DOM order is Checkout, Keep looking, the bag glyph: primary first, which
+   DOM order is Checkout, Explore more, the bag glyph: primary first, which
    is the order a screen reader and a tab key should meet them in. The eye
    wants the opposite on a wide panel, where the filled block belongs at the
    end of the line the reader is travelling along, so the ROW is reversed
@@ -1010,7 +1239,7 @@
        lay three controls across rather than the body column's 306px. */
     grid-column: 1 / -1;
     display: flex;
-    /* Right to left: Checkout lands rightmost, Keep looking in the middle,
+    /* Right to left: Checkout lands rightmost, Explore more in the middle,
        the glyph at the far left. */
     flex-direction: row-reverse;
     justify-content: space-between;
@@ -1145,6 +1374,142 @@
   color: var(--fg-primary);
 }
 
+/* ── ONE PHASE AT A TIME, ON A PHONE ───────────────────────────────
+   The fold is a desk behaviour. It works there because all four heads
+   are in view at once, so the closed ones are context: what was
+   answered, what is still coming. On a phone they are not context,
+   they are three lines of furniture between the reader and the field
+   they are typing into, and the open step's own length means the next
+   head is off screen anyway.
+
+   So below 1024px the closed steps are removed from the page outright
+   — `display: none`, not a folded body — and the rail above carries
+   what they used to say. One question, its answer, its way on.
+
+   The rail sticks under the header at the header's own height, the
+   same three paddings .shop-bar measures, so the reader always knows
+   which of the four they are in. */
+.phase-rail {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .phase-rail {
+    --rail-top: 3.75rem;
+    display: block;
+    position: sticky;
+    top: var(--rail-top);
+    z-index: 40;
+    margin-inline: calc(-1 * var(--gutter));
+    margin-bottom: 2.5rem;
+    padding: 0.75rem var(--gutter);
+    /* Opaque: the steps must not show through the marks as they pass. */
+    background: var(--ink);
+    border-bottom: var(--rule-weight) solid var(--fg-rule);
+  }
+  /* Only the open one is drawn. The others are not folded, they are
+     not there — and nothing inside them is tabbable or announced. */
+  .checkout-steps .step:not([data-state="open"]) {
+    display: none;
+  }
+  /* The one step on screen is the page, so it does not need the rule
+     that separated it from the three that are gone. */
+  .checkout-steps .step {
+    border-top: 0;
+    padding-top: 0;
+    /* Clear of the header AND the rail stuck under it, or the step's own
+       title lands behind the marks the moment it is revealed. */
+    scroll-margin-top: 9.5rem;
+  }
+  /* The rail already says which of the four this is, in the same
+     numerals. The step keeps its title and drops the number. */
+  .checkout-steps .step-index {
+    display: none;
+  }
+  /* The express door is the way PAST the four questions, which is an
+     offer that only makes sense before the first one is answered. Kept
+     on 01, gone once the reader is inside the sequence. */
+  .checkout:not([data-phase="pay"]) .express {
+    display: none;
+  }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .phase-rail {
+    --rail-top: 4.25rem;
+    margin-inline: calc(-1 * var(--gutter-wide));
+    padding-inline: var(--gutter-wide);
+  }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .checkout-steps .step {
+    scroll-margin-top: 10rem;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .phase-rail {
+    --rail-top: 5.25rem;
+  }
+  .checkout-steps .step {
+    scroll-margin-top: 11rem;
+  }
+}
+/* Four marks across the width, each one the same share of it, so the
+   rail reads as a measure of the whole rather than as four buttons
+   that happen to be in a row. The line under each mark is the state:
+   quiet for what is waiting, drawn for what is answered, at full ink
+   for the one being asked. */
+.phase-rail-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.phase-mark {
+  display: flex;
+  flex-direction: column;
+  /* The label under the index is gone, so the gap it opened goes with it. */
+  position: relative;
+  width: 100%;
+  padding-top: 0.5rem;
+  text-align: left;
+  border-top: 2px solid var(--fg-rule);
+  color: var(--fg-quiet);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.phase-index {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+}
+.phase-label {
+  /* Not drawn. Four words across a phone's width were a caption on a mark
+     that already carries the only thing the rail is for — which of the
+     four this is — and the open step's own title says the rest, an inch
+     below and at full size. The label stays in the markup because the
+     mark is a button and "02" is not an accessible name. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.phase[data-state="done"] .phase-mark,
+.phase[data-state="ready"] .phase-mark {
+  color: var(--fg-tertiary);
+  border-top-color: var(--fg-tertiary);
+}
+.phase[data-state="open"] .phase-mark {
+  color: var(--fg-primary);
+  border-top-color: var(--fg-primary);
+}
+.phase-mark:disabled {
+  cursor: default;
+}
+
 .checkout[data-busy="true"] .checkout-steps {
   opacity: 0.6;
   pointer-events: none;
@@ -1260,7 +1625,7 @@
 
 /* ── THE ADDRESS CARDS ─────────────────────────────────────────────
    One per saved address, on a hairline box rather than a filled card —
-   the only fill on the site is the heart. Chosen means a full-weight rule
+   the only fill on the site is the bookmark. Chosen means a full-weight rule
    and a mark in the corner. */
 .address-cards {
   display: grid;
@@ -1844,25 +2209,405 @@
    Glyph, word, and a note that is only drawn when there is one. The
    glyph is the desk's own for that room, at the chrome's weight, so
    the drawer and the page name a room the same way twice. */
-.desk-line {
+/* The drawer's rooms. Each one is a `.cta-secondary` carrying its own
+   box, its own states and the house shuffle, so this is only the stack:
+   a column of full-width CTAs, evenly spaced, with room under any of them
+   for the quiet note that says what is in there. No list markers, no
+   hairlines — the boxes are the rule now. */
+.desk-rooms {
   display: flex;
-  align-items: center;
-  gap: 0.9rem;
+  flex-direction: column;
+  /* A hair more than the half-rem this started at: five boxes an eighth
+     of an inch apart read as one block with lines through it rather than
+     as five rooms, and the drawer has the height to spare. */
+  gap: 0.75rem;
+  /* No `margin: 0` here. Preflight already zeroes a list's margins, and
+     writing it again in this file — which loads AFTER the utilities —
+     meant the `mt-10` the drawer sets on this list was silently dropped
+     and the first room sat against the paragraph above it. A reset that
+     only repeats the reset above it can still cost you a rule. */
+  padding: 0;
+  list-style: none;
 }
-.desk-line-glyph {
-  flex: 0 0 auto;
+/* Full width, so the five boxes are one column with one left edge and one
+   right edge — a stack of centred pills at five different widths is a
+   list of buttons, not a list of rooms. */
+.desk-rooms .cta-secondary {
+  width: 100%;
+}
+
+/* ── SHOP ALL ──────────────────────────────────────────────────────
+   The catalogue page. The rail and the filter pin are one band that
+   sticks under the header; the drawer's rows and the grid's dividers
+   are the rest. See components/shop/shop-all.tsx and lib/shop-all.ts
+   for where the arithmetic came from. */
+
+/* The band. Sticky rather than fixed, so it scrolls with the head of
+   the page and then holds under the header once the head has gone.
+   Full-bleed ink behind it, or the tiles would show through the gaps
+   in the rail as they pass under. Below the header's 70 and above the
+   grid; the drawer sits at 60 and covers it, which is right: the
+   controls behind a control are not controls.
+
+   `top` is the header's height at each of its three paddings (py-3,
+   py-4, py-6 around a 2.25rem cluster). The header is transparent, so
+   a bar stuck under it would leave a band the tiles scroll through on
+   their way past; while the bar is STUCK (`data-stuck`, set from a
+   sentinel in shop-all.tsx) it paints that band itself, and the header
+   sits on it. Not while in flow: there the band would cover the lede. */
+.shop-bar {
+  --bar-top: 3.75rem;
+  position: sticky;
+  top: var(--bar-top);
+  z-index: 40;
+  margin-inline: calc(-1 * var(--gutter));
+  padding: 1rem var(--gutter);
+  background: var(--ink);
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+}
+.shop-bar[data-stuck]::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: var(--bar-top);
+  background: var(--ink);
+}
+@media (min-width: 640px) {
+  .shop-bar {
+    --bar-top: 4.25rem;
+    margin-inline: calc(-1 * var(--gutter-wide));
+    padding-inline: var(--gutter-wide);
+  }
+}
+@media (min-width: 768px) {
+  .shop-bar {
+    --bar-top: 5.25rem;
+  }
+}
+
+/* The rail scrolls sideways on a phone rather than wrapping: seven tabs
+   wrapped to three rows is most of a screen before the first tile. No
+   scrollbar drawn, and the edge fades to say there is more. */
+.shop-rail {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+}
+.shop-rail::-webkit-scrollbar {
+  display: none;
+}
+/* Their own width, always. The site's CTAs go full-span below 1024px
+   because a lone CTA in a column should; a tab in a rail is not lone. */
+.shop-rail > * {
+  flex: none;
+  width: auto;
+  white-space: nowrap;
+}
+
+/* The pin. A glyph and a word at the chrome's sizes, with the count of
+   filters currently narrowing the grid as a mono numeral beside it: the
+   same tally the bag glyph carries, not a filled badge. */
+/* ---- The rail's handles ----
+   Two squares, the same height as the filter box beside them, so the three
+   read as one group at the bar's right end. Square because everything that
+   contains something on this site is square — the CTA, the swatch, the
+   card; a rounded pair here would be the only radius in the bar. */
+.shop-nudge {
+  display: inline-flex;
+  flex: none;
+  gap: 0.375rem;
+}
+/* Gone on a phone. The rail is already swipeable there, and the chevrons
+   exist for the pointer that cannot swipe — a mouse on a desktop. Keeping
+   them would spend two 44px targets of a 375px bar on a gesture the thumb
+   already has, and push Filter off the edge. */
+@media (max-width: 639px) {
+  .shop-nudge {
+    display: none;
+  }
+}
+.shop-nudge button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-primary);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.shop-nudge button:hover,
+.shop-nudge button:focus-visible {
+  border-color: var(--fg-primary);
+}
+.shop-nudge button:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: 2px;
+}
+.shop-nudge svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.25;
+}
+
+/* An outlined RECTANGLE, not a bare glyph and word.
+   It was `padding-inline: 0.25rem` with no border, which left the one
+   control that opens a panel looking lighter than the chips it sits beside
+   — a button that does more, drawn as less. The hairline is the same one
+   `.cta-secondary` uses, so it belongs to the same family as the rail. */
+.shop-filter-pin {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding-inline: 1rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-primary);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
+}
+.shop-filter-pin:hover,
+.shop-filter-pin:focus-visible {
+  border-color: var(--fg-primary);
+}
+.shop-filter-pin:focus-visible {
+  outline: var(--rule-weight) solid currentColor;
+  outline-offset: 2px;
+}
+.shop-filter-pin svg {
   width: 1.125rem;
   height: 1.125rem;
   stroke-width: 1.25;
-  color: var(--fg-quiet);
+}
+.shop-filter-pin .t-eyebrow {
+  color: inherit;
+}
+
+/* The drawer's groups. A heading at eyebrow scale, then rows on
+   hairlines. The whole row is the button; the tick at the end is the
+   only state mark, and the count is mono because it is a number being
+   compared down a column. */
+.filter-group {
+  padding-block: 1.5rem;
+}
+.filter-group + .filter-group {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+.filter-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 1rem;
+  min-height: 2.75rem;
+  padding-block: 0.375rem;
+  text-align: left;
+  color: var(--fg-secondary);
+  font-family: var(--font-ui-stack);
+  font-size: 0.9375rem;
   transition: color var(--dur-fast) var(--ease-out);
 }
-/* The label takes the slack, so the note sits on the right edge and the
-   rows line up whether or not a row has one. */
-.desk-line-label {
-  flex: 1 1 auto;
-}
-.link-quiet:hover .desk-line-glyph,
-.link-quiet:focus-visible .desk-line-glyph {
+.filter-row:hover,
+.filter-row:focus-visible,
+.filter-row[data-on] {
   color: var(--fg-primary);
+}
+.filter-row:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+.filter-row-label {
+  flex: 1;
+  min-width: 0;
+}
+.filter-row-count {
+  font-size: 0.6875rem;
+  color: var(--fg-quiet);
+}
+.filter-row-tick {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.25;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.filter-row[data-on] .filter-row-tick {
+  opacity: 1;
+}
+
+/* The dividers. The name, and nothing else: it spans every column, and
+   the first row of the run sits directly under it. The rule that used
+   to run out from a divider drew a second horizontal line every few
+   rows on a page whose only real structure is the grid. */
+.shop-divider {
+  grid-column: 1 / -1;
+  padding-top: 2.5rem;
+}
+.shop-divider:first-child {
+  padding-top: 0;
+}
+
+/* The promo, across the whole grid: plate on the left, the words on the
+   right, a hairline above and below so it reads as an interruption and
+   not as a very wide piece. */
+.shop-promo {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 2rem;
+  padding-block: 2.5rem;
+  border-block: var(--rule-weight) solid var(--fg-rule);
+}
+@media (min-width: 768px) {
+  .shop-promo {
+    grid-template-columns: 3fr 2fr;
+    align-items: center;
+    gap: 4rem;
+  }
+}
+.shop-promo-art {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ink);
+}
+.shop-promo-art img {
+  transition: transform var(--dur-reveal) var(--ease-out);
+}
+.shop-promo:hover .shop-promo-art img {
+  transform: scale(1.03);
+}
+
+/* "In the bag", at the corner of the card's picture. Words on ink, not
+   a badge: the card is a link and this is a fact about it. */
+.shop-in-bag {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 2;
+  padding: 0.375rem 0.625rem;
+  background: var(--ink);
+  color: var(--paper);
+  pointer-events: none;
+}
+
+/* ── THE SIZE ROW ──────────────────────────────────────────────────
+   A garment has a size and a frame does not, so this is the one control
+   the eyewear panel never needed. Word chips, not a select: three options
+   fit on one line at every width the panel is drawn at, and a dropdown
+   would hide a required choice behind a press.
+
+   Bordered rather than filled at rest, filled when chosen — the same
+   grammar as the acetate swatches directly above it, so a reader who has
+   just picked a colour knows without being told that this is the second
+   half of the same question. 2.5rem tall: the 24px minimum target with the
+   text sitting comfortably inside it rather than against its edge. */
+.size-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  min-height: 2.5rem;
+  padding: 0 0.85rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+  color: var(--fg-secondary);
+  font-size: var(--fs-caption, 0.8125rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: transparent;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.size-chip:hover {
+  color: var(--fg-primary);
+  border-color: var(--fg-secondary);
+}
+.size-chip[data-on="true"] {
+  color: var(--ink);
+  background: var(--fg-primary);
+  border-color: var(--fg-primary);
+}
+/* The ask, not an error. It appears only once a reader has pressed Add
+   without choosing, so it is an answer to something they did rather than a
+   warning sitting on the page from the start. */
+.size-ask {
+  color: var(--fg-accent);
+}
+
+/* The rail's heading line: the two chevrons and Shop all are one group of
+   controls, so they are one height. They were not — the squares are
+   2.75rem, the CTA's own padding made it 37px, and side by side that
+   reads as two unrelated things that happen to be next to each other.
+   The CTA grows to the square rather than the square shrinking to the
+   CTA: 44px is the comfortable target, and giving it up to match a
+   smaller neighbour would be paying for tidiness with a worse control. */
+.rail-head .shop-nudge button,
+.rail-head .cta-secondary {
+  height: 2.75rem;
+}
+.rail-head .cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0;
+}
+
+/* ── A ROW THAT RUNS OFF THE EDGE ──────────────────────────────────
+   The story pages' closing rail (see OtherCollections). One line of
+   cards, scrolled rather than wrapped, with the last one cut by the right
+   edge — a partial card is what says the row moves, and it does it
+   without a caption or a dot strip.
+
+   Snap on the start of each cell so a chevron press lands on a card
+   rather than halfway between two. */
+.rail-row {
+  display: grid;
+  grid-auto-flow: column;
+  /* ---- The width is chosen so the row OVERFLOWS ----
+  
+     There are five other houses and the page is 80rem wide, so any card
+     narrow enough to fit all five is a card that makes the chevrons
+     decoration — two buttons that scroll a row with nowhere to scroll to.
+     18rem puts about four and a quarter on screen at full width, which
+     leaves a real cut card at the edge and gives the handles something to
+     do. Below the breakpoints it is a fraction of the viewport, so a
+     phone shows one and a half. */
+  grid-auto-columns: 74vw;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* The scrollbar is the browser's, and on a dark editorial page it is a
+     grey bar across the composition. The row says it moves by showing a
+     cut card; it does not need a second, uglier way of saying it. */
+  scrollbar-width: none;
+  /* Room for the focus ring on a keyboard-tabbed card, which an
+     `overflow` box clips to nothing. */
+  padding-block: 0.25rem;
+}
+.rail-row::-webkit-scrollbar {
+  display: none;
+}
+.rail-cell {
+  display: flex;
+  scroll-snap-align: start;
+}
+@media (min-width: 640px) {
+  .rail-row {
+    grid-auto-columns: 36vw;
+  }
+}
+@media (min-width: 1024px) {
+  .rail-row {
+    grid-auto-columns: 18rem;
+  }
 }

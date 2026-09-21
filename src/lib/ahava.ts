@@ -9,9 +9,10 @@
  *
  * ---- What this house has, and what it does not ----
  *
- * AHAVA has been shot as its own world (a Paris apartment, early) but it
- * has no campaign film and one turntable export between its six acetates.
- * So the approach runs face-only, and the offering turns the house's glb
+ * AHAVA has been shot as its own world (a Paris apartment, early) and has
+ * one turntable export between its six acetates. Its films are placeholder
+ * teasers until the campaign is cut (see the note at `hero`); the approach
+ * walks in film to face, and the offering turns the house's glb
  * with no squares under it. The palette band still paints the full run:
  * StoryPage builds it from `colorwayNames` in lib/navigation, so the six
  * colours are declared once and the buy page sells the same six.
@@ -46,7 +47,19 @@ export const hero: Hero = {
   image: "/images/ahava/cover/desktop.webp",
   imagePortrait: "/images/ahava/cover/mobile.webp",
   alt: "AHAVA, front on, in early window light",
-  /* No film. See the note at the head of this file. */
+  /* ---- Placeholder teasers, Sep 2026 ----
+     Three Kling cuts stand in until the house films the campaign. This
+     set is the odd one: its "hero" cut was rendered 9:16, so the wide
+     establishing shot carries the hero here and the portrait cut takes
+     over on a phone, where it shows the whole frame at the same zoom —
+     the same split `imagePortrait` makes for the stills. The closing
+     shot runs at the approach and again beside the buy page's detail
+     tabs (lib/navigation). Each poster is frame 0 of its own film. Swap
+     the files under public/video/ahava/ and the page needs nothing else. */
+  video: "/video/ahava/establishing.mp4",
+  videoPortrait: "/video/ahava/hero.mp4",
+  poster: "/video/ahava/establishing-poster.webp",
+  posterPortrait: "/video/ahava/hero-poster.webp",
 };
 
 export const structure: Opening = {
@@ -160,10 +173,14 @@ export const spec: Spec = {
   ],
 };
 
-/* Face only. The deck has no film and the house has not been shot moving;
-   a stage holding another house's footage would be a lie about which
-   object the page is about. See Approach in product-approach.tsx. */
+/* The closing teaser, a different cut from the hero's. Its own footage
+   and not another house's: see Approach in product-approach.tsx. */
 export const approach: Approach = {
+  film: {
+    src: "/video/ahava/closing.mp4",
+    poster: "/video/ahava/closing-poster.webp",
+    alt: "The teaser film for AHAVA",
+  },
   face: {
     src: `${C}/creative-aria-fisheye-closeup.webp`,
     alt: "Aria, close, wearing AHAVA",
@@ -182,7 +199,7 @@ export const offering: Offering = {
      page. */
   view: {
     kind: "model",
-    src: "/models/houses/ahava-ahava-noir.glb",
+    src: "/models/houses/ahava-noir.glb",
   },
 };
 

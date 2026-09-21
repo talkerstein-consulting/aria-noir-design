@@ -43,7 +43,9 @@ export function ProductHero({ hero }: { hero: Hero }) {
       {hero.video ? (
         <HeroFilm
           src={hero.video}
+          srcPortrait={hero.videoPortrait}
           poster={hero.poster ?? hero.image}
+          posterPortrait={hero.posterPortrait}
           alt={hero.alt}
           className="object-cover object-[50%_30%]"
         />
@@ -89,7 +91,21 @@ export function ProductHero({ hero }: { hero: Hero }) {
           gold caps preheader, display heading under it at a 5xl measure. The
           hero adds the product name between the two, since unlike a section
           masthead it has a name to carry. */}
-      <div className="relative px-6 pb-16 sm:px-10 sm:pb-24">
+      {/* Two different problems at the two widths, so two different feet.
+      
+          NARROW: the pause control is pinned 24px up and is 44px tall, so
+          it owns the band from 24px to 68px — and the copy runs the full
+          width of the screen straight through it. At `pb-16` the last line
+          landed at 64px, inside that band and a few pixels off the glyph.
+          `pb-28` stops the type above the control and leaves the corner to
+          it.
+      
+          WIDE: no collision to avoid. The copy is a centred `max-w-5xl`
+          column and the control is out at the right margin — measured at
+          1440px, the text ends 140px short of it. So the foot here is not
+          clearance, it is composition: the type is seated low in the frame
+          against the architecture above it, which is the shot. */}
+      <div className="relative px-6 pb-28 sm:px-10 sm:pb-16">
         <div className="stack stack--sm mx-auto max-w-5xl items-center text-center">
           {/* The trail, where this house's eyebrow used to be — see
               components/crumb-eyebrow. */}

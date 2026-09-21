@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ProductModel, posterFor } from "@/components/product/product-model";
+import { MODEL_AIR } from "@/lib/model-fit";
 
 /**
  * The turntable, with a photograph of itself underneath.
@@ -39,10 +40,16 @@ export function ModelStill({
   /** The section's own mount gate. Until it is true, the still is all
    *  there is — and that is the point of it. */
   built,
+  air,
 }: {
   src: string;
   alt: string;
   built: boolean;
+  /** Passed straight to `ProductModel`, and used here to size the STILL to
+   *  match. The two are supposed to be one picture — see the note on the
+   *  crossfade — so a stage that enlarges the model has to enlarge the
+   *  photograph of it by the same amount, or the fade becomes a jump. */
+  air?: number;
 }) {
   /* What has been drawn is a FILENAME, not a boolean, and `drawn` is
      derived from it during render.
@@ -66,8 +73,15 @@ export function ModelStill({
         /* contain and the same padding as the plate fallback: this is a
            still life of one object, and cropping it to fill a screen cuts
            the temples off the frame being sold. */
-        className="object-contain p-10 transition-opacity duration-700 sm:p-20"
-        style={{ opacity: drawn ? 0 : 1 }}
+        className="object-contain transition-opacity duration-700"
+        /* The poster was captured with the frame at the house margin
+           inside a square, so the padding here is what re-states that
+           margin on a stage of a different shape — and it scales with
+           `air` rather than being two fixed Tailwind steps. */
+        style={{
+          opacity: drawn ? 0 : 1,
+          padding: `${(2.5 * MODEL_AIR) / (air ?? MODEL_AIR)}rem`,
+        }}
         /* The one image on the section that is worth fetching before the
            reader reaches it: it is what they will see if anything at all
            goes wrong with the scene. */
@@ -79,7 +93,7 @@ export function ModelStill({
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: drawn ? 1 : 0 }}
         >
-          <ProductModel src={src} onReady={() => setDrawnFor(src)} />
+          <ProductModel src={src} air={air} onReady={() => setDrawnFor(src)} />
         </div>
       ) : null}
     </div>

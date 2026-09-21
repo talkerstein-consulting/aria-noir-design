@@ -1,6 +1,9 @@
 import { footer } from "@/lib/content";
 import { SitemapTabs } from "./sitemap-tabs";
+import { Camera, ChevronRight } from "lucide-react";
+import { CtaLink } from "@/components/cta-link";
 import { FooterMark } from "./footer-mark";
+import { TcgBadge } from "./tcg-badge";
 
 /**
  * Two grounds, one object.
@@ -51,20 +54,42 @@ export function SiteFooter({
                 aria-label="Subscribe"
                 className="field-submit"
               >
-                →
+                <ChevronRight aria-hidden="true" size={18} strokeWidth={1.5} />
               </button>
             </form>
-            <div className="mt-2 flex gap-5">
+            {/* ---- The one social account, as an offer ----
+            
+                It was a bare word — "Instagram" — in the quiet link style
+                the legal row uses, sitting under the newsletter field
+                with no box and no verb. Next to a form with a submit
+                button it read as a footnote rather than as the second
+                thing the house is asking a reader to do.
+            
+                An outlined CTA says what pressing it does, and the glyph
+                names the destination faster than the word does. Secondary
+                and not filled: the newsletter field is this column's main
+                action and two solid blocks would fight.
+            
+                Still hidden on a phone, where the socials are a tab in
+                the map below rather than a stray control under the
+                field. */}
+            <div className="mt-3 hidden sm:block">
               {footer.socials.map((social) => (
-                <a
+                <CtaLink
                   key={social.label}
                   href={social.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="link-quiet link-quiet--accent link-quiet--micro"
+                  external
+                  kind="secondary"
+                  /* `Camera`, not `Instagram`: lucide 1.x removed every brand
+                     mark from the set — there is no twitter, github or
+                     instagram glyph in the 4,070 icons installed — and the
+                     deleted one was a camera outline anyway. The word next
+                     to it names the destination; the glyph only has to say
+                     "this is the picture one". */
+                  icon={<Camera aria-hidden size={16} strokeWidth={1.5} />}
                 >
-                  {social.label}
-                </a>
+                  {`Follow us on ${social.label}`}
+                </CtaLink>
               ))}
             </div>
           </div>
@@ -75,14 +100,25 @@ export function SiteFooter({
               the footer empty — a footer being narrow in the one place
               there is nothing competing for the width. */}
           <div className="lg:min-w-0 lg:flex-1">
-            <SitemapTabs />
+            <SitemapTabs
+              narrowExtra={{
+                title: "Follow us",
+                links: footer.socials.map((s) => ({ ...s, external: true })),
+              }}
+            />
           </div>
         </div>
 
-        {/* legal line sits ABOVE the mark, so ARIA closes the page alone */}
-        <div className="mt-16 flex flex-col-reverse items-center justify-between gap-4 border-t border-[var(--fg-rule)] pt-8 sm:flex-row">
-          <p className="link-quiet link-quiet--micro">{footer.legal}</p>
-          <ul className="flex gap-6">
+        {/* Legal row, then the mark, then the plaque.
+            Desktop: the plaque and the links share one row above the mark,
+            so ARIA closes the page alone. Phone: the links sit above the
+            mark and the plaque is the last line under it, full width, the
+            maker's stamp at the very foot of the page. */}
+        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[var(--fg-rule)] pt-8 sm:flex-row">
+          <div className="hidden sm:block">
+            <TcgBadge tone={tone} />
+          </div>
+          <ul className="flex flex-wrap justify-center gap-6">
             {footer.legalLinks.map((l) => (
               <li key={l.label}>
                 <a href={l.href} className="link-quiet link-quiet--micro">
@@ -95,6 +131,10 @@ export function SiteFooter({
 
         {/* enlarged ARIA mark — draws itself in when it scrolls into view */}
         <FooterMark />
+
+        <div className="mt-8 sm:hidden">
+          <TcgBadge tone={tone} />
+        </div>
       </div>
     </footer>
   );

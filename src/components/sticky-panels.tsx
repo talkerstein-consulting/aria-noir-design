@@ -146,6 +146,8 @@ export type PanelItem = {
    * which is every house but ARCA I.
    */
   imageNarrow?: string;
+  /** A crop into `imageNarrow`, phone only. See House.plateNarrowZoom. */
+  narrowZoom?: { scale: number; origin: string };
   /** Acetate swatch, for the panels with no plate in hand — the same
    *  bargain the index grid strikes rather than borrowing someone else's
    *  photograph and calling it this frame. */
@@ -166,8 +168,13 @@ export type PanelItem = {
  * the frame is centred and filling the screen and an even tint over it is
  * a veil across the thing being sold. The name goes under it instead, on a
  * gradient that only touches the bottom of the frame.
+ *
+ * `split` is the six houses: the name at the top of the plate and the CTA
+ * at the foot, with the frame left clear between them. No even tint; two
+ * short gradients seat the type at either edge and nothing crosses the
+ * product. Same on a phone, where the middle is all the frame has.
  */
-export type LabelPlacement = "center" | "foot";
+export type LabelPlacement = "center" | "foot" | "split";
 
 type StickyPanelsProps = {
   items: readonly PanelItem[];
@@ -277,6 +284,14 @@ export function StickyPanels({
   const plate = useRef<HTMLDivElement>(null);
   const panels = useRef<(HTMLDivElement | null)[]>([]);
   const labels = useRef<(HTMLDivElement | null)[]>([]);
+  /* Per label: how far across the stage the label's clickable content
+     reaches, as a fraction of the stage's width. The incoming panel covers
+     the stage from the right, so this is the point at which it starts
+     eating the CTA — see onProgress. Measured, not guessed, because the
+     label is centred and its width is the width of the longest word in it.
+     Cached on layout rather than read per frame: a getBoundingClientRect
+     per label per scroll event is a forced reflow on every wheel tick. */
+  const reach = useRef<number[]>([]);
 
   /* The phone gets its own beats — see NARROW — and nothing else. There is
      deliberately no snapping here; see the note above `useTiming`. */
@@ -326,16 +341,54 @@ export function StickyPanels({
          that is true for both layouts: on a desktop the photograph is still
          doing the covering and this changes nothing anyone can see. */
       const nextIn = eased[i + 1] ?? 0;
-      const o = clamp01((eased[i] - 0.75) / 0.25) * (1 - nextIn);
+      const arrived = clamp01((eased[i] - 0.75) / 0.25);
+      const o = arrived * (1 - nextIn);
       el.style.opacity = String(o);
-      /* Only the panel that has actually arrived is clickable. Without this
-         a label still at opacity 0 mid-slide would keep a full-screen link
-         over the stage and swallow clicks meant for the panel on top. */
-      el.style.pointerEvents = o > 0.9 ? "auto" : "none";
+      /* Clickable for as long as the whole CTA is still there to be
+         clicked, which is a question about geometry and not about opacity.
+      
+         It used to be `o > 0.9`, and o carries the outgoing fade in it: the
+         instant the next panel began to move the label dropped under the
+         threshold and went dead, while its name and CTA were still sitting
+         in full view on the stage. A reader reaching for a button that is
+         plainly on the screen and getting nothing is the worst version of
+         this. So the two halves are separated — the label has to have
+         arrived (it is not clickable while it is still fading in and the
+         reader cannot yet read what they would be clicking), and the
+         incoming panel must not have reached it yet. The panel's left edge
+         is at (1 - nextIn) of the stage; `reach` is where the label's
+         content ends. Once the edge crosses it the CTA is being covered
+         and the link goes with it. */
+      const covered = 1 - nextIn < (reach.current[i] ?? 1);
+      el.style.pointerEvents = arrived > 0.9 && !covered ? "auto" : "none";
     });
   }, [zones]);
 
   useScrollProgress(wrap, onProgress);
+
+  /* Measure each label's rightmost clickable edge. The label box is the
+     full stage (inset-0), so the links inside it are what has to be
+     measured, not the box. */
+  useEffect(() => {
+    const measure = () => {
+      reach.current = labels.current.map((el) => {
+        if (!el) return 1;
+        const box = el.getBoundingClientRect();
+        if (!box.width) return 1;
+        let right = 0;
+        el.querySelectorAll("a").forEach((a) => {
+          const r = a.getBoundingClientRect();
+          if (r.width) right = Math.max(right, r.right - box.left);
+        });
+        return right ? clamp01(right / box.width) : 1;
+      });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    /* Web fonts land after first paint and change how wide the name is. */
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => window.removeEventListener("resize", measure);
+  }, [items.length, placement, narrow]);
 
   const [first, ...rest] = items;
   if (!first) return null;
@@ -451,7 +504,10 @@ function Ground({
      positioned parent, and giving the photograph an element of its own
      keeps the label's scrim and type layered over it rather than beside
      it. */
-  const box = "absolute inset-0";
+  /* Clipped: a phone crop (`narrowZoom`) scales the photograph past its
+     own box, and a sliding panel without a clip would carry the overflow
+     across the panels beside it. */
+  const box = "absolute inset-0 overflow-hidden";
 
   if (!src) {
     return (
@@ -472,11 +528,25 @@ function Ground({
         sizes="100vw"
         className="object-cover"
         priority={eager}
+        style={
+          narrow && item.imageNarrow && item.narrowZoom
+            ? {
+                transform: `scale(${item.narrowZoom.scale})`,
+                transformOrigin: item.narrowZoom.origin,
+              }
+            : undefined
+        }
       />
       {/* A foot label needs no veil over the plate — the gradient under
           its own type is the whole of the dimming. */}
       {placement === "center" ? (
         <div className={`absolute inset-0 ${TINT}`} />
+      ) : null}
+      {placement === "split" ? (
+        <>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-ink/80 via-ink/40 via-50% to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/80 via-ink/40 via-50% to-transparent" />
+        </>
       ) : null}
     </div>
   );
@@ -524,6 +594,36 @@ function Label({
         />
       ) : null}
 
+      {placement === "split" ? (
+        /* Two groups pinned to the plate's edges. The heading is the top
+           group and the CTA the bottom one; the frame sits between them
+           uncovered. On a phone the same, only tighter to the edges. */
+        <div className="relative z-10 flex h-full w-full flex-col items-center justify-between px-6 pb-16 pt-28 text-center sm:px-10 sm:pb-20 sm:pt-36">
+          <div className="flex flex-col items-center gap-3">
+            {meta ? (
+              <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+                {meta}
+              </p>
+            ) : null}
+            {href ? (
+              <Link href={href} className="transition-opacity hover:opacity-80">
+                <h3 className="font-display text-5xl tracking-tight text-paper sm:text-8xl">
+                  {name}
+                </h3>
+              </Link>
+            ) : (
+              <h3 className="font-display text-5xl tracking-tight text-paper sm:text-8xl">
+                {name}
+              </h3>
+            )}
+          </div>
+          {href && cta ? (
+            <CtaLink href={href} kind="secondary">
+              {cta}
+            </CtaLink>
+          ) : null}
+        </div>
+      ) : (
       <div
         /* A foot label is centred on the plate's own axis, not pushed into
            the left corner: the frame in these photographs is centred, and a
@@ -564,6 +664,7 @@ function Label({
         ) : null}
 
       </div>
+      )}
     </div>
   );
 }

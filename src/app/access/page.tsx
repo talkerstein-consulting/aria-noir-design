@@ -39,7 +39,7 @@ export default function AccessPage() {
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
         <section className="on-ink relative flex min-h-svh flex-col justify-center bg-ink px-6 py-32 sm:px-10">
           <div className="mx-auto w-full max-w-md">
             <div className="stack stack--sm">

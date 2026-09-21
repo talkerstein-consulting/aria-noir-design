@@ -16,7 +16,15 @@ import {
 } from "@/components/shop/address-form";
 import { CardField } from "@/components/shop/card-field";
 import { OrderSummary } from "@/components/shop/order-summary";
-import { subtotal as bagSubtotal, useBag, type ResolvedLine } from "@/lib/cart";
+import {
+  subtotal as bagSubtotal,
+  useBag,
+  lineHref,
+  lineImage,
+  lineMeta,
+  lineName,
+  type ResolvedLine,
+} from "@/lib/cart";
 import {
   announceSession,
   house,
@@ -232,7 +240,14 @@ export function CheckoutView() {
     (asGuest && Boolean(contact.firstName) && isValidEmail(contact.email) && isValidPhone(contactPhone));
 
   /* ── the fold ── */
-  const [open, setOpenRaw] = useState<StepId>("who");
+  /* Payment is the first question asked, not the third.
+   *
+   * A wallet or a card on file already carries the name, the email and an
+   * address. Asked FIRST, it answers 02 and 03 before they are put — and a
+   * question you can avoid putting is worth more than a question answered
+   * quickly. Asked third, as it was, the reader typed out everything the
+   * card was about to supply and then chose the card. */
+  const [open, setOpenRaw] = useState<StepId>("pay");
   /* The step that opens is brought to the top of the viewport, under the
      header. A fold that opens below the fold is a question asked out of
      sight — and after a declined card the reader has to be shown where
@@ -324,17 +339,20 @@ export function CheckoutView() {
      rather than an effect clearing state on every change. */
   const [quoted, setQuoted] = useState<{ key: string; quote?: Quote; error: string }>();
   const items = (): CheckoutItem[] =>
-      sendable.map(({ line, house: h, entry }) => ({
+      sendable.map((r) => ({
         /* Middot, not an em dash: this name is read back on the receipt
-           and the house does not set em dashes in copy. See COPY.md. */
-        name: `${h?.name ?? line.slug} · ${line.colorway}`,
-        quantity: line.qty,
+           and the house does not set em dashes in copy. See COPY.md.
+           `lineMeta` rather than the colourway alone, so a garment's size
+           is on the receipt — without it two sizes of one sweater arrive
+           at fulfilment as the same string. */
+        name: `${lineName(r)} · ${lineMeta(r)}`,
+        quantity: r.line.qty,
         /* For the house API's catalogue lookup; the Donuts service resolves
            by name and ignores the rest, a successor can key on these. */
-        variantId: entry?.variantId,
-        slug: line.slug,
-        colorway: line.colorway,
-        unitCents: entry?.cents,
+        variantId: r.entry?.variantId,
+        slug: r.line.slug,
+        colorway: r.line.colorway,
+        unitCents: r.entry?.cents,
       })) as CheckoutItem[];
   const fulfillment = () => ({
       type: "shipping",
@@ -444,6 +462,28 @@ export function CheckoutView() {
      know which of the reader's addresses this order is for. When both
      are already answered the press below finishes the order. */
   const expressReady = Boolean(identified && whereComplete && quote);
+
+  /* ---- What the payment method already answered ----
+   *
+   * 02 and 03 are questions, not ceremonies: if the method chosen in 01
+   * already carries the answer, the step is DONE rather than asked. A card
+   * on file belongs to a signed-in reader whose profile holds the name, the
+   * email and the phone, and whose address book has already filled the
+   * address — so both fold shut the moment that card is chosen, and the
+   * reader lands on 04 with nothing to type.
+   *
+   * These are written as what is KNOWN rather than as a list of methods
+   * that are trusted. A wallet that is asked for contact and shipping
+   * details — Square's `paymentRequest` can request both — satisfies these
+   * the same way and skips the same steps, with nothing to change here. A
+   * method that supplies nothing leaves 02 and 03 exactly as they were. */
+  const payChosen = Boolean(method);
+  const paySuppliesWho = payChosen && identified;
+  const paySuppliesWhere = payChosen && whereComplete && whereConfirmed;
+
+  /* Where 01 hands the reader next: past anything already answered. */
+  const afterPay = (): StepId =>
+    !paySuppliesWho ? "who" : !paySuppliesWhere ? "where" : "review";
 
   /* ── placing it ── */
   const [busy, setBusy] = useState(false);
@@ -626,9 +666,62 @@ export function CheckoutView() {
   const state = (id: StepId, done: boolean, reachable: boolean) =>
     open === id ? "open" : done ? "done" : reachable ? "ready" : "waiting";
 
+  /* ── the four, once ────────────────────────────────────────────────
+     The sections below and the rail on a phone are the same four steps
+     in the same four states, so the states are worked out here and read
+     twice rather than written twice and allowed to drift. The short
+     labels are the rail's; each section keeps its own full title. */
+  const phases: { id: StepId; index: string; label: string; state: string }[] = [
+    { id: "pay", index: "01", label: "Payment", state: state("pay", payComplete, true) },
+    { id: "who", index: "02", label: "Number", state: state("who", identified, payChosen) },
+    {
+      id: "where",
+      index: "03",
+      label: "Address",
+      state: state("where", whereComplete && whereConfirmed, identified),
+    },
+    { id: "review", index: "04", label: "Order", state: state("review", false, whereComplete && whereConfirmed) },
+  ];
+  const phaseState = (id: StepId) => phases.find((p) => p.id === id)!.state;
+
   return (
-    <div className="checkout checkout-has-foot" data-busy={busy} aria-busy={busy}>
+    <div className="checkout checkout-has-foot" data-phase={open} data-busy={busy} aria-busy={busy}>
       <div className="checkout-steps">
+        {/* ── the rail, on a phone ───────────────────────────────────
+            Above 1024px the four steps are a column the reader can see
+            all of, and the fold is enough: the questions above and
+            below the open one are on screen, answered or waiting.
+
+            On a phone they are not. Three folded heads stacked under a
+            long open one read as a list of things gone wrong, and the
+            reader working in step 03 has no idea how many are left. So
+            below 1024px the page shows ONE phase at a time (the CSS
+            hides the rest outright, not just their bodies) and this
+            rail carries the position: four marks, the current one lit,
+            the answered ones still pressable to go back. It is the
+            only way back, which is why the answered marks stay live
+            and the unreached ones are disabled rather than hidden —
+            a step you cannot see yet is still a step you are told is
+            coming. */}
+        <nav className="phase-rail" aria-label="Checkout steps">
+          <ol className="phase-rail-list">
+            {phases.map((p) => (
+              <li key={p.id} className="phase" data-state={p.state}>
+                <button
+                  type="button"
+                  className="phase-mark"
+                  disabled={busy || p.state === "waiting"}
+                  aria-current={p.state === "open" ? "step" : undefined}
+                  onClick={() => setOpen(p.id)}
+                >
+                  <span className="phase-index">{p.index}</span>
+                  <span className="phase-label t-eyebrow">{p.label}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </nav>
+
         {/* ── the short way, for anyone the page already knows ────────
             Above 01 on purpose: it is not a step, it is the way past
             all four of them. Drawn only when a wallet is actually
@@ -681,235 +774,15 @@ export function CheckoutView() {
         ) : null}
 
         {/* ── 01 ── */}
-        <section id="step-who" className="step scroll-mt-28" data-state={state("who", identified, true)}>
-          <button type="button" className="step-head" onClick={() => setOpen("who")} aria-expanded={open === "who"}>
-            <span className="t-eyebrow">
-              <span className="step-index">01</span>Your number
-            </span>
-            {open === "who" || !identified ? null : (
-              <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
-            )}
-          </button>
-          <p className="step-summary t-caption">
-            {signedIn
-              ? `${contact.firstName} ${contact.lastName} · ${contact.email}${contactPhone ? ` · ${contactPhone}` : ""}`
-              : identified
-                ? `${contact.firstName} · ${contact.email} · ${contactPhone} · as a guest`
-                : "Not answered yet."}
-          </p>
-          <div className="step-body">
-            <div className="step-body-inner">
-            {signedIn ? (
-              <>
-                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-                  Signed in as {contact.email}. The order and the receipt go on your desk.
-                </p>
-                <label className="field mt-8 max-w-sm" data-invalid={Boolean(phoneError(phone))}>
-                  <span>Phone</span>
-                  <div className="field-dial">
-                    <CountrySelect
-                      value={dialCountry}
-                      onChange={setDialCountry}
-                      dial
-                      label="Country dialling code"
-                      autoComplete="off"
-                    />
-                    <input
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel-national"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                  </div>
-                  <em className="t-caption mt-2 block not-italic text-[var(--fg-quiet)]">
-                    For the courier, on the day. Nothing else.
-                  </em>
-                  {phoneError(phone) ? <em className="field-error" role="alert">{phoneError(phone)}</em> : null}
-                </label>
-                <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-                  <CtaButton disabled={!isValidPhone(phone)} onClick={() => setOpen("where")}>
-                    Submit
-                  </CtaButton>
-                  <button
-                    type="button"
-                    className="link-quiet"
-                    onClick={async () => {
-                      await house.logout().catch(() => {});
-                      announceSession();
-                      void reload();
-                    }}
-                  >
-                    Not you? Sign out
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-                  An account is not a condition of buying anything. A name for the parcel, an address for
-                  the receipt, a number for the courier — that is all an order needs.
-                </p>
-                <div className="mt-8 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
-                  <label className="field" data-invalid={Boolean(guestTouched.name && !guest.name.trim())}>
-                    <span>Name</span>
-                    <input
-                      autoComplete="name"
-                      value={guest.name}
-                      onChange={(e) => setGuest((g) => ({ ...g, name: e.target.value }))}
-                      onBlur={() => setGuestTouched((t) => ({ ...t, name: true }))}
-                    />
-                    {guestTouched.name && !guest.name.trim() ? (
-                      <em className="field-error" role="alert">A name for the parcel.</em>
-                    ) : null}
-                  </label>
-                  <label className="field" data-invalid={Boolean(guestTouched.email && (emailError(guest.email) || !guest.email.trim()))}>
-                    <span>Email</span>
-                    <input
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      value={guest.email}
-                      onChange={(e) => setGuest((g) => ({ ...g, email: e.target.value }))}
-                      onBlur={() => setGuestTouched((t) => ({ ...t, email: true }))}
-                    />
-                    {guestTouched.email && (emailError(guest.email) || !guest.email.trim()) ? (
-                      <em className="field-error" role="alert">
-                        {emailError(guest.email) || "Where the receipt goes."}
-                      </em>
-                    ) : null}
-                  </label>
-                  <label className="field" data-invalid={Boolean(guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()))}>
-                    <span>Phone</span>
-                    <div className="field-dial">
-                    <CountrySelect
-                      value={dialCountry}
-                      onChange={setDialCountry}
-                      dial
-                      label="Country dialling code"
-                      autoComplete="off"
-                    />
-                      <input
-                        type="tel"
-                        inputMode="tel"
-                        autoComplete="tel-national"
-                        value={guest.phone}
-                        onChange={(e) => setGuest((g) => ({ ...g, phone: e.target.value }))}
-                        onBlur={() => setGuestTouched((t) => ({ ...t, phone: true }))}
-                      />
-                    </div>
-                    {guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()) ? (
-                      <em className="field-error" role="alert">
-                        {phoneError(guest.phone) || "A number the courier can reach on the day."}
-                      </em>
-                    ) : null}
-                  </label>
-                </div>
-                <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
-                  <CtaButton
-                    onClick={() => {
-                      setGuestTouched({ name: true, email: true, phone: true });
-                      if (guest.name.trim() && isValidEmail(guest.email) && isValidPhone(guest.phone)) {
-                        setAsGuest(true);
-                        setOpen("where");
-                      }
-                    }}
-                  >
-                    Continue as guest
-                  </CtaButton>
-                  <Link href="/access?next=/checkout" className="link-quiet">
-                    Sign in instead
-                  </Link>
-                </div>
-              </>
-            )}
-            </div>
-          </div>
-        </section>
-
-        {/* ── 02 ── */}
-        <section id="step-where" className="step scroll-mt-28" data-state={state("where", whereComplete && whereConfirmed, identified)}>
+        <section id="step-pay" className="step scroll-mt-28" data-state={phaseState("pay")}>
           <button
             type="button"
             className="step-head"
-            onClick={() => identified && setOpen("where")}
-            aria-expanded={open === "where"}
-            disabled={!identified}
-          >
-            <span className="t-eyebrow">
-              <span className="step-index">02</span>Your address
-            </span>
-            {open === "where" || !(whereComplete && whereConfirmed) ? null : (
-              <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
-            )}
-          </button>
-          <p className="step-summary t-caption">
-            {whereComplete
-              ? `${addressLine(address)} · ${countryName(address.country)} · ${transitFor(address.country)}`
-              : "Not answered yet."}
-          </p>
-          <div className="step-body">
-            <div className="step-body-inner">
-            {signedIn ? (
-              <>
-                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-                  {saved.length
-                    ? "Choose one of the addresses on your desk, or add another."
-                    : "The first address on your desk. It is kept for next time."}
-                </p>
-                <div className="mt-8">
-                  <AddressBook
-                    addresses={saved}
-                    onChange={setSaved}
-                    selected={address}
-                    onSelect={(a) => setAddress({ ...BLANK_ADDRESS, ...a })}
-                    startOpen={savedLoaded && saved.length === 0}
-                    onEditing={setAddressEditing}
-                    key={savedLoaded ? "book" : "waiting"}
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-                  The address the frame is sent to. The country decides the estimate; standard shipping is
-                  free everywhere the house sends.
-                </p>
-                <div className="mt-8 max-w-2xl">
-                  <AddressFields value={address} onChange={setAddress} idPrefix="ship" />
-                </div>
-              </>
-            )}
-            {/* Disabled while the address is short of an answer, never
-                removed. STYLE-GUIDE 6: a control that disappears leaves
-                the reader wondering what they did. It used to vanish
-                until the last field was right, so the way on to step 03
-                was a button nobody had seen yet. */}
-            <CtaButton
-              className="mt-10"
-              disabled={!whereComplete}
-              onClick={() => {
-                setWhereConfirmed(true);
-                setOpen("pay");
-              }}
-            >
-              Send it here
-            </CtaButton>
-            </div>
-          </div>
-        </section>
-
-        {/* ── 03 ── */}
-        <section id="step-pay" className="step scroll-mt-28" data-state={state("pay", payComplete && open === "review", whereComplete && whereConfirmed)}>
-          <button
-            type="button"
-            className="step-head"
-            onClick={() => whereComplete && whereConfirmed && setOpen("pay")}
+            onClick={() => setOpen("pay")}
             aria-expanded={open === "pay"}
-            disabled={!(whereComplete && whereConfirmed)}
           >
             <span className="t-eyebrow">
-              <span className="step-index">03</span>Payment Method
+              <span className="step-index">01</span>Payment Method
             </span>
             {open === "pay" || !payComplete ? null : (
               <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
@@ -1042,7 +915,7 @@ export function CheckoutView() {
                   <p className="field-error mt-8" role="alert">{error}</p>
                 ) : null}
 
-                <CtaButton className="mt-10" disabled={!payComplete} onClick={() => setOpen("review")}>
+                <CtaButton className="mt-10" disabled={!payComplete} onClick={() => setOpen(afterPay())}>
                   Review the order
                 </CtaButton>
               </>
@@ -1053,14 +926,246 @@ export function CheckoutView() {
           </div>
         </section>
 
-        {/* ── 04 ── */}
-        <section id="step-review" className="step scroll-mt-28" data-state={state("review", false, payComplete)}>
+        {/* ── 02 ── */}
+        <section id="step-who" className="step scroll-mt-28" data-state={phaseState("who")}>
+          {/* `disabled`, not merely guarded. A waiting head is drawn at
+              0.4 opacity, which reads as unavailable and measures as 2.14:1
+              — but it was still a focusable button announcing itself as
+              enabled and doing nothing when pressed. Disabling it takes it
+              out of the tab order, says "dimmed" to a screen reader, and
+              makes the low contrast legitimate: WCAG exempts inactive
+              components from 1.4.3. */}
           <button
             type="button"
             className="step-head"
-            onClick={() => payComplete && setOpen("review")}
+            disabled={!payChosen}
+            onClick={() => payChosen && setOpen("who")}
+            aria-expanded={open === "who"}
+          >
+            <span className="t-eyebrow">
+              <span className="step-index">02</span>Your number
+            </span>
+            {open === "who" || !identified ? null : (
+              <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
+            )}
+          </button>
+          <p className="step-summary t-caption">
+            {signedIn
+              ? `${contact.firstName} ${contact.lastName} · ${contact.email}${contactPhone ? ` · ${contactPhone}` : ""}`
+              : identified
+                ? `${contact.firstName} · ${contact.email} · ${contactPhone} · as a guest`
+                : "Not answered yet."}
+          </p>
+          <div className="step-body">
+            <div className="step-body-inner">
+            {signedIn ? (
+              <>
+                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
+                  Signed in as {contact.email}. The order and the receipt go on your desk.
+                </p>
+                <label className="field mt-8 max-w-sm" data-invalid={Boolean(phoneError(phone))}>
+                  <span>Phone</span>
+                  <div className="field-dial">
+                    <CountrySelect
+                      value={dialCountry}
+                      onChange={setDialCountry}
+                      dial
+                      label="Country dialling code"
+                      autoComplete="off"
+                    />
+                    <input
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel-national"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  <em className="t-caption mt-2 block not-italic text-[var(--fg-quiet)]">
+                    For the courier, on the day. Nothing else.
+                  </em>
+                  {phoneError(phone) ? <em className="field-error" role="alert">{phoneError(phone)}</em> : null}
+                </label>
+                <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
+                  <CtaButton disabled={!isValidPhone(phone)} onClick={() => setOpen("where")}>
+                    Submit
+                  </CtaButton>
+                  <button
+                    type="button"
+                    className="link-quiet"
+                    onClick={async () => {
+                      await house.logout().catch(() => {});
+                      announceSession();
+                      void reload();
+                    }}
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
+                  An account is not a condition of buying anything. A name for the parcel, an address for
+                  the receipt, a number for the courier — that is all an order needs.
+                </p>
+                <div className="mt-8 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
+                  <label className="field" data-invalid={Boolean(guestTouched.name && !guest.name.trim())}>
+                    <span>Name</span>
+                    <input
+                      autoComplete="name"
+                      value={guest.name}
+                      onChange={(e) => setGuest((g) => ({ ...g, name: e.target.value }))}
+                      onBlur={() => setGuestTouched((t) => ({ ...t, name: true }))}
+                    />
+                    {guestTouched.name && !guest.name.trim() ? (
+                      <em className="field-error" role="alert">A name for the parcel.</em>
+                    ) : null}
+                  </label>
+                  <label className="field" data-invalid={Boolean(guestTouched.email && (emailError(guest.email) || !guest.email.trim()))}>
+                    <span>Email</span>
+                    <input
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      value={guest.email}
+                      onChange={(e) => setGuest((g) => ({ ...g, email: e.target.value }))}
+                      onBlur={() => setGuestTouched((t) => ({ ...t, email: true }))}
+                    />
+                    {guestTouched.email && (emailError(guest.email) || !guest.email.trim()) ? (
+                      <em className="field-error" role="alert">
+                        {emailError(guest.email) || "Where the receipt goes."}
+                      </em>
+                    ) : null}
+                  </label>
+                  <label className="field" data-invalid={Boolean(guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()))}>
+                    <span>Phone</span>
+                    <div className="field-dial">
+                    <CountrySelect
+                      value={dialCountry}
+                      onChange={setDialCountry}
+                      dial
+                      label="Country dialling code"
+                      autoComplete="off"
+                    />
+                      <input
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel-national"
+                        value={guest.phone}
+                        onChange={(e) => setGuest((g) => ({ ...g, phone: e.target.value }))}
+                        onBlur={() => setGuestTouched((t) => ({ ...t, phone: true }))}
+                      />
+                    </div>
+                    {guestTouched.phone && (phoneError(guest.phone) || !guest.phone.trim()) ? (
+                      <em className="field-error" role="alert">
+                        {phoneError(guest.phone) || "A number the courier can reach on the day."}
+                      </em>
+                    ) : null}
+                  </label>
+                </div>
+                <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
+                  <CtaButton
+                    onClick={() => {
+                      setGuestTouched({ name: true, email: true, phone: true });
+                      if (guest.name.trim() && isValidEmail(guest.email) && isValidPhone(guest.phone)) {
+                        setAsGuest(true);
+                        setOpen("where");
+                      }
+                    }}
+                  >
+                    Continue as guest
+                  </CtaButton>
+                  <Link href="/access?next=/checkout" className="link-quiet">
+                    Sign in instead
+                  </Link>
+                </div>
+              </>
+            )}
+            </div>
+          </div>
+        </section>
+
+        {/* ── 03 ── */}
+        <section id="step-where" className="step scroll-mt-28" data-state={phaseState("where")}>
+          <button
+            type="button"
+            className="step-head"
+            disabled={!identified}
+            onClick={() => identified && setOpen("where")}
+            aria-expanded={open === "where"}
+          >
+            <span className="t-eyebrow">
+              <span className="step-index">03</span>Your address
+            </span>
+            {open === "where" || !(whereComplete && whereConfirmed) ? null : (
+              <span className="t-eyebrow text-[var(--fg-quiet)]">Change</span>
+            )}
+          </button>
+          <p className="step-summary t-caption">
+            {whereComplete
+              ? `${addressLine(address)} · ${countryName(address.country)} · ${transitFor(address.country)}`
+              : "Not answered yet."}
+          </p>
+          <div className="step-body">
+            <div className="step-body-inner">
+            {signedIn ? (
+              <>
+                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
+                  {saved.length
+                    ? "Choose one of the addresses on your desk, or add another."
+                    : "The first address on your desk. It is kept for next time."}
+                </p>
+                <div className="mt-8">
+                  <AddressBook
+                    addresses={saved}
+                    onChange={setSaved}
+                    selected={address}
+                    onSelect={(a) => setAddress({ ...BLANK_ADDRESS, ...a })}
+                    startOpen={savedLoaded && saved.length === 0}
+                    onEditing={setAddressEditing}
+                    key={savedLoaded ? "book" : "waiting"}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
+                  The address the frame is sent to. The country decides the estimate; standard shipping is
+                  free everywhere the house sends.
+                </p>
+                <div className="mt-8 max-w-2xl">
+                  <AddressFields value={address} onChange={setAddress} idPrefix="ship" />
+                </div>
+              </>
+            )}
+            {/* Disabled while the address is short of an answer, never
+                removed. STYLE-GUIDE 6: a control that disappears leaves
+                the reader wondering what they did. It used to vanish
+                until the last field was right, so the way on to step 03
+                was a button nobody had seen yet. */}
+            <CtaButton
+              className="mt-10"
+              disabled={!whereComplete}
+              onClick={() => {
+                setWhereConfirmed(true);
+                setOpen("review");
+              }}
+            >
+              Send it here
+            </CtaButton>
+            </div>
+          </div>
+        </section>
+
+        {/* ── 04 ── */}
+        <section id="step-review" className="step scroll-mt-28" data-state={phaseState("review")}>
+          <button
+            type="button"
+            className="step-head"
+            disabled={!(whereComplete && whereConfirmed)}
+            onClick={() => whereComplete && whereConfirmed && setOpen("review")}
             aria-expanded={open === "review"}
-            disabled={!payComplete}
           >
             <span className="t-eyebrow">
               <span className="step-index">04</span>
@@ -1162,7 +1267,14 @@ export function CheckoutView() {
         </a>
       </div>
 
-      <aside className="checkout-aside">
+      {/* A `div`, not an `aside`. `aside` carries the COMPLEMENTARY
+          landmark, which is defined as content at the top level of the
+          document — and this one sits inside `<main>`, so screen readers
+          were being handed a landmark nested in a landmark. It is also not
+          complementary in the first place: the order summary is the thing
+          being bought, not an aside from it. The heading inside it is what
+          makes this region findable now. */}
+      <div className="checkout-aside">
         <OrderSummary
           lines={sendable}
           subtotal={subtotal}
@@ -1185,7 +1297,7 @@ export function CheckoutView() {
             the pinned band watches for, and the point at which the band
             has nothing left to say. */}
         <div ref={totalMark} aria-hidden />
-      </aside>
+      </div>
     </div>
   );
 }
@@ -1193,14 +1305,18 @@ export function CheckoutView() {
 function ReviewLines({ lines }: { lines: readonly ResolvedLine[] }) {
   return (
     <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-      {lines.map(({ line, house: h, entry }) => (
+      {lines.map((r) => (
         <LineCard
-          key={`${line.slug}:${line.colorway}`}
-          house={h}
-          slug={line.slug}
-          colorway={line.colorway}
-          qty={line.qty}
-          cents={entry?.cents}
+          key={`${r.line.slug}:${r.line.colorway}:${r.line.size ?? ""}`}
+          house={r.house}
+          slug={r.line.slug}
+          colorway={r.line.colorway}
+          qty={r.line.qty}
+          cents={r.entry?.cents}
+          name={lineName(r)}
+          meta={lineMeta(r)}
+          image={lineImage(r)}
+          href={lineHref(r)}
         />
       ))}
     </div>

@@ -65,7 +65,14 @@ export function BuyDetail({
             const on = tab.id === open;
             return (
               <li key={tab.id} className="faq-row">
-                <h3>
+                {/* h2, not h3. These rows follow the page's h1 with nothing
+                    between, so an h3 skipped a level — and they ARE the
+                    top-level sections of the detail block, at the same
+                    depth as "The Collection" further down. The heading
+                    carries no classes: `.faq-q` on the button inside it
+                    sets the type, so the level is free to be whatever the
+                    document outline needs. */}
+                <h2>
                   <button
                     type="button"
                     className="faq-q"
@@ -83,7 +90,7 @@ export function BuyDetail({
                         reads as opening rather than as being replaced. */}
                     <span aria-hidden className="faq-mark" data-on={on} />
                   </button>
-                </h3>
+                </h2>
 
                 <div
                   id={`panel-${tab.id}`}
@@ -111,7 +118,7 @@ export function BuyDetail({
             offer: fit is the one thing the rows above cannot settle, and a
             reader asks it INSTEAD of opening another row. */}
         <div className="mt-12">
-          <CtaLink href="/care">Read the fit guide</CtaLink>
+          <CtaLink href="/care" kind="secondary">Read the care guide</CtaLink>
         </div>
       </div>
 

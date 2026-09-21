@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { Bookmark, UserRoundPlus } from "lucide-react";
 import { CtaLink } from "@/components/cta-link";
-import { Heart, UserRoundPlus } from "lucide-react";
 import { VIEWS } from "@/components/shop/desk-view";
 import { useSession } from "@/lib/session";
 import { announceSession, house } from "@/lib/house-api";
@@ -104,7 +103,13 @@ export function DeskDrawer({
           <p className="t-eyebrow">{signedIn ? "The Desk" : "Access"}</p>
         </div>
 
-        <div className="drawer-lines px-7">
+        {/* `data-lenis-prevent`: the page's own smooth scroll captures the
+            wheel document-wide, so without this the panel simply does not
+            scroll — the list is clipped at the fold and the wheel moves the
+            page behind the glass instead. The filter drawer has carried
+            this since it was built; these two did not, which is why a bag
+            with more lines than fit could not be reached. */}
+        <div className="drawer-lines px-7 pb-10" data-lenis-prevent>
           {signedIn ? (
             <>
               <p className="t-body t-body--lede">Welcome back.</p>
@@ -119,9 +124,9 @@ export function DeskDrawer({
                   line above this one promises the card on file. It also
                   ended with "Open the full desk", which went to the same
                   place as Orders and so was the same row twice. */}
-              <ul className="mt-10">
+              <ul className="desk-rooms mt-10">
                 {VIEWS.map(({ id, label, Icon }) => (
-                  <DeskLine
+                  <DeskRoom
                     key={id}
                     href={id === "orders" ? "/desk" : `/desk#${id}`}
                     onClick={onClose}
@@ -144,19 +149,19 @@ export function DeskDrawer({
                 Sign in
               </CtaLink>
 
-              <ul className="mt-10">
-                <DeskLine
+              <ul className="desk-rooms mt-10">
+                <DeskRoom
                   href="/access?mode=new"
                   onClick={onClose}
                   label="New here"
                   Icon={UserRoundPlus}
                   note="Make an account"
                 />
-                <DeskLine
+                <DeskRoom
                   href="/desk#held"
                   onClick={onClose}
                   label="Held"
-                  Icon={Heart}
+                  Icon={Bookmark}
                   note={heldNote}
                 />
               </ul>
@@ -167,10 +172,17 @@ export function DeskDrawer({
         {signedIn ? (
           <div className="border-t border-[var(--fg-rule)] px-7 pt-6 pb-8">
             {/* Ends the house API session — the thing that actually ends —
-                and drops the header's hint on the way. */}
+                and drops the header's hint on the way.
+
+                Not a CTA at either weight: signing out is the one control
+                in the drawer nobody came here to press, and an outlined
+                box under five outlined rooms reads as a sixth room. It is
+                `link-quiet` at eyebrow scale — the same quiet word the
+                filter drawer closes with — so the boxes above it stay the
+                things being offered. */}
             <button
               type="button"
-              className="link-quiet link-quiet--micro"
+              className="link-quiet t-eyebrow"
               onClick={async () => {
                 await house.logout().catch(() => {});
                 announceSession();
@@ -188,16 +200,25 @@ export function DeskDrawer({
 }
 
 /**
- * One errand: a word, a hairline under it, and a quiet note on the right
- * saying where it goes or what it holds. The same list the rest of the shop
- * is built from, at the width a drawer can carry.
+ * One room of the desk, as the site's own CTA at its second weight.
+ *
+ * It used to be a hairline row: a glyph, a word in caption type, a quiet
+ * note pushed to the right edge, and `link-quiet` underneath the lot. That
+ * made the drawer's list a fourth interactive object — not a CTA, not a
+ * nav link, not a field — and it was the only place on the site where the
+ * way into a room looked like that.
+ *
+ * So the row kept its anatomy and changed its object: the glyph, the
+ * label and the note are exactly where they were, inside the standard
+ * outlined box, with the states and the glyph shuffle every other CTA
+ * has. The desk's own subnav goes to these same five rooms and is built
+ * from the same box.
  */
-function DeskLine({
+function DeskRoom({
   href,
   label,
   note,
   Icon,
-  external,
   onClick,
 }: {
   href: string;
@@ -205,37 +226,20 @@ function DeskLine({
   note: string;
   /** The desk's own glyph for this room, so the drawer and the desk
    *  name it the same way twice. Chrome weight, per STYLE-GUIDE 4. */
-  Icon?: typeof Heart;
-  external?: boolean;
+  Icon?: typeof Bookmark;
   onClick?: () => void;
 }) {
-  const body = (
-    <span className="desk-line">
-      {Icon ? <Icon className="desk-line-glyph" aria-hidden /> : null}
-      <span className="t-caption desk-line-label">{label}</span>
-      {/* Drawn only when there is something to say. Three of these rows
-          carried an empty span, which reserved the gap for a note that
-          never came and left the labels floating short of the rule. */}
-      {note ? <span className="t-micro text-[var(--fg-quiet)]">{note}</span> : null}
-    </span>
-  );
-
   return (
-    <li className="border-b border-[var(--fg-rule)] first:border-t">
-      {external ? (
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          className="link-quiet block py-4"
-        >
-          {body}
-        </a>
-      ) : (
-        <Link href={href} onClick={onClick} className="link-quiet block py-4">
-          {body}
-        </Link>
-      )}
+    <li>
+      <CtaLink
+        href={href}
+        onClick={onClick}
+        kind="secondary"
+        icon={Icon ? <Icon /> : undefined}
+        trailing={note || undefined}
+      >
+        {label}
+      </CtaLink>
     </li>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { house, type Quote } from "@/lib/house-api";
-import type { ResolvedLine } from "@/lib/cart";
+import { lineHref, lineImage, lineMeta, lineName, type ResolvedLine } from "@/lib/cart";
 import { formatPrice } from "@/lib/shop";
 import { LineCard } from "@/components/shop/line-card";
 
@@ -76,17 +76,27 @@ export function OrderSummary({
 
   return (
     <div className="summary" id="your-order">
-      <p className="t-eyebrow">Your order</p>
+      {/* An h2, not a p. The lines below it are `card-name` h3s, and with
+          nothing between them and the page's h1 the outline skipped a
+          level — on the one region of the checkout that lists what is
+          being bought. The eyebrow class still draws it; only the element
+          changed, so the document has a heading where it already looked
+          like there was one. */}
+      <h2 className="t-eyebrow">Your order</h2>
 
       <div className="summary-cards mt-6">
-        {lines.map(({ line, house: h, entry }) => (
+        {lines.map((r) => (
           <LineCard
-            key={`${line.slug}:${line.colorway}`}
-            house={h}
-            slug={line.slug}
-            colorway={line.colorway}
-            qty={line.qty}
-            cents={entry?.cents}
+            key={`${r.line.slug}:${r.line.colorway}:${r.line.size ?? ""}`}
+            house={r.house}
+            slug={r.line.slug}
+            colorway={r.line.colorway}
+            qty={r.line.qty}
+            cents={r.entry?.cents}
+            name={lineName(r)}
+            meta={lineMeta(r)}
+            image={lineImage(r)}
+            href={lineHref(r)}
           />
         ))}
       </div>
@@ -101,7 +111,7 @@ export function OrderSummary({
         <label className="field" data-invalid={promoNote?.tone === "bad"}>
           <span>
             Code
-            <em className="not-italic opacity-60"> · optional</em>
+            <em className="not-italic text-[var(--fg-quiet)]"> · optional</em>
           </span>
           <div className="flex items-end gap-6">
             <input

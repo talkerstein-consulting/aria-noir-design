@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { StoryBuy } from "@/components/product/story-buy";
 import type { Opening } from "@/lib/product";
 import { SECTION_PAD } from "@/lib/timeline";
 import { RevealText, RevealPlate } from "@/components/reveal";
@@ -9,7 +10,15 @@ import { RevealText, RevealPlate } from "@/components/reveal";
  * the hero and the Aria/Noir portraits and earns its keep by giving the eye
  * a rest before the next image-heavy section.
  */
-export function ProductOpening({ structure }: { structure: Opening }) {
+export function ProductOpening({
+  structure,
+  buyHref,
+  buyLabel,
+}: {
+  structure: Opening;
+  buyHref: string;
+  buyLabel?: string;
+}) {
   return (
     <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-16 sm:gap-20">
@@ -31,6 +40,7 @@ export function ProductOpening({ structure }: { structure: Opening }) {
                 {para}
               </p>
             ))}
+            <StoryBuy href={buyHref} label={buyLabel} />
           </div>
         </div>
 

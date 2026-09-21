@@ -3,7 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { useBag, subtotal } from "@/lib/cart";
+import { Trash2 } from "lucide-react";
+import {
+  useBag,
+  subtotal,
+  lineName,
+  lineMeta,
+  lineImage,
+  lineHref,
+} from "@/lib/cart";
 import { formatPrice, galleryFor, swatchFor } from "@/lib/shop";
 import { shopPath } from "@/lib/navigation";
 import { CtaLink } from "@/components/cta-link";
@@ -103,14 +111,20 @@ export function BagDrawer({
             control, and it shows a cross for as long as this is open. The
             tally is said in words because a drawer that has just opened
             should answer "how much of what" before anything else. */}
-        <div className="flex items-baseline justify-between px-7 pt-28 pb-6">
+        <div className="flex items-baseline justify-between px-7 pt-28 pb-5">
           <p className="t-eyebrow">The Bag</p>
           <p className="t-micro text-[var(--fg-quiet)]">
             {ready ? `${count} ${count === 1 ? "piece" : "pieces"}` : null}
           </p>
         </div>
 
-        <div className="drawer-lines px-7">
+        {/* `data-lenis-prevent`: the page's own smooth scroll captures the
+            wheel document-wide, so without this the panel simply does not
+            scroll — the list is clipped at the fold and the wheel moves the
+            page behind the glass instead. The filter drawer has carried
+            this since it was built; these two did not, which is why a bag
+            with more lines than fit could not be reached. */}
+        <div className="drawer-lines px-7" data-lenis-prevent>
           {!ready ? (
             <p className="t-caption">Opening the bag…</p>
           ) : !resolved.length ? (
@@ -126,10 +140,18 @@ export function BagDrawer({
             </div>
           ) : (
             <ul>
-              {resolved.map(({ line, house, entry }) => {
-                const shot = house ? galleryFor(house, line.colorway)[0] : undefined;
+              {resolved.map((r) => {
+                const { line, house, entry } = r;
+                /* Name, colour-and-size, picture and destination all come
+                   from the resolver now: a line can be a frame or a
+                   garment, and the row does not need to know which. */
+                const shot = house
+                  ? galleryFor(house, line.colorway)[0]
+                  : lineImage(r);
+                const title = lineName(r);
+                const meta = lineMeta(r);
                 return (
-                <li key={`${line.slug}-${line.colorway}`} className="line-row">
+                <li key={`${line.slug}-${line.colorway}-${line.size ?? ""}`} className="line-row">
                   {/* The frame itself, lying on its acetate.
 
                       This was a 40px square of colour, on the argument
@@ -148,7 +170,7 @@ export function BagDrawer({
                     {shot ? (
                       <Image
                         src={shot}
-                        alt={`${house?.name ?? line.slug} in ${line.colorway}`}
+                        alt={`${title} in ${line.colorway}`}
                         fill
                         sizes="6rem"
                         className="object-cover"
@@ -160,7 +182,7 @@ export function BagDrawer({
                     <div className="flex items-baseline justify-between gap-3">
                       {house ? (
                         <Link
-                          href={shopPath(house)}
+                          href={lineHref(r)}
                           onClick={onClose}
                           className="t-caption link-quiet"
                         >
@@ -175,7 +197,7 @@ export function BagDrawer({
                     </div>
 
                     <p className="t-micro mt-1 text-[var(--fg-quiet)]">
-                      {line.colorway}
+                      {meta}
                       {entry && !entry.available ? " · no longer cut" : null}
                     </p>
 
@@ -183,37 +205,56 @@ export function BagDrawer({
                         page's own table can afford a stepper with a field
                         in it; a drawer cannot, and a number that is typed
                         is a number that can be typed wrong. */}
-                    <div className="mt-3 flex items-center gap-4">
-                      <div className="flex items-center gap-3">
+                    {/* ---- Down-to-nothing is the same gesture ----
+
+                        There is no Remove button. Taking the last one out
+                        of the bag IS decrementing from one, so the minus
+                        key becomes a bin at that point and does it — one
+                        control, pressed the same way, rather than a word
+                        sitting beside the stepper duplicating its floor.
+
+                        The label changes with it, because the two actions
+                        are not the same promise: at two or more it says
+                        what it takes away, at one it says the line goes.
+                        A screen reader gets the bin's meaning from that
+                        label; the icon itself is `aria-hidden`. */}
+                    <div className="mt-3 flex items-center">
+                      <div className="bag-qty">
+                        {line.qty <= 1 ? (
+                          <button
+                            type="button"
+                            className="bag-qty-btn"
+                            onClick={() => remove(line.slug, line.colorway, line.size)}
+                            aria-label={`Remove ${title}, ${meta}, from the bag`}
+                          >
+                            <Trash2 size={13} strokeWidth={1.5} aria-hidden />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="t-micro bag-qty-btn"
+                            onClick={() =>
+                              setQty(line.slug, line.colorway, line.qty - 1, line.size)
+                            }
+                            aria-label={`One fewer ${house?.name ?? line.slug}`}
+                          >
+                            −
+                          </button>
+                        )}
+                        <span className="t-micro bag-qty-count tabular-nums">
+                          {line.qty}
+                        </span>
                         <button
                           type="button"
-                          className="t-micro link-quiet"
+                          className="t-micro bag-qty-btn"
                           onClick={() =>
-                            setQty(line.slug, line.colorway, line.qty - 1)
-                          }
-                          aria-label={`One fewer ${house?.name ?? line.slug}`}
-                        >
-                          −
-                        </button>
-                        <span className="t-micro tabular-nums">{line.qty}</span>
-                        <button
-                          type="button"
-                          className="t-micro link-quiet"
-                          onClick={() =>
-                            setQty(line.slug, line.colorway, line.qty + 1)
+                            setQty(line.slug, line.colorway, line.qty + 1, line.size)
                           }
                           aria-label={`One more ${house?.name ?? line.slug}`}
                         >
                           +
                         </button>
                       </div>
-                      <button
-                        type="button"
-                        className="t-micro link-quiet link-quiet--micro"
-                        onClick={() => remove(line.slug, line.colorway)}
-                      >
-                        Remove
-                      </button>
                     </div>
                   </div>
                 </li>
@@ -228,7 +269,7 @@ export function BagDrawer({
             are deciding what to take out is the one line this panel exists
             to keep still. */}
         {ready && resolved.length ? (
-          <div className="border-t border-[var(--fg-rule)] px-7 pt-6 pb-8">
+          <div className="border-t border-[var(--fg-rule)] px-7 pt-5 pb-7">
             <div className="flex items-baseline justify-between">
               <span className="t-eyebrow">Subtotal</span>
               <span className="t-caption tabular-nums">
@@ -243,7 +284,7 @@ export function BagDrawer({
                 nature, so the line break has to come from the wrapper
                 rather than from a `block` the component's own class wins
                 against. */}
-            <div className="mt-7">
+            <div className="mt-6">
               {sendable ? (
                 <CtaLink href="/checkout" onClick={onClose}>
                   Checkout
@@ -255,17 +296,6 @@ export function BagDrawer({
               )}
             </div>
 
-            {/* The page is still the page: orders, addresses and the desk
-                live there, and this drawer is not trying to replace it. */}
-            <div className="mt-5">
-              <Link
-                href="/bag"
-                onClick={onClose}
-                className="link-quiet link-quiet--micro"
-              >
-                Open the full bag
-              </Link>
-            </div>
           </div>
         ) : null}
       </div>

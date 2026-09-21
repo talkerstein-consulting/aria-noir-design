@@ -7,8 +7,13 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { BuyHero } from "@/components/shop/buy-hero";
 import { BuyDetail, type DetailTab } from "@/components/shop/buy-detail";
 import { BuyCampaign } from "@/components/shop/buy-campaign";
-import { ColourwayCards } from "@/components/shop/colourway-cards";
+import {
+  ColourwayCards,
+  hasColourwayCards,
+} from "@/components/shop/colourway-cards";
 import { AlsoLike } from "@/components/shop/also-like";
+import { apparel } from "@/lib/apparel";
+import { ApparelBuy } from "@/components/shop/apparel-buy";
 import { colorwayCount, houses, type House } from "@/lib/navigation";
 import { houseBySlug, priceOf } from "@/lib/shop";
 import { shipping } from "@/lib/policies";
@@ -96,7 +101,12 @@ export const dynamicParams = false;
  * page is built with nothing here to change.
  */
 export function generateStaticParams() {
-  return houses.map((house) => ({ slug: house.slug }));
+  return [
+    ...houses.map((house) => ({ slug: house.slug })),
+    /* The garment is a buy page like any other and is prerendered like
+       one. It was missing here, which is why /shop/alpaca-sweater 404'd. */
+    ...apparel.map((a) => ({ slug: a.slug })),
+  ];
 }
 
 export async function generateMetadata({
@@ -106,7 +116,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const house = houseBySlug(slug);
-  if (!house) return {};
+  if (!house) {
+    const garment = apparel.find((a) => a.slug === slug);
+    if (!garment) return {};
+    return {
+      title: `${garment.name} — Aria Noir`,
+      description: `${garment.note} ${garment.colourways.length} colourways, ${garment.sizes.length} sizes.`,
+    };
+  }
   return {
     title: `${house.name} — Aria Noir`,
     description: `${house.note} ${colorwayCount(house)} colourways, from ${priceOf(house)}.`,
@@ -177,15 +194,42 @@ export default async function ShopHousePage({
 }) {
   const { slug } = await params;
   const house = houseBySlug(slug);
-  if (!house) notFound();
+
+  /* ---- The garment takes the same route ----
+  
+     El Patrón is not a house and has no row in the eyewear catalogue, so
+     `houseBySlug` misses it — and this page used to 404 on the one product
+     the shop lists that is not a frame. Its cards pointed off-site to
+     Shopify instead, which walked a reader out of the build mid-journey.
+  
+     One buy route, two kinds of product: the garment renders its own
+     offer (see ApparelBuy for why it is not BuyHero) inside the same
+     shell, so the page around it — the chrome, the section, the footer —
+     is the one a reader has been moving through all along. */
+  if (!house) {
+    const garment = apparel.find((a) => a.slug === slug);
+    if (!garment) notFound();
+    return (
+      <>
+        <SmoothScroll />
+        <SiteNav />
+        <main id="main" tabIndex={-1} className="buy-page relative">
+          <section className="on-ink section buy-section bg-ink">
+            <ApparelBuy line={garment} />
+          </section>
+        </main>
+        <SiteFooter tone="ink" />
+      </>
+    );
+  }
 
   return (
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="buy-page relative">
+      <main id="main" tabIndex={-1} className="buy-page relative">
         {/* ---- the transaction: photographs left, offer sticky right ---- */}
-        <section className="on-ink section bg-ink pt-32 sm:pt-40">
+        <section className="on-ink section buy-section bg-ink">
           {/* BuyHero reads `?colourway=` to open on the acetate a link
               meant. `useSearchParams` needs a boundary on a route that is
               prerendered by generateStaticParams — without one, the whole
@@ -226,9 +270,11 @@ export default async function ShopHousePage({
             who has read the panels and is choosing between colours is
             still shopping this house, and sending them to other houses
             first would answer a question they have not asked. */}
-        <section className="on-ink section bg-ink">
-          <ColourwayCards house={house} />
-        </section>
+        {hasColourwayCards(house) ? (
+          <section className="on-ink section bg-ink">
+            <ColourwayCards house={house} />
+          </section>
+        ) : null}
 
         {/* ---- the rest of the catalogue ---- */}
         <section className="on-ink section bg-ink">

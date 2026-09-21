@@ -142,7 +142,7 @@ export function StickyFeature({
                   “{quote}”
                 </p>
                 {quoteAttribution ? (
-                  <footer className="font-ui text-[11px] tracking-[0.3em] text-paper/45 uppercase">
+                  <footer className="font-ui text-[11px] tracking-[0.3em] text-paper/55 uppercase">
                     {quoteAttribution}
                   </footer>
                 ) : null}

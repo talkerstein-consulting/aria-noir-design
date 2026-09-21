@@ -257,7 +257,7 @@ export const privateAccess = {
   href: "/contact",
   /** The model the section lights. The house has no story page yet, so
    *  nothing on the site contradicts a frame that is not released. */
-  model: "/models/houses/monarca-monarca-noir.glb",
+  model: "/models/houses/monarca-noir.glb",
 };
 
 /**

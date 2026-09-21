@@ -40,9 +40,9 @@ const MODELS: readonly string[] = [
   "/models/houses/arca-ii-dreamy-rose.glb",
   "/models/houses/arca-ii-velvet-rose.glb",
   "/models/houses/arca-ii-pixie-dust.glb",
-  "/models/houses/ahava-ahava-noir.glb",
+  "/models/houses/ahava-noir.glb",
   "/models/houses/matriarca-midnight-noir.glb",
-  "/models/houses/monarca-monarca-noir.glb",
+  "/models/houses/monarca-noir.glb",
   "/models/houses/patriarca-midnight-noir.glb",
 ];
 
@@ -82,7 +82,7 @@ export function PosterRig() {
   );
 
   return (
-    <main className="min-h-svh bg-ink p-10 text-paper">
+    <main id="main" tabIndex={-1} className="min-h-svh bg-ink p-10 text-paper">
       <p className="t-eyebrow">Poster kitchen · development only</p>
       <h1 className="t-display-md mt-3">
         {src ? `${at + 1} of ${MODELS.length}` : "Done."}

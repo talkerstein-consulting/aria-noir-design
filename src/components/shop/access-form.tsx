@@ -147,7 +147,7 @@ export function AccessForm({
       <label className="field" data-invalid={bad}>
         <span>
           {label}
-          {optional ? <em className="not-italic opacity-60"> · optional</em> : null}
+          {optional ? <em className="not-italic text-[var(--fg-quiet)]"> · optional</em> : null}
         </span>
         <input
           {...props}

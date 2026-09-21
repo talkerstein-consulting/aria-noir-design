@@ -83,6 +83,10 @@ export function kickPlay(el: HTMLVideoElement | null | undefined): void {
 
   const attempt = () => {
     if (!el.paused || el.ended) return;
+    /* The reader has stopped it on purpose (a pause control, or a
+       reduced-motion preference the page honours). That is not a failed
+       autoplay to recover from; leave it alone until the flag comes off. */
+    if (el.dataset.held === "true") return;
     const now = performance.now();
     if (now - last < RETRY_MS) return;
     last = now;

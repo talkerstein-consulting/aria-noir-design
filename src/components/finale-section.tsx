@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { ChevronRight } from "lucide-react";
 import ImageTrail from "./ImageTrail";
 import { finale, newsletter } from "@/lib/content";
 import { RevealText } from "@/components/reveal";
@@ -54,7 +55,7 @@ export function FinaleSection() {
          letting the circle be the only transition. */
       /* `on-paper` declares the ground: it is what the type recipes read,
          and it is what the fixed nav probes to know it must go dark here. */
-      className="on-paper relative z-[38] overflow-hidden px-6 pt-[29vh] pb-32 text-ink sm:px-10 sm:pb-48"
+      className="on-paper relative z-[38] overflow-hidden px-6 pt-[29vh] pb-20 text-ink sm:px-10 sm:pb-48"
     >
       {/* ---- quote zone: the trail's full extent ---- */}
       <div className="relative">
@@ -134,11 +135,11 @@ export function FinaleSection() {
             aria-label={newsletter.cta}
             className="field-submit"
           >
-            &#8594;
+            <ChevronRight size={18} strokeWidth={1.5} aria-hidden />
           </button>
         </form>
 
-        <p className="font-ui text-xs tracking-[0.02em] text-ink/45">
+        <p className="font-ui text-xs tracking-[0.02em] text-ink/55">
           {newsletter.note}
         </p>
       </div>

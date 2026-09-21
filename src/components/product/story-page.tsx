@@ -3,7 +3,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ProductHero } from "@/components/product/product-hero";
 import { ProductOpening } from "@/components/product/product-opening";
-import { ProductPalette } from "@/components/product/product-palette";
 import { ProductAriaNoir } from "@/components/product/product-aria-noir";
 import { ProductShoot } from "@/components/product/product-shoot";
 import { ProductMeaning } from "@/components/product/product-meaning";
@@ -16,6 +15,7 @@ import { ProductOffering } from "@/components/product/product-offering";
 import { ProductSpec } from "@/components/product/product-spec";
 import { ProductWorn } from "@/components/product/product-worn";
 import { ProductBuy } from "@/components/product/product-buy";
+import { OtherCollections } from "@/components/product/other-collections";
 import { ProductClose } from "@/components/product/product-close";
 import type {
   AriaNoir,
@@ -30,7 +30,7 @@ import type {
   Spec,
   Worn,
 } from "@/lib/product";
-import { houseBySlug, swatchFor } from "@/lib/shop";
+import { houseBySlug } from "@/lib/shop";
 
 /**
  * The story page, as a page.
@@ -123,36 +123,20 @@ export function StoryPage({
    * deck that restated them would be a second list of the house's colours,
    * free to fall out of step with the picker selling them.
    */
-  const palette: readonly PaletteColour[] =
-    story.palette ??
-    (house?.colorwayNames.map((name) => ({
-      name,
-      swatch: swatchFor(name),
-    })) ??
-      []);
 
   return (
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
         <ProductHero hero={story.hero} />
-        <ProductOpening structure={story.structure} />
-        {/* The colour scheme, straight off the back of the opening's body:
-            the room has just been described, and this is the run of
-            acetate it was built to hold. An accent band, not a section —
-            see ProductPalette. It is the CATALOGUE's list, which is also
-            what the turntable's squares and the buy page's picker are
-            named from, so the house has one set of colours.
-
-            It used to be drawn only where the offering carried
-            `colorways`, which is a turntable feature: four houses have a
-            single glb between their whole run, so four houses painted no
-            palette despite every colour being known. One acetate is still
-            not a run, so a house with one shows nothing. */}
-        {palette.length > 1 ? <ProductPalette colorways={palette} /> : null}
-        <ProductAriaNoir ariaNoir={story.ariaNoir} />
-        <ProductShoot shoot={story.shoot} />
+        <ProductOpening structure={story.structure} buyHref={buyHref} buyLabel={house?.name} />
+        {/* The acetate band that used to sit here is gone, with the
+            turntable's swatches. A story page argues for the cut; the
+            colours are the buy page's question, and asking it twice let a
+            reader answer in a place that could not remember. */}
+        <ProductAriaNoir ariaNoir={story.ariaNoir} buyHref={buyHref} buyLabel={house?.name} />
+        <ProductShoot shoot={story.shoot} buyHref={buyHref} buyLabel={house?.name} />
         {/* One continuous run from here to the registry. There was a
             wrapper around the next four sections once, holding the "Arca"
             definition pinned while they rode over the top of it. Nothing
@@ -194,10 +178,15 @@ export function StoryPage({
             shape of "you cannot buy this here", and it is one branch
             rather than a second template. */}
         {house ? (
-          <ProductBuy close={story.close} house={house} buyHref={buyHref} />
+          <ProductBuy close={story.close} house={house} />
         ) : (
           <ProductClose close={story.close} buyHref={buyHref} />
         )}
+        {/* The way out of the page that is not the nav and not Back.
+            After the counter, because it is what a reader who did NOT buy
+            wants, and putting it before would be interrupting the offer
+            to name five alternatives to it. See OtherCollections. */}
+        {house ? <OtherCollections current={house} /> : null}
       </main>
       {/* The counter is laid on ink, so the footer carries on in ink
           rather than dropping the page back to paper under it. The closing

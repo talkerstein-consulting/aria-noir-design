@@ -3,6 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
 import { allHouses, type House } from "@/lib/navigation";
+import { apparel, type ApparelCollection } from "@/lib/apparel";
 
 /**
  * What the reader is holding on to without having bought it.
@@ -36,6 +37,11 @@ export type ResolvedHeld = {
   line: HeldLine;
   house: House | undefined;
   entry: CatalogueEntry | undefined;
+  /** The collection, where the held thing is a garment rather than a
+   *  frame. Same field, same meaning, as `ResolvedLine` in lib/cart — the
+   *  held list draws `ProductCard` with the bag's `lineName`/`lineImage`
+   *  helpers, and they read this. */
+  garment: ApparelCollection | undefined;
 };
 
 function read(): HeldLine[] {
@@ -59,20 +65,41 @@ function write(lines: HeldLine[]) {
   try {
     window.localStorage.setItem(KEY, JSON.stringify(lines));
   } catch {
-    /* Private mode, or a full quota. The heart will not stick, and that is
+    /* Private mode, or a full quota. The bookmark will not stick, and that is
        a better outcome than a thrown error on a product page. */
   }
   window.dispatchEvent(new Event("aria-noir:held"));
 }
 
 export function resolveHeld(lines: readonly HeldLine[]): ResolvedHeld[] {
-  return lines.map((line) => ({
-    line,
-    house: allHouses.find((h) => h.slug === line.slug),
-    entry: (CATALOGUE[line.slug] ?? []).find(
+  return lines.map((line) => {
+    const house = allHouses.find((h) => h.slug === line.slug);
+    const entry = (CATALOGUE[line.slug] ?? []).find(
       (e) => e.colorway === line.colorway,
-    ),
-  }));
+    );
+    if (house || entry) return { line, house, entry, garment: undefined };
+
+    /* A bookmarked garment, resolved the same way the bag resolves one —
+       see the long note on `resolve` in lib/cart. Without this a held
+       sweater came back with no entry at all and the card drew it as out
+       of the workshop, which is a lie about something in stock. */
+    const garment = apparel.find((a) => a.slug === line.slug);
+    const colour = garment?.colourways.find((c) => c.name === line.colorway);
+    return {
+      line,
+      house: undefined,
+      entry: colour
+        ? {
+            colorway: colour.name,
+            handle: colour.handle,
+            variantId: colour.variantId,
+            cents: colour.cents,
+            available: colour.available,
+          }
+        : undefined,
+      garment,
+    };
+  });
 }
 
 const EMPTY: HeldLine[] = [];

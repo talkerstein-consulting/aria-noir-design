@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Pause, Play } from "lucide-react";
 import { AtelierSection } from "./atelier-section";
 import { CollectionsSection } from "./collections-section";
 import { GridSection } from "./grid-section";
@@ -157,6 +158,64 @@ export function Experience() {
   const logoWrap = useRef<HTMLDivElement>(null);
   const logoMark = useRef<HTMLImageElement>(null);
   const headGroup = useRef<HTMLDivElement>(null);
+
+  /* ---------- the film's pause control ----------
+     A looping film with no way to stop it fails WCAG 2.2.2, and a reader
+     who has asked the OS for less motion should not be shown one at all.
+     `held` is the reader's decision; lib/autoplay reads the same flag off
+     the element so its retries do not undo it. `filmGone` hides the control
+     once the choreography has carried the film off the top of the page. */
+  const film = useRef<HTMLVideoElement>(null);
+  const [held, setHeld] = useState(false);
+  const [filmGone, setFilmGone] = useState(false);
+
+  const setFilm = (el: HTMLVideoElement | null) => {
+    film.current = el;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.dataset.held = "true";
+      el.pause();
+      setHeld(true);
+    }
+    /* No `kickPlay` here. Asking a film to play is asking for the file, and
+       this one is under the opening — scaled to nothing, behind an opaque
+       black overlay — for the whole of the sequence. Starting it on attach
+       fetched 4.67MB before the reader had seen a single frame of it. It is
+       started in the effect below instead, at the moment it is uncovered. */
+  };
+
+  /* ---- The film loads when it is revealed, not when it mounts ----
+   *
+   * `preload` cannot express this on its own: an element carrying `autoPlay`
+   * (or one asked to play on attach) downloads regardless of what `preload`
+   * says — measured at 4.67MB pulled down with the element still paused,
+   * because playback, not the hint, is what drives the fetch.
+   *
+   * So the ask is moved to the one moment it is true: `live`, when the
+   * opening has finished and the box has scaled up to fill the screen. The
+   * poster carries the frame until the footage catches up, which is the
+   * same handover HeroFilm already performs on the story pages.
+   *
+   * `held` is respected: a reduced-motion reader, or one who has pressed
+   * pause, is never handed a film they have already declined. */
+  useEffect(() => {
+    if (!live || held) return;
+    kickPlay(film.current);
+  }, [live, held]);
+
+  const toggleFilm = () => {
+    const el = film.current;
+    if (!el) return;
+    if (held) {
+      delete el.dataset.held;
+      setHeld(false);
+      kickPlay(el);
+    } else {
+      el.dataset.held = "true";
+      el.pause();
+      setHeld(true);
+    }
+  };
 
   /* ---------- opening: one rAF loop, direct DOM writes ---------- */
   useEffect(() => {
@@ -318,6 +377,9 @@ export function Experience() {
       if (videoBox.current) {
         videoBox.current.style.transform = `translateY(${liftVh + exitVh}vh) scale(${scale})`;
       }
+      /* The film's bottom edge, in vh from the top of the viewport. Once it
+         is above zero the film is off screen and its control goes with it. */
+      setFilmGone(50 + scale * 50 + liftVh + exitVh <= 0);
 
       /* ---- heading group is ANCHORED to the video's bottom edge, so the two
          are one unit. It naturally HANGS while the video rests. ---- */
@@ -381,18 +443,52 @@ export function Experience() {
               Mode, Data Saver, a tab that opened in the background. This
               film is the page's opening image, so it is asked directly as
               well, and asked again if the answer changes. See lib/autoplay. */}
+          {/* The poster is the film's own first frame, so a slow line, a
+              refused autoplay or a reduced-motion reader all see the
+              opening image rather than a black screen. */}
           <video
-            ref={kickPlay}
+            ref={setFilm}
             className="h-full w-full object-cover"
             src="/video/hero-bg.mp4"
-            autoPlay
+            poster="/video/hero-bg-poster.webp"
             muted
             loop
             playsInline
-            preload="auto"
+            /* `metadata`, not `auto`.
+             *
+             * `auto` is a request to fetch the WHOLE file up front, and the
+             * browser honours it whether or not the film ever plays —
+             * measured here as 4.67MB pulled down with the element still
+             * `paused`, because this context declined the autoplay. The
+             * opening is a black screen the reader scrolls THROUGH before
+             * the film is uncovered, so that was a full video downloaded
+             * ahead of a frame nobody had looked at yet.
+             *
+             * `metadata` fetches the header and lets playback pull the rest
+             * as it needs it. Nothing above is weakened: `autoPlay` still
+             * asks, lib/autoplay still asks again on visibility and on the
+             * first interaction, and the poster below the film still holds
+             * the opening image until it genuinely rolls. */
+            preload="metadata"
           />
         </div>
       </div>
+
+      {live && !filmGone && (
+        <button
+          type="button"
+          onClick={toggleFilm}
+          aria-pressed={held}
+          aria-label={held ? "Play the film" : "Pause the film"}
+          className="fixed bottom-6 right-6 z-[46] flex h-11 w-11 items-center justify-center rounded-full border border-paper/30 bg-ink/60 text-paper backdrop-blur transition-colors hover:border-paper/60 focus-visible:outline focus-visible:outline-1 focus-visible:outline-paper"
+        >
+          {held ? (
+            <Play size={16} strokeWidth={1.5} aria-hidden />
+          ) : (
+            <Pause size={16} strokeWidth={1.5} aria-hidden />
+          )}
+        </button>
+      )}
 
       {/* ---------- opening (video is above this and overtakes it) ---------- */}
       {!live && (
@@ -506,7 +602,11 @@ export function Experience() {
         </CtaLink>
       </div>
 
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
+        {/* The page's one H1. The mark above is an image and the opening
+            lines are choreography, so the outline needs a heading of its
+            own; it is read, never shown. */}
+        <h1 className="sr-only">Aria Noir. Eyewear, carved not assembled.</h1>
         {/* Runway for the fixed choreography above — the scroll distance the
             scene needs, and nothing else. Shorter on a phone because the
             scene itself is compressed there; see NARROW_FRAMES_PER_VH. */}

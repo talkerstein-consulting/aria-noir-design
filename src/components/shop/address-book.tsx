@@ -257,7 +257,7 @@ export function AddressBook({
             <label className="field">
               <span>
                 Call it
-                <em className="not-italic opacity-60"> · optional</em>
+                <em className="not-italic text-[var(--fg-quiet)]"> · optional</em>
               </span>
               <input
                 value={label}

@@ -36,7 +36,7 @@ export function PageClose({
     tone === "ink" ? "on-ink bg-ink" : `on-paper ${bare ? "" : "bg-paper"}`;
   return (
     <section
-      className={`${ground} relative z-[38] px-6 pt-[8vh] pb-32 sm:px-10 sm:pb-48`}
+      className={`${ground} relative z-[38] px-6 pt-[8vh] pb-20 sm:px-10 sm:pb-48`}
     >
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-7 text-center">
         <RevealText as="h2" text={heading} className="t-display-lg" />

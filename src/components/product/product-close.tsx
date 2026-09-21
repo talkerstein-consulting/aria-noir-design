@@ -53,7 +53,7 @@ export function ProductClose({
          CTA has to fill with ink and set its label in paper. This used to be
          a `variant="dark"` prop on the CTA itself; ground belongs on the
          section. */
-      className="on-paper relative overflow-hidden bg-paper px-6 pt-[8vh] pb-32 text-ink sm:px-10 sm:pb-48"
+      className="on-paper relative overflow-hidden bg-paper px-6 pt-[8vh] pb-20 text-ink sm:px-10 sm:pb-48"
     >
       {/* The turn itself. Ink at the very top, paper by the time the
           heading is on screen, so the gallery above hands over rather than

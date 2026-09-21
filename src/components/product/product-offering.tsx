@@ -7,6 +7,7 @@ import { CtaLink } from "@/components/cta-link";
 import { RevealText } from "@/components/reveal";
 import { preloadModels } from "@/components/product/product-model";
 import { ModelStill } from "@/components/product/model-still";
+import { MODEL_AIR_STORY } from "@/lib/model-fit";
 import { useOnScreen } from "@/hooks/use-on-screen";
 import { ConcreteField } from "@/components/vectors/ConcreteField";
 
@@ -75,16 +76,20 @@ export function ProductOffering({
      Where the slice is short, `moreNote` says so under the squares, so a
      row of three reads as a selection rather than as the whole house. See
      `turned` in lib/product.ts. */
-  const all =
-    offering.view.kind === "model" ? offering.view.colorways : undefined;
-  const shown = all?.slice(
-    0,
-    offering.view.kind === "model" ? (offering.view.turned ?? all.length) : 0,
-  );
-  /* One acetate is not a choice, so no squares are drawn for it. */
-  const colorways = (shown?.length ?? 0) > 1 ? shown : undefined;
-  const [chosen, setChosen] = useState(0);
-  const pick = colorways?.[chosen];
+  /* ---- A story page offers no colour choice ----
+   *
+   * The swatch row under the turntable is gone, and with it the glb it
+   * swapped in. A story page argues for the CUT — the block, the bench,
+   * the hinge — and which acetate to buy it in is the buy page's question.
+   * Asking it in both places let a reader answer here and then find the
+   * buy page asking again, with no memory of what they had said.
+   *
+   * The turntable stays, showing the house's own `view.src`: the flagship,
+   * the same frame the buy page opens on. `moreNote` still counts the run,
+   * because saying how many acetates exist is not the same as offering
+   * them. */
+  const moreCount =
+    offering.view.kind === "model" ? (offering.view.colorways?.length ?? 0) : 0;
 
   /* ---- When the acetates are fetched, and why not all at once ----
 
@@ -148,39 +153,16 @@ export function ProductOffering({
     if (near) setBuilt(true);
   }, [near]);
 
+  /* One model, warmed when the turntable is near. It used to warm every
+     colourway's glb — on ARCA II that was eight files and 6.85MB, and a
+     271ms long task decoding them. */
   useEffect(() => {
-    if (colorways?.[0]) preloadModels([colorways[0].src]);
-  }, [colorways]);
+    if (near && offering.view.kind === "model") preloadModels([offering.view.src]);
+  }, [near, offering.view]);
 
-  useEffect(() => {
-    if (!near || !colorways) return;
-    const rest = colorways.slice(1).map((c) => c.src);
-    /* requestIdleCallback is not in Safari. The fallback is a timeout,
-       which is worse at picking its moment but still spreads the decodes
-       across separate tasks rather than one. */
-    const idle: (cb: () => void) => number =
-      typeof requestIdleCallback === "function"
-        ? (cb) => requestIdleCallback(() => cb())
-        : (cb) => window.setTimeout(cb, 300);
-
-    let cancelled = false;
-    const next = (i: number) => {
-      if (cancelled || i >= rest.length) return;
-      idle(() => {
-        if (cancelled) return;
-        preloadModels([rest[i]]);
-        next(i + 1);
-      });
-    };
-    next(0);
-    return () => {
-      cancelled = true;
-    };
-  }, [near, colorways]);
-
-  /* The offer goes where the acetate goes. Falls back to the page's own
-     buy link for a house with no per-colourway set. */
-  const href = pick?.href ?? buyHref;
+  /* One way on: the page's own buy link. There is no chosen acetate here
+     to carry into it any more. */
+  const href = buyHref;
 
   return (
     <section
@@ -270,8 +252,12 @@ export function ProductOffering({
              problem, and the gate above gives it a screen and a half to
              build in. */
             <ModelStill
-              src={pick?.src ?? offering.view.src}
-              alt={`${offering.name}${pick ? ` in ${pick.name}` : ""}`}
+              /* The story page's own share — see `MODEL_AIR_STORY`. This
+                 section is the one place the object is the argument
+                 rather than an illustration beside one. */
+              air={MODEL_AIR_STORY}
+              src={offering.view.src}
+              alt={offering.name}
               built={built}
             />
           ) : (
@@ -327,71 +313,18 @@ export function ProductOffering({
             className="font-display text-6xl leading-[1.02] tracking-tight text-paper sm:text-8xl"
           />
 
-          {/* ---- The acetates ----
+          {/* The swatch row that stood here is gone: a story page no longer
+              offers a colour choice. See the note where `colorways` used
+              to be derived. */}
 
-              Square, hairline, gold when chosen: the same control the buy
-              page's picker is, from the same stylesheet, because a reader
-              who meets it here and again at checkout should be meeting one
-              object twice rather than two objects once. `.swatch` reads
-              --fg-*, so the row is wrapped in `on-ink` to resolve them
-              against this section's black instead of the body default.
-
-              Flat chips rather than the buy page's photographic thumbnails.
-              A picture here would be a second, smaller, worse view of the
-              exact thing turning full-screen above it; the frame itself is
-              the preview, and these only have to say which colour it is
-              about to become.
-
-              `pointer-events-auto` because the block around it is
-              transparent to the pointer by default — see the note on that
-              wrapper. */}
-          {colorways ? (
-            <div
-              className="on-ink pointer-events-auto mt-5 flex flex-wrap justify-center gap-2"
-              role="radiogroup"
-              aria-label="Colourway"
-            >
-              {colorways.map((c, i) => (
-                <button
-                  key={c.name}
-                  type="button"
-                  role="radio"
-                  aria-checked={i === chosen}
-                  aria-label={c.name}
-                  title={c.name}
-                  onClick={() => setChosen(i)}
-                  /* Warm this one before it is asked for. See the note on
-                     the preload effects above. */
-                  onPointerEnter={() => preloadModels([c.src])}
-                  onFocus={() => preloadModels([c.src])}
-                  className="swatch"
-                  data-on={i === chosen}
-                >
-                  <span
-                    aria-hidden
-                    className="swatch-chip"
-                    style={{ background: c.swatch }}
-                  />
-                </button>
-              ))}
-            </div>
-          ) : null}
-
-          {/* Which acetate is on the frame, directly under the squares
-              rather than after the offer. The squares are colour and
-              nothing else — a row of unlabelled chips is unreadable the
-              moment two of them are browns — and the name belongs to the
-              control, not to the CTA below it. */}
-          {pick ? (
-            <p className="mt-2 font-ui text-[11px] tracking-[0.35em] text-paper/60 uppercase">
-              {pick.name}
-            </p>
-          ) : null}
+          {/* The acetate name went with the squares: it labelled a
+              control that no longer exists, and on its own it would be a
+              caption naming a colour the reader cannot change. */}
 
           {/* The rest of the run, and where it lives. Only where the
               turntable is holding a short list. */}
-          {colorways && offering.moreNote ? (
-            <p className="mt-1 font-ui text-[11px] tracking-[0.2em] text-paper/35 uppercase">
+          {moreCount > 1 && offering.moreNote ? (
+            <p className="mt-1 font-ui text-[11px] tracking-[0.2em] text-paper/50 uppercase">
               {offering.moreNote}
             </p>
           ) : null}
@@ -400,7 +333,7 @@ export function ProductOffering({
             {offering.cta}
           </CtaLink>
 
-          <p className="mt-5 max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/40">
+          <p className="mt-5 max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/50">
             {offering.registryNote}
           </p>
         </div>

@@ -3,6 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
 import { allHouses, type House } from "@/lib/navigation";
+import { apparel, runShot, type ApparelCollection } from "@/lib/apparel";
 
 /**
  * The headless cart.
@@ -32,8 +33,28 @@ const KEY = "aria-noir:bag";
 export type BagLine = {
   slug: string;
   colorway: string;
+  /**
+   * The garment's size. Absent on eyewear, which is one size.
+   *
+   * Part of the line's IDENTITY, not a note on it: a Medium and a Large in
+   * the same colourway are two different things to own, two different
+   * variants to order, and must sit as two lines. Every add, quantity
+   * change and removal keys on it — see `same`.
+   */
+  size?: string;
   qty: number;
 };
+
+/** Two lines are the same line when the product, the colour AND the size
+ *  agree. Kept here so add, setQty and remove cannot drift apart on what
+ *  counts as a match. */
+function same(a: BagLine, b: Pick<BagLine, "slug" | "colorway" | "size">) {
+  return (
+    a.slug === b.slug &&
+    a.colorway === b.colorway &&
+    (a.size ?? "") === (b.size ?? "")
+  );
+}
 
 /** A bag line joined back to the catalogue. Null where the store no longer
  *  carries the line — a colourway can be withdrawn between the day it was
@@ -42,6 +63,8 @@ export type ResolvedLine = {
   line: BagLine;
   house: House | undefined;
   entry: CatalogueEntry | undefined;
+  /** The collection, where the line is a garment rather than a frame. */
+  garment: ApparelCollection | undefined;
 };
 
 function read(): BagLine[] {
@@ -79,8 +102,82 @@ export function resolve(lines: readonly BagLine[]): ResolvedLine[] {
     const entry = (CATALOGUE[line.slug] ?? []).find(
       (e) => e.colorway === line.colorway,
     );
-    return { line, house, entry };
+    if (house || entry) return { line, house, entry, garment: undefined };
+
+    /* ---- The garment resolves too ----
+     *
+     * This used to look only at `allHouses` and `CATALOGUE`, so a line for
+     * El Patrón came back with no house and no entry: it showed a dash
+     * where its price should be, counted zero towards the subtotal, and
+     * was dropped on the way to checkout. The bag silently refused to sell
+     * one of the two things the shop makes.
+     *
+     * An `ApparelColourway` already carries everything a `CatalogueEntry`
+     * does — the colourway, the handle, the variant id, the price and
+     * whether it is in stock — so it is handed over AS one. Every surface
+     * that reads `entry.cents` or `entry.variantId` therefore works on a
+     * sweater without being told sweaters exist: the subtotal adds up, the
+     * checkout has a variant to order, and the out-of-stock line says so.
+     *
+     * `house` stays undefined, because a garment is not one. `garment`
+     * carries the name and the photography instead — see `lineName` and
+     * `lineImage`. */
+    const garment = apparel.find((a) => a.slug === line.slug);
+    const colour = garment?.colourways.find((c) => c.name === line.colorway);
+    return {
+      line,
+      house: undefined,
+      entry: colour
+        ? {
+            colorway: colour.name,
+            handle: colour.handle,
+            variantId: colour.variantId,
+            cents: colour.cents,
+            available: colour.available,
+          }
+        : undefined,
+      garment,
+    };
   });
+}
+
+/* ---- The four read-helpers take less than a bag line ----
+ *
+ * `Displayable`, not `ResolvedLine`: the held list resolves to the same
+ * shape WITHOUT a quantity (nobody saves two of a frame for later), and
+ * these four read nothing but the slug, the colour, the size and which
+ * kind of product it is. Typing them to the narrower thing lets the bag,
+ * the held list and anything later share one set of answers instead of
+ * each growing its own name-and-picture logic. */
+export type Displayable = {
+  line: { slug: string; colorway: string; size?: string };
+  house: House | undefined;
+  garment: ApparelCollection | undefined;
+};
+
+/** What to call a line, whichever kind of product it is. */
+export function lineName(r: Displayable) {
+  return r.house?.name ?? r.garment?.name ?? r.line.slug;
+}
+
+/** The colour, and the size where there is one. */
+export function lineMeta(r: Displayable) {
+  return r.line.size
+    ? `${r.line.colorway} · ${r.line.size}`
+    : r.line.colorway;
+}
+
+/** The line's photograph: the colourway's own where the shoot has one. */
+export function lineImage(r: Displayable) {
+  /* The run, never the packshot series — see `runShot`. */
+  if (r.garment) return runShot(r.garment, r.line.colorway);
+  return undefined;
+}
+
+/** Where the line's product lives on this site. */
+export function lineHref(r: Displayable) {
+  const slug = r.house?.slug ?? r.garment?.slug ?? r.line.slug;
+  return `/shop/${slug}?colourway=${encodeURIComponent(r.line.colorway)}`;
 }
 
 export function subtotal(resolved: readonly ResolvedLine[]) {
@@ -145,28 +242,35 @@ export function useBag() {
     () => false,
   );
 
-  const add = useCallback((slug: string, colorway: string, qty = 1) => {
-    const next = read();
-    const found = next.find(
-      (l) => l.slug === slug && l.colorway === colorway,
-    );
-    if (found) found.qty += qty;
-    else next.push({ slug, colorway, qty });
-    write(next);
-  }, []);
+  /* `size` is last and optional on all three, so every existing eyewear
+     call site keeps working unchanged. */
+  const add = useCallback(
+    (slug: string, colorway: string, qty = 1, size?: string) => {
+      const next = read();
+      const found = next.find((l) => same(l, { slug, colorway, size }));
+      if (found) found.qty += qty;
+      else next.push(size ? { slug, colorway, size, qty } : { slug, colorway, qty });
+      write(next);
+    },
+    [],
+  );
 
-  const setQty = useCallback((slug: string, colorway: string, qty: number) => {
-    const next = read()
-      .map((l) =>
-        l.slug === slug && l.colorway === colorway ? { ...l, qty } : l,
-      )
-      .filter((l) => l.qty > 0);
-    write(next);
-  }, []);
+  const setQty = useCallback(
+    (slug: string, colorway: string, qty: number, size?: string) => {
+      const next = read()
+        .map((l) => (same(l, { slug, colorway, size }) ? { ...l, qty } : l))
+        .filter((l) => l.qty > 0);
+      write(next);
+    },
+    [],
+  );
 
-  const remove = useCallback((slug: string, colorway: string) => {
-    write(read().filter((l) => !(l.slug === slug && l.colorway === colorway)));
-  }, []);
+  const remove = useCallback(
+    (slug: string, colorway: string, size?: string) => {
+      write(read().filter((l) => !same(l, { slug, colorway, size })));
+    },
+    [],
+  );
 
   /* After an order is placed. The bag was an intention and the intention
      has been acted on; keeping the lines would make the next visit look

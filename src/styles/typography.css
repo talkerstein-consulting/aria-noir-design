@@ -184,7 +184,7 @@ body {
 
 /* ── Section shell ───────────────────────────────────────────────────
    The vertical rhythm and page gutter, as one class instead of
-   `px-6 sm:px-10 py-32 sm:py-48` retyped per section. */
+   `px-6 sm:px-10 py-20 sm:py-48` retyped per section. */
 .section {
   padding-inline: var(--gutter);
   padding-block: var(--section-pad);
@@ -197,6 +197,34 @@ body {
 }
 .section--flush {
   padding-block: 0;
+}
+
+/* ---- Two sections do not get two paddings ----
+ *
+ * `--section-pad-wide` is 12rem, and it is the air AROUND a section. Stack
+ * two and the seam between them is 12rem of bottom padding plus 12rem of
+ * top padding: 24rem, 384px, nearly 40% of a laptop screen of nothing,
+ * everywhere two sections meet. That was never the rhythm anyone chose —
+ * it is the rhythm twice.
+ *
+ * So the second of a touching pair drops its top padding and the seam
+ * becomes one interval instead of two.
+ *
+ * Guarded on the background, and that guard is the whole point: where the
+ * band colour CHANGES, both paddings are doing real work — they are the
+ * inset that keeps type off the edge of a colour field, and collapsing
+ * them would run the first line of the paper section into the black above
+ * it. Same colour, no visible seam, no reason to pay twice. Different
+ * colour, the padding stays.
+ */
+/* `:is(.section, .section-pad)` because the build sets this rhythm two
+ * ways — the `.section` class here, and the `SECTION_PAD` utility string in
+ * lib/timeline — and they produce the same 5rem/12rem. Matching only the
+ * first left every seam where a `SECTION_PAD` section met a `.section` one
+ * still paying twice; /arca-i had three of them. */
+:is(.section, .section-pad).bg-ink + :is(.section, .section-pad).bg-ink,
+:is(.section, .section-pad).bg-paper + :is(.section, .section-pad).bg-paper {
+  padding-block-start: 0;
 }
 
 /* Vertical stacks. The gap steps are the same four the build already

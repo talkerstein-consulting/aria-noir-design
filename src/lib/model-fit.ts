@@ -51,6 +51,31 @@
 export const MODEL_AIR = 0.86;
 
 /**
+ * The fraction a story page's turntable may occupy instead.
+ *
+ * The story pages are the one surface where the object is the ARGUMENT
+ * rather than a thumbnail of what is for sale: a full section, its own
+ * concrete field, a heading and a CTA arranged around one frame the reader
+ * is meant to turn. At 0.86 it read as a small object in a large empty
+ * room — the air stopped being composure and became distance.
+ *
+ * Above 1 because the fit is against the bounding SPHERE, and the sphere
+ * is sized by the frame's widest moment, three-quarters on, where the
+ * temples swing out along Z. Face-on — which is where the frame rests and
+ * where the reader sees it most of the time — the silhouette is much
+ * narrower than that sphere, so 1.16 still leaves visible air at rest and
+ * only approaches the edges at the angle that earns it. Measured at both
+ * ends: at 1.34 the frame was cut off by the top of its box on a laptop,
+ * and at 1.16 it clears the heading below it and the nav above it through
+ * a full turn, at 375px and at desktop width.
+ *
+ * It is NOT the site-wide number. The home page's film, the eyewear
+ * turntable and the buy page all share a screen with type in a way this
+ * section does not, and `MODEL_AIR` is still what they ask for.
+ */
+export const MODEL_AIR_STORY = 1.16;
+
+/**
  * The same rule for a stage that moves the camera instead of the model.
  * Multiply the distance at which the sphere exactly fills the frame by
  * this, and the object lands at `MODEL_AIR` of it.
@@ -64,6 +89,10 @@ export const MODEL_MARGIN = 1 / MODEL_AIR;
 export function fitScale(
   viewport: { width: number; height: number },
   radius: number,
+  /** The stage's own share, where it has earned one — see
+   *  `MODEL_AIR_STORY`. Every caller that does not pass it gets the house
+   *  number, which is the point of the module. */
+  air: number = MODEL_AIR,
 ) {
-  return (Math.min(viewport.width, viewport.height) * MODEL_AIR) / (radius * 2);
+  return (Math.min(viewport.width, viewport.height) * air) / (radius * 2);
 }

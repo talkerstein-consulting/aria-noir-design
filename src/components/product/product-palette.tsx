@@ -38,7 +38,7 @@ export function ProductPalette({
       className="relative bg-ink px-6 pb-16 sm:px-10"
     >
       <div className="mx-auto w-full max-w-7xl">
-        <p className="font-ui text-[11px] tracking-[0.35em] text-paper/40 uppercase">
+        <p className="font-ui text-[11px] tracking-[0.35em] text-paper/55 uppercase">
           {label}
         </p>
 
@@ -60,19 +60,31 @@ export function ProductPalette({
         </div>
 
         {/* The names, on the same track as the colours above them, so each
-            one sits under its own band. They wrap to two lines on a phone
-            at eight colourways and that is fine — the strip stays intact,
-            which is the part that has to read. */}
-        <div className="mt-3 flex w-full">
+            one sits under its own band. From `sm` up there is room for
+            that. On a phone there is not: eight bands are 40px each and
+            TORTOISE alone is wider, so the track ran off the right edge of
+            the screen. There the names run as one line in the strip's
+            order instead, which still says what the bands are. */}
+        <div className="mt-3 hidden w-full sm:flex">
           {colorways.map((c) => (
             <p
               key={c.name}
-              className="flex-1 pr-2 font-ui text-[10px] leading-tight tracking-[0.14em] text-paper/45 uppercase"
+              className="min-w-0 flex-1 pr-2 font-ui text-[10px] leading-tight tracking-[0.14em] text-paper/55 uppercase"
             >
               {c.name}
             </p>
           ))}
         </div>
+        <p className="mt-3 font-ui text-[10px] leading-relaxed tracking-[0.14em] text-paper/55 uppercase sm:hidden">
+          {colorways.map((c, i) => (
+            <span key={c.name} className="whitespace-nowrap">
+              {c.name}
+              {i < colorways.length - 1 ? (
+                <span aria-hidden className="px-2 text-paper/25">·</span>
+              ) : null}
+            </span>
+          ))}
+        </p>
       </div>
     </section>
   );

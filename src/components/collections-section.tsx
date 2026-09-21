@@ -36,6 +36,8 @@ export function CollectionsSection() {
        thing worth forbidding, and nothing borrows: each panel shows the
        plate belonging to the house it names. */
     image: house.plate ?? undefined,
+    imageNarrow: house.plateNarrow,
+    narrowZoom: house.plateNarrowZoom,
     swatch: house.swatch,
     /* The house's own page where there is one; the index otherwise. NOT
        the buy page — that sits after the story, and a home page panel is
@@ -46,6 +48,7 @@ export function CollectionsSection() {
 
   return (
     <StickyPanels
+      labels="split"
       items={items}
       /* The first section the reader reaches after the opening, so its
          leading plates are the ones the loader has to have covered. Two:

@@ -67,7 +67,13 @@ export function ColourwayPicker({
         <p className="t-label text-[var(--fg-primary)]">{chosen}</p>
       </div>
 
-      <ul
+      {/* A `div`, not a `ul`. This was a list of list items with
+          `role="radiogroup"` on the list — which REPLACES the list
+          semantics, leaving every `<li>` inside it orphaned: a list item
+          with no list, which is a real error in the accessibility tree and
+          not a lint preference. A radiogroup's children are its radios;
+          there is no list here to keep. */}
+      <div
         className="mt-3 flex flex-wrap gap-3"
         role="radiogroup"
         aria-label="Colourway"
@@ -75,14 +81,29 @@ export function ColourwayPicker({
         {stock.map(({ colorway: name, available: inStock }) => {
           const on = name === chosen;
           return (
-            <li key={name}>
               <button
+                key={name}
                 type="button"
                 role="radio"
                 aria-checked={on}
                 aria-label={inStock ? name : `${name} — out of the workshop`}
                 disabled={!inStock}
                 onClick={() => setChosen(name)}
+                /* ---- Fetch the mesh while the hand is still travelling ----
+                
+                   Each colourway has its own glb (~830kb). Prefetching all
+                   of them on arrival made the swap instant and cost close
+                   to 6MB on a house with seven acetates, most of it for
+                   frames nobody presses.
+                
+                   The pointer entering a swatch is the reliable warning
+                   that a press is coming, and the last inch of travel is a
+                   few hundred milliseconds — enough for a Draco mesh off a
+                   warm connection. `onFocus` is the keyboard's equivalent:
+                   arrowing onto a swatch starts the same fetch.
+                
+                   `preloadModels` is idempotent, so a reader sweeping the
+                   row costs one fetch per acetate, not one per crossing. */
                 title={name}
                 className="swatch swatch--thumb"
                 data-on={on}
@@ -98,10 +119,9 @@ export function ColourwayPicker({
                   style={{ background: swatchFor(name) }}
                 />
               </button>
-            </li>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }

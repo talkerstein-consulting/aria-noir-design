@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { createElement, type CSSProperties, type ElementType } from "react";
+import { createElement, useEffect, type CSSProperties, type ElementType } from "react";
 import { crumbsFor, type Crumb } from "@/lib/crumbs";
 import { RevealText, useReveal } from "@/components/reveal";
 
@@ -53,7 +53,7 @@ type CrumbEyebrowProps = {
  * whose whole opening move is a full-bleed frame with nothing over it.
  *
  * Every page here already opens with a small uppercase line above its
- * heading, saying where you are: EYEWEAR, FIT & CARE, THE HOUSE. That is
+ * heading, saying where you are: EYEWEAR, CARE, THE HOUSE. That is
  * the trail's sentence, one crumb short. So the trail is set there instead
  * of above it — same scale, same colour, same reveal, one line instead of
  * two, and the last crumb IS the eyebrow the page would have written.
@@ -129,6 +129,21 @@ function CrumbTrail({
      unconditionally is what keeps the two modes one component. */
   const ref = useReveal<HTMLElement>();
   const last = items.length - 1;
+
+  /* Open scrolled to the end, so the current page's crumb is on screen
+     and it is the trail behind it that runs off the left edge. Re-done on
+     resize because the overflow, and so the end, moves with the width.
+     The reader can still drag back to the start. */
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const toEnd = () => {
+      el.scrollLeft = el.scrollWidth;
+    };
+    toEnd();
+    window.addEventListener("resize", toEnd);
+    return () => window.removeEventListener("resize", toEnd);
+  }, [ref]);
 
   return (
     <nav

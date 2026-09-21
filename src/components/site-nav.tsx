@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { rememberBrowsing, OPEN_BAG_PARAM } from "@/lib/last-browsed";
 import { Search, ShoppingBag, UserRound, X } from "lucide-react";
 import { nav } from "@/lib/content";
 import { AriaWordmark } from "@/components/aria-wordmark";
@@ -59,6 +61,15 @@ const PROBE_X = [0.12, 0.5, 0.88];
  */
 export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
   const { count, ready } = useBag();
+
+  /* The shop remembers where the reader was shopping, so the bag's way out
+     can return them to it rather than to whatever URL happens to be one
+     entry back. Recorded here because this nav is on every page — see
+     lib/last-browsed for why this is not `history.back()`. */
+  const pathname = usePathname();
+  useEffect(() => {
+    rememberBrowsing(pathname);
+  }, [pathname]);
   const ref = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -76,6 +87,43 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
     setBagOpen(which === "bag" && next);
     setDeskOpen(which === "desk" && next);
   };
+
+  /* ---- Arriving with the bag asked for ----
+   *
+   * `/bag` is a door rather than a page: it sends the reader back to
+   * whatever they were looking at with `?bag=1` on it, and this is the end
+   * that answers. Every link that used to go to the bag page still goes to
+   * the bag — it just opens beside the page now instead of replacing it.
+   *
+   * The param is stripped once it has been acted on, with `replaceState` so
+   * no history entry is spent on it. Leaving it would mean a reader who
+   * closes the drawer and reloads gets it opened again, and a shared URL
+   * that carries someone else's errand.
+   *
+   * Read from `window.location` rather than `useSearchParams`, which opts
+   * the whole route out of static prerendering unless every page wrapping
+   * this nav adds a Suspense boundary — for a value nothing renders. */
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get(OPEN_BAG_PARAM) !== "1") return;
+    url.searchParams.delete(OPEN_BAG_PARAM);
+    window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+    /* Opened on the NEXT FRAME, and deliberately not cancelled.
+     *
+     * Next frame, because setting state synchronously in an effect body
+     * makes React render again before the browser paints — the page the
+     * reader just landed on would be composed with the drawer already over
+     * it, so the panel appears rather than arrives.
+     *
+     * Not cancelled, because React runs an effect twice in development —
+     * mount, clean up, mount again — and a cleanup that cancelled this
+     * frame killed the only pass that still had the param to act on: the
+     * second pass finds the URL already stripped and returns early, and
+     * the drawer never opened at all. Letting the frame land is right
+     * either way; this nav outlives every route change, and a setState
+     * after unmount is a no-op. */
+    window.requestAnimationFrame(() => setBagOpen(true));
+  }, [pathname]);
 
   useEffect(() => {
     const header = ref.current;
@@ -122,6 +170,13 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
       }
 
       header.dataset.tone = light ? "light" : "dark";
+
+      /* Once the page has moved at all, the band stops being a transparent
+         overlay and becomes a lid: on a phone the checkout's own fields and
+         the phase rail pass directly under it, and type sliding through the
+         wordmark reads as a bug. Only the fact of having scrolled is stored
+         here; which pages take a ground, and at what width, is CSS. */
+      header.dataset.scrolled = window.scrollY > 8 ? "true" : "false";
     };
 
     update();
@@ -157,6 +212,9 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
       <header
         ref={ref}
         data-tone="dark"
+        /* The ground the band takes once scrolled is a per-page decision,
+           and the checkout is the page that needs it. */
+        data-route={pathname.startsWith("/checkout") ? "checkout" : undefined}
         /* Read by the tone probe above, and the reason the header can sit
            OVER the overlay rather than under it. */
         data-menu={menuOpen ? "open" : "closed"}

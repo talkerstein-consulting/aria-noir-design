@@ -47,7 +47,7 @@ export default async function PolicyPage({
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
         {/* No plate. These pages open on type over ink and are better for
             it — a warranty set over campaign photography is a page asking
             to be admired while someone is trying to find out whether their

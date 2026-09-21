@@ -18,14 +18,16 @@ rules: no em-dashes, and the tagline *Frame your mind* is never explained.
 
 ## What is in scope
 
-Eight routes. Nothing outside them is being designed, unless asked:
+Ten routes. Nothing outside them is being designed, unless asked:
 
 | | |
 |---|---|
 | Home | `/` |
 | Story | `/arca-i`, `/arca-ii` |
+| Shop all | `/shop` |
 | Buy | `/shop/[slug]` |
 | Lookbook | `/lookbook/ss26` |
+| Gallery | `/gallery` |
 | The House | `/house/about` |
 | Contact | `/contact` |
 | Bag | `/bag` |

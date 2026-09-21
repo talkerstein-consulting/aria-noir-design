@@ -15,8 +15,8 @@ export default function ConfirmedPage() {
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
-        <section className="on-ink section bg-ink pt-32 sm:pt-40">
+      <main id="main" tabIndex={-1} className="relative">
+        <section className="on-ink section bg-ink pt-20 sm:pt-40">
           <div className="mx-auto max-w-5xl">
             <ConfirmedView />
           </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { CreditCard, Heart, MapPin, Package, UserRound } from "lucide-react";
+import { CreditCard, Bookmark, MapPin, Package, UserRound } from "lucide-react";
 import { CtaLink, CtaButton } from "@/components/cta-link";
 import { AddressBook } from "@/components/shop/address-book";
 import { addressLine } from "@/components/shop/address-form";
@@ -71,7 +71,7 @@ export type View = "orders" | "held" | "profile" | "addresses" | "payment";
  */
 export const VIEWS: readonly { id: View; label: string; Icon: typeof UserRound }[] = [
   { id: "orders", label: "Orders", Icon: Package },
-  { id: "held", label: "Held", Icon: Heart },
+  { id: "held", label: "Held", Icon: Bookmark },
   { id: "profile", label: "Profile", Icon: UserRound },
   { id: "addresses", label: "Addresses", Icon: MapPin },
   { id: "payment", label: "Payment", Icon: CreditCard },
@@ -92,7 +92,6 @@ function subscribeHash(onChange: () => void) {
 }
 
 export function DeskView() {
-  const known = useSession();
   const { session, loading, error, reload } = useHouseSession();
   const view = useSyncExternalStore(subscribeHash, fromHash, () => "orders" as View);
   const signedIn = Boolean(session?.user);
@@ -110,12 +109,22 @@ export function DeskView() {
 
   return (
     <>
+      {/* The rooms, as the site's own CTA at its second weight — the same
+          outlined box as every other secondary action, rather than the
+          hand-drawn rail of icons and underlines this used to be. The
+          interaction system says there are two CTAs and nothing is styled
+          a third way; a tabbed subnav was a third way. The live room is
+          `aria-current`, which is what turns it gold. */}
       <nav className="desk-rail" aria-label="The desk">
-        {VIEWS.map(({ id, label, Icon }) => (
-          <button key={id} type="button" onClick={() => go(id)} aria-current={view === id}>
-            <Icon aria-hidden />
-            <span>{label}</span>
-          </button>
+        {VIEWS.map(({ id, label }) => (
+          <CtaButton
+            key={id}
+            kind="secondary"
+            current={view === id}
+            onClick={() => go(id)}
+          >
+            {label}
+          </CtaButton>
         ))}
       </nav>
 
@@ -126,7 +135,9 @@ export function DeskView() {
           <>
             {view === "orders" ? <Orders session={session!} /> : null}
             {view === "held" ? <HeldView /> : null}
-            {view === "profile" ? <ProfilePane session={session!} onSaved={reload} /> : null}
+            {view === "profile" ? (
+              <ProfilePane session={session!} onSaved={reload} onSignOut={signOut} />
+            ) : null}
             {view === "addresses" ? <AddressesPane session={session!} /> : null}
             {view === "payment" ? <PaymentPane session={session!} onSaved={reload} /> : null}
             {!signedIn && view !== "held" ? <DoorNote reason={error} /> : null}
@@ -134,16 +145,6 @@ export function DeskView() {
         )}
       </div>
 
-      {signedIn ? (
-        <div className="hairline mt-20 flex flex-wrap items-center gap-x-10 gap-y-4 pt-10">
-          <CtaButton kind="secondary" onClick={() => void signOut()}>
-            Sign out
-          </CtaButton>
-          <CtaButton kind="secondary" onClick={() => known.set(false)}>
-            Not you?
-          </CtaButton>
-        </div>
-      ) : null}
     </>
   );
 }
@@ -376,7 +377,15 @@ function Orders({ session }: { session: Session }) {
 
 /* ── Profile ──────────────────────────────────────────────────────── */
 
-function ProfilePane({ session, onSaved }: { session: Session; onSaved: () => void }) {
+function ProfilePane({
+  session,
+  onSaved,
+  onSignOut,
+}: {
+  session: Session;
+  onSaved: () => void;
+  onSignOut: () => void | Promise<void>;
+}) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -437,6 +446,20 @@ function ProfilePane({ session, onSaved }: { session: Session; onSaved: () => vo
       {u ? (
         <section className="hairline mt-20 pt-10">
           <p className="t-eyebrow">The account itself</p>
+
+          {/* Sign out lives HERE and nowhere else on the desk. It used to
+              sit in the page's foot, under whichever room you happened to
+              be reading — a control that ends the session hanging off the
+              bottom of the orders list is a door in the middle of a
+              corridor. The account is the profile's subject, so the two
+              things you can do to the account are in one place. */}
+          <div className="mt-8">
+            <CtaButton kind="secondary" onClick={() => void onSignOut()}>
+              Sign out
+            </CtaButton>
+          </div>
+
+          <p className="t-eyebrow mt-16">Deleting it</p>
           <p className="t-body mt-4 max-w-xl text-[var(--fg-tertiary)]">
             Deleting it removes the sign-in, the saved addresses and the card on file. Orders
             already placed stay on the workshop&rsquo;s books, as they must, without your name on them.

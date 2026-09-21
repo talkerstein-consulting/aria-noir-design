@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { GROUPS, NO_RESULT_ROUTES, query, type Hit } from "@/lib/search";
 import { CtaLink } from "@/components/cta-link";
+import { ProductCard } from "@/components/product-card";
 
 /**
  * The search sheet.
@@ -138,7 +139,7 @@ export function SiteSearch({
 
           <div className="search-results" aria-live="polite">
             {!asked ? (
-              <Suggested />
+              <Suggested onGo={onClose} />
             ) : hits.length ? (
               <Answered hits={hits} onGo={onClose} />
             ) : (
@@ -152,16 +153,12 @@ export function SiteSearch({
 }
 
 /** Nothing typed yet. The catalogue is small enough to simply offer. */
-function Suggested() {
+function Suggested({ onGo }: { onGo: () => void }) {
   const frames = useMemo(() => query("arca"), []);
   return (
     <div className="search-group">
       <p className="t-eyebrow mb-4 text-[var(--fg-quiet)]">The whole house</p>
-      {frames
-        .filter((h) => h.kind === "frame")
-        .map((hit) => (
-          <HitRow key={hit.href} hit={hit} onGo={() => {}} />
-        ))}
+      <Hits hits={frames.filter((h) => h.kind === "frame")} onGo={onGo} />
       <div className="mt-8">
         <CtaLink href="/eyewear">Browse all frames</CtaLink>
       </div>
@@ -189,13 +186,44 @@ function Answered({
                   know how much of the house answered before they read it. */}
               <span className="ml-3 opacity-60">{group.length}</span>
             </p>
-            {group.map((hit) => (
-              <HitRow key={hit.href} hit={hit} onGo={onGo} />
-            ))}
+            <Hits hits={group} onGo={onGo} />
           </div>
         );
       })}
     </>
+  );
+}
+
+/**
+ * A group's answers.
+ *
+ * A product is shown, not described: frames and colourways come back as
+ * the same `ProductCard` the eyewear grid and the colourway wall draw, so
+ * the picture a reader recognises the acetate by is the thing they are
+ * choosing from. Pages have no photograph and stay as rows — a policy
+ * given a tile would be the sheet pretending a sentence is merchandise.
+ */
+function Hits({ hits, onGo }: { hits: readonly Hit[]; onGo: () => void }) {
+  const cards = hits.filter((h) => h.card);
+  if (!cards.length) {
+    return (
+      <>
+        {hits.map((hit) => (
+          <HitRow key={hit.href} hit={hit} onGo={onGo} />
+        ))}
+      </>
+    );
+  }
+  return (
+    /* The click is caught on the way up rather than on each card:
+       `ProductCard` is a shared object and giving it an `onClick` for this
+       one caller's sake would put the sheet's business inside every grid
+       on the site. */
+    <div className="search-cards" onClick={onGo}>
+      {cards.map((hit) => (
+        <ProductCard key={hit.href} {...hit.card!} />
+      ))}
+    </div>
   );
 }
 

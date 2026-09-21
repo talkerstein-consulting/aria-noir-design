@@ -2,7 +2,8 @@
  * MATRIARCA — product page copy and plate assignments.
  *
  * The house's approved copy deck, in the shape lib/product.ts sets and
- * components/product/story-page.tsx renders. No film, one turntable
+ * components/product/story-page.tsx renders. Placeholder teaser films
+ * (see the note at `hero`), one turntable
  * export; the approach runs face-only and the offering turns a single glb.
  *
  * The run is three acetates and one of them, Black Wood, is out of the
@@ -29,6 +30,8 @@ import type {
 } from "./product";
 
 const C = "/images/matriarca/campaign";
+/** The closeup pass — see scripts/import-closeup-photography. */
+const CU = "/images/matriarca/closeup";
 const V = "/images/matriarca/variants";
 
 export const hero: Hero = {
@@ -42,6 +45,15 @@ export const hero: Hero = {
      portrait plate was re-cut with the frame centred and needs nothing. */
   focus: "38% 30%",
   alt: "MATRIARCA, the bridge against stone",
+  /* ---- Placeholder teasers, Sep 2026 ----
+     Three Kling cuts stand in until the house films the campaign: the
+     hero above the title, the establishing shot at the approach, the
+     closing shot beside the buy page's detail tabs (lib/navigation).
+     Each poster is frame 0 of its own film, so the handover is invisible
+     (see the `poster` note in lib/product.ts). Swap the files under
+     public/video/matriarca/ and the page needs nothing else. */
+  video: "/video/matriarca/hero.mp4",
+  poster: "/video/matriarca/hero-poster.webp",
 };
 
 export const structure: Opening = {
@@ -132,18 +144,32 @@ export const spec: Spec = {
         "Modern materials and a considered fit bring the monumental concept into an everyday, wearable form.",
     },
   ],
-  /* The bridge relief at hero crop, then the two acetates the bench has
-     actually photographed, on the sill and upright. Black Wood is absent
-     from the sheet for the same reason it is absent from the shelf. */
+  /* The CLOSEUP pass, not the sill stills that were here.
+  
+     Every claim on this sheet is about something you have to be close to
+     see — the bridge relief, the profile, the proportion at the temple —
+     and the evidence beside it was the whole frame on a windowsill, four
+     times, at a distance where none of those readings are available. The
+     shoot delivered a closeup pass for exactly this and nothing was
+     reading it; see scripts/import-closeup-photography.
+  
+     Both figures, because the sheet describes one object and the two
+     passes are the same object in two lights. */
   macro: [
-    { src: `${C}/hero-macro-01-bridge-relief.webp`, alt: "The bridge relief, hero crop" },
-    { src: `${V}/midnight-noir-sill.webp`, alt: "MATRIARCA in Midnight Noir, on the sill" },
-    { src: `${V}/brown-sill.webp`, alt: "MATRIARCA in Brown, on the sill" },
-    { src: `${V}/brown-tall.webp`, alt: "MATRIARCA in Brown, upright" },
+    { src: `${CU}/aria-closeup-01-stone-archway.webp`, alt: "MATRIARCA at the stone archway, close" },
+    { src: `${CU}/noir-closeup-02-profile-golden.webp`, alt: "The frame in profile, golden light" },
+    { src: `${CU}/noir-closeup-01-stone-archway.webp`, alt: "MATRIARCA at the stone archway, close" },
+    { src: `${CU}/aria-closeup-02-profile-golden.webp`, alt: "The frame in profile, golden light" },
   ],
 };
 
 export const approach: Approach = {
+  /* The establishing teaser, a different cut from the hero's. */
+  film: {
+    src: "/video/matriarca/establishing.mp4",
+    poster: "/video/matriarca/establishing-poster.webp",
+    alt: "The teaser film for MATRIARCA",
+  },
   face: {
     src: `${C}/worn-noir-closeup-01-stone-archway.webp`,
     alt: "Noir, close, in the stone archway",

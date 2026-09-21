@@ -1,6 +1,10 @@
 import { allHouses, type House } from "@/lib/navigation";
 import { PLATE_SIZES } from "./plate-sizes";
 import { CATALOGUE, type CatalogueEntry } from "@/lib/catalogue";
+import {
+  COLOURWAY_CARD_ART,
+  colourwayKey,
+} from "@/lib/colourway-cards.generated";
 
 /**
  * The commerce layer: where a frame is bought, and what a colourway looks
@@ -37,8 +41,26 @@ export const SHOP_ALL_URL = `${SHOP_URL}/collections/all`;
  * What the store actually sells for this house, in the order the store
  * lists it. Empty for a house the storefront does not carry.
  */
+/**
+ * Colourways the house does not sell here, whatever the storefront says.
+ *
+ * MATRIARCA's Black Wood is the only one. It was never shot on the sill,
+ * so it has no card on the wall, and it is withdrawn from the run rather
+ * than shown as a nameplate with no photograph beside seven that have one.
+ *
+ * Applied in `stockFor`, which is the single source every surface reads —
+ * the picker, the run, the shop list, the counts and the bag. Filtering it
+ * in one of those and not the others is how a colourway ends up buyable on
+ * a page that does not list it.
+ */
+const WITHDRAWN: Record<string, readonly string[]> = {
+  matriarca: ["Black Wood"],
+};
+
 export function stockFor(house: House): readonly CatalogueEntry[] {
-  return CATALOGUE[house.slug] ?? [];
+  const all = CATALOGUE[house.slug] ?? [];
+  const gone = WITHDRAWN[house.slug];
+  return gone ? all.filter((e) => !gone.includes(e.colorway)) : all;
 }
 
 export function entryFor(house: House, colorway: string) {
@@ -185,6 +207,47 @@ export const COLLECTION_LABEL = "Eyewear";
  * honest picture available, and the panel says which colour is chosen
  * regardless. Where even that is missing the caller renders the acetate.
  */
+/**
+ * The SQUARE render of a colourway, where the sill shoot produced one.
+ *
+ * `COLOURWAY_CARD_ART` is that set — the 16:9 sill outpainted to 1:1 so a
+ * square crop keeps the temples, built by scripts/build-colourway-cards.
+ * It is what the product cards already use, so the buy page's lead plate
+ * and the card that sent the reader there are now the same photograph at
+ * the same proportion.
+ *
+ * ARCA I has none: it was never put on the sill. It falls back to
+ * `colorwayCardPlates`, the portrait cut of its own shoot, which crops to
+ * a square without losing the frame either.
+ */
+/**
+ * The name that ties a card's photograph to the plate it opens into.
+ *
+ * A View Transition morphs between two elements that share a
+ * `view-transition-name`. The shop's colourway card and the buy page's
+ * lead plate are the SAME square render of the same acetate — see
+ * `squareFor` — so there is a real photograph on both ends and the
+ * browser has something to interpolate rather than a cross-fade between
+ * two different pictures.
+ *
+ * Keyed by house and colourway because the name has to be unique in each
+ * document: a shop page draws thirty-odd cards at once, and two elements
+ * sharing a name make the transition ambiguous and the browser skip it.
+ *
+ * Returns undefined where there is no square, which is the signal to draw
+ * no name at all rather than a name that will never find its pair.
+ */
+export function morphName(house: House, colorway?: string) {
+  if (!colorway || !squareFor(house, colorway)) return undefined;
+  return `frame-${house.slug}-${colourwayKey(colorway)}`;
+}
+
+export function squareFor(house: House, colorway?: string) {
+  if (!colorway) return undefined;
+  const art = COLOURWAY_CARD_ART[house.slug]?.[colourwayKey(colorway)];
+  return art?.image ?? house.colorwayCardPlates?.[colorway];
+}
+
 export function galleryFor(house: House, colorway?: string): readonly string[] {
   /* The campaign's own frame of this acetate closes the scroll, where the
      house has been shot that way. Appended here rather than written into
@@ -208,6 +271,19 @@ export function galleryFor(house: House, colorway?: string): readonly string[] {
      never claimed to be showing a colourway, so its plate still stands. */
   if (house.colorwayPlates || house.colorwayGallery) return [];
   return house.plate ? [house.plate] : [];
+}
+
+/**
+ * The glb for a colourway, falling back to the house's own.
+ *
+ * Every house now carries a model per acetate — `colorwayModels` in
+ * lib/navigation, built from the Blender sources by
+ * scripts/build-colourway-models.mjs. Where one is missing (AHAVA's Dark
+ * Tortoise is the only case today) the house model stands in, so the
+ * picker can never point at a file that is not there.
+ */
+export function modelFor(house: House, colorway?: string | null) {
+  return (colorway ? house.colorwayModels?.[colorway] : undefined) ?? house.model;
 }
 
 /**
@@ -311,8 +387,3 @@ export function defaultColorway(house: House, asked?: string | null) {
   return (wanted ?? hero ?? stock.find((e) => e.available) ?? stock[0])?.colorway ?? "";
 }
 
-/** The turntable for a colourway, falling back to the house's own glb. A
- *  house with neither shows no viewer at all rather than another cut. */
-export function modelFor(house: House, colorway?: string | null) {
-  return (colorway ? house.colorwayModels?.[colorway] : undefined) ?? house.model;
-}

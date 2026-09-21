@@ -9,9 +9,9 @@ import { PageClose } from "@/components/page/page-close";
 import { care } from "@/lib/pages";
 
 export const metadata: Metadata = {
-  title: "Fit & Care — Aria Noir",
+  title: "Care — Aria Noir",
   description:
-    "Five contact points between a frame and a face, what each one tells you, and how to keep a frame for the years it was built for.",
+    "How to keep an Aria Noir frame for the years it was built for, and what the two-year international limited warranty covers.",
 };
 
 /** Shared section-page shell — see house/about/page.tsx. */
@@ -20,14 +20,14 @@ export default function CarePage() {
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
+      <main id="main" tabIndex={-1} className="relative">
         <PageHero {...care.hero} />
         {/* The macro set was shot as a specification and reads just as well
             as an anatomy: each plate is the point the row beside it is
             making, which is the whole argument for the sticky study. */}
-        <StickyStudy id="fit" {...care.fit} />
-        <section id="keeping">
-          <TextPair {...care.keeping} />
+        <StickyStudy id="keeping" {...care.keeping} />
+        <section id="ownership">
+          <TextPair {...care.ownership} />
         </section>
         <PageClose tone="ink" {...care.close} />
       </main>

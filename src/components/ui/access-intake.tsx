@@ -92,7 +92,7 @@ export function AccessIntake({ cta }: { cta: string }) {
                 <ChevronRight size={18} strokeWidth={1.5} aria-hidden />
               </button>
             </div>
-            <p className="access-intake__note font-ui text-xs text-paper/45">
+            <p className="access-intake__note font-ui text-xs text-paper/55">
               {copy.note}
             </p>
           </form>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { HouseIndex } from "@/components/page/house-index";
+import { PageHero } from "@/components/page/page-hero";
 import { TextPair } from "@/components/page/text-pair";
 import { StickyFeature } from "@/components/page/sticky-feature";
 import { PlateBand } from "@/components/page/plate-band";
@@ -27,13 +27,15 @@ export default function AboutPage() {
     <>
       <SmoothScroll />
       <SiteNav />
-      <main className="relative">
-        {/* The house's whole output, above its argument for itself. The
-            title plate that used to open this page is gone: a page called
-            The House opened on a photograph of the founders and a line
-            about soul, and left the reader to go somewhere else to find out
-            what the house actually makes. See HouseIndex. */}
-        <HouseIndex />
+      <main id="main" tabIndex={-1} className="relative">
+        {/* The title plate, back. For a while this page opened on the
+            house's whole inventory, on the argument that a page called The
+            House should show what the house makes before it argues for
+            itself. The inventory has a room of its own now, /shop, and a
+            page about the house that opens on thirty-six prices is a shop
+            wearing an essay's name. The founders open it; the close still
+            sends the reader to the frames. */}
+        <PageHero {...about.hero} />
         <TextPair {...about.opening} />
         {/* The band is this page's one full-bleed beat, and it sits between
             the two arguments rather than after both — the vision section

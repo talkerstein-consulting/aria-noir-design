@@ -2,7 +2,8 @@
  * PATRIARCA — product page copy and plate assignments.
  *
  * The house's approved copy deck, in the shape lib/product.ts sets and
- * components/product/story-page.tsx renders. No film, one turntable
+ * components/product/story-page.tsx renders. Placeholder teaser films
+ * (see the note at `hero`), one turntable
  * export; the approach runs face-only and the offering turns a single glb.
  * The three acetates are painted by the palette band, which StoryPage
  * builds from `colorwayNames` in lib/navigation.
@@ -35,6 +36,15 @@ export const hero: Hero = {
   image: "/images/patriarca/cover/desktop.webp",
   imagePortrait: "/images/patriarca/cover/mobile.webp",
   alt: "PATRIARCA in black, front on",
+  /* ---- Placeholder teasers, Sep 2026 ----
+     Three Kling cuts stand in until the house films the campaign: the
+     hero above the title, the establishing shot at the approach, the
+     closing shot beside the buy page's detail tabs (lib/navigation).
+     Each poster is frame 0 of its own film, so the handover is invisible
+     (see the `poster` note in lib/product.ts). Swap the files under
+     public/video/patriarca/ and the page needs nothing else. */
+  video: "/video/patriarca/hero.mp4",
+  poster: "/video/patriarca/hero-poster.webp",
 };
 
 export const structure: Opening = {
@@ -140,6 +150,12 @@ export const spec: Spec = {
 };
 
 export const approach: Approach = {
+  /* The establishing teaser, a different cut from the hero's. */
+  film: {
+    src: "/video/patriarca/establishing.mp4",
+    poster: "/video/patriarca/establishing-poster.webp",
+    alt: "The teaser film for PATRIARCA",
+  },
   face: {
     src: `${C}/hero-aria-magazine-cover-colosseum.webp`,
     alt: "Aria, close, wearing PATRIARCA",

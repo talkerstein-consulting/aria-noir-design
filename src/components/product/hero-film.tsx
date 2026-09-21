@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Pause, Play } from "lucide-react";
 import { kickPlay } from "@/lib/autoplay";
 
 /**
@@ -37,14 +38,23 @@ import { kickPlay } from "@/lib/autoplay";
  */
 export function HeroFilm({
   src,
+  srcPortrait,
   poster,
+  posterPortrait,
   alt,
   className,
   priority = true,
   lazy = false,
 }: {
   src: string;
+  /** A 9:16 cut of the same film for a phone, chosen by the browser from a
+   *  `<source media>` so one element decodes one file and nothing is read
+   *  in JS. Omit and `src` runs at every width. */
+  srcPortrait?: string;
   poster: string;
+  /** Frame 0 of `srcPortrait`, shown in its place below `sm` so the phone's
+   *  crossfade has nothing to travel either. */
+  posterPortrait?: string;
   alt: string;
   className: string;
   /** Whether the still is the page's LCP candidate. True for the hero,
@@ -58,6 +68,31 @@ export function HeroFilm({
 }) {
   const [rolling, setRolling] = useState(false);
   const video = useRef<HTMLVideoElement | null>(null);
+
+  /* ---- the reader's say ----
+     A film that loops with no way to stop it fails WCAG 2.2.2, and a
+     reader who has asked the OS for less motion should be left on the
+     still. `held` is that decision; lib/autoplay reads the same flag off
+     the element so its retries do not undo it. Held means the still
+     stays up: the film only ever fades in over it once it is playing. */
+  const [held, setHeld] = useState(false);
+  const hold = (el: HTMLVideoElement, on: boolean) => {
+    if (on) {
+      el.dataset.held = "true";
+      el.pause();
+      setRolling(false);
+    } else {
+      delete el.dataset.held;
+      kickPlay(el);
+    }
+    setHeld(on);
+  };
+  useEffect(() => {
+    const el = video.current;
+    if (el && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      hold(el, true);
+    }
+  }, []);
 
   /* ---- lazy: play on arrival, pause on departure ----
 
@@ -78,7 +113,7 @@ export function HeroFilm({
         if (entry.isIntersecting) {
           el.preload = "auto";
           kickPlay(el);
-        } else {
+        } else if (el.dataset.held !== "true") {
           el.pause();
           setRolling(false);
         }
@@ -122,22 +157,89 @@ export function HeroFilm({
            the film ever arrives. */
         priority={priority}
         sizes="100vw"
-        className={className}
+        className={`${className} ${posterPortrait ? "hidden sm:block" : ""}`}
       />
+      {posterPortrait ? (
+        <Image
+          src={posterPortrait}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes="100vw"
+          className={`${className} sm:hidden`}
+        />
+      ) : null}
       <video
         ref={attach}
         className={`${className} absolute inset-0 h-full w-full transition-opacity duration-1000 ease-out ${
           rolling ? "opacity-100" : "opacity-0"
         }`}
-        src={src}
+        src={srcPortrait ? undefined : src}
         aria-label={alt}
         autoPlay={!lazy}
         muted
         loop
         playsInline
-        preload={lazy ? "none" : "auto"}
+        /* `none` when lazy, and that is the case this attribute actually
+           governs: nothing is fetched until the observer above starts the
+           film.
+           
+           For the EAGER case `metadata` is honest intent and little more.
+           An element carrying `autoPlay` downloads what it needs to play no
+           matter what this says — measured on /arca-i as the full 4.0MB
+           with `preload="metadata"` set — because playback, not the hint,
+           drives the fetch. It stays `metadata` rather than `auto` so the
+           element never asks for MORE than playback needs, but it is not
+           what keeps a hero light.
+           
+           What would: this hero is genuinely on screen and rolling the
+           moment the page opens, so the only ways to make it cheaper are a
+           smaller encode, or letting the poster lead and starting the film
+           at idle — the poster is already laid underneath and faded out on
+           `onPlaying`, so that handover is built and unused. */
+        preload={lazy ? "none" : "metadata"}
         onPlaying={() => setRolling(true)}
-      />
+        onPause={() => {
+          if (video.current?.dataset.held === "true") setRolling(false);
+        }}
+      >
+        {/* The portrait cut first, since the browser takes the first
+            source whose media matches. The breakpoint is the same `sm`
+            that swaps the poster stills in ProductHero. */}
+        {srcPortrait ? (
+          <>
+            <source src={srcPortrait} media="(max-width: 639px)" />
+            <source src={src} />
+          </>
+        ) : null}
+      </video>
+      <button
+        type="button"
+        onClick={() => video.current && hold(video.current, !held)}
+        aria-pressed={held}
+        aria-label={held ? "Play the film" : "Pause the film"}
+        /* No disc. The control was a bordered, tinted, blurred circle —
+           a piece of chrome the size of an app icon sitting on top of the
+           one full-bleed film on the page. The glyph alone is enough: it
+           is the only mark in that corner, and the film behind it is dark
+           at the foot where the gradient seats the type.
+
+           `h-11 w-11` stays. It is the TOUCH TARGET, not the disc — 44px
+           is the size a control has to be to be hit reliably, and losing
+           the circle is a change to what is drawn, not to what is
+           pressable. The glyph is centred in that box.
+
+           Hover and focus move the glyph's own colour now that there is no
+           border to brighten, and the focus ring is drawn with an offset
+           so it reads as a ring around the icon rather than a box on it. */
+        className="absolute bottom-6 right-6 z-10 flex h-11 w-11 items-center justify-center text-paper/70 drop-shadow-[0_1px_3px_rgba(0,0,0,0.55)] transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-paper"
+      >
+        {held ? (
+          <Play size={16} strokeWidth={1.5} aria-hidden />
+        ) : (
+          <Pause size={16} strokeWidth={1.5} aria-hidden />
+        )}
+      </button>
     </>
   );
 }

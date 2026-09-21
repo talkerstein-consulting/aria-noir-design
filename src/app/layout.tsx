@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
 import { RouteWipe } from "@/components/route-wipe";
+import { MorphNav } from "@/components/morph-nav";
 import "./globals.css";
 
 const libreBodoni = Libre_Bodoni({
@@ -82,6 +83,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>
       <body className="min-h-full bg-ink text-paper">
+        {/* First thing in the tab order on every page, visible only while
+            focused. Every <main> carries id="main" and tabIndex={-1} so the
+            jump lands and the next Tab continues from there. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-paper focus:px-4 focus:py-2 focus:font-ui focus:text-xs focus:uppercase focus:tracking-[0.2em] focus:text-ink"
+        >
+          Skip to content
+        </a>
+        {/* Cards that grow into the page they open. One delegated
+            listener, so the grids stay server-rendered — see
+            components/morph-nav. Draws nothing. */}
+        <MorphNav />
         {children}
         {/* Last in the body, so it is over the page without needing to
             out-rank anything on it. See RouteWipe. */}

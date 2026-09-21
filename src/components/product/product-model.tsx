@@ -101,11 +101,13 @@ function Model({
   src,
   yaw,
   zoom,
+  air,
   onReady,
 }: {
   src: string;
   yaw?: React.RefObject<number>;
   zoom?: React.RefObject<number>;
+  air?: number;
   onReady?: () => void;
 }) {
   const { scene } = useGLTF(src);
@@ -166,6 +168,67 @@ function Model({
     const center = new THREE.Vector3();
     box.getCenter(center);
     box.getBoundingSphere(sphere);
+
+    /* ---- Where the object actually balances ----
+     *
+     * Area-weighted over every triangle, which is the honest centre for a
+     * shell: these meshes are surfaces, not solids, so weighting by
+     * triangle area is the closest thing to weighting by material. A plain
+     * average of vertices would instead be a vote, and the densest mesh
+     * would win it — on this model the temples carry more vertices than
+     * the fronts, so the naive average lands almost where the bounding box
+     * already was and fixes nothing.
+     *
+     * Measured in the SCENE's space, via each mesh's world matrix, because
+     * the glb parks its parts at node transforms (the fronts are rotated a
+     * quarter turn about X, two of them are mirrored with a negative
+     * scale) and a centroid read off raw local positions would be the
+     * centre of a model that is not the one on screen. A mirrored node has
+     * a negative determinant, which flips the cross product's direction
+     * but not its length — and length is all this takes. */
+    const centroid = new THREE.Vector3();
+    {
+      let area = 0;
+      const a = new THREE.Vector3();
+      const b = new THREE.Vector3();
+      const c = new THREE.Vector3();
+      const ab = new THREE.Vector3();
+      const ac = new THREE.Vector3();
+      const tri = new THREE.Vector3();
+
+      scene.updateWorldMatrix(false, true);
+      scene.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        if (!mesh.isMesh || !mesh.geometry) return;
+        const pos = mesh.geometry.getAttribute("position");
+        if (!pos) return;
+        const index = mesh.geometry.getIndex();
+        const count = index ? index.count : pos.count;
+
+        for (let i = 0; i < count; i += 3) {
+          const i0 = index ? index.getX(i) : i;
+          const i1 = index ? index.getX(i + 1) : i + 1;
+          const i2 = index ? index.getX(i + 2) : i + 2;
+
+          a.fromBufferAttribute(pos, i0).applyMatrix4(mesh.matrixWorld);
+          b.fromBufferAttribute(pos, i1).applyMatrix4(mesh.matrixWorld);
+          c.fromBufferAttribute(pos, i2).applyMatrix4(mesh.matrixWorld);
+
+          /* Half the cross product's length is the triangle's area. */
+          const w = ab.subVectors(b, a).cross(ac.subVectors(c, a)).length() / 2;
+          if (!(w > 0)) continue;
+
+          tri.copy(a).add(b).add(c).divideScalar(3);
+          centroid.addScaledVector(tri, w);
+          area += w;
+        }
+      });
+
+      /* A model with no drawable area cannot be balanced; the box's middle
+         is the only answer left and it is the one this used to give. */
+      if (area > 0) centroid.divideScalar(area);
+      else centroid.copy(center);
+    }
 
     scene.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -253,7 +316,31 @@ function Model({
     });
 
     return {
-      offset: center.clone().negate(),
+      /* ---- The turn axis is the object's BALANCE POINT, not its box ----
+       *
+       * This used to be `center` — the middle of the bounding box — and a
+       * bounding box is the wrong description of a pair of glasses. The
+       * box is 0.154 deep because the temples reach back that far, so its
+       * middle lands at z ≈ -0.071: a point in the EMPTY AIR between two
+       * thin arms, 46% of the way back from the face. Nearly all the
+       * object's mass — the fronts, the lenses, the bridge, the hinges —
+       * sits in the first fifth of that depth, centred near z ≈ -0.007.
+       *
+       * Turning about the box's middle therefore swung the heavy front
+       * through a wide arc around a pivot behind it: the frame slid across
+       * the plate and changed size as it went, which reads as an object
+       * being orbited rather than one turning on its own axis.
+       *
+       * `centroid` below is the area-weighted centre of the actual
+       * triangles, so the axis passes through where the frame genuinely
+       * balances. The front now stays put and the temples sweep behind it,
+       * which is what a frame on a turntable does.
+       *
+       * X and Z come from the centroid because those two place the
+       * VERTICAL AXIS the yaw turns about. Y stays the box's middle: the
+       * height of the axis cannot affect a spin around it, and the box is
+       * the better answer for sitting the object squarely in its plate. */
+      offset: new THREE.Vector3(centroid.x, center.y, centroid.z).negate(),
       /* The RADIUS of that box's bounding sphere. A sphere is the only
          bound that does not change as the object turns, which is the whole
          point: the silhouette of a pair of glasses is at its narrowest
@@ -268,7 +355,7 @@ function Model({
      the plate's shape can never clip it top-to-bottom either. The margin
      the frame turns inside of, rather than skimming the edges of, is the
      house's and is decided in lib/model-fit. */
-  const scale = fitScale(viewport, radius);
+  const scale = fitScale(viewport, radius, air);
 
   /* Eases `at` toward `to` and writes the one rotation this object has.
      Frame-rate independent, and it settles rather than oscillating: at rest
@@ -315,7 +402,16 @@ function Model({
  *  geometry never does, which is the only reason a still of a turntable is
  *  worth keeping in the repository at all. */
 export function posterFor(src: string) {
-  return `/images/posters/${src.split("/").pop()!.replace(/\.glb$/i, "")}.webp`;
+  /* `-baked` is stripped: a baked model is the same object as its unbaked
+     twin, photographed from the same angle, so it shares the poster rather
+     than needing a second capture of an identical frame. Without this the
+     suffix travels into the filename and the still 404s. */
+  const name = src
+    .split("/")
+    .pop()!
+    .replace(/\.glb$/i, "")
+    .replace(/-baked$/, "");
+  return `/images/posters/${name}.webp`;
 }
 
 /** The poster's edge, in device pixels. Square — see poster-rig. */
@@ -381,6 +477,7 @@ export function ProductModel({
   src,
   yaw,
   zoom,
+  air,
   onReady,
   onCapture,
 }: {
@@ -393,6 +490,9 @@ export function ProductModel({
    *  opening holds it large in the middle of the screen and lets it settle
    *  to 1 as it lands. Never do this with a CSS transform — see useFrame. */
   zoom?: React.RefObject<number>;
+  /** The share of the stage the frame may occupy, where the caller wants
+   *  something other than the house margin — see `MODEL_AIR_STORY`. */
+  air?: number;
   /** Called once the glb is loaded and the frame is about to be drawn.
    *  Callers that fade the viewer in wait on this rather than on a timer. */
   onReady?: () => void;
@@ -494,7 +594,7 @@ export function ProductModel({
           <directionalLight position={[2, 5, 4]} intensity={0.3} />
           <directionalLight position={[-4, 2, 3]} intensity={0.2} />
           <Suspense fallback={null}>
-            <Model src={src} yaw={yaw} zoom={zoom} onReady={onReady} />
+            <Model src={src} yaw={yaw} zoom={zoom} air={air} onReady={onReady} />
             {onCapture ? <Capture onCapture={onCapture} /> : null}
             {/* A white sky, built as one enormous soft source overhead and
                 large low-intensity panels all round.

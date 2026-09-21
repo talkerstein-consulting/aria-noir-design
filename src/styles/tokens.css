@@ -28,7 +28,16 @@
   --text-primary-dark: var(--paper);
   --text-secondary-dark: color-mix(in srgb, var(--paper) 70%, transparent);
   --text-tertiary-dark: color-mix(in srgb, var(--paper) 50%, transparent);
-  --text-quiet-dark: color-mix(in srgb, var(--paper) 40%, transparent);
+  /* 47%, not 40%. At 40% this resolves to #666 on the ink, which is
+     3.65:1 — and every place it is used is 11px legal/footer type, the
+     size WCAG is strictest about. 47% is 4.76:1, the first step that
+     clears AA with a little headroom for the colour-mix rounding.
+
+     It is now close to --text-tertiary-dark (50%, 5.32:1), so the two
+     quietest tiers read more alike than they did. That gap is worth
+     re-cutting as a pair — tertiary has room to go up — but not at the
+     cost of shipping a legal line nobody with low vision can read. */
+  --text-quiet-dark: color-mix(in srgb, var(--paper) 47%, transparent);
   --text-accent-dark: var(--gold);
   --rule-dark: color-mix(in srgb, var(--paper) 15%, transparent);
 
@@ -111,7 +120,11 @@
      it here so they can stand in the same column instead of running out to
      the gutter. Change it and the whole page moves together. */
   --page-measure: 80rem; /* max-w-7xl */
-  --section-pad: 8rem; /* py-32 */
+  /* 5rem on a phone, not the 8rem the wide value scaled down to: two
+     sections met with 256px of black between them, which on a screen
+     812px tall is a third of a screen of nothing. 160px still separates
+     ideas by a lot; it no longer separates them by a scroll. */
+  --section-pad: 5rem; /* py-20 */
   --section-pad-wide: 12rem; /* sm:py-48 */
 
   /* The vertical stack inside a section. Four steps, and the jumps are

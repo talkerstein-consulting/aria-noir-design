@@ -15,7 +15,7 @@ import {
   swatchFor,
 } from "@/lib/shop";
 import { useBag } from "@/lib/cart";
-import { CtaButton, CtaLink } from "@/components/cta-link";
+import { CtaButton } from "@/components/cta-link";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { BagAdded } from "@/components/shop/bag-added";
@@ -49,17 +49,14 @@ import { RevealText } from "@/components/reveal";
  *
  * The copy is the closing block's, unchanged: the heading and the body
  * still land, they simply land above a counter instead of above a link.
- * `close.cta` survives as the quiet way through to the full page, for a
- * reader who wants the panels rather than the bag.
+ * `close.cta` is NOT drawn here — see the note where it used to be.
  */
 export function ProductBuy({
   close,
   house,
-  buyHref,
 }: {
   close: Close;
   house: House;
-  buyHref: string;
 }) {
   /* Seeded with the same rule the picker seeds itself with, so the first
      photograph shown and the first swatch marked agree on the first
@@ -219,15 +216,15 @@ export function ProductBuy({
                   : "Made in runs. Tell us and we will write when this one returns."}
               </p>
 
-              {/* The way through to the full page, for the reader who came
-                  down here for the panels rather than the bag. Secondary:
-                  Add to bag above it is this panel's one main action, and
-                  two filled blocks in a column would fight. */}
-              <div className="mt-10">
-                <CtaLink href={buyHref} kind="secondary">
-                  {close.cta}
-                </CtaLink>
-              </div>
+              {/* No second way out of here.
+              
+                  There was a "Discover <house>" beneath the bag — a
+                  secondary link to the very page this counter is the short
+                  form of. By the time a reader reaches it they have passed
+                  a buy CTA at the foot of every section above (see
+                  StoryBuy), so it was the page's ninth offer of the same
+                  destination and the last thing it said. The counter is the
+                  end: pick the acetate, pick how many, buy it. */}
             </div>
           </div>
         </div>
