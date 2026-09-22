@@ -312,6 +312,65 @@ html.lenis {
   --fg-accent: var(--text-accent-light);
   --fg-rule: var(--rule-light);
 }
+/* ── The scrim under the band ─────────────────────────────────────────
+   The nav floats over whatever the page opens with, and what the page
+   opens with is usually a photograph. A white wordmark over a pale sky,
+   a concrete sill or the top of a gallery wall is the one place on this
+   site where type is left to take its chances with the picture behind
+   it.
+
+   So a wash of ink under the band: opaque at the very top, gone by the
+   foot of it, on a curve rather than a straight ramp so there is no
+   visible edge where it stops. It is not a bar — nothing here gains a
+   rule or a fill, and on the dark sections it is invisible because it
+   is the same ink they are already painted in. What it buys is the
+   contrast the lettering needs on the light ones.
+
+   A pseudo-element rather than a background on the header: the band is
+   a grid with three children and a background would end at its padding
+   box, which is shorter than the fade needs to be to end without a
+   seam. `pointer-events: none` so the strip over the page is still the
+   page's — the header's own controls sit above it at z-index 1.
+
+   On the LIGHT ground it flips: those pages letter the band in ink, and
+   a black wash under black type would erase it. */
+.site-nav::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  /* Half again the band's own height, so the fade finishes below the
+     glyphs rather than at their feet. */
+  height: 180%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--ink) 62%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 34%, transparent) 45%,
+    transparent 100%
+  );
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.site-nav[data-tone="light"]::before {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--paper) 62%, transparent) 0%,
+    color-mix(in srgb, var(--paper) 34%, transparent) 45%,
+    transparent 100%
+  );
+}
+/* The band's own children, over the wash. */
+.site-nav > * {
+  position: relative;
+  z-index: 1;
+}
+/* With a sheet open the page behind is already under glass, and a
+   second wash on top of it is a band of ink with an edge. */
+.site-nav[data-menu="open"]::before,
+.site-nav[data-sheet="open"]::before {
+  opacity: 0;
+}
+
 /* ── The band as a lid, on the checkout, on a phone ───────────────────
    Everywhere else the nav floats over a section that was composed with it
    in mind. The checkout is a column of fields and a sticky phase rail, and
@@ -320,7 +379,9 @@ html.lenis {
    page has moved, the band takes the ink it is already lettered for and
    blocks what passes behind it. At rest it stays transparent: the top of
    the page is the title, and there is nothing to block yet. */
-@media (max-width: 1023px) {
+/* 900, with the rest of the checkout's own rules — see the note over
+   `.checkout` in commerce.css. */
+@media (max-width: 899px) {
   .site-nav[data-route="checkout"] {
     transition:
       color var(--dur-fast) var(--ease-out),
@@ -329,6 +390,11 @@ html.lenis {
   }
   .site-nav[data-route="checkout"][data-scrolled="true"] {
     background: var(--ink);
+  }
+  /* The solid lid IS the contrast there; the wash under it would only
+     put a soft edge below a hard one. */
+  .site-nav[data-route="checkout"][data-scrolled="true"]::before {
+    opacity: 0;
   }
 }
 

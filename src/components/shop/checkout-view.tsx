@@ -213,12 +213,25 @@ export function CheckoutView() {
   const withDial = (national: string) => {
     const trimmed = national.trim();
     if (!trimmed) return "";
+    /* ---- Liberal in, conservative out ----
+       The field takes anything: brackets, dots, spaces, dashes, a number
+       read off the back of a card. `isValidPhone` has always counted
+       digits rather than matched a shape, so none of that was ever
+       refused — and none of it was ever cleaned up either. What left here
+       was whatever the reader happened to type, so the same number
+       reached the courier as "(555) 123-4567" from one buyer and
+       "555.123.4567" from the next.
+
+       The separators go on the way OUT, not on the way in: nothing the
+       reader typed is rewritten under their cursor, and what the house
+       sends is one shape. */
+    const digits = trimmed.replace(/\D/g, "");
     /* A number the reader typed in full already carries its country. */
-    if (trimmed.startsWith("+")) return trimmed;
+    if (trimmed.startsWith("+")) return `+${digits}`;
     const code = dialCode(dialCountry);
     /* The trunk zero is for dialling inside the country and is wrong in
        front of a country code: +44 020 … does not ring. */
-    return code ? `${code} ${trimmed.replace(/^0+/, "")}` : trimmed;
+    return code ? `${code} ${digits.replace(/^0+/, "")}` : digits;
   };
 
   const contactPhone = withDial(signedIn ? phone : guest.phone);
@@ -248,13 +261,43 @@ export function CheckoutView() {
    * quickly. Asked third, as it was, the reader typed out everything the
    * card was about to supply and then chose the card. */
   const [open, setOpenRaw] = useState<StepId>("pay");
-  /* The step that opens is brought to the top of the viewport, under the
-     header. A fold that opens below the fold is a question asked out of
-     sight — and after a declined card the reader has to be shown where
-     the answer is wanted, not left looking at the footer. */
+  /* ---- the page moves only when it has to ----
+
+     This used to bring every step that opened to the top of the
+     viewport. On the way FORWARD that is a jump the reader did not ask
+     for: they have just pressed a button at the bottom of the step they
+     finished, their eyes are there, and the next question is already
+     arriving in that same place — so the page threw them somewhere else
+     and they had to scroll back to read it. Worse on a phone, where the
+     step they came from is removed outright: the document shrinks under
+     the scroll position and the jump lands on the hero.
+
+     So: if the step that opened is already on screen with room to read
+     it, nothing moves. It is scrolled into view only when it is NOT —
+     jumping back to an answered step from the rail, or being sent back
+     to a question after a declined card, where being shown where the
+     answer is wanted is the whole point.
+
+     Two frames, not one: the step's body opens in the commit that just
+     ran, and a rect measured before the browser has laid that out is
+     the rect of a step that is still closed. */
   const reveal = (s: StepId) =>
     window.requestAnimationFrame(() =>
-      document.getElementById(`step-${s}`)?.scrollIntoView({ block: "start", behavior: "smooth" }),
+      window.requestAnimationFrame(() => {
+        const el = document.getElementById(`step-${s}`);
+        if (!el) return;
+        const { top, bottom } = el.getBoundingClientRect();
+        /* The header sits over the first few rem of the viewport, so a
+           step whose head is under it is not "on screen" for reading. */
+        const lid = 112;
+        const onScreen = top >= lid && top < window.innerHeight * 0.75;
+        /* A step taller than the screen counts as found if its head is
+           in view; a short one has to be wholly in view, or the answer
+           under it is still below the fold. */
+        const wholly = bottom <= window.innerHeight || el.offsetHeight > window.innerHeight - lid;
+        if (onScreen && wholly) return;
+        el.scrollIntoView({ block: "start", behavior: "smooth" });
+      }),
     );
   const setOpen = (s: StepId) => {
     setOpenRaw(s);
@@ -1067,7 +1110,7 @@ export function CheckoutView() {
             {signedIn ? (
               <>
                 <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-                  Signed in as {contact.email}. The order and the receipt go on your desk.
+                  Signed in as {contact.email}. The order and the receipt go to your account.
                 </p>
                 <label className="field mt-8 max-w-sm" data-invalid={Boolean(phoneError(phone))}>
                   <span>Phone</span>
@@ -1210,8 +1253,8 @@ export function CheckoutView() {
               <>
                 <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
                   {saved.length
-                    ? "Choose one of the addresses on your desk, or add another."
-                    : "The first address on your desk. It is kept for next time."}
+                    ? "Choose one of the addresses in your account, or add another."
+                    : "The first address in your account. It is kept for next time."}
                 </p>
                 <div className="mt-8">
                   <AddressBook

@@ -13,9 +13,12 @@ import { useBag } from "@/lib/cart";
  *
  * A bag with something in it is an intention the reader has already
  * formed; the shop's job after that is to stay out of the way of the
- * browsing and keep the way out one tap away. On a desktop the bag is a
- * button in the header that is always in view, so this is a phone
- * behaviour only.
+ * browsing and keep the way out one press away. The header's bag button
+ * says how many; it does not say "and here is the way out", which is
+ * what this band is for. Same two parts at every width — what is in the
+ * bag on the left, the way out at the right — with the page's own
+ * gutter on a desk and the CTA at its own width rather than stretched
+ * across the band.
  *
  * It is absent on the routes where it would be furniture rather than a
  * way on: the checkout is the way out, so a band pointing at it is a

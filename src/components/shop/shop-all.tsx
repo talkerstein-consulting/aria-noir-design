@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/product-card";
 import {
   FilterDrawer,
   FilterGroup,
+  FilterMore,
   FilterMulti,
   type FilterOption,
 } from "@/components/shop/filter-drawer";
@@ -398,18 +399,22 @@ export function ShopAll() {
             })
           }
         />
-        <FilterGroup
-          title="Kind"
-          options={kindOptions}
-          value={query.kind ?? "any"}
-          onChange={(next) => patch({ kind: next === "any" ? null : next })}
-        />
-        <FilterGroup
-          title="Stock"
-          options={stockOptions}
-          value={query.inStock ? "in" : "all"}
-          onChange={(next) => patch({ inStock: next === "in" })}
-        />
+        {/* Under the fold, and open already if either one is cutting the
+            grid — see FilterMore. */}
+        <FilterMore defaultOpen={Boolean(query.kind) || query.inStock}>
+          <FilterGroup
+            title="Kind"
+            options={kindOptions}
+            value={query.kind ?? "any"}
+            onChange={(next) => patch({ kind: next === "any" ? null : next })}
+          />
+          <FilterGroup
+            title="Stock"
+            options={stockOptions}
+            value={query.inStock ? "in" : "all"}
+            onChange={(next) => patch({ inStock: next === "in" })}
+          />
+        </FilterMore>
       </FilterDrawer>
 
       <div className="mx-auto max-w-7xl">

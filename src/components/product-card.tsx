@@ -279,7 +279,7 @@ export function ProductCard({
               colorway={holdColorway}
               /* Name AND meta: on the shop list every card in a run is
                  titled with the same house, so a bookmark labelled by the
-                 name alone would read "Hold this — AHAVA" eight times
+                 name alone would read "Save: AHAVA" eight times
                  over. The acetate is what tells them apart. */
               label={meta ? `${name}, ${meta}` : name}
               compact

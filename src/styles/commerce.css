@@ -353,22 +353,26 @@
  * targets in the build doing the heaviest work.
  *
  * The box is the fix, not a bigger glyph: the type stays at micro scale,
- * and a 32px square is drawn around it. That square is invisible, which is
+ * and a square is drawn around it. That square is invisible, which is
  * why the row still reads as three quiet marks rather than a toolbar, and
- * `margin: -0.5rem` on the group pulls the added padding back out of the
- * layout so nothing below it moves.
+ * the negative margin on the group pulls the added padding back out of
+ * the layout so nothing below it moves.
+ *
+ * That square was 32px, which was three times what it replaced and still
+ * short of the 44px a thumb actually needs. It is 44 now, and the pull
+ * grew with it.
  */
 .bag-qty {
   display: inline-flex;
   align-items: center;
-  margin: -0.5rem;
+  margin: -0.875rem;
 }
 .bag-qty-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  min-height: 2rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   color: var(--fg-quiet);
   transition: color var(--dur-fast) var(--ease-out);
 }
@@ -384,6 +388,16 @@
 .bag-qty-count {
   min-width: 1.5rem;
   text-align: center;
+}
+/* The bin, set apart from the stepper it used to live inside.
+   `.bag-qty` pulls its own padding back by 0.875rem on every side, so the
+   first 0.875rem of this margin only undoes that pull — at 0.625rem the
+   two hit areas OVERLAPPED by 4px, which is the one thing this separation
+   exists to prevent, invisible though it was. Past the pull there is a
+   real gap: the boxes clear each other, and what is drawn reads as about
+   a glyph's width between the plus mark and the bin. */
+.bag-qty-bin {
+  margin-left: 1.375rem;
 }
 /* The lines scroll; the head and the total do not. A subtotal that scrolls
    away while you are deciding whether to remove something is the one line
@@ -1355,7 +1369,22 @@
   grid-template-columns: 1fr;
   gap: 4rem;
 }
-@media (min-width: 1024px) {
+/* ── WHERE THE CHECKOUT BECOMES A DESK ─────────────────────────────
+   900px, not the 1024 the rest of the site turns at.
+
+   The summary beside the questions is the thing this page is FOR: the
+   number you are agreeing to, on screen while you answer. A laptop
+   window a hair under 1024 — which is most of them once a dock or a
+   second pane is open — was being handed the phone's layout instead,
+   one step at a time with the summary pushed below all four. The
+   column needs 24rem and the questions want about 21; 900 is where
+   both fit with the page's own gutters still around them.
+
+   Every rule the checkout turns at moves together — the grid, the
+   sticky column, the phase rail, the fixed bar, the phone's type scale
+   and its full-bleed groups — so there is no width where the page is
+   half a desk and half a phone. */
+@media (min-width: 900px) {
   .checkout {
     grid-template-columns: minmax(0, 1fr) 24rem;
     gap: 6rem;
@@ -1399,7 +1428,7 @@
   border-top: var(--rule-weight) solid var(--fg-rule);
   margin-inline: calc(-1 * var(--gutter));
 }
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .checkout-foot {
     display: none;
   }
@@ -1423,7 +1452,7 @@
 .checkout-bar {
   display: none;
 }
-@media (max-width: 1023px) {
+@media (max-width: 899px) {
   .checkout-bar {
     position: fixed;
     inset-inline: 0;
@@ -1498,7 +1527,7 @@
   /* The bar's own height as well: the page ends above it, not behind. */
   padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
 }
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .checkout-has-foot {
     padding-bottom: 0;
   }
@@ -1512,6 +1541,49 @@
   font-family: var(--font-mono);
   font-size: 1rem;
   color: var(--fg-primary);
+}
+
+/* ── THE PHONE'S OWN SCALE, AND ITS MARGIN ─────────────────────────
+   Two things the desk's layout got wrong when it was folded down.
+
+   THE SCALE. On a desk the four steps are a column and each head is a
+   LABEL on one of four — 11px uppercase is right for a thing you are
+   scanning past. On a phone there is one step on the screen at a time,
+   so that label is the heading of everything the reader can see, and an
+   11px heading is a caption. The heads, the answers under them and the
+   field labels all come up a step; nothing changes above 1024px.
+
+   THE MARGIN. A group box sits inside the page's own gutter and pads
+   its content again, so the step's title sat at 24px and the answers it
+   introduces at 45 — two left edges a fifth of an inch apart, which
+   reads as a mistake rather than as a nest. On a phone the box is let
+   out to the screen's edges instead and pads by the gutter, so what is
+   inside it lands on the page's own margin, under the title. The box
+   keeps its rules top and bottom; the sides are the screen. */
+@media (max-width: 899px) {
+  .step-head .t-eyebrow,
+  .step-head > span {
+    font-size: 0.8125rem;
+    letter-spacing: 0.16em;
+  }
+  .step-index {
+    font-size: 0.8125rem;
+  }
+  .step-summary {
+    font-size: 0.875rem;
+  }
+  /* The labels over the fields, and the words on the method boxes. */
+  .field > span,
+  .pay-method .t-eyebrow {
+    font-size: 0.8125rem;
+  }
+  /* What is typed IN a field is the answer the reader has to check; it
+     was a step below the label naming it. */
+  .field input,
+  .field textarea,
+  .field select {
+    font-size: 1rem;
+  }
 }
 
 /* ── ONE PHASE AT A TIME, ON A PHONE ───────────────────────────────
@@ -1532,7 +1604,7 @@
 .phase-rail {
   display: none;
 }
-@media (max-width: 1023px) {
+@media (max-width: 899px) {
   .phase-rail {
     --rail-top: 3.75rem;
     display: block;
@@ -1572,19 +1644,19 @@
     display: none;
   }
 }
-@media (min-width: 640px) and (max-width: 1023px) {
+@media (min-width: 640px) and (max-width: 899px) {
   .phase-rail {
     --rail-top: 4.25rem;
     margin-inline: calc(-1 * var(--gutter-wide));
     padding-inline: var(--gutter-wide);
   }
 }
-@media (min-width: 640px) and (max-width: 1023px) {
+@media (min-width: 640px) and (max-width: 899px) {
   .checkout-steps .step {
     scroll-margin-top: 10rem;
   }
 }
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 899px) {
   .phase-rail {
     --rail-top: 5.25rem;
   }
@@ -1780,6 +1852,18 @@
 @media (min-width: 640px) {
   .step-group {
     padding: 1.75rem;
+  }
+}
+/* On a phone the box is let out to the screen's edges and pads by the
+   page's own gutter, so what is inside it lands on the same left margin
+   as the step title above it. Declared here, after the base padding,
+   because a shorthand later in the file would otherwise win. See the
+   note above `.phase-rail`. */
+@media (max-width: 899px) {
+  .step-group {
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    border-inline: 0;
   }
 }
 /* The methods are the group's whole content, so their own bottom margin
@@ -2582,6 +2666,106 @@
 .filter-group + .filter-group {
   border-top: var(--rule-weight) solid var(--fg-rule);
 }
+/* ---- The marks a page makes while it is still loading ----
+ *
+ * One class, drawn as the house draws a hairline rather than as a grey
+ * block: a rule-weight wash of the section's own foreground, on the
+ * section's own ground. It reads as the page's furniture arriving, not as
+ * a grey template someone forgot to fill.
+ *
+ * The pulse is opacity only — nothing moves, nothing reflows — and it is
+ * slow on purpose. A fast shimmer is a widget asking to be looked at; the
+ * point of this object is to be legible and then forgotten. */
+.skeleton {
+  display: block;
+  background: color-mix(in srgb, var(--fg-primary) 8%, transparent);
+  animation: skeleton-breathe 2.4s ease-in-out infinite;
+}
+@keyframes skeleton-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+/* Photosensitivity and motion sensitivity both: the wash stays, the
+   breathing stops. Every other animation in this build guards itself the
+   same way — there is no blanket rule to inherit. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+/* The heights are the type's own sizes, so the head of the real page
+   lands exactly where the head of this one was. */
+.skeleton--eyebrow {
+  height: var(--text-eyebrow);
+  width: 5rem;
+}
+/* The height is exact, because that is what the swap lands against. The
+   width is only a likeness of a heading, and it is set in rem rather than
+   ch on purpose: this element carries no font-size of its own, so `ch`
+   would measure the section's body font and draw a bar far too short for
+   the display-sized line it stands in for. */
+.skeleton--display {
+  height: calc(var(--display-lg) * var(--leading-display-lg));
+  width: min(100%, 16rem);
+}
+.skeleton--chip {
+  height: 2.25rem;
+}
+.skeleton--name {
+  height: var(--text-body-sm);
+  width: 60%;
+}
+.skeleton--caption {
+  height: var(--text-caption);
+  width: 35%;
+}
+
+/* ---- The fold ----
+   The rule above it is the drawer's own, in the same place the group
+   before it would have drawn one, so the column reads unbroken whether
+   the fold is open or shut. */
+.filter-more {
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+.filter-more-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-block: 0.375rem;
+  cursor: pointer;
+  list-style: none;
+  transition: color var(--dur-fast) ease;
+}
+/* Safari draws its own triangle through `::-webkit-details-marker`, which
+   `list-style: none` alone does not reach. */
+.filter-more-head::-webkit-details-marker {
+  display: none;
+}
+.filter-more-head:hover,
+.filter-more-head:focus-visible {
+  color: var(--fg-primary);
+}
+/* The house's own mark for the state, after the word: a plus that becomes
+   a minus. Drawn in text so it inherits the label's colour and scale
+   rather than needing an icon and a second set of rules. */
+.filter-more-head::after {
+  content: "+";
+  font-variant-numeric: tabular-nums;
+}
+.filter-more[open] .filter-more-head::after {
+  content: "−";
+}
+/* The first group inside the fold sits directly under the summary, which
+   has already drawn the separation. */
+.filter-more .filter-group:first-of-type {
+  padding-top: 0;
+}
 .filter-row {
   display: flex;
   width: 100%;
@@ -2827,12 +3011,22 @@ body {
   gap: 0.75rem;
   min-width: 0;
 }
-/* The band is a phone behaviour: on a desk the bag is a button in the
-   header that never leaves the screen. */
-@media (min-width: 1024px) {
+/* On a desk it keeps the same two parts and takes the page's own gutter:
+   what is in the bag on the left, on one line, and the way out at the
+   right at the CTA's own width — a button stretched across a band is a
+   toolbar, not an offer. */
+@media (min-width: 640px) {
   .bag-bar {
-    display: none;
+    padding-inline: var(--gutter-wide);
   }
+}
+.bag-bar-sum {
+  /* One line: the count is a short phrase and wrapping it would make the
+     band two rows tall over the page it is floating on. */
+  white-space: nowrap;
+}
+.bag-bar .cta-main {
+  flex: none;
 }
 
 

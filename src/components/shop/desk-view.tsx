@@ -71,7 +71,7 @@ export type View = "orders" | "held" | "profile" | "addresses" | "payment";
  */
 export const VIEWS: readonly { id: View; label: string; Icon: typeof UserRound }[] = [
   { id: "orders", label: "Orders", Icon: Package },
-  { id: "held", label: "Held", Icon: Bookmark },
+  { id: "held", label: "Saved", Icon: Bookmark },
   { id: "profile", label: "Profile", Icon: UserRound },
   { id: "addresses", label: "Addresses", Icon: MapPin },
   { id: "payment", label: "Payment", Icon: CreditCard },
@@ -115,7 +115,7 @@ export function DeskView() {
           interaction system says there are two CTAs and nothing is styled
           a third way; a tabbed subnav was a third way. The live room is
           `aria-current`, which is what turns it gold. */}
-      <nav className="desk-rail" aria-label="The desk">
+      <nav className="desk-rail" aria-label="Your account">
         {VIEWS.map(({ id, label }) => (
           <CtaButton
             key={id}
@@ -130,7 +130,7 @@ export function DeskView() {
 
       <div className="mt-14">
         {loading ? (
-          <p className="t-caption" role="status">Opening the desk</p>
+          <p className="t-caption" role="status">Opening your account</p>
         ) : (
           <>
             {view === "orders" ? <Orders session={session!} /> : null}
@@ -154,7 +154,7 @@ function DoorNote({ reason }: { reason?: string }) {
     <p className="t-caption mt-10 max-w-xl text-[var(--fg-quiet)]">
       {reason
         ? `${reason} `
-        : "Not signed in, so this is the shape of the desk rather than your own. "}
+        : "Not signed in, so this is the shape of an account rather than your own. "}
       An account is not a condition of buying anything — the bag goes through either way.{" "}
       <Link href="/access?next=/desk" className="link-quiet">
         Sign in

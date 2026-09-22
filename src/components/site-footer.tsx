@@ -28,8 +28,15 @@ export function SiteFooter({
 } = {}) {
   const ground = tone === "ink" ? "on-ink bg-ink" : "on-paper";
   return (
-    <footer className={`${ground} relative z-[39] border-t border-[var(--fg-rule)] px-6 pt-24 pb-10 sm:px-10`}>
-      <div className="mx-auto max-w-7xl">
+    /* `sm:pb-0` is not a footer with no foot: from `sm` up the space
+       under the mark is set INSIDE the column below, so both gaps in the
+       lockup resolve against the same box. See the credit line. */
+    <footer className={`${ground} relative z-[39] border-t border-[var(--fg-rule)] px-6 pt-24 pb-10 sm:px-10 sm:pb-0`}>
+      {/* The lockup's column, and the box every percentage in it
+          resolves against — the mark's own gaps, the credit's, and the
+          room under the last line. Carried here rather than as the
+          footer's padding so all three read the same width. */}
+      <div className="mx-auto max-w-7xl sm:pb-[calc(6.49%_-_0.6rem)]">
         {/* ---- newsletter, then the sitemap as tabs ----
             Two blocks rather than a four-column grid. The desk (field and
             socials) is the thing someone came down here to USE; the map is
@@ -135,7 +142,23 @@ export function SiteFooter({
         {/* enlarged ARIA mark — draws itself in when it scrolls into view */}
         <FooterMark />
 
-        <div className="mt-8 flex justify-center">
+        {/* ---- the credit, in the lockup's own measure ----
+
+            The space under NOIR is the space between ARIA and NOIR:
+            12.98% of this column, the number footer-mark sets the top
+            gap with, so the two cannot drift. The credit sits in the
+            middle of it — half above, half below, less half its own
+            height each side — which is why this carries the footer's
+            bottom room as a margin rather than the footer carrying it as
+            padding: a percentage on the footer would resolve against the
+            page, and this one has to resolve against the same column the
+            mark is drawn in.
+
+            On a phone the mark is smaller and the plaque runs the width
+            of the screen, so it keeps the flat 2rem it had. */}
+        <div
+          className="mt-8 flex justify-center sm:mt-[calc(6.49%_-_0.6rem)]"
+        >
           <TcgBadge tone={tone} />
         </div>
       </div>

@@ -122,6 +122,47 @@ export function FilterMulti<T extends string>({
   );
 }
 
+/**
+ * The fold at the foot of the drawer.
+ *
+ * ---- Why two of the five go under it ----
+ *
+ * The drawer offered five independent axes at once — Collection, Order,
+ * Colour, Kind, Stock — over a catalogue of seven pieces. Five ways to cut
+ * seven things is not a filter, it is a decision about which filter to
+ * use, put to someone who came to look at glasses.
+ *
+ * Kind and Stock are the two that earn it least. Kind is already answered
+ * by Collection, which is the axis above it and the one that decides what
+ * the grid is a list of. Stock is a single toggle wearing a group's
+ * clothes. Neither is the reason anyone opened this drawer, so neither
+ * should be in the way of the three that are.
+ *
+ * ---- What it does NOT do ----
+ *
+ * Hide something that is on. A filter folded away while it is still
+ * cutting the grid is the worst object in a shop: the reader sees a short
+ * list, finds nothing that explains it, and concludes the house is out of
+ * stock. So the fold opens itself whenever anything inside it is active,
+ * and `canClear` on the drawer's own foot still counts it.
+ */
+export function FilterMore({
+  children,
+  defaultOpen = false,
+}: {
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details className="filter-more" open={defaultOpen}>
+      <summary className="filter-more-head t-eyebrow t-eyebrow--quiet">
+        More
+      </summary>
+      {children}
+    </details>
+  );
+}
+
 export function FilterDrawer({
   open,
   onClose,

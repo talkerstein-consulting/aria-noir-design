@@ -6,8 +6,8 @@ import { DeskView } from "@/components/shop/desk-view";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "The Desk — Aria Noir",
-  description: "Orders, what you are holding, and your details.",
+  title: "Account — Aria Noir",
+  description: "Orders, saved pieces, and your details.",
   robots: { index: false, follow: false },
 };
 
@@ -27,7 +27,7 @@ export default function DeskPage() {
         <section className="on-ink section bg-ink pt-20 sm:pt-40">
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
-              <CrumbEyebrow label="The Desk" className="t-eyebrow" />
+              <CrumbEyebrow label="Account" className="t-eyebrow" />
               <h1 className="t-display-lg">Yours.</h1>
             </div>
             <DeskView />

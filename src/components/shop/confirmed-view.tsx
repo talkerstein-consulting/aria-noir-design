@@ -69,10 +69,10 @@ export function ConfirmedView() {
         <p className="t-eyebrow">Confirmed</p>
         <h1 className="t-display-lg">On the bench.</h1>
         <p className="t-body t-body--lede mt-2 max-w-xl">
-          The receipt is in your email, and the order is on your desk if you have one.
+          The receipt is in your email, and the order is in your account if you have one.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/desk">The desk</CtaLink>
+          <CtaLink href="/desk">Your account</CtaLink>
           <CtaLink href="/eyewear" kind="secondary">Explore more</CtaLink>
         </div>
       </div>
@@ -173,7 +173,7 @@ export function ConfirmedView() {
       {order.guest ? (
         <section className="hairline mt-20 pt-10">
           <p className="t-eyebrow">Keep it</p>
-          <h2 className="t-display-xs mt-3">A desk for this order.</h2>
+          <h2 className="t-display-xs mt-3">An account for this order.</h2>
           <p className="t-body mt-4 max-w-xl text-[var(--fg-tertiary)]">
             An account was not needed to buy the frame. It is useful afterwards: the order, its
             tracking, and any warranty claim are found by signing in rather than by proving a
@@ -194,7 +194,7 @@ export function ConfirmedView() {
         </section>
       ) : (
         <div className="mt-16 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/desk">Orders on your desk</CtaLink>
+          <CtaLink href="/desk">Orders in your account</CtaLink>
           <CtaLink href="/eyewear" kind="secondary">Explore more</CtaLink>
         </div>
       )}

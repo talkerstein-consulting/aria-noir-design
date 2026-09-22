@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ShopAll } from "@/components/shop/shop-all";
+import { ShopSkeleton } from "@/components/shop/shop-skeleton";
 
 export const metadata: Metadata = {
   title: "Shop all — Aria Noir",
@@ -26,7 +27,10 @@ export default function ShopAllPage() {
       <SmoothScroll />
       <SiteNav />
       <main className="relative">
-        <Suspense fallback={<div className="on-ink min-h-screen bg-ink" />}>
+        {/* Not a black rectangle. The boundary suspends on every cold
+            entry, and what it hands over is the page's own shape — see
+            ShopSkeleton. */}
+        <Suspense fallback={<ShopSkeleton />}>
           <ShopAll />
         </Suspense>
       </main>

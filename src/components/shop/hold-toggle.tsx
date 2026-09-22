@@ -59,8 +59,8 @@ export function HoldToggle({
   const held = Boolean(colorway) && ready && holds(slug, colorway as string);
 
   const says = held
-    ? `Held${label ? ` — ${label}` : ""}`
-    : `Hold this${label ? ` — ${label}` : ""}`;
+    ? `Saved${label ? `: ${label}` : ""}`
+    : `Save${label ? `: ${label}` : ""}`;
 
   return (
     <button
@@ -74,7 +74,7 @@ export function HoldToggle({
       onClick={() => colorway && toggle(slug, colorway)}
     >
       <Bookmark aria-hidden />
-      {compact ? null : <span>{held ? "Held" : "Hold this"}</span>}
+      {compact ? null : <span>{held ? "Saved" : "Save"}</span>}
     </button>
   );
 }

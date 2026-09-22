@@ -260,7 +260,7 @@ export const privacyPreferences: Policy = {
         [
           "Marketing: the newsletter and launch notes are sent only to addresses that asked for them, and every one carries a way off the list.",
           "Sharing: nothing is shared beyond the payment processor, the courier and the site's own analytics. You may opt out of the analytics share below; the other two are what an order is.",
-          "Access and deletion: the desk edits the details on the account and deletes the account. Anything else, write to admin@arianoir.com and it will be answered within thirty days.",
+          "Access and deletion: your account page edits your details and deletes the account. Anything else, write to admin@arianoir.com and it will be answered within thirty days.",
         ],
       ],
     },

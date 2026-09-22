@@ -89,18 +89,18 @@ export function DeskDrawer({
       data-open={open}
       role="dialog"
       aria-modal="true"
-      aria-label="The desk"
+      aria-label="Your account"
     >
       <button
         type="button"
-        aria-label="Close the desk"
+        aria-label="Close your account"
         onClick={onClose}
         className="drawer-glass"
       />
 
       <div ref={panel} className="drawer-panel on-ink">
         <div className="flex items-baseline justify-between px-7 pt-28 pb-6">
-          <p className="t-eyebrow">{signedIn ? "The Desk" : "Access"}</p>
+          <p className="t-eyebrow">{signedIn ? "Account" : "Access"}</p>
         </div>
 
         {/* `data-lenis-prevent`: the page's own smooth scroll captures the
@@ -114,8 +114,8 @@ export function DeskDrawer({
             <>
               <p className="t-body t-body--lede">Welcome back.</p>
               <p className="t-body t-body--tight mt-2 text-[var(--fg-tertiary)]">
-                Orders, addresses and the card on file are on the desk. What
-                this browser is holding is below.
+                Orders, addresses and the card on file are kept here. What
+                this browser has saved is below.
               </p>
 
               {/* Read from the desk's own VIEWS rather than restated.
@@ -160,7 +160,7 @@ export function DeskDrawer({
                 <DeskRoom
                   href="/desk#held"
                   onClick={onClose}
-                  label="Held"
+                  label="Saved"
                   Icon={Bookmark}
                   note={heldNote}
                 />

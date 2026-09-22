@@ -36,6 +36,18 @@
   justify-content: center;
   /* 1x block, 2x inline. */
   padding: 1em 2em;
+  /* ---- The floor, which the padding alone did not reach ----
+     The label is set at eyebrow scale — 11px — so `1em` of block padding
+     drew a box about 34px tall. That is the box behind Add to bag,
+     Checkout and Place the order: the three presses the shop exists for,
+     all of them under the 44px a thumb needs.
+
+     A floor rather than more padding, because the padding is the
+     drawing and the floor is the target. At the sizes above it changes
+     nothing a reader sees — the box grows into the gap it was already
+     sitting in — and any CTA whose label wraps to two lines is already
+     past it and keeps its own height. */
+  min-height: 2.75rem;
   border: var(--rule-weight) solid transparent;
   border-radius: 0;
   font-family: var(--font-ui-stack);
@@ -876,7 +888,12 @@
     color var(--dur-fast) ease,
     background-color var(--dur-fast) ease;
   place-items: center;
-  width: 2.5rem;
+  width: 2.75rem;
+  /* The cell had a width and no height, so it took whatever the field
+     beside it happened to be — about 35px. The two keys either side of a
+     quantity are the most-pressed controls on a buy page; they get the
+     same 44px floor as the CTA rather than inheriting one. */
+  min-height: 2.75rem;
   font-family: var(--font-ui-stack);
   font-size: var(--text-body);
   line-height: 1;
@@ -1707,6 +1724,13 @@
   }
   .buy-row .cta-main,
   .buy-row .cta-secondary {
+    width: auto;
+  }
+  /* The bag band and the checkout's bar are rows too: the way out takes
+     the room the count or the way back leaves, not a line of its own. */
+  .bag-bar .cta-main,
+  .checkout-bar .cta-main,
+  .checkout-bar .cta-secondary {
     width: auto;
   }
 }

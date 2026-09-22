@@ -206,42 +206,47 @@ export function BagDrawer({
                         page's own table can afford a stepper with a field
                         in it; a drawer cannot, and a number that is typed
                         is a number that can be typed wrong. */}
-                    {/* ---- Down-to-nothing is the same gesture ----
+                    {/* ---- Down-to-nothing is no longer the same gesture ----
 
-                        There is no Remove button. Taking the last one out
-                        of the bag IS decrementing from one, so the minus
-                        key becomes a bin at that point and does it — one
-                        control, pressed the same way, rather than a word
-                        sitting beside the stepper duplicating its floor.
+                        It was, and the argument for it was good: taking
+                        the last one out of the bag IS decrementing from
+                        one, so the minus key turned into a bin at that
+                        point and did it. One control, pressed the same
+                        way, rather than a word beside the stepper
+                        duplicating its floor.
 
-                        The label changes with it, because the two actions
-                        are not the same promise: at two or more it says
-                        what it takes away, at one it says the line goes.
-                        A screen reader gets the bin's meaning from that
-                        label; the icon itself is `aria-hidden`. */}
+                        What that argument missed is the SEQUENCE. Going
+                        from two to one is a press in this spot; removing
+                        the line is then the same press in the same spot,
+                        a moment later, with nothing between them. A
+                        reader tapping down through a quantity does not
+                        stop to re-read a key that has not moved, so the
+                        press that was undoing a choice becomes the press
+                        that destroys the line — and there is no undo
+                        here to catch it.
+
+                        So the bin has its own key, outside the group and
+                        set apart from it, and it is drawn on every line
+                        rather than appearing at one. The minus key keeps
+                        its floor at one and stops there. Two controls,
+                        two places, and the destructive one is never
+                        where the reader's finger already is.
+
+                        The icon is `aria-hidden`; the label on the
+                        button is what carries its meaning. */}
                     <div className="mt-3 flex items-center">
                       <div className="bag-qty">
-                        {line.qty <= 1 ? (
-                          <button
-                            type="button"
-                            className="bag-qty-btn"
-                            onClick={() => remove(line.slug, line.colorway, line.size)}
-                            aria-label={`Remove ${title}, ${meta}, from the bag`}
-                          >
-                            <Trash2 size={13} strokeWidth={1.5} aria-hidden />
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="t-micro bag-qty-btn"
-                            onClick={() =>
-                              setQty(line.slug, line.colorway, line.qty - 1, line.size)
-                            }
-                            aria-label={`One fewer ${house?.name ?? line.slug}`}
-                          >
-                            −
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          className="t-micro bag-qty-btn"
+                          disabled={line.qty <= 1}
+                          onClick={() =>
+                            setQty(line.slug, line.colorway, line.qty - 1, line.size)
+                          }
+                          aria-label={`One fewer ${house?.name ?? line.slug}`}
+                        >
+                          −
+                        </button>
                         <span className="t-micro bag-qty-count tabular-nums">
                           {line.qty}
                         </span>
@@ -256,6 +261,14 @@ export function BagDrawer({
                           +
                         </button>
                       </div>
+                      <button
+                        type="button"
+                        className="bag-qty-btn bag-qty-bin"
+                        onClick={() => remove(line.slug, line.colorway, line.size)}
+                        aria-label={`Remove ${title}, ${meta}, from the bag`}
+                      >
+                        <Trash2 size={13} strokeWidth={1.5} aria-hidden />
+                      </button>
                     </div>
                   </div>
                 </li>

@@ -84,6 +84,9 @@ const HOLD_AT = 0.9;
  * lost visitor.
  */
 const MAX_WAIT_MS = 26000;
+/* When the opening stops being a show and starts being a wait. Comfortably
+   past OPENING_MS, so a normal visit never sees the control at all. */
+const SKIP_AFTER_MS = 3000;
 
 /* 9000 before, and it was the binding constraint on the whole loader rather
    than the last-resort ceiling it is written as: the per-asset waits in
@@ -144,6 +147,24 @@ function openingScale(ms: number): [number, number] {
 
 export function Experience() {
   const [live, setLive] = useState(false);
+
+  /* ---- The way past the opening ----
+   *
+   * The counter waits on the page, and `MAX_WAIT_MS` lets it wait 26
+   * seconds before the failsafe gives up. For that whole time the body
+   * does not scroll and there is nothing to press. A reader on a bad
+   * connection is held at 90 on a number they cannot move, on the one
+   * visit that decides whether there is a second.
+   *
+   * So: after SKIP_AFTER_MS, a way out appears. Not sooner — the opening
+   * is 2.2 seconds when the network is behaving, and a Skip drawn over a
+   * sequence that is about to end by itself is an apology the house does
+   * not need to make. It appears only when the wait has become longer
+   * than the show, which is exactly when it stops being a show. */
+  const [slow, setSlow] = useState(false);
+  /* `finish` is defined inside the effect below, where its bookkeeping
+     lives. The button is out here, so the effect hands it over. */
+  const finishRef = useRef<() => void>(() => {});
 
   /* inertia scrolling, but only once the loader has handed over */
   useSmoothScroll(live);
@@ -254,6 +275,7 @@ export function Experience() {
       setLive(true);
       document.body.style.overflow = "";
     };
+    finishRef.current = finish;
     if (revisit) {
       finish();
       return;
@@ -273,6 +295,9 @@ export function Experience() {
        (the old one — background tabs and low-power throttling never reach
        OPENING_MS) and a network that never finishes. */
     const failsafe = window.setTimeout(finish, MAX_WAIT_MS);
+    /* Set here rather than beside `live`, so it is cleared by the same
+       cleanup and never fires for a revisit, which has already returned. */
+    const slowMark = window.setTimeout(() => setSlow(true), SKIP_AFTER_MS);
 
     const tick = (now: number) => {
       if (done) return;
@@ -328,6 +353,7 @@ export function Experience() {
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(failsafe);
+      clearTimeout(slowMark);
     };
   }, []);
 
@@ -544,6 +570,28 @@ export function Experience() {
               </span>
             </div>
           </div>
+
+          {/* The way past, once the wait is longer than the show. The
+              layer above is `pointer-events-none` so that a counter
+              cannot swallow a press; this one is its own fixed layer and
+              takes them back. It fades in rather than appearing, because
+              a control that pops onto a held screen reads as an error
+              the page has just hit.
+
+              `-mr-4` pulls the button's own padding back out, so the word
+              still sits on the page's right margin while the box around
+              it is the 44px the rest of the build now uses. */}
+          {slow && (
+            <div className="fixed bottom-7 right-8 z-[46] -mr-4 animate-[fade-in_400ms_ease-out_both]">
+              <button
+                type="button"
+                onClick={() => finishRef.current()}
+                className="flex min-h-11 items-center px-4 font-ui text-xs uppercase tracking-[0.18em] text-paper/60 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-none"
+              >
+                Skip
+              </button>
+            </div>
+          )}
         </>
       )}
 

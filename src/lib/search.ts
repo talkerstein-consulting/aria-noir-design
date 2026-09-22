@@ -69,7 +69,7 @@ const PAGES: readonly MenuLink[] = [
   { label: "The House", href: "/house/about" },
   { label: "Contact", href: "/contact" },
   { label: "The Bag", href: "/bag" },
-  { label: "Held", href: "/held" },
+  { label: "Saved", href: "/held" },
   { label: "Access", href: "/access" },
   ...menu.secondary,
 ];

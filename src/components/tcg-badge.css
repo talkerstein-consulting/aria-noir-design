@@ -1,10 +1,20 @@
 .tcg-footer {
   display: block;
+  /* The plaque's width is a percentage of the lockup's column, so this
+     wrapper has to BE that column rather than shrink to the plaque. */
+  width: 100%;
   color: var(--fg-primary);          /* the ground's ink: black on paper, paper on ink */
 }
 
 .tcg-plaque {
-  --w: min(300px, 70vw);             /* sits in the legal row at micro-label scale */
+  /* NOIR's own width, so the three lines of the lockup share one
+     measure: 40.04% of the column, which is the figure footer-mark cuts
+     the word to. Capped, because past about 520px the credit is bigger
+     than the thing it credits. */
+  --w: min(40.04%, 520px);
+  /* NOIR is not centred in the column — it starts 30.47% in. The credit
+     takes the same start, so the two words sit on one left edge. */
+  margin-inline-start: 30.47%;
   --pad-x: 8px;
   /* The hit area, over and under the lettering. The strip itself is under
      20px tall; this makes the thing a thumb can land on 44px and more,

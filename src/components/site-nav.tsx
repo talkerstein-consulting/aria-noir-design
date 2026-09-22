@@ -316,8 +316,8 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             className="nav-icon nav-icon--morph"
             onClick={() => only("desk", !deskOpen)}
             aria-expanded={deskOpen}
-            aria-label={deskOpen ? "Close the desk" : "The desk"}
-            title="The desk"
+            aria-label={deskOpen ? "Close your account" : "Your account"}
+            title="Your account"
           >
             <UserRound className="morph-in" aria-hidden />
             <X className="morph-out" aria-hidden />

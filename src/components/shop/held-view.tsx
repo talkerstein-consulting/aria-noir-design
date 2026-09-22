@@ -42,10 +42,10 @@ export function HeldView() {
   if (!resolved.length) {
     return (
       <div className="stack stack--sm">
-        <p className="t-body t-body--lede">Nothing is being held.</p>
+        <p className="t-body t-body--lede">Nothing is saved.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
           Press the bookmark on any colourway and it waits here. The list lives
-          in this browser, not on your account, so it will not follow you to
+          in this browser, not in your account, so it will not follow you to
           another machine.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
