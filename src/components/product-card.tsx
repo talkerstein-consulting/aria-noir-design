@@ -87,19 +87,6 @@ export type ProductCardProps = {
   holdSlug?: string;
   holdColorway?: string | null;
   /**
-   * Ties this card's photograph to the plate on the page it opens.
-   *
-   * Carried on the LINK as `data-morph`, and written onto the image only
-   * at the moment that card is pressed — see components/morph-nav.
-   *
-   * Naming all thirty up front looked simpler and was measurably worse:
-   * every named element gets its own snapshot, so a click captured thirty
-   * cards and animated thirty `::view-transition-old` pseudo-elements to
-   * move one. Named on demand, the browser captures the one that travels
-   * and lets the rest go with the page.
-   */
-  morph?: string;
-  /**
    * A control the card carries in its foot — "Add to bag" on the held
    * list, and nothing at all in a plain grid.
    *
@@ -157,7 +144,6 @@ export function ProductCard({
   holdSlug,
   holdColorway,
   action,
-  morph,
   meta,
   detail,
   price,
@@ -265,7 +251,6 @@ export function ProductCard({
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
                 className="card-name-link"
-                data-morph={morph || undefined}
               >
                 {name}
               </Link>

@@ -245,7 +245,7 @@ export const newsletter = {
  * offer the house makes that is not for everybody.
  */
 export const privateAccess = {
-  heading: "The next edition isn't for everyone.",
+  heading: "The next edition isn’t for everyone.",
   body:
     "Unreleased frames, before they enter the collection.",
   cta: "Request private access",

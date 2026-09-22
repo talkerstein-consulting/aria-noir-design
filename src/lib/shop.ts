@@ -220,28 +220,6 @@ export const COLLECTION_LABEL = "Eyewear";
  * `colorwayCardPlates`, the portrait cut of its own shoot, which crops to
  * a square without losing the frame either.
  */
-/**
- * The name that ties a card's photograph to the plate it opens into.
- *
- * A View Transition morphs between two elements that share a
- * `view-transition-name`. The shop's colourway card and the buy page's
- * lead plate are the SAME square render of the same acetate — see
- * `squareFor` — so there is a real photograph on both ends and the
- * browser has something to interpolate rather than a cross-fade between
- * two different pictures.
- *
- * Keyed by house and colourway because the name has to be unique in each
- * document: a shop page draws thirty-odd cards at once, and two elements
- * sharing a name make the transition ambiguous and the browser skip it.
- *
- * Returns undefined where there is no square, which is the signal to draw
- * no name at all rather than a name that will never find its pair.
- */
-export function morphName(house: House, colorway?: string) {
-  if (!colorway || !squareFor(house, colorway)) return undefined;
-  return `frame-${house.slug}-${colourwayKey(colorway)}`;
-}
-
 export function squareFor(house: House, colorway?: string) {
   if (!colorway) return undefined;
   const art = COLOURWAY_CARD_ART[house.slug]?.[colourwayKey(colorway)];

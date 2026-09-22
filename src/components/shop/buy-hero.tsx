@@ -14,7 +14,6 @@ import {
   defaultColorway,
   galleryFor,
   squareFor,
-  morphName,
   plateRatio,
   priceOf,
   stockFor,
@@ -100,7 +99,6 @@ export function BuyHero({ house }: { house: House }) {
    * (ARCA I, never shot on the sill) falls back to the first plate it
    * does have. */
   const square = squareFor(house, chosen ?? undefined);
-  const morph = morphName(house, chosen ?? undefined);
   const images = square
     ? [square]
     : galleryFor(house, chosen ?? undefined).slice(0, 1);
@@ -479,11 +477,6 @@ export function BuyHero({ house }: { house: House }) {
                    run has no square and shows its own first plate. */
                 style={{
                   aspectRatio: square ? 1 : (plateRatio(src) ?? 16 / 9),
-                  /* The other end of the morph: the card the reader
-                     pressed carries this same name on its photograph, so
-                     the browser grows one into the other. Only on the
-                     square — it is the plate the card actually shows. */
-                  ...(i === 0 && morph ? { viewTransitionName: morph } : {}),
                 }}
               >
                 <Image

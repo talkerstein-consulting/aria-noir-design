@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
 import { BagBar } from "@/components/shop/bag-bar";
 import { RouteWipe } from "@/components/route-wipe";
-import { MorphNav } from "@/components/morph-nav";
 import "./globals.css";
 
 const libreBodoni = Libre_Bodoni({
@@ -93,10 +92,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        {/* Cards that grow into the page they open. One delegated
-            listener, so the grids stay server-rendered — see
-            components/morph-nav. Draws nothing. */}
-        <MorphNav />
         {children}
         {/* The bag at the foot of a phone's screen, while the reader
             keeps looking. Drawn only where it is a way on — see BagBar. */}

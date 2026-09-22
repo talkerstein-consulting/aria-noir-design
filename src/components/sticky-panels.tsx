@@ -307,6 +307,27 @@ export function StickyPanels({
      ten screens away. Promotion now follows the section. */
   const live = useOnScreen(wrap);
 
+  /* ---- Which panels are allowed to hold a decoded photograph ----
+   *
+   * Six full-screen plates is 7.7 megapixels of bitmap held at once, on a
+   * page that is also playing a hero film. Measured in the app's own
+   * browser, Chrome answers that pressure by decoding each plate at a
+   * FRACTION of its size and stretching it: a 1513x844 file arrived in
+   * the element as 442x246, which is exactly the softness the stage looks
+   * like. The `scale(0.22)` the plate opens at makes it worse, because
+   * the first raster is taken while the picture is a fifth of the window.
+   *
+   * So only the panel on screen and its two neighbours carry an image.
+   * The rest render their house's acetate — the same fallback a house
+   * with no photograph gets — and swap in a frame before they slide.
+   *
+   * State, but not per frame: `onProgress` runs on every rAF and writes
+   * transforms directly; this setter is guarded by a ref and fires at
+   * most once per panel change, so the section re-renders six times in a
+   * full pass rather than sixty times a second. */
+  const nearRef = useRef(0);
+  const [near, setNear] = useState(0);
+
   /* `zones` is memoised on the panel count, so this identity only changes
      when the number of panels does — which is the one case the scroll
      subscription genuinely does need to be rebuilt for. */
@@ -319,6 +340,17 @@ export function StickyPanels({
     if (head.current) head.current.style.opacity = String(1 - plateP);
     if (plate.current) {
       plate.current.style.transform = `translateY(${lerp(PLATE_REST_Y_VH, 0, plateP)}vh) scale(${lerp(PLATE_START_SCALE, 1, plateP)})`;
+    }
+
+    /* The frontmost panel that has started to arrive — the one the
+       reader is looking at, or about to. */
+    let front = 0;
+    for (let i = 0; i < slide.length; i += 1) {
+      if ((slide[i] ?? 0) > 0.001) front = i + 1;
+    }
+    if (front !== nearRef.current) {
+      nearRef.current = front;
+      setNear(front);
     }
 
     panels.current.forEach((el, i) => {
@@ -446,7 +478,13 @@ export function StickyPanels({
               transform: `translateY(${PLATE_REST_Y_VH}vh) scale(${PLATE_START_SCALE})`,
             }}
           >
-            <Ground item={first} placement={placement} narrow={narrow} eager={eager > 0} />
+            <Ground
+              item={first}
+              placement={placement}
+              narrow={narrow}
+              eager={eager > 0}
+              show={near <= 1}
+            />
             <Label
               refCb={(el) => {
                 labels.current[0] = el;
@@ -467,7 +505,13 @@ export function StickyPanels({
             className="stage-layer absolute inset-0"
             style={{ zIndex: 21 + i, transform: "translateX(100%)" }}
           >
-            <Ground item={item} placement={placement} narrow={narrow} eager={i + 1 < eager} />
+            <Ground
+              item={item}
+              placement={placement}
+              narrow={narrow}
+              eager={i + 1 < eager}
+              show={Math.abs(i + 1 - near) <= 1}
+            />
             <Label
               refCb={(el) => {
                 labels.current[i + 1] = el;
@@ -490,16 +534,20 @@ function Ground({
   placement,
   narrow,
   eager = false,
+  show = true,
 }: {
   item: PanelItem;
   placement: LabelPlacement;
   narrow: boolean;
   /** See `eager` on StickyPanelsProps. */
   eager?: boolean;
+  /** Whether this panel is near enough to the front to hold a decoded
+   *  photograph — see the note on `near`. */
+  show?: boolean;
 }) {
   /* The upright plate where the house has one and the stage is a square,
      the wide one everywhere else. */
-  const src = (narrow && item.imageNarrow) || item.image;
+  const src = show ? (narrow && item.imageNarrow) || item.image : undefined;
   /* The picture's own box rather than the panel's. `<Image fill>` needs a
      positioned parent, and giving the photograph an element of its own
      keeps the label's scrim and type layered over it rather than beside
@@ -526,6 +574,12 @@ function Ground({
         alt=""
         fill
         sizes="100vw"
+        /* 90, not the default 75. This is the largest picture on the
+           site — one photograph filling the window — and at 75 the
+           optimizer's own softening lands on top of a source that is
+           already being scaled up on a 2x screen. The extra bytes buy
+           the one image nobody can look away from. */
+        quality={90}
         className="object-cover"
         priority={eager}
         style={

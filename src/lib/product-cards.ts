@@ -15,7 +15,6 @@ import {
   formatPrice,
   galleryFor,
   isAvailable,
-  morphName,
   priceOf,
   shopHref,
   swatchFor,
@@ -350,10 +349,6 @@ export function colourwayCard(
        no defaulting required. */
     holdSlug: house.slug,
     holdColorway: colorway,
-    /* The card's photograph and the buy page's lead plate are the same
-       square render, so the browser can morph one into the other rather
-       than swapping pages. See `morphName`. */
-    morph: morphName(house, colorway),
     price: priceOf(house, colorway),
     detail: out ? "Out of the workshop" : undefined,
     soldOut: out,

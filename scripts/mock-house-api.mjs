@@ -135,6 +135,44 @@ createServer((req, res) => {
       sessions.set(t, e);
       return json(res, 201, { user: publicUser(u) }, setCookie(t));
     }
+    /* Google sign-in.
+    
+       The real service verifies the ID token against Google's public keys
+       and checks the audience; this preview only DECODES it, because it
+       has no network and no client secret, and a local mock that refused
+       every token would make the button untestable. It is a mock: nothing
+       here should be read as how to treat a JWT in production. */
+    if (path === "/auth/google" && req.method === "POST") {
+      let claims = {};
+      try {
+        const part = String(body.credential || "").split(".")[1] || "";
+        claims = JSON.parse(Buffer.from(part, "base64url").toString("utf8"));
+      } catch {
+        return json(res, 400, { error: { message: "That Google sign-in could not be read." } });
+      }
+      const e = String(claims.email || "").toLowerCase();
+      if (!e) return json(res, 400, { error: { message: "That Google account has no email address on it." } });
+      let u = users.get(e);
+      if (!u) {
+        /* First time in: the account is made from the Google profile, with
+           no password — this address signs in with Google from now on. */
+        u = {
+          id: randomUUID(),
+          email: e,
+          firstName: claims.given_name || "",
+          lastName: claims.family_name || "",
+          phone: null,
+          passwordHash: null,
+        };
+        users.set(e, u);
+        profiles.set(e, { phone: "", address: null });
+        addressBook.set(e, []);
+        for (const o of orders) if (o.guestEmail === e) o.userEmail = e;
+      }
+      const t = randomUUID();
+      sessions.set(t, e);
+      return json(res, 200, { user: publicUser(u) }, setCookie(t));
+    }
     if (path === "/auth/logout" && req.method === "POST") {
       if (token) sessions.delete(token);
       return noContent(res, clearCookie());

@@ -72,7 +72,20 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const slide = (i: number) => ({
   initial: { opacity: 0, x: 48 },
   animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -48 },
+  /* ---- The stagger is for ARRIVING, not for leaving ----
+  
+     The shared `transition` below staggers by index, which is what makes
+     a filter change read as a run of tiles rather than a flash. On the
+     way OUT it is dead time: the last tile would not begin its 350ms
+     exit until 240ms after the first, so the grid took about 0.6s to
+     clear before anything could take its place. The exit carries its own
+     transition — no delay, and shorter — because leaving is not a
+     performance. */
+  exit: {
+    opacity: 0,
+    x: -48,
+    transition: { duration: 0.18, delay: 0, ease: EASE },
+  },
   transition: {
     layout: { type: "spring" as const, stiffness: 260, damping: 30 },
     duration: 0.35,

@@ -136,6 +136,15 @@ deployment with its own secrets; this site only knows its origin.
 |---|---|---|
 | `HOUSE_API_URL` | Vercel project env (server) | the service's origin, e.g. `https://house.arianoir.com`. Default `http://127.0.0.1:3101`. |
 | `NEXT_PUBLIC_HOUSE_TENANT` | Vercel project env | the tenant slug the service knows this store by. Default `aria-noir`. |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Vercel project env | the OAuth **client id** for Google sign-in. Public by design — it ships to the browser. Unset, `/access` simply does not offer Google, which is the correct fallback: a button that opens a Google dialog saying "invalid client" is worse than no button. |
+
+Google sign-in needs one thing on the other side too: the house API must
+answer `POST /auth/google` with `{ credential, tenantSlug }`, verify that
+ID token against Google's public keys AND against the same client id as
+the audience, then set the session cookie it sets for a password login.
+The browser never verifies the token itself — a JWT is only as good as
+the signature check, and the page that received it cannot make one. The
+local mock (`scripts/mock-house-api.mjs`) only decodes it, and says so.
 
 Nothing Square-shaped lives here. The service answers `/storefront/config`
 with its own `applicationId` and `locationId`, and the browser loads

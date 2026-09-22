@@ -3037,3 +3037,35 @@ body {
   padding: 0.55em 1.1em;
   font-size: 0.625rem;
 }
+
+/* ── THE OTHER DOOR ────────────────────────────────────────────────
+   Google's button under the form, with a rule and the word "or" across
+   it: the two ways in are alternatives, and stacked without a divider
+   they read as a queue of things to press. The rule is the hairline the
+   rest of the page separates with. */
+.access-google {
+  margin-block-start: 2rem;
+}
+.access-google__or {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+  color: var(--fg-quiet);
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.access-google__or::before,
+.access-google__or::after {
+  content: "";
+  flex: 1;
+  height: var(--rule-weight);
+  background: var(--fg-rule);
+}
+/* Google renders its own iframe and sizes it in px. Left-aligned with
+   the fields above rather than centred, so the column has one edge. */
+.access-google [data-ready] {
+  max-width: 100%;
+  overflow: hidden;
+}

@@ -10,6 +10,16 @@ import type { NextConfig } from "next";
 const HOUSE_API_URL = (process.env.HOUSE_API_URL || "http://127.0.0.1:3101").replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
+  /**
+   * Next 16 only serves the qualities listed here, and silently falls
+   * back to 75 for anything else — which is why `quality={90}` on the
+   * home page's sticky plates was still arriving as `q=75` in the URL.
+   * 75 is kept because it is what every other image on the site asks
+   * for; 90 is for the full-screen plates alone (see sticky-panels).
+   */
+  images: {
+    qualities: [75, 90],
+  },
   async rewrites() {
     return [
       {

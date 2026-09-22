@@ -3,7 +3,6 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { AccessForm } from "@/components/shop/access-form";
-import { CtaLink } from "@/components/cta-link";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
@@ -55,12 +54,11 @@ export default function AccessPage() {
               <AccessForm />
             </div>
 
-            <div className="hairline mt-14 flex flex-wrap items-center gap-x-10 gap-y-4 pt-8">
-              <CtaLink href="/eyewear">See the frames</CtaLink>
-              <CtaLink href="/contact" kind="secondary">
-                Talk to the studio
-              </CtaLink>
-            </div>
+            {/* The two CTAs that used to close this page — "See the
+                frames" and "Talk to the studio" — are gone. A sign-in
+                page has one job, and a filled CTA to the shop sitting
+                under the password field competes with the door for the
+                same press. Anyone who wants the shop has the nav. */}
           </div>
         </section>
       </main>

@@ -196,6 +196,19 @@ export type House = {
    */
   plateNarrow?: string;
   /**
+   * The same cover shot, LANDSCAPE — `cover/desktop.webp`, which every
+   * house has and the story heroes already use.
+   *
+   * `plate` is the square, and the square is right for a card. The home
+   * page's sticky stage is a wide box, and covering it with a square
+   * means the browser scales by the LONGER side and throws the rest
+   * away: on a 1122x714 panel, a 1474px square is scaled to fit 714px of
+   * height and two thirds of its pixels are cropped off. The landscape
+   * crop is the same photograph composed for that box, so nothing is
+   * wasted and nothing is upscaled as far.
+   */
+  plateWide?: string;
+  /**
    * How far a phone leans into `plateNarrow`, and on what. A cover shot
    * wide enough to hold a room leaves the frame small on a phone; this is
    * the crop that brings it forward. `scale` is the magnification and
@@ -422,6 +435,7 @@ export const allHouses: readonly House[] = [
        shoot, which is the most recent and best-lit frame in the pool — the
        old object-front plate predates it. */
     plate: "/images/arca-i/cover/square.webp",
+    plateWide: "/images/arca-i/cover/desktop.webp",
     plateNarrow: "/images/arca-i/cover/mobile.webp",
     colorwayPlates: {
       "Z White": "/images/arca-i/variants/z-white-main.webp",
@@ -549,6 +563,7 @@ export const allHouses: readonly House[] = [
     ],
     from: 125,
     plate: "/images/arca-ii/cover/square.webp",
+    plateWide: "/images/arca-ii/cover/desktop.webp",
     plateNarrow: "/images/arca-ii/cover/mobile.webp",
             /* One composition across the whole run - see `colorwaySills`. The
        closing counter re-shoots itself from these, and they close out each
@@ -638,6 +653,7 @@ export const allHouses: readonly House[] = [
        is photographed as itself now, so its card is one of its own
        pictures. */
     plate: "/images/ahava/cover/square.webp",
+    plateWide: "/images/ahava/cover/desktop.webp",
     plateNarrow: "/images/ahava/cover/mobile.webp",
     /* Shot across the whole room; the frame is a hand's width on the
        table. Pulled in on the frame so it is the plate's subject. */
@@ -718,6 +734,7 @@ export const allHouses: readonly House[] = [
     from: 150,
     /* The hero acetate from the house's own shoot, in portrait. See AHAVA. */
     plate: "/images/matriarca/cover/square.webp",
+    plateWide: "/images/matriarca/cover/desktop.webp",
     plateNarrow: "/images/matriarca/cover/mobile.webp",
     /* ---- the colourway shoot ----
        The campaign's own frame of each acetate, one composition for the whole
@@ -781,6 +798,7 @@ export const allHouses: readonly House[] = [
     from: 175,
     /* The hero acetate from the house's own shoot, in portrait. See AHAVA. */
     plate: "/images/patriarca/cover/square.webp",
+    plateWide: "/images/patriarca/cover/desktop.webp",
     plateNarrow: "/images/patriarca/cover/mobile.webp",
             /* The same setup in landscape, held across the whole run: the picker
        moves and only the colour of the frame changes. */
@@ -858,6 +876,7 @@ export const allHouses: readonly House[] = [
     /* The hero acetate from the house's own shoot. Landscape, because this
        is the one house whose colourway set was shot 16:9 only. */
     plate: "/images/monarca/cover/square.webp",
+    plateWide: "/images/monarca/cover/desktop.webp",
     plateNarrow: "/images/monarca/cover/mobile.webp",
         /* The same setup in landscape, held across the whole run: the picker
        moves and only the colour of the frame changes. */

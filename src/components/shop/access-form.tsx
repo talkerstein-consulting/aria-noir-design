@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { CtaButton } from "@/components/cta-link";
+import { GoogleSignIn } from "@/components/shop/google-sign-in";
 import { announceSession, house } from "@/lib/house-api";
 import { useSession } from "@/lib/session";
 import { emailError, isValidEmail, phoneError } from "@/lib/validation";
@@ -86,6 +87,26 @@ export function AccessForm({
     announceSession();
     known.set(true);
     router.push(destination());
+  };
+
+  /* Google's button hands back an ID token; the house API turns it into
+     the same session an email sign-in gets, so this lands on the same
+     `arrive()` and the reader is where they were going. One door, two
+     keys — see GoogleSignIn and `googleLogin` in lib/house-api. */
+  const withGoogle = async (credential: string) => {
+    setError("");
+    setNote("");
+    setBusy(true);
+    try {
+      await house.googleLogin(credential);
+      arrive();
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "That Google sign-in did not go through.",
+      );
+    } finally {
+      setBusy(false);
+    }
   };
 
   const submit = async () => {
@@ -245,10 +266,14 @@ export function AccessForm({
                   ? "Send the link"
                   : "Change it"}
         </CtaButton>
+        {/* An outlined CTA, not a quiet link. It is the second real
+            action on this form — the one a reader who cannot get in
+            needs — and as a text link beside a filled button it read as
+            fine print rather than as the way out of being locked out. */}
         {mode === "in" ? (
-          <button type="button" className="link-quiet" onClick={() => switchMode("forgot")}>
-            Forgotten the password
-          </button>
+          <CtaButton kind="secondary" onClick={() => switchMode("forgot")}>
+            Forgot your password?
+          </CtaButton>
         ) : null}
         {mode === "forgot" ? (
           <button type="button" className="link-quiet" onClick={() => switchMode("in")}>
@@ -256,6 +281,17 @@ export function AccessForm({
           </button>
         ) : null}
       </div>
+
+      {/* The other door. On the two modes where it means anything: there
+          is no Google equivalent of "email me a reset link", and the
+          reset form is reached from an email and already knows who it is
+          for. Renders nothing at all until a client id is configured. */}
+      {mode === "in" || mode === "new" ? (
+        <GoogleSignIn
+          label={mode === "new" ? "signup_with" : "signin_with"}
+          onCredential={(credential) => void withGoogle(credential)}
+        />
+      ) : null}
     </form>
   );
 }

@@ -435,9 +435,23 @@
   background: var(--fg-accent);
   border-color: var(--fg-accent);
 }
+/* ---- The label goes, and is not merely moved ----
+
+   It used to rely on `translateY(-160%)` and the button's own
+   `overflow: hidden` to take the label out of the box. Measured on the
+   home page it did not: "REQUEST PRIVATE ACCESS" sat over the Name
+   field, dimmed by the panel's own translucency, so the form opened with
+   a ghost of the button printed across it. The travel is still there —
+   it is the gesture — but the layer is taken out of the paint at the end
+   of it rather than trusted to be clipped. */
 .access-intake[data-phase="form"] .access-intake__cta,
 .access-intake[data-phase="done"] .access-intake__cta {
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    visibility 0s linear var(--dur-base);
 }
 .access-intake[data-phase="form"] .access-intake__cta .cta-chars,
 .access-intake[data-phase="done"] .access-intake__cta .cta-chars {
@@ -466,41 +480,59 @@
     transform: translateX(-50%);
     transition:
       width var(--dur-slow) var(--ease-out),
+      grid-template-rows var(--dur-slow) var(--ease-out),
       background-color var(--dur-slow) ease,
       border-color var(--dur-slow) ease;
   }
+  /* ---- The box grows in HEIGHT as well as width ----
+
+     `inset: 0` inside a panel whose height was the button's meant two
+     inputs, a submit key and a note were being asked to live in 44px:
+     the fields were squeezed to 21px, the note was switched off
+     entirely, and the row overflowed the box it was in. The panel is a
+     grid that opens from 0fr to 1fr — the same mechanism the phone
+     layout already used — so its height is whatever the form needs, and
+     the width animation is unchanged. */
+  .access-intake__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+  }
   .access-intake__inner {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
     padding: 0 1.25rem;
-    transform: translateY(110%);
-    transition: transform var(--dur-base) var(--ease-inout);
+    min-height: 0;
+    transition: padding var(--dur-slow) var(--ease-out);
   }
   .access-intake__inner > form,
   .access-intake__inner > div {
     display: flex;
-    flex: 1;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 1.25rem;
+    gap: 0 1.25rem;
     min-width: 0;
   }
   .access-intake__inner .field-row {
     flex: 1;
-    min-width: 0;
+    min-width: 12rem;
   }
+  /* The note is the one thing the panel says in its own voice — what
+     the address is for. It was hidden on every screen wide enough to
+     have room for it. */
   .access-intake__inner .access-intake__note {
-    display: none;
+    flex-basis: 100%;
+    padding-top: 0.15rem;
   }
   .access-intake[data-phase="form"] .access-intake__panel,
   .access-intake[data-phase="done"] .access-intake__panel {
     width: min(38rem, calc(100vw - 3rem));
   }
+
+  .access-intake[data-phase="form"] .access-intake__panel,
+  .access-intake[data-phase="done"] .access-intake__panel {
+    grid-template-rows: 1fr;
+  }
   .access-intake[data-phase="form"] .access-intake__inner,
   .access-intake[data-phase="done"] .access-intake__inner {
-    transform: none;
-    transition-delay: 60ms;
+    padding-block: 0.85rem 0.9rem;
   }
 }
 
@@ -1376,32 +1408,6 @@
   .buy-model[data-leaving] {
     transform: none;
     transition: opacity 200ms linear;
-  }
-}
-
-/* ---- The morph, and the page around it ----
-   The named photograph animates between the two pages; everything else
-   cross-fades. The root pair is shortened from the browser's default
-   250ms so the page under the frame has resolved by the time the frame
-   arrives, rather than the two finishing together and reading as one
-   slow dissolve. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 180ms;
-}
-/* The frame itself travels on the house's own curve, and slower than the
-   page: it is the thing being followed. */
-::view-transition-group(*) {
-  animation-duration: var(--dur-reveal);
-  animation-timing-function: var(--ease-out);
-}
-/* A reader who has asked for less motion gets the navigation and none of
-   the travel. The pages still change; nothing flies. */
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation: none;
   }
 }
 

@@ -35,7 +35,10 @@ export function CollectionsSection() {
        for a house added before its photography lands. Borrowing was the
        thing worth forbidding, and nothing borrows: each panel shows the
        plate belonging to the house it names. */
-    image: house.plate ?? undefined,
+    /* The LANDSCAPE cover on the wide stage — see `plateWide`. It was
+       the square, which this stage crops two thirds of the height out of
+       and then upscales what is left. */
+    image: house.plateWide ?? house.plate ?? undefined,
     imageNarrow: house.plateNarrow,
     narrowZoom: house.plateNarrowZoom,
     swatch: house.swatch,

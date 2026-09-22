@@ -224,7 +224,12 @@ export function PrivateAccessSection() {
           {/* The phone's floor is deeper than the desk's: the sign-up grows
               DOWN out of the button there (see AccessIntake), and the room
               it grows into has to already exist so nothing above it moves. */}
-          <div className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-40 text-center sm:px-10 sm:pb-14">
+          <div /* `sm:pb-28`, not `pb-14`: the intake grows DOWNWARD out of its
+                 button on every width now (see interactions.css), and at 14
+                 the opened form ran into the foot of the screen — on a
+                 laptop it met the bag bar. This is the room it needs, kept
+                 whether or not it is open so nothing above it moves. */
+              className="absolute inset-x-0 bottom-0 flex flex-col items-center px-6 pb-40 text-center sm:px-10 sm:pb-28">
           <div className="relative flex max-w-3xl flex-col items-center gap-5">
             <RevealText
               as="h2"

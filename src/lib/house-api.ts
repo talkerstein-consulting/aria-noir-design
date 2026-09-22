@@ -243,6 +243,25 @@ export const house = {
       method: "POST",
       body: JSON.stringify({ token, password }),
     }),
+  /**
+   * Sign in with Google.
+   *
+   * `credential` is the ID token Google Identity Services hands the
+   * button's callback — a signed JWT naming the account. It is passed
+   * STRAIGHT THROUGH to the house API and verified there, against
+   * Google's public keys and the expected audience. Nothing on this
+   * origin reads or trusts it: a JWT is only as good as the signature
+   * check, and a browser cannot do that check on its own behalf.
+   *
+   * The response is the same `{ user }` login returns, with the same
+   * httpOnly session cookie set on this origin — so every screen that
+   * already knows how to read a session needs no change.
+   */
+  googleLogin: (credential: string) =>
+    api<{ user: User }>("/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential, tenantSlug: TENANT }),
+    }),
   logout: () => api<null>("/auth/logout", { method: "POST" }),
   deleteAccount: (confirmation: string) =>
     api<null>("/storefront/account", {
