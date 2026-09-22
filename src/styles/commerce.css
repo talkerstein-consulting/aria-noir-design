@@ -1445,10 +1445,15 @@
    screen, the way back on the left and the way on at the right, where
    the thumb already is.
 
-   A band rather than a floating pill: square, hairline over opaque ink,
-   the same treatment the header takes at the other end of the screen
-   and the bag band takes on every other page. Opaque because the fields
-   it passes over must not read through the button that commits them. */
+   A band rather than a floating pill: square, hairline over ink, the
+   same treatment the header takes at the other end of the screen and
+   the bag band takes on every other page.
+
+   The fill is ink at 80%, behind a 12px blur. It used to be a flat
+   solid, which read as a strip of furniture laid over the form; at 80%
+   the page carries on underneath and the blur is what keeps the fields
+   from competing with the button that commits them. `-webkit-` first
+   for Safari, which is where this band is most often seen. */
 .checkout-bar {
   display: none;
 }
@@ -1465,7 +1470,9 @@
     padding: 0.75rem var(--gutter);
     /* Clear of the home indicator, and of the browser's own chrome. */
     padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-    background: var(--ink);
+    background: color-mix(in srgb, var(--ink) 80%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    backdrop-filter: blur(12px) saturate(120%);
     border-top: var(--rule-weight) solid var(--fg-rule);
   }
   /* The commit takes the width it needs; the glyph beside it is a
@@ -2997,7 +3004,13 @@
   padding: 0.75rem var(--gutter);
   /* Clear of the home indicator on a phone that has one. */
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  background: var(--ink);
+  /* Ink at 80% behind a blur, not a flat solid: the page carries on
+     underneath the band instead of being cut off by it, and the blur is
+     what stops the type passing under it from competing with the way
+     out. `-webkit-` first for Safari. */
+  background: color-mix(in srgb, var(--ink) 80%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  backdrop-filter: blur(12px) saturate(120%);
   border-top: var(--rule-weight) solid var(--fg-rule);
 }
 /* The page ends above the band rather than behind it. The variable is
