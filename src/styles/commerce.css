@@ -918,9 +918,17 @@
 }
 
 /* ── THE FIELD ─────────────────────────────────────────────────────
-   One underline, no box. The label sits above it at label scale and stays
-   there — a placeholder that disappears the moment you type is a label you
-   cannot check your own answer against. */
+   A BOX, not an underline. The label sits above it at label scale and
+   stays there — a placeholder that disappears the moment you type is a
+   label you cannot check your own answer against.
+
+   It was a single rule under the type, which is the same hairline this
+   site draws every SEPARATOR with: on a form of stacked questions the
+   reader could not tell which rules were fields and which were the
+   divisions between groups of them. A box has an inside; a rule does
+   not. Square, hairline, no fill, so it is the CTA's outline standing
+   still — the same object at rest, which is what makes a form read as
+   part of this house rather than a widget dropped into it. */
 .field {
   display: block;
 }
@@ -949,10 +957,10 @@
 .field textarea,
 .field select {
   width: 100%;
-  padding: 0.6rem 0;
+  padding: 0.75rem 0.875rem;
   background: none;
-  border: 0;
-  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  border: var(--rule-weight) solid var(--fg-rule);
+  border-radius: 0; /* NO RADII ANYWHERE — see interactions.css */
   color: var(--fg-primary);
   font-family: var(--font-ui);
   font-size: 0.9375rem;
@@ -982,15 +990,18 @@
 .field-dial {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  align-items: end;
-  gap: 0.75rem;
-  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  align-items: stretch;
+  border: var(--rule-weight) solid var(--fg-rule);
   transition: border-color var(--dur-fast) var(--ease-out);
 }
-/* The rule now belongs to the pair, so the two controls give theirs up. */
+/* The box now belongs to the pair, so the two controls give theirs up;
+   what divides them is one rule between, not a border each. */
 .field-dial select,
 .field-dial input {
-  border-bottom: 0;
+  border: 0;
+}
+.field-dial select {
+  border-right: var(--rule-weight) solid var(--fg-rule);
 }
 .field-dial:focus-within {
   border-color: var(--fg-primary);
@@ -1003,8 +1014,8 @@
   font-family: var(--font-mono);
   color: var(--fg-secondary);
   /* The native arrow is the platform's affordance and stays; this only
-     keeps it from crowding the number beside it. */
-  padding-right: 0.25rem;
+     keeps it from crowding the rule beside it. */
+  padding-right: 0.5rem;
 }
 
 .field-error {
@@ -1100,19 +1111,24 @@
 /* ── IN THE BAG ────────────────────────────────────────────────────
    The confirmation sheet, over whatever page did the adding. See
    BagAdded for what is on it and, more to the point, what is not. */
+/* It COMES DOWN THE WHOLE SCREEN, the way the search and the menu do.
+
+   It used to be a card in the middle of the page that rose a fifth of an
+   inch and faded — a tooltip's gesture, and a shape nothing else on this
+   site has. The header's two sheets are the house's way of covering the
+   page: a panel the width of the screen, hung off the top edge, coming
+   down over what you were reading. This is the third thing that covers
+   the page, so it is that same object. See `.sheet` above; the rule is
+   the panel travels and the ground fades.
+
+   The panel is not full HEIGHT: it is as tall as what it has to say,
+   like the menu, so the page underneath is still visible below it and
+   the reader can see they have not been taken anywhere. */
 .bag-added {
   position: fixed;
   inset: 0;
   z-index: 190;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--gutter);
-}
-@media (min-width: 640px) {
-  .bag-added {
-    padding: var(--gutter-wide);
-  }
+  display: block;
 }
 
 /* Ground and dismiss target in one element. A button rather than a div
@@ -1120,21 +1136,25 @@
 .bag-added-scrim {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--ink) 82%, transparent);
-  backdrop-filter: blur(6px);
+  /* The same glass the sheet puts over the page, not a darker ink: two
+     sheets of black would merge into one screen with a seam in it. */
+  background: color-mix(in srgb, var(--paper) 6%, transparent);
+  backdrop-filter: blur(12px);
   border: 0;
   cursor: pointer;
   animation: bag-added-in var(--dur-base) var(--ease-out) both;
 }
 
 .bag-added-panel {
-  position: relative;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.75rem;
-  width: min(46rem, 100%);
   max-height: 100%;
   overflow-y: auto;
+  overscroll-behavior: contain;
   /* Deeper at the top than the other three sides, and only on a phone.
      The panel stacks to one column here, so the photograph is the first
      thing in it and the close glyph would otherwise sit ON the plate —
@@ -1144,10 +1164,14 @@
      from. So the corner gets ink of its own to stand on. A backing plate
      behind the glyph would be the other fix and is the one the house does
      not make — no fills. */
-  padding: 3.5rem 1.75rem 1.75rem;
+  padding: 4.5rem var(--gutter) 2.5rem;
   background: var(--ink);
-  border: var(--rule-weight) solid var(--fg-rule);
-  animation: bag-added-rise var(--dur-slow) var(--ease-out) both;
+  /* One rule, along the edge it stops at: the panel spans the screen, so
+     a box around it would be three rules drawn on the screen's own
+     edges. Same as the sheet, which is bounded by its foot alone. */
+  border-bottom: var(--rule-weight) solid var(--fg-rule);
+  /* The same beat as the sheet: the panel travels, nothing fades. */
+  animation: bag-added-drop var(--dur-base) var(--ease-out) both;
 }
 .bag-added-panel:focus-visible {
   outline: none;
@@ -1161,7 +1185,12 @@
     grid-template-columns: 20rem minmax(0, 1fr);
     align-items: start;
     gap: 2.25rem;
-    padding: 2.25rem;
+    /* The panel is the width of the screen and so is its content: the
+       plate takes its 20rem and everything else runs to the far gutter,
+       so the body, the figures and the ways on all end on ONE right
+       edge. Capping the children at a 46rem measure was what left the
+       actions row stopping short of the numbers above it. */
+    padding: 6rem var(--gutter-wide) 3rem;
   }
 }
 
@@ -1239,11 +1268,28 @@
        lay three controls across rather than the body column's 306px. */
     grid-column: 1 / -1;
     display: flex;
-    /* Right to left: Checkout lands rightmost, Explore more in the middle,
-       the glyph at the far left. */
+    /* Right to left: Checkout lands rightmost, Explore more beside it,
+       the bag glyph beside that. The three sit TOGETHER at the right
+       rather than spread across the sheet — `space-between` put the
+       glyph at the far left, a third of a metre from the two words it
+       belongs with, and a control that far from its group reads as a
+       different control. Grouped, with one gap between all three, they
+       are one set of ways on ending at the edge the reader's eye stops
+       at. */
     flex-direction: row-reverse;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: center;
     gap: 1.5rem;
+  }
+  /* The main action spans only on a phone; in the row it takes its own
+     width like the other two. */
+  .bag-added-actions > .cta-main {
+    grid-column: auto;
+  }
+  /* `justify-self` is a grid word and does nothing in this flex row; the
+     glyph is placed by the order above. */
+  .bag-added-bag {
+    justify-self: auto;
   }
 }
 
@@ -1282,10 +1328,12 @@
     opacity: 0;
   }
 }
-@keyframes bag-added-rise {
+@keyframes bag-added-drop {
   from {
-    opacity: 0;
-    transform: translateY(1.25rem);
+    /* Its own height plus the gutter it is inset by: it starts entirely
+       above the top edge, so what the reader sees is a panel coming down
+       into the page rather than one growing out of the middle of it. */
+    transform: translateY(calc(-100% - var(--gutter)));
   }
 }
 
@@ -1295,6 +1343,7 @@
     animation-duration: 1ms;
   }
 }
+
 
 /* ── THE CHECKOUT ──────────────────────────────────────────────────
    Two columns on a desk: the four folding steps, and the order beside them
@@ -1328,11 +1377,17 @@
    the same treatment the header uses at the other end of the screen.
    It carries the number and the way to the lines, and nothing else. The
    step's own commit button stays in the step, where the answer is. */
+/* NOT fixed, deliberately.
+   It was a band pinned to the foot of the screen, and on a phone that is
+   the strip the browser's own chrome lives in: the URL bar slides over
+   it, the home indicator sits under it, and the one number the reader is
+   checking spent the whole checkout behind somebody else's furniture.
+   The band stays, in flow, under the steps — reached by scrolling like
+   everything else on the page. The foot of a phone's screen belongs to
+   the reader's browser here; the only band that takes it is the bag's,
+   and that one is absent on this route for the same reason. */
 .checkout-foot {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: 70;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1342,8 +1397,7 @@
      frames through the number that says what they cost. */
   background: var(--ink);
   border-top: var(--rule-weight) solid var(--fg-rule);
-  /* Clear of the home indicator on a phone that has one. */
-  padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+  margin-inline: calc(-1 * var(--gutter));
 }
 @media (min-width: 1024px) {
   .checkout-foot {
@@ -1354,9 +1408,95 @@
 .checkout-foot[hidden] {
   display: none;
 }
-/* The page ends above the band rather than behind it. */
+/* ── THE WAY ON, HELD STILL ────────────────────────────────────────
+   Phone only. The open step's commit was the last thing in a body that
+   can run several screens — on 03, under nine fields — so the button
+   moved every time the answer above it did, and on every step it was
+   somewhere else. Here it is the same place always: the foot of the
+   screen, the way back on the left and the way on at the right, where
+   the thumb already is.
+
+   A band rather than a floating pill: square, hairline over opaque ink,
+   the same treatment the header takes at the other end of the screen
+   and the bag band takes on every other page. Opaque because the fields
+   it passes over must not read through the button that commits them. */
+.checkout-bar {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .checkout-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem var(--gutter);
+    /* Clear of the home indicator, and of the browser's own chrome. */
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    background: var(--ink);
+    border-top: var(--rule-weight) solid var(--fg-rule);
+  }
+  /* The commit takes the width it needs; the glyph beside it is a
+     square, so the way on is the object on this band and the way back
+     is a mark. */
+  .checkout-bar .cta-main {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  /* The same height as the button beside it, to the pixel: the two are
+     one row and a glyph box a few pixels short of the CTA reads as a
+     mistake rather than a smaller control. `align-self: stretch` on
+     both is what does it — the row's own height is the CTA's, and the
+     square matches whatever that turns out to be. Width is still fixed,
+     so it stays a square mark and the way on keeps the rest. */
+  .checkout-bar {
+    align-items: stretch;
+  }
+  .checkout-bar-back {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    min-height: 3rem;
+    border: var(--rule-weight) solid var(--fg-rule);
+    color: var(--fg-primary);
+    cursor: pointer;
+    transition:
+      border-color var(--dur-fast) ease,
+      color var(--dur-fast) ease;
+  }
+  .checkout-bar-back:hover,
+  .checkout-bar-back:focus-visible {
+    border-color: var(--fg-accent);
+    color: var(--fg-accent);
+  }
+  .checkout-bar-back:focus-visible {
+    outline: var(--rule-weight) solid var(--fg-accent);
+    outline-offset: var(--focus-offset);
+  }
+  .checkout-bar-back:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  /* The step's own copy of the same button stands down: the bar is
+     holding it. Removed rather than hidden-but-focusable, so there is
+     never a second way on to find or to announce. */
+  .step-commit {
+    display: none;
+  }
+}
+
+/* Room under the last thing on the page for the phone's own chrome —
+   the home indicator, and the URL bar that slides back up over the foot
+   of the viewport. Nothing of ours is down there to be covered, but a
+   button flush against that edge is one a thumb reaches past. */
 .checkout-has-foot {
-  padding-bottom: 5.5rem;
+  /* The bar's own height as well: the page ends above it, not behind. */
+  padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
 }
 @media (min-width: 1024px) {
   .checkout-has-foot {
@@ -1621,6 +1761,37 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+/* ── A GROUP OF ANSWERS, IN ITS OWN BOX ────────────────────────────
+   A step can hold two or three groups — the methods, the card on file
+   and a new one, the field itself — and stacked on bare ink they read
+   as one long list with some gaps in it. A box says which answers
+   belong to which question.
+
+   Its padding is the field's, doubled: the box is the room the fields
+   stand in, and room a control can touch the wall of is not room. The
+   fields inside keep their own box, so what the reader sees is a group
+   with edges and the answers inside it having theirs. */
+.step-group {
+  padding: 1.25rem;
+  border: var(--rule-weight) solid var(--fg-rule);
+}
+@media (min-width: 640px) {
+  .step-group {
+    padding: 1.75rem;
+  }
+}
+/* The methods are the group's whole content, so their own bottom margin
+   would be padding counted twice. */
+.step-group > .pay-methods:only-child,
+.step-group > .pay-methods:last-child {
+  margin-bottom: 0;
+}
+/* Two groups in a row are separated by their own edges; a gap as well
+   would be a third mark doing the same work. */
+.step-group + .step-group {
+  margin-top: 1rem;
 }
 
 /* ── THE ADDRESS CARDS ─────────────────────────────────────────────
@@ -2006,9 +2177,17 @@
 .field-dial .country {
   width: auto;
 }
+/* The code and the number are two halves of ONE field, so they are the
+   same height and carry the same padding as any other input; what
+   divides them is a single rule, the same hairline the box is drawn
+   with. It used to be a 42px button with no left padding beside a 47px
+   input with 14 — two controls that happened to be adjacent, which is
+   exactly what the box exists to stop them looking like. */
 .field-dial .country-button {
-  border-bottom: 0;
-  padding-right: 0.25rem;
+  align-self: stretch;
+  border: 0;
+  border-right: var(--rule-weight) solid var(--fg-rule);
+  padding: 0.75rem 0.875rem;
   font-family: var(--font-mono);
   color: var(--fg-secondary);
 }
@@ -2610,4 +2789,57 @@
   .rail-row {
     grid-auto-columns: 18rem;
   }
+}
+
+
+/* ── THE BAG BAND ──────────────────────────────────────────────────
+   The foot of a phone's screen while the reader is still looking: what
+   is in the bag on the left, the way out on the right. See
+   components/shop/bag-bar for when it is drawn and when it is not.
+
+   A band, not a card: hairline over ink, square, no shadow, the same
+   treatment the header uses at the other end of the screen. Opaque
+   rather than glass, so the photographs it passes over do not read
+   through the number. */
+.bag-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.75rem var(--gutter);
+  /* Clear of the home indicator on a phone that has one. */
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  background: var(--ink);
+  border-top: var(--rule-weight) solid var(--fg-rule);
+}
+/* The page ends above the band rather than behind it. The variable is
+   set only while the band is drawn, so this is zero everywhere else. */
+body {
+  padding-bottom: var(--bag-bar-h, 0px);
+}
+.bag-bar-sum {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  min-width: 0;
+}
+/* The band is a phone behaviour: on a desk the bag is a button in the
+   header that never leaves the screen. */
+@media (min-width: 1024px) {
+  .bag-bar {
+    display: none;
+  }
+}
+
+
+/* The line's own way to keep a frame rather than buy it now. The CTA
+   object at its outline weight, set at the scale of a card's own type
+   rather than a section's action. */
+.line-card-hold {
+  padding: 0.55em 1.1em;
+  font-size: 0.625rem;
 }

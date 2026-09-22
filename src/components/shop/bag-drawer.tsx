@@ -12,7 +12,8 @@ import {
   lineImage,
   lineHref,
 } from "@/lib/cart";
-import { formatPrice, galleryFor, swatchFor } from "@/lib/shop";
+import { formatPrice, swatchFor } from "@/lib/shop";
+import { cardImageFor } from "@/lib/product-cards";
 import { shopPath } from "@/lib/navigation";
 import { CtaLink } from "@/components/cta-link";
 
@@ -146,7 +147,7 @@ export function BagDrawer({
                    from the resolver now: a line can be a frame or a
                    garment, and the row does not need to know which. */
                 const shot = house
-                  ? galleryFor(house, line.colorway)[0]
+                  ? cardImageFor(house, line.colorway)
                   : lineImage(r);
                 const title = lineName(r);
                 const meta = lineMeta(r);

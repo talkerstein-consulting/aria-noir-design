@@ -109,15 +109,17 @@ export function SiteFooter({
           </div>
         </div>
 
-        {/* Legal row, then the mark, then the plaque.
-            Desktop: the plaque and the links share one row above the mark,
-            so ARIA closes the page alone. Phone: the links sit above the
-            mark and the plaque is the last line under it, full width, the
-            maker's stamp at the very foot of the page. */}
+        {/* ── the closing row, then the mark, then the credit ───────
+            Left: the legal pages, which is where a reader looks for
+            them. Right: the copyright, which is the other thing a foot
+            of a page says and the only counterweight that is not a
+            second set of links — the four columns above already carry
+            every route, and repeating three of them here to fill the
+            space would be the footer saying the same thing twice.
+
+            Under both, ARIA closes the page alone, and the maker's
+            credit is the last line, centred beneath the mark. */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[var(--fg-rule)] pt-8 sm:flex-row">
-          <div className="hidden sm:block">
-            <TcgBadge tone={tone} />
-          </div>
           <ul className="flex flex-wrap justify-center gap-6">
             {footer.legalLinks.map((l) => (
               <li key={l.label}>
@@ -127,12 +129,13 @@ export function SiteFooter({
               </li>
             ))}
           </ul>
+          <p className="t-micro text-[var(--fg-quiet)]">{footer.legal}</p>
         </div>
 
         {/* enlarged ARIA mark — draws itself in when it scrolls into view */}
         <FooterMark />
 
-        <div className="mt-8 sm:hidden">
+        <div className="mt-8 flex justify-center">
           <TcgBadge tone={tone} />
         </div>
       </div>

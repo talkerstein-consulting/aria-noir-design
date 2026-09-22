@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { CountrySelect } from "@/components/shop/country-select";
 import { ApplePayMark, CardMark, GooglePayMark } from "@/components/shop/pay-marks";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -130,7 +131,6 @@ export function CheckoutView() {
     session: liveSession,
     loading: liveSessionLoading,
     error: liveSessionError,
-    reload,
   } = useHouseSession();
   /* One place where the pretence is applied, so the rest of the component
      reads exactly as it will once FURNISHING is gone. */
@@ -663,6 +663,21 @@ export function CheckoutView() {
     );
   }
 
+  /* Named rather than written inline, because the step and the phone's
+     bar are two presses of the SAME button and a second copy of the
+     closure is a second thing to keep in step. */
+  const continueAsGuest = () => {
+    setGuestTouched({ name: true, email: true, phone: true });
+    if (guest.name.trim() && isValidEmail(guest.email) && isValidPhone(guest.phone)) {
+      setAsGuest(true);
+      setOpen("where");
+    }
+  };
+  const confirmWhere = () => {
+    setWhereConfirmed(true);
+    setOpen("review");
+  };
+
   const state = (id: StepId, done: boolean, reachable: boolean) =>
     open === id ? "open" : done ? "done" : reachable ? "ready" : "waiting";
 
@@ -683,6 +698,62 @@ export function CheckoutView() {
     { id: "review", index: "04", label: "Order", state: state("review", false, whereComplete && whereConfirmed) },
   ];
   const phaseState = (id: StepId) => phases.find((p) => p.id === id)!.state;
+
+  /* ── the open step's way on and way back, for the phone's bar ──────
+     Below 1024px the page draws one step at a time and its commit sits
+     at the bottom of a body that can be several screens long: on 03 the
+     button was under nine fields, so the way on moved every time the
+     address did. The bar holds it still at the foot of the screen, the
+     same place on every step, with the way back beside it.
+
+     It is the same control, not a copy: the label, the disabled rule and
+     the press all come from here and the step's own button reads them
+     too. Only one of the two is ever drawn (see .step-commit and
+     .checkout-bar in commerce.css), so there is never a second button to
+     find or to announce. */
+  /* Three plain values rather than one object: the step's own button and
+     the bar are the same control, and this is what both read.
+
+     01 has none unless a NEW card is being typed — a wallet or the card
+     on file is answered by the press that chooses it (see the method
+     buttons above), so a way-on button there would be a second press for
+     a question already answered. */
+  const noWay = open === "pay" && method !== "card";
+  const commitLabel = noWay
+    ? ""
+    : open === "pay"
+      ? "Review the order"
+      : open === "who"
+        ? signedIn
+          ? "Submit"
+          : "Continue as guest"
+        : open === "where"
+          ? "Send it here"
+          : busy
+            ? "Placing the order"
+            : "Place the order";
+  const commitOff = noWay
+    ? true
+    : open === "pay"
+      ? !payComplete
+      : open === "who"
+        ? signedIn && !isValidPhone(phone)
+        : open === "where"
+          ? !whereComplete
+          : busy || !quote || !payComplete;
+  const commitPress = () => {
+    if (open === "pay") setOpen(afterPay());
+    else if (open === "who") {
+      if (signedIn) setOpen("where");
+      else continueAsGuest();
+    } else if (open === "where") confirmWhere();
+    else void place();
+  };
+
+  /* The step behind this one. On 01 there is none, and the way back out
+     of a checkout is the bag it was filled from. */
+  const backTo: StepId | null =
+    open === "review" ? "where" : open === "where" ? "who" : open === "who" ? "pay" : null;
 
   return (
     <div className="checkout checkout-has-foot" data-phase={open} data-busy={busy} aria-busy={busy}>
@@ -815,6 +886,12 @@ export function CheckoutView() {
                     drawn disabled rather than removed, so the row does
                     not change shape between devices and the reader is
                     never left wondering what used to be there. */}
+                {/* No heading over it: the step is called Payment
+                    Method and the group under it is the methods, so a
+                    second label saying so is the page reading its own
+                    title back. The radiogroup keeps the name for anyone
+                    who cannot see the step's own head. */}
+                <div className="step-group">
                 <div className="pay-methods" role="radiogroup" aria-label="Payment method">
                   <button
                     type="button"
@@ -851,7 +928,19 @@ export function CheckoutView() {
                     role="radio"
                     aria-checked={method === "card" || method === "saved_card"}
                     className="pay-method"
-                    onClick={() => setMethod(cardOnFile ? "saved_card" : "card")}
+                    /* The choice IS the answer where nothing is left to
+                       type: the card already on file needs no field, so
+                       the press that picks it moves the page on rather
+                       than waiting to be told again. A new card has a
+                       field about to appear, so that one stays. */
+                    onClick={() => {
+                      if (cardOnFile) {
+                        setMethod("saved_card");
+                        setOpen(afterPay());
+                      } else {
+                        setMethod("card");
+                      }
+                    }}
                   >
                     <CardMark />
                     <span className="t-eyebrow">
@@ -859,18 +948,22 @@ export function CheckoutView() {
                     </span>
                   </button>
                 </div>
+                </div>
 
                 {/* The card on file and a new one are the same card, so
                     the choice between them belongs under it rather than
                     beside the wallets. */}
                 {cardOnFile && (method === "saved_card" || method === "card") ? (
-                  <div className="pay-options">
+                  <div className="pay-options step-group">
                     <label className="check">
                       <input
                         type="radio"
                         name="method"
                         checked={method === "saved_card"}
-                        onChange={() => setMethod("saved_card")}
+                        onChange={() => {
+                          setMethod("saved_card");
+                          setOpen(afterPay());
+                        }}
                       />
                       <span>
                         {(cardOnFile.brand || "Card").toUpperCase()} ending {cardOnFile.last4}
@@ -898,7 +991,7 @@ export function CheckoutView() {
                     card field that mounted behind a closed step would
                     answer "ready" to a question nobody had reached. */}
                 {(open === "pay" || open === "review") && method === "card" ? (
-                  <div className="mt-8 max-w-md">
+                  <div className="step-group mt-8 max-w-md">
                     <CardField
                       config={config}
                       cardRef={card}
@@ -915,9 +1008,22 @@ export function CheckoutView() {
                   <p className="field-error mt-8" role="alert">{error}</p>
                 ) : null}
 
-                <CtaButton className="mt-10" disabled={!payComplete} onClick={() => setOpen(afterPay())}>
-                  Review the order
-                </CtaButton>
+                {/* No way-on button where the choice IS the answer: a
+                    wallet or the card already on file needs nothing
+                    typed, so choosing one moves the page on by itself
+                    (see the effect above) and a button underneath would
+                    be a second press for a question already answered.
+                    A NEW card is the one case with something left to
+                    fill in, so that is the one case with a commit. */}
+                {method === "card" ? (
+                  <CtaButton
+                    className="step-commit mt-10"
+                    disabled={!payComplete}
+                    onClick={() => setOpen(afterPay())}
+                  >
+                    Review the order
+                  </CtaButton>
+                ) : null}
               </>
             ) : (
               <p className="t-caption" role="status">Loading secure payment</p>
@@ -987,20 +1093,19 @@ export function CheckoutView() {
                   {phoneError(phone) ? <em className="field-error" role="alert">{phoneError(phone)}</em> : null}
                 </label>
                 <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-                  <CtaButton disabled={!isValidPhone(phone)} onClick={() => setOpen("where")}>
+                  <CtaButton
+                    className="step-commit"
+                    disabled={!isValidPhone(phone)}
+                    onClick={() => setOpen("where")}
+                  >
                     Submit
                   </CtaButton>
-                  <button
-                    type="button"
-                    className="link-quiet"
-                    onClick={async () => {
-                      await house.logout().catch(() => {});
-                      announceSession();
-                      void reload();
-                    }}
-                  >
-                    Sign out
-                  </button>
+                  {/* The sign-out that used to sit here is gone: this
+                      is a checkout, and a control that empties the
+                      reader's own session mid-order is a way to lose
+                      the address and the card that were the reason to
+                      be signed in. The desk is where an account is
+                      left. */}
                 </div>
               </>
             ) : (
@@ -1065,15 +1170,7 @@ export function CheckoutView() {
                   </label>
                 </div>
                 <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
-                  <CtaButton
-                    onClick={() => {
-                      setGuestTouched({ name: true, email: true, phone: true });
-                      if (guest.name.trim() && isValidEmail(guest.email) && isValidPhone(guest.phone)) {
-                        setAsGuest(true);
-                        setOpen("where");
-                      }
-                    }}
-                  >
+                  <CtaButton className="step-commit" onClick={continueAsGuest}>
                     Continue as guest
                   </CtaButton>
                   <Link href="/access?next=/checkout" className="link-quiet">
@@ -1145,12 +1242,9 @@ export function CheckoutView() {
                 until the last field was right, so the way on to step 03
                 was a button nobody had seen yet. */}
             <CtaButton
-              className="mt-10"
+              className="step-commit mt-10"
               disabled={!whereComplete}
-              onClick={() => {
-                setWhereConfirmed(true);
-                setOpen("review");
-              }}
+              onClick={confirmWhere}
             >
               Send it here
             </CtaButton>
@@ -1235,7 +1329,7 @@ export function CheckoutView() {
                 printed beneath it, which put the press above the
                 sentence it agreed to. */}
             <CtaButton
-              className="mt-10"
+              className="step-commit mt-10"
               disabled={busy || !quote || !payComplete}
               onClick={() => void place()}
             >
@@ -1244,6 +1338,38 @@ export function CheckoutView() {
             </div>
           </div>
         </section>
+      </div>
+
+      {/* ── the way on, held still ──────────────────────────────────
+          Phone only. Back on the left, the step's own commit on the
+          right, in the same place on all four steps. See `commit`. */}
+      <div className="checkout-bar">
+        {/* The way back is a glyph: it is the same gesture on all four
+            steps and the word for it was taking a third of a phone's
+            width off the button that matters. Named for anyone who
+            cannot see the glyph, which is what `aria-label` is for. */}
+        {backTo ? (
+          <button
+            type="button"
+            className="checkout-bar-back"
+            disabled={busy}
+            aria-label="Back a step"
+            onClick={() => setOpen(backTo)}
+          >
+            <ChevronLeft size={18} strokeWidth={1.5} aria-hidden />
+          </button>
+        ) : (
+          <Link href="/bag" className="checkout-bar-back" aria-label="Back to the bag">
+            <ShoppingBag size={18} strokeWidth={1.5} aria-hidden />
+          </Link>
+        )}
+        {/* Absent on 01 unless a new card is being typed: there the
+            choice moves the page on by itself. */}
+        {commitLabel ? (
+          <CtaButton disabled={commitOff} onClick={commitPress}>
+            {commitLabel}
+          </CtaButton>
+        ) : null}
       </div>
 
       {/* The number, pinned, for the widths where the column beside the

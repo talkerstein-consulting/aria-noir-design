@@ -2,9 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useHeld } from "@/lib/held";
+import { CtaButton } from "@/components/cta-link";
 import { shopPath } from "@/lib/navigation";
 import type { House } from "@/lib/navigation";
-import { formatPrice, galleryFor, swatchFor } from "@/lib/shop";
+import { formatPrice, swatchFor } from "@/lib/shop";
+import { cardImageFor } from "@/lib/product-cards";
 
 /**
  * A bag line as a product card — the same object the held list and the
@@ -20,6 +23,7 @@ export function LineCard({
   qty,
   cents,
   linked = true,
+  holdable = false,
   name: nameIn,
   image: imageIn,
   meta,
@@ -32,7 +36,7 @@ export function LineCard({
   cents?: number;
   /* ---- The four overrides, and why they exist ----
      A bag line is no longer always a frame: El Patrón sells here too, and
-     a garment has no `House`, no `galleryFor` and a colourway that carries
+     a garment has no `House`, no card art and a colourway that carries
      a size beside it. Rather than branch on eyewear-or-garment inside this
      component, the caller — which has the resolved line and `lineName`,
      `lineMeta`, `lineImage`, `lineHref` to read it with — hands over what
@@ -45,8 +49,26 @@ export function LineCard({
   /** Off on the confirmation, where the order is done and the card is a
    *  record rather than a way back to the shop. */
   linked?: boolean;
+  /**
+   * Offer to hold this one instead, where it is not held already.
+   *
+   * The checkout's own list: a reader looking at four lines and having
+   * second thoughts about one of them had nothing to do but delete it,
+   * which loses the frame and the colourway they picked. Held, it is
+   * still theirs to come back to. Drawn only when it is NOT already
+   * held — a button that says "save for later" over something already
+   * saved is a question with no answer.
+   */
+  holdable?: boolean;
 }) {
-  const image = imageIn ?? (house ? galleryFor(house, colorway)[0] : undefined);
+  const { holds, toggle, ready } = useHeld();
+  const alreadyHeld = ready && holds(slug, colorway);
+  /* The SAME photograph the shop's grid draws — the square card render,
+     via the one resolver that knows the chain. This used to reach for
+     `galleryFor(...)[0]`, a 16:9 master, and the square shot box then
+     cropped the temples off both sides: the shop showed one picture of a
+     frame and the bag showed a different, worse one. See cardImageFor. */
+  const image = imageIn ?? (house ? cardImageFor(house, colorway) : undefined);
   const name = nameIn ?? house?.name ?? slug;
   const sub = meta ?? colorway;
   const to = href ?? (house ? `${shopPath(house)}?colourway=${encodeURIComponent(colorway)}` : undefined);
@@ -91,6 +113,18 @@ export function LineCard({
           <span className="text-[var(--fg-quiet)]"> · {formatPrice(cents)} each</span>
         ) : null}
       </p>
+      {/* Outlined, not filled: the filled CTA on this screen is the one
+          that places the order, and a second fill beside every line
+          would be four of them arguing with it. */}
+      {holdable && !alreadyHeld ? (
+        <CtaButton
+          kind="secondary"
+          className="line-card-hold mt-3"
+          onClick={() => toggle(slug, colorway)}
+        >
+          Save for later
+        </CtaButton>
+      ) : null}
     </article>
   );
 }

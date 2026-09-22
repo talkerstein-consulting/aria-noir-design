@@ -58,8 +58,8 @@
   position: fixed;
   left: 50%;
   top: 50%;
-  width: min(18vmin, 170px);
-  height: min(18vmin, 170px);
+  width: min(34vmin, 330px);
+  height: min(34vmin, 330px);
   transform: translate(-50%, -50%) scale(0.92);
   z-index: 60;
   pointer-events: none;
@@ -83,9 +83,9 @@
 
 
 @media (max-width: 640px) {
-  /* The last line of the page, under the ARIA mark, as wide as the screen
-     allows: let out past the gutters so the lettering is the width of
-     the mark above it rather than a stamp in a corner. */
+  /* The last line of the page, under the ARIA mark, as wide as the
+     screen allows: let out past the gutters so the lettering is the
+     width of the mark above it rather than a stamp in a corner. */
   .tcg-footer { width: calc(100% + 2rem); margin-inline: -1rem; }
   .tcg-plaque { --w: 100%; --pad-x: 10px; }
 }

@@ -234,7 +234,6 @@ export const newsletter = {
     "One letter when a house is finished, a run opens, or a date is set for the bench. Nothing else, and never often.",
   label: "Email address",
   cta: "Subscribe",
-  note: "A few times a year. Leave whenever you like.",
 };
 
 /**

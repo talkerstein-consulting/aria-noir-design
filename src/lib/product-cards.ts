@@ -286,6 +286,30 @@ export function apparelCard(line: ApparelCollection): ProductCardProps {
  * colour should move. With no `hoverImage`, `ProductCard` zooms instead,
  * which is the same gesture with the subject held still.
  */
+/**
+ * The square photograph that stands for one colourway, wherever a card
+ * of it is drawn.
+ *
+ * The colourway wall had this chain inline and every other list —
+ * the bag, the checkout's summary, the held list — reached past it for
+ * `galleryFor(...)[0]`, which is a 16:9 master. Square-cropped, that
+ * takes the temples off both sides, and the temples are how a frame is
+ * told apart from another frame. So the chain is named once here and
+ * read everywhere:
+ *
+ *   1. the sill render cut square, where the run was shot that way;
+ *   2. the colourway's own PORTRAIT plate, where it was not (ARCA I);
+ *   3. the gallery's first frame, which is the last resort and the only
+ *      one that can be cropped.
+ */
+export function cardImageFor(house: House, colorway: string) {
+  return (
+    COLOURWAY_CARD_ART[house.slug]?.[colourwayKey(colorway)]?.image ??
+    house.colorwayCardPlates?.[colorway] ??
+    galleryFor(house, colorway)[0]
+  );
+}
+
 export function colourwayCard(
   house: House,
   colorway: string,
@@ -315,10 +339,7 @@ export function colourwayCard(
        filtered to houses that have one (see hasColourwayCards). But a real
        photograph of the right frame in the right acetate beats a gradient
        standing in for it on a page whose job is to show what is sold. */
-    image:
-      art?.image ??
-      house.colorwayCardPlates?.[colorway] ??
-      galleryFor(house, colorway)[0],
+    image: cardImageFor(house, colorway),
     swatch: swatchFor(colorway),
     /* The HOUSE is the product; the colourway is which one of it. The
        price reads across from the name, so the name has to be the thing

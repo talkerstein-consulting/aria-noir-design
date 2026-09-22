@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
+import { BagBar } from "@/components/shop/bag-bar";
 import { RouteWipe } from "@/components/route-wipe";
 import { MorphNav } from "@/components/morph-nav";
 import "./globals.css";
@@ -97,6 +98,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             components/morph-nav. Draws nothing. */}
         <MorphNav />
         {children}
+        {/* The bag at the foot of a phone's screen, while the reader
+            keeps looking. Drawn only where it is a way on — see BagBar. */}
+        <BagBar />
         {/* Last in the body, so it is over the page without needing to
             out-rank anything on it. See RouteWipe. */}
         <RouteWipe />

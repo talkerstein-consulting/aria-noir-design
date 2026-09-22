@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ChevronRight } from "lucide-react";
 import ImageTrail from "./ImageTrail";
 import { finale, newsletter } from "@/lib/content";
 import { RevealText } from "@/components/reveal";
@@ -118,30 +117,11 @@ export function FinaleSection() {
           {newsletter.body}
         </p>
 
-        <form className="field-row mt-4 w-full max-w-md">
-          <label htmlFor="finale-email" className="sr-only">
-            {newsletter.label}
-          </label>
-          <input
-            id="finale-email"
-            name="email"
-            type="email"
-            required
-            placeholder={newsletter.label}
-            className="field"
-          />
-          <button
-            type="submit"
-            aria-label={newsletter.cta}
-            className="field-submit"
-          >
-            <ChevronRight size={18} strokeWidth={1.5} aria-hidden />
-          </button>
-        </form>
-
-        <p className="font-ui text-xs tracking-[0.02em] text-ink/55">
-          {newsletter.note}
-        </p>
+        {/* The intake that used to sit here is gone: the footer under
+            this section carries the same field, so the last screen of
+            the home page was asking for an address twice in a row. The
+            words stay — they are the invitation; the footer is where it
+            is answered. */}
       </div>
 
     </section>

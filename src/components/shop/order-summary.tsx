@@ -97,6 +97,9 @@ export function OrderSummary({
             meta={lineMeta(r)}
             image={lineImage(r)}
             href={lineHref(r)}
+            /* The one list where second thoughts are likely, and where
+               deleting the line is the only other answer. */
+            holdable
           />
         ))}
       </div>

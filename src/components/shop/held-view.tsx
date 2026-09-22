@@ -5,7 +5,8 @@ import { CtaLink, CtaButton } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
 import { useHeld } from "@/lib/held";
 import { lineHref, lineImage, lineName, useBag } from "@/lib/cart";
-import { formatPrice, galleryFor, shopHref, swatchFor } from "@/lib/shop";
+import { formatPrice, shopHref, swatchFor } from "@/lib/shop";
+import { cardImageFor } from "@/lib/product-cards";
 import { shopPath } from "@/lib/navigation";
 
 /**
@@ -101,9 +102,8 @@ export function HeldView() {
       <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
         {resolved.map((r) => {
           const { line, house, entry } = r;
-          const image = house
-            ? galleryFor(house, line.colorway)[0]
-            : lineImage(r);
+          /* The shop grid's own square render — see cardImageFor. */
+          const image = house ? cardImageFor(house, line.colorway) : lineImage(r);
           const gone = !entry || !entry.available;
           return (
             /* The SAME card the rest of the site is built from.
