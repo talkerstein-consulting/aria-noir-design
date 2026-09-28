@@ -1614,11 +1614,6 @@
    floating tile, while the controls inside keep the offer's own width. */
 .buy-row[data-pinned] {
   z-index: 40;
-  /* Above the bag band where there is one — the band writes its own
-     height to this variable and clears it again, so on every other page
-     this resolves to zero and the row sits on the edge as before. See
-     components/shop/bag-bar. */
-  margin-bottom: var(--bag-bar-h, 0px);
   padding-block: 0.85rem;
   transition: transform var(--dur-base) var(--ease-out);
 }
@@ -1732,13 +1727,6 @@
   .buy-row .cta-secondary {
     width: auto;
   }
-  /* The bag band and the checkout's bar are rows too: the way out takes
-     the room the count or the way back leaves, not a line of its own. */
-  .bag-bar .cta-main,
-  .checkout-bar .cta-main,
-  .checkout-bar .cta-secondary {
-    width: auto;
-  }
 }
 
 /* ── The home page's runway ──
@@ -1760,6 +1748,18 @@
    against a scene ending at 3.8, and the difference was black with nothing
    in it — the seam read as the page having stopped rather than as one
    section handing over to the next. */
+/* The opening rectangle's resting state, for the first paint only — the
+   scroll handler in experience.tsx writes inline styles over these from
+   its first run. Kept in step with START_W / START_H there. */
+.home-open-box {
+  clip-path: inset(21% 29% round 24px);
+}
+@media (max-width: 1023px) {
+  .home-open-box {
+    clip-path: inset(26% 13% round 24px);
+  }
+}
+
 .home-runway {
   height: 410vh;
 }

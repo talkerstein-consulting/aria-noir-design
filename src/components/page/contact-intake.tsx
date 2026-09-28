@@ -36,7 +36,7 @@ export function ContactIntake() {
   const [subject, setSubject] = useState<number | null>(null);
   const [who, setWho] = useState({ name: "", email: "", phone: "" });
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<false | "opening" | "fallback">(false);
 
   const last = intake.steps.length - 1;
   const chosen = subject == null ? null : intake.subjects[subject];
@@ -60,7 +60,13 @@ export function ContactIntake() {
     window.location.href = `mailto:${chosen.to}?subject=${encodeURIComponent(
       `${chosen.label}: ${who.name}`,
     )}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    setSent("opening");
+    /* A mailto that found a mail app takes focus away from the page. If
+       the page still has it a moment later, nothing opened — say where to
+       write instead of claiming the message is on its way. */
+    window.setTimeout(() => {
+      if (document.hasFocus()) setSent("fallback");
+    }, 1200);
   };
 
   /* Each step is its own <form>, so the browser's own `required` check
@@ -169,7 +175,19 @@ export function ContactIntake() {
             </div>
           </div>
           <p className="t-micro" role="status">
-            {sent ? intake.sent : form.note}
+            {sent === "fallback" && chosen ? (
+              <>
+                {intake.fallback}{" "}
+                <a href={`mailto:${chosen.to}`} className="link-quiet link-quiet--micro">
+                  {chosen.to}
+                </a>
+                .
+              </>
+            ) : sent ? (
+              intake.sent
+            ) : (
+              form.note
+            )}
           </p>
           <Nav
             step={step}

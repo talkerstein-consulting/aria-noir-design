@@ -69,6 +69,12 @@ the service side are needed before an Aria Noir order goes through it:
       address, estimate }`. The service's `fulfillmentSchema` knows
       `pickup` and `delivery`, and `delivery` runs a Toronto postal-prefix
       check that would refuse every address the house ships to.
+- [ ] **`POST /auth/apple`.** Body `{ idToken, name?, tenantSlug }`.
+  Verify `idToken` against Apple's JWKS (audience = the Services ID),
+  then find or create the user by `email` exactly as `/auth/google`
+  does, using `name` only on first creation (Apple sends it once, never
+  in the token). Same `{ user }` response and session cookie. The mock
+  implements it.
 - [ ] **Line resolution by variant.** Items carry `name` (`House —
       Colourway`), `variantId`, `slug`, `colorway`, `unitCents`. The
       service resolves by `name` against the Square catalogue; the

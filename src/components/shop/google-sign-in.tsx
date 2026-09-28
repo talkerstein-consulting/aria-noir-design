@@ -125,14 +125,7 @@ export function GoogleSignIn({
 
   if (!clientId) return null;
 
-  return (
-    <div className="access-google">
-      {/* The rule and the word, so the two doors read as alternatives
-          rather than as a stack of buttons. */}
-      <p className="access-google__or" aria-hidden>
-        or
-      </p>
-      <div ref={box} id={id} data-ready={ready} />
-    </div>
-  );
+  /* The "or" rule above it is drawn by the access form, once, for every
+     provider together. */
+  return <div ref={box} id={id} data-ready={ready} />;
 }

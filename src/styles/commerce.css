@@ -62,8 +62,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.75rem; /* 44px: the touch minimum */
+  height: 2.75rem;
   color: currentColor;
   opacity: 0.86;
   transition: opacity var(--dur-fast) var(--ease-out);
@@ -708,6 +708,14 @@
   margin-top: 2rem;
   text-align: inherit;
 }
+/* On a phone the paragraphs run several screens, so the offer comes
+   first, straight under the heading, instead of after all of them. */
+@media (max-width: 899px) {
+  .story-buy {
+    order: -1;
+    margin-top: 0;
+  }
+}
 
 /* ── THE TURNTABLE, AS A PLATE ──────────────────────────────────────
    One item in the buy page's column of photographs — see
@@ -802,8 +810,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  min-height: 2rem;
+  min-width: 2.75rem; /* 44px: the touch minimum */
+  min-height: 2.75rem;
   gap: 0;
 }
 
@@ -1437,95 +1445,6 @@
 .checkout-foot[hidden] {
   display: none;
 }
-/* ── THE WAY ON, HELD STILL ────────────────────────────────────────
-   Phone only. The open step's commit was the last thing in a body that
-   can run several screens — on 03, under nine fields — so the button
-   moved every time the answer above it did, and on every step it was
-   somewhere else. Here it is the same place always: the foot of the
-   screen, the way back on the left and the way on at the right, where
-   the thumb already is.
-
-   A band rather than a floating pill: square, hairline over ink, the
-   same treatment the header takes at the other end of the screen and
-   the bag band takes on every other page.
-
-   The fill is ink at 80%, behind a 12px blur. It used to be a flat
-   solid, which read as a strip of furniture laid over the form; at 80%
-   the page carries on underneath and the blur is what keeps the fields
-   from competing with the button that commits them. `-webkit-` first
-   for Safari, which is where this band is most often seen. */
-.checkout-bar {
-  display: none;
-}
-@media (max-width: 899px) {
-  .checkout-bar {
-    position: fixed;
-    inset-inline: 0;
-    bottom: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.75rem var(--gutter);
-    /* Clear of the home indicator, and of the browser's own chrome. */
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-    background: color-mix(in srgb, var(--ink) 80%, transparent);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
-    backdrop-filter: blur(12px) saturate(120%);
-    border-top: var(--rule-weight) solid var(--fg-rule);
-  }
-  /* The commit takes the width it needs; the glyph beside it is a
-     square, so the way on is the object on this band and the way back
-     is a mark. */
-  .checkout-bar .cta-main {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  /* The same height as the button beside it, to the pixel: the two are
-     one row and a glyph box a few pixels short of the CTA reads as a
-     mistake rather than a smaller control. `align-self: stretch` on
-     both is what does it — the row's own height is the CTA's, and the
-     square matches whatever that turns out to be. Width is still fixed,
-     so it stays a square mark and the way on keeps the rest. */
-  .checkout-bar {
-    align-items: stretch;
-  }
-  .checkout-bar-back {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    min-height: 3rem;
-    border: var(--rule-weight) solid var(--fg-rule);
-    color: var(--fg-primary);
-    cursor: pointer;
-    transition:
-      border-color var(--dur-fast) ease,
-      color var(--dur-fast) ease;
-  }
-  .checkout-bar-back:hover,
-  .checkout-bar-back:focus-visible {
-    border-color: var(--fg-accent);
-    color: var(--fg-accent);
-  }
-  .checkout-bar-back:focus-visible {
-    outline: var(--rule-weight) solid var(--fg-accent);
-    outline-offset: var(--focus-offset);
-  }
-  .checkout-bar-back:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  /* The step's own copy of the same button stands down: the bar is
-     holding it. Removed rather than hidden-but-focusable, so there is
-     never a second way on to find or to announce. */
-  .step-commit {
-    display: none;
-  }
-}
-
 /* Room under the last thing on the page for the phone's own chrome —
    the home indicator, and the URL bar that slides back up over the foot
    of the viewport. Nothing of ours is down there to be covered, but a
@@ -2983,66 +2902,6 @@
 }
 
 
-/* ── THE BAG BAND ──────────────────────────────────────────────────
-   The foot of a phone's screen while the reader is still looking: what
-   is in the bag on the left, the way out on the right. See
-   components/shop/bag-bar for when it is drawn and when it is not.
-
-   A band, not a card: hairline over ink, square, no shadow, the same
-   treatment the header uses at the other end of the screen. Opaque
-   rather than glass, so the photographs it passes over do not read
-   through the number. */
-.bag-bar {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: 45;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0.75rem var(--gutter);
-  /* Clear of the home indicator on a phone that has one. */
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-  /* Ink at 80% behind a blur, not a flat solid: the page carries on
-     underneath the band instead of being cut off by it, and the blur is
-     what stops the type passing under it from competing with the way
-     out. `-webkit-` first for Safari. */
-  background: color-mix(in srgb, var(--ink) 80%, transparent);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  backdrop-filter: blur(12px) saturate(120%);
-  border-top: var(--rule-weight) solid var(--fg-rule);
-}
-/* The page ends above the band rather than behind it. The variable is
-   set only while the band is drawn, so this is zero everywhere else. */
-body {
-  padding-bottom: var(--bag-bar-h, 0px);
-}
-.bag-bar-sum {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  min-width: 0;
-}
-/* On a desk it keeps the same two parts and takes the page's own gutter:
-   what is in the bag on the left, on one line, and the way out at the
-   right at the CTA's own width — a button stretched across a band is a
-   toolbar, not an offer. */
-@media (min-width: 640px) {
-  .bag-bar {
-    padding-inline: var(--gutter-wide);
-  }
-}
-.bag-bar-sum {
-  /* One line: the count is a short phrase and wrapping it would make the
-     band two rows tall over the page it is floating on. */
-  white-space: nowrap;
-}
-.bag-bar .cta-main {
-  flex: none;
-}
-
-
 /* The line's own way to keep a frame rather than buy it now. The CTA
    object at its outline weight, set at the scale of a card's own type
    rather than a section's action. */
@@ -3078,6 +2937,44 @@ body {
 }
 /* Google renders its own iframe and sizes it in px. Left-aligned with
    the fields above rather than centred, so the column has one edge. */
+/* The providers, one per row, at the width Google draws its own button. */
+.access-social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 320px;
+}
+/* Apple's button (and the dev stand-ins), matched to Google's large pill:
+   40px tall, 320 wide, black with a hairline outline on the dark ground. */
+.access-apple {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--paper) 45%, transparent);
+  background: #000;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) ease;
+}
+.access-apple:hover:not(:disabled),
+.access-apple:focus-visible {
+  border-color: var(--paper);
+}
+.access-apple:focus-visible {
+  outline: var(--rule-weight) solid var(--fg-accent);
+  outline-offset: var(--focus-offset);
+}
+.access-apple:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .access-google [data-ready] {
   max-width: 100%;
   overflow: hidden;

@@ -352,7 +352,9 @@ export function ModelStage({
       /* Portrait puts the name plate under the frame rather than beside
          it, so the frame lifts out of its way. Nothing to dodge in
          landscape, where the type sits well below the object. */
-      camera.position.y = camera.aspect < 0.85 ? 0.18 : 0;
+      /* Negative: the camera drops, so the frame sits high in a phone's
+         screen with the name and its button right under it. */
+      camera.position.y = camera.aspect < 0.85 ? -0.32 : 0;
       camera.lookAt(0, camera.position.y, 0);
     };
 
@@ -815,7 +817,7 @@ export function ModelStage({
         </div>
 
         {/* ---- the name ---- */}
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-6 pb-[clamp(3.5rem,12vh,9.5rem)] sm:px-10">
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-end px-6 pb-[24vh] sm:px-10 sm:pb-[clamp(3.5rem,12vh,9.5rem)]">
           <div
             ref={plate}
             data-idx="0"

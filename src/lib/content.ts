@@ -219,24 +219,6 @@ export const finale = {
 };
 
 /**
- * The closing block, which used to be a commission pitch — "Commission a
- * frame that outlives you", a private fitting, eleven days on the bench.
- *
- * It is a newsletter intake now. The commission argument is made properly
- * on /contact, where there is a form that can actually take it; repeating
- * the offer at the foot of the home page asked for a decision from a reader
- * who has just finished looking rather than started. An address is the
- * smaller, likelier thing to ask for at the end of a page.
- */
-export const newsletter = {
-  heading: "Word from the bench.",
-  body:
-    "One letter when a house is finished, a run opens, or a date is set for the bench. Nothing else, and never often.",
-  label: "Email address",
-  cta: "Subscribe",
-};
-
-/**
  * The private-access module: one frame in the dark, under a lamp that
  * crosses it as the reader scrolls.
  *
@@ -290,10 +272,6 @@ export const footer = {
   /* The link columns used to live here as bare strings, all rendered with
      `href="#"`. They are routes, not copy, so they moved to lib/navigation
      as `sitemap` — where a link has somewhere to go. */
-  /* Not "Word from the bench" — that is the finale's heading, one screen
-     above this, and the page was saying the same four words twice in its
-     last two blocks. This is the label on a field, so it names the thing
-     rather than announcing it. */
   newsletterLabel: "The house letter",
   newsletterPlaceholder: "Email address",
   /* One, because one is what the house has. Pinterest and LinkedIn were

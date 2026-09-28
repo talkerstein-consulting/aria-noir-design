@@ -32,6 +32,9 @@ function wantsSmoothScroll() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return false;
   }
+  /* A phone-width window gets native scroll too, wheel or not: on mobile
+     the page should move exactly as far as the finger does. */
+  if (window.matchMedia("(max-width: 899px)").matches) return false;
   return !window.matchMedia("(pointer: coarse)").matches;
 }
 

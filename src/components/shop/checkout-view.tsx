@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ShoppingBag } from "lucide-react";
 import { CountrySelect } from "@/components/shop/country-select";
 import { ApplePayMark, CardMark, GooglePayMark } from "@/components/shop/pay-marks";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -124,6 +123,8 @@ const FURNISHING_SESSION: Session = {
   houseAccount: null,
 };
 
+const GUEST_KEY = "aria-noir:checkout-guest";
+
 export function CheckoutView() {
   const router = useRouter();
   const { resolved, ready: bagReady, clear } = useBag();
@@ -187,7 +188,22 @@ export function CheckoutView() {
 
   /* ── 01 ── */
   const signedIn = Boolean(session?.user);
-  const [guest, setGuest] = useState({ name: "", email: "", phone: "" });
+  /* Kept for the tab's life, so a reload or a trip back to the bag does
+     not hand the reader three empty fields they already filled. Session,
+     not local: a guest's details should not outlive the visit. */
+  const [guest, setGuest] = useState<{ name: string; email: string; phone: string }>(() => {
+    const empty = { name: "", email: "", phone: "" };
+    try {
+      return { ...empty, ...JSON.parse(window.sessionStorage.getItem(GUEST_KEY) || "{}") };
+    } catch {
+      return empty;
+    }
+  });
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(GUEST_KEY, JSON.stringify(guest));
+    } catch {}
+  }, [guest]);
   const [guestTouched, setGuestTouched] = useState<Partial<Record<"name" | "email" | "phone", boolean>>>({});
   /* The phone on file is the answer until the reader types another; the
      draft is null, not "", until then, so the profile's number is not
@@ -630,6 +646,9 @@ export function CheckoutView() {
         /* Storage refused; the confirmation page has a fallback line. */
       }
       clear();
+      try {
+        window.sessionStorage.removeItem(GUEST_KEY);
+      } catch {}
       router.push("/checkout/confirmed");
     } catch (cause) {
       /* The payment step is where the failure is answered, with every
@@ -741,62 +760,6 @@ export function CheckoutView() {
     { id: "review", index: "04", label: "Order", state: state("review", false, whereComplete && whereConfirmed) },
   ];
   const phaseState = (id: StepId) => phases.find((p) => p.id === id)!.state;
-
-  /* ── the open step's way on and way back, for the phone's bar ──────
-     Below 1024px the page draws one step at a time and its commit sits
-     at the bottom of a body that can be several screens long: on 03 the
-     button was under nine fields, so the way on moved every time the
-     address did. The bar holds it still at the foot of the screen, the
-     same place on every step, with the way back beside it.
-
-     It is the same control, not a copy: the label, the disabled rule and
-     the press all come from here and the step's own button reads them
-     too. Only one of the two is ever drawn (see .step-commit and
-     .checkout-bar in commerce.css), so there is never a second button to
-     find or to announce. */
-  /* Three plain values rather than one object: the step's own button and
-     the bar are the same control, and this is what both read.
-
-     01 has none unless a NEW card is being typed — a wallet or the card
-     on file is answered by the press that chooses it (see the method
-     buttons above), so a way-on button there would be a second press for
-     a question already answered. */
-  const noWay = open === "pay" && method !== "card";
-  const commitLabel = noWay
-    ? ""
-    : open === "pay"
-      ? "Review the order"
-      : open === "who"
-        ? signedIn
-          ? "Submit"
-          : "Continue as guest"
-        : open === "where"
-          ? "Send it here"
-          : busy
-            ? "Placing the order"
-            : "Place the order";
-  const commitOff = noWay
-    ? true
-    : open === "pay"
-      ? !payComplete
-      : open === "who"
-        ? signedIn && !isValidPhone(phone)
-        : open === "where"
-          ? !whereComplete
-          : busy || !quote || !payComplete;
-  const commitPress = () => {
-    if (open === "pay") setOpen(afterPay());
-    else if (open === "who") {
-      if (signedIn) setOpen("where");
-      else continueAsGuest();
-    } else if (open === "where") confirmWhere();
-    else void place();
-  };
-
-  /* The step behind this one. On 01 there is none, and the way back out
-     of a checkout is the bag it was filled from. */
-  const backTo: StepId | null =
-    open === "review" ? "where" : open === "where" ? "who" : open === "who" ? "pay" : null;
 
   return (
     <div className="checkout checkout-has-foot" data-phase={open} data-busy={busy} aria-busy={busy}>
@@ -991,6 +954,13 @@ export function CheckoutView() {
                     </span>
                   </button>
                 </div>
+                {/* The wallets wait on the total, and a greyed button with
+                    no reason reads as broken. Say why, until it lands. */}
+                {!quote && !quoteError ? (
+                  <p className="t-caption mt-4" role="status">
+                    Calculating your total — Apple Pay and Google Pay open once it is in.
+                  </p>
+                ) : null}
                 </div>
 
                 {/* The card on file and a new one are the same card, so
@@ -1351,7 +1321,11 @@ export function CheckoutView() {
 
             <div className="hairline mt-10 pt-8">
               <p className="t-eyebrow">Total</p>
-              <p className="t-display-xs mt-2 tabular-nums">
+              <p
+                className="t-display-xs mt-2 tabular-nums"
+                aria-live="polite"
+                aria-busy={!quote && !quoteError}
+              >
                 {quote ? formatPrice(quote.order.total) : quoteError ? "—" : "…"}
               </p>
               <p className="t-caption mt-2">
@@ -1381,38 +1355,6 @@ export function CheckoutView() {
             </div>
           </div>
         </section>
-      </div>
-
-      {/* ── the way on, held still ──────────────────────────────────
-          Phone only. Back on the left, the step's own commit on the
-          right, in the same place on all four steps. See `commit`. */}
-      <div className="checkout-bar">
-        {/* The way back is a glyph: it is the same gesture on all four
-            steps and the word for it was taking a third of a phone's
-            width off the button that matters. Named for anyone who
-            cannot see the glyph, which is what `aria-label` is for. */}
-        {backTo ? (
-          <button
-            type="button"
-            className="checkout-bar-back"
-            disabled={busy}
-            aria-label="Back a step"
-            onClick={() => setOpen(backTo)}
-          >
-            <ChevronLeft size={18} strokeWidth={1.5} aria-hidden />
-          </button>
-        ) : (
-          <Link href="/bag" className="checkout-bar-back" aria-label="Back to the bag">
-            <ShoppingBag size={18} strokeWidth={1.5} aria-hidden />
-          </Link>
-        )}
-        {/* Absent on 01 unless a new card is being typed: there the
-            choice moves the page on by itself. */}
-        {commitLabel ? (
-          <CtaButton disabled={commitOff} onClick={commitPress}>
-            {commitLabel}
-          </CtaButton>
-        ) : null}
       </div>
 
       {/* The number, pinned, for the widths where the column beside the

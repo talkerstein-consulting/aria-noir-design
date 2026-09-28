@@ -31,10 +31,10 @@ export type MenuLink = { label: string; href: string; external?: boolean };
  * The overlay's contents.
  *
  * `primary` is a single numbered stack, not a set of columns. That is the
- * whole idea of this menu: seven destinations set large enough to be read
+ * whole idea of this menu: six destinations set large enough to be read
  * across a room, in a fixed order, so the numeral tells you how big the
  * site is before you have finished reading the first word. Columns would
- * hide that — and with seven entries there is nothing to group anyway.
+ * hide that — and with six entries there is nothing to group anyway.
  *
  * The order is the site's own shape, not the alphabet: the shop first, the
  * house second, the desk last.
@@ -44,11 +44,11 @@ export type MenuLink = { label: string; href: string; external?: boolean };
  * difference between "read this" and "this exists".
  */
 export const menu = {
-  /* ---- FOUR DOORS ----
+  /* ---- SIX DOORS ----
 
      The stack was the storefront's whole top level, thirteen destinations
      deep once the frame families were counted. This is the short version,
-     and the short version is the point: four words, each one a different
+     and the short version is the point: six words, each one a different
      kind of place to be, set large enough that the panel is read rather
      than scanned.
 
@@ -71,7 +71,7 @@ export const menu = {
      the six campaigns walked as six rooms. */
   primary: [
     { label: "Home", href: "/" },
-    { label: "Our Showcase", href: "/eyewear" },
+    { label: "Eyeglasses", href: "/eyewear" },
     { label: "Shop All", href: "/shop" },
     { label: "Gallery", href: "/gallery" },
     { label: "About us", href: "/house/about" },

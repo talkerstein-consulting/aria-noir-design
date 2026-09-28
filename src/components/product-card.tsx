@@ -306,8 +306,11 @@ export function ProductCard({
           whatever the caller hangs off the card. */}
       {detail || action ? (
         <div className="hairline mt-auto flex items-baseline justify-between gap-4 pt-3">
-          <p className="t-caption">{detail}</p>
-          {action ? <div className="card-action">{action}</div> : null}
+          {detail ? <p className="t-caption">{detail}</p> : null}
+          {/* With no detail beside it, the action takes the whole row. */}
+          {action ? (
+            <div className={`card-action${detail ? "" : " w-full"}`}>{action}</div>
+          ) : null}
         </div>
       ) : null}
     </>

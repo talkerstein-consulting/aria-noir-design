@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import ImageTrail from "./ImageTrail";
-import { finale, newsletter } from "@/lib/content";
-import { RevealText } from "@/components/reveal";
+import { finale } from "@/lib/content";
+import { CtaLink } from "@/components/cta-link";
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -80,50 +80,10 @@ export function FinaleSection() {
         </blockquote>
       </div>
 
-      {/* ---- the desk: outside the quote zone, so the trail never covers it ----
-
-          This was a commission pitch — a heading, a paragraph about private
-          fittings and eleven days on the bench, and a CTA that scrolled to
-          itself. The argument for a commission is made properly on
-          /contact, where there is a form that can take one; at the foot of
-          the home page it asked a reader who has just finished LOOKING to
-          make a decision. An address is the smaller and likelier thing to
-          ask for here, and the field is the same one the footer carries, so
-          the page ends on the house's own furniture rather than a second
-          version of it. */}
-      <div className="relative z-30 mx-auto mt-24 flex max-w-2xl flex-col items-center gap-6 text-center sm:mt-32">
-        {/* One step down the house scale, from `--display-xl` to
-            `--display-lg`.
-
-            The inline sizes it carried were text-5xl / sm:7xl / md:8xl,
-            which is `--display-xl` spelled out by hand — the same size as
-            the page's largest headings. Directly above it the close runs
-            at up to 132px, so the two read as headlines of equal rank and
-            the reader meets a second title where they should be meeting a
-            field. This is the label on an email box; it is subordinate,
-            and it should look it.
-
-            Named recipe rather than inline utilities, because that is what
-            the recipes are for and because the hand-spelled version was
-            already a duplicate of a token. The colour comes from the
-            section's `on-paper` ground now instead of a hardcoded
-            text-ink. */}
-        <RevealText
-          as="h2"
-          text={newsletter.heading}
-          className="t-display-lg"
-        />
-        <p className="max-w-xl font-ui text-base leading-relaxed text-ink/65 sm:text-lg">
-          {newsletter.body}
-        </p>
-
-        {/* The intake that used to sit here is gone: the footer under
-            this section carries the same field, so the last screen of
-            the home page was asking for an address twice in a row. The
-            words stay — they are the invitation; the footer is where it
-            is answered. */}
+      {/* ---- the way on: outside the quote zone, so the trail never covers it ---- */}
+      <div className="relative z-30 mx-auto mt-24 flex justify-center sm:mt-32">
+        <CtaLink href="/eyewear">See the eyeglasses</CtaLink>
       </div>
-
     </section>
   );
 }

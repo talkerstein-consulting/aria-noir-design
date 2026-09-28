@@ -10,7 +10,7 @@ import { WhiteDotOverlay } from "./white-dot-overlay";
 import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
 import { SiteNav } from "./site-nav";
-import { opening, sectionTwo } from "@/lib/content";
+import { sectionTwo } from "@/lib/content";
 import { CtaLink } from "@/components/cta-link";
 import {
   F,
@@ -22,9 +22,7 @@ import {
   H2_GAP_VH,
 } from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
-import { whenAssetsReady } from "@/lib/preload";
 import { kickPlay } from "@/lib/autoplay";
-import { privateAccess } from "@/lib/content";
 
 /**
  * The scrubbed film, loaded on demand.
@@ -46,77 +44,29 @@ const PrivateAccessSection = dynamic(
 );
 
 
-/* ---------- opening ----------
-   One rAF loop writing straight to the DOM. Nothing goes through React state
-   per frame and no value is rounded before it reaches a transform.
+/* ---------- opening: the scaling rectangle ----------
+   The React Bits ScrollExpand move, on the page's own fixed film. The film
+   starts as a rounded rectangle in the middle of the screen and grows to
+   full bleed on its own, about two seconds after load — no counter and no
+   preload gate. The scroll scene then plays exactly as it did.
 
-   Beats: dot → mini → full, all on cubic-bezier(0.83, 0, 0.17, 1).
+   Width and height are percentages of the screen, per ScrollExpand's
+   startWidth / startHeight; a phone gets a taller, wider box because a
+   42% column of a 375px screen is a slot, not a picture. */
+const EXPAND_DELAY_MS = 700; // hold on the rectangle
+const EXPAND_MS = 1300; // rectangle → full bleed
+const START_W = 42;
+const START_H = 58;
+const START_W_NARROW = 74;
+const START_H_NARROW = 48;
+const START_RADIUS = 24; // px
+const MEDIA_ZOOM = 1.35;
 
-   Scale is UNIFORM at every step. A non-uniform scale would squash the video
-   frame itself, which is what made the mini box look elongated. */
-const COUNT_MS = 1700; // 0 → 100 readout
-const DOT_AT = 0.09; // counter fraction where the dot appears
-const GROW_END_AT = 0.55; // counter fraction where the mini box is complete
-const GROW_MS = 300; // dot → mini
-const FULL_MS = 520; // mini → full bleed
-const OPENING_MS = COUNT_MS + FULL_MS;
+const smoothstep = (a: number, b: number, x: number) => {
+  const t = clamp01((x - a) / (b - a || 1e-6));
+  return t * t * (3 - 2 * t);
+};
 
-/**
- * Where the counter waits for the page.
- *
- * The readout is no longer a pure animation: it climbs on time until this
- * fraction and then HOLDS there until the assets are in — see lib/preload.
- * The last few percent are the handover itself, so they cannot be spent
- * before the thing being handed over exists.
- *
- * 0.9 rather than 0.99 on purpose. A bar that sticks at 99 reads as broken;
- * one that pauses at 90 reads as still working, which is the truth.
- */
-const HOLD_AT = 0.9;
-
-/**
- * The ceiling on all of it.
- *
- * Waiting for assets means the loader's length is now decided by the
- * NETWORK, and a network can simply never answer. Past this, the page opens
- * regardless and whatever has not arrived arrives late — a page assembling
- * itself is a bad first impression, a loading screen that never ends is a
- * lost visitor.
- */
-const MAX_WAIT_MS = 26000;
-/* When the opening stops being a show and starts being a wait. Comfortably
-   past OPENING_MS, so a normal visit never sees the control at all. */
-const SKIP_AFTER_MS = 3000;
-
-/* 9000 before, and it was the binding constraint on the whole loader rather
-   than the last-resort ceiling it is written as: the per-asset waits in
-   lib/preload run to 8s each and are wrapped again at 16s, so anything that
-   was genuinely still downloading lost to this timer every time. The loader
-   spent its life pretending to wait.
-   
-   It can afford to be a real ceiling now. The hero film was a 42MB master
-   and is 4.2MB — see scripts/compress-video.mjs — so the thing this was
-   quietly cutting short is now something a slow connection can actually
-   finish inside the ceiling.
-
-   26s rather than 16, to sit above lib/preload's own per-asset ceiling
-   rather than under it: at 16s this timer fired first and the per-asset
-   waits never got to finish, which made them decorative. The home page's
-   cold payload is about 7MB, so this covers down to roughly 2.5 Mbps.
-   Past that the page opens unfinished, which is the correct failure — the
-   alternative is a visitor who never gets in. */
-
-const GROW_START_MS = COUNT_MS * GROW_END_AT - GROW_MS;
-const DOT_MS = COUNT_MS * DOT_AT;
-
-const DOT_SCALE = 0.006;
-const MINI_SCALE = 0.16;
-/** How far the stacks travel relative to the box's own half-height. 1.0 would
- *  weld them to its edges; above that they still START touching but open up
- *  progressively faster than the box grows. */
-const PUSH_MULT = 1.95;
-
-/* ---------- logo geometry (width-driven, never transform:scale) ---------- */
 const HERO_LOGO_W = 288; // px
 const NAV_LOGO_W = 80; // px
 const NAV_CENTER_Y = 40; // px from top
@@ -125,60 +75,15 @@ const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 /** The JS equivalent of cubic-bezier(0.83, 0, 0.17, 1). */
-const easeInOutQuint = (t: number) =>
-  t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
-
-/**
- * Continuous, un-quantised UNIFORM scale for the whole opening.
- * Returns [scale, expandT] — expandT drives the text cross-fade so the type
- * is swallowed mid-expansion rather than on a separate timer.
- */
-function openingScale(ms: number): [number, number] {
-  if (ms < DOT_MS) return [0, 0]; // nothing yet
-  if (ms < GROW_START_MS) return [DOT_SCALE, 0]; // the dot holds
-  if (ms < COUNT_MS * GROW_END_AT) {
-    const t = easeInOutQuint((ms - GROW_START_MS) / GROW_MS);
-    return [lerp(DOT_SCALE, MINI_SCALE, t), 0];
-  }
-  if (ms < COUNT_MS) return [MINI_SCALE, 0]; // hangtime
-  const t = easeInOutQuint(clamp01((ms - COUNT_MS) / FULL_MS));
-  return [lerp(MINI_SCALE, 1, t), t];
-}
-
 export function Experience() {
-  const [live, setLive] = useState(false);
-
-  /* ---- The way past the opening ----
-   *
-   * The counter waits on the page, and `MAX_WAIT_MS` lets it wait 26
-   * seconds before the failsafe gives up. For that whole time the body
-   * does not scroll and there is nothing to press. A reader on a bad
-   * connection is held at 90 on a number they cannot move, on the one
-   * visit that decides whether there is a second.
-   *
-   * So: after SKIP_AFTER_MS, a way out appears. Not sooner — the opening
-   * is 2.2 seconds when the network is behaving, and a Skip drawn over a
-   * sequence that is about to end by itself is an apology the house does
-   * not need to make. It appears only when the wait has become longer
-   * than the show, which is exactly when it stops being a show. */
-  const [slow, setSlow] = useState(false);
-  /* `finish` is defined inside the effect below, where its bookkeeping
-     lives. The button is out here, so the effect hands it over. */
-  const finishRef = useRef<() => void>(() => {});
-
-  /* inertia scrolling, but only once the loader has handed over */
-  useSmoothScroll(live);
+  useSmoothScroll(true);
 
   const videoBox = useRef<HTMLDivElement>(null);
-  const stackA = useRef<HTMLDivElement>(null);
-  const stackB = useRef<HTMLDivElement>(null);
-  const barWrap = useRef<HTMLDivElement>(null);
-  const barFill = useRef<HTMLDivElement>(null);
-  const barNum = useRef<HTMLSpanElement>(null);
 
   const logoWrap = useRef<HTMLDivElement>(null);
   const logoMark = useRef<HTMLImageElement>(null);
   const headGroup = useRef<HTMLDivElement>(null);
+  const progressBar = useRef<HTMLDivElement>(null);
 
   /* ---------- the film's pause control ----------
      A looping film with no way to stop it fails WCAG 2.2.2, and a reader
@@ -198,31 +103,10 @@ export function Experience() {
       el.pause();
       setHeld(true);
     }
-    /* No `kickPlay` here. Asking a film to play is asking for the file, and
-       this one is under the opening — scaled to nothing, behind an opaque
-       black overlay — for the whole of the sequence. Starting it on attach
-       fetched 4.67MB before the reader had seen a single frame of it. It is
-       started in the effect below instead, at the moment it is uncovered. */
+    /* On screen from the first frame now, inside the rectangle, so it is
+       asked to play on attach. The poster holds the frame until it can. */
+    if (!el.dataset.held) kickPlay(el);
   };
-
-  /* ---- The film loads when it is revealed, not when it mounts ----
-   *
-   * `preload` cannot express this on its own: an element carrying `autoPlay`
-   * (or one asked to play on attach) downloads regardless of what `preload`
-   * says — measured at 4.67MB pulled down with the element still paused,
-   * because playback, not the hint, is what drives the fetch.
-   *
-   * So the ask is moved to the one moment it is true: `live`, when the
-   * opening has finished and the box has scaled up to fill the screen. The
-   * poster carries the frame until the footage catches up, which is the
-   * same handover HeroFilm already performs on the story pages.
-   *
-   * `held` is respected: a reduced-motion reader, or one who has pressed
-   * pause, is never handed a film they have already declined. */
-  useEffect(() => {
-    if (!live || held) return;
-    kickPlay(film.current);
-  }, [live, held]);
 
   const toggleFilm = () => {
     const el = film.current;
@@ -238,129 +122,72 @@ export function Experience() {
     }
   };
 
-  /* ---------- opening: one rAF loop, direct DOM writes ---------- */
+  /* ---------- opening: the rectangle expands by itself ----------
+     Timed, not scrolled: a short hold on the rectangle, then it grows to
+     full bleed. Scroll is held for the ~2s it takes, as the old opening
+     did, so the scene below always starts from a full-screen film. */
   useEffect(() => {
     document.body.style.overflow = "hidden";
     window.scrollTo(0, 0);
-
-    let raf = 0;
-    let done = false;
-    /* Set when the page's own assets are in. A ref, not state: it is read
-       inside the rAF loop, and a re-render per change would be a re-render
-       for something nothing renders. */
-    let ready = false;
-    /* Time spent waiting at HOLD_AT, subtracted from the clock so the
-       counter resumes where it paused instead of jumping to catch up. */
-    let held = 0;
+    const narrow = window.matchMedia("(max-width: 1023px)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const start = performance.now();
-
-    /* Return visit: the opening has already been seen this session, so it
-       is skipped entirely and the black wipe in the markup below covers
-       the handover instead. Set before paint by the boot script in
-       layout.tsx — reading it here rather than from state is the whole
-       point, since state would arrive a frame too late to stop the
-       counter from showing. */
-    const revisit =
-      document.documentElement.classList.contains("revisit");
-
-    /* rAF is paused in background tabs and throttled hard under low-power /
-       heavy load. Without this, a starved loop would never reach OPENING_MS
-       and the scroll lock below would never lift — leaving the visitor stuck
-       on the loader. The timer guarantees the sequence always completes. */
-    const finish = () => {
-      if (done) return;
-      done = true;
+    let raf = 0;
+    const apply = (p: number) => {
+        const e = smoothstep(0, 1, p);
+        const sw = narrow ? START_W_NARROW : START_W;
+        const sh = narrow ? START_H_NARROW : START_H;
+        const w = sw + (100 - sw) * e;
+        const h = sh + (100 - sh) * e;
+        if (videoBox.current) {
+          videoBox.current.style.clipPath = `inset(${(100 - h) / 2}% ${(100 - w) / 2}% round ${START_RADIUS * (1 - e)}px)`;
+        }
+        if (film.current) {
+          film.current.style.transform = `scale(${MEDIA_ZOOM + (1 - MEDIA_ZOOM) * e})`;
+        }
+    };
+    /* A reader who reaches for the wheel, the screen or a key has said
+       they are ready: the film jumps to full bleed and scroll is theirs,
+       rather than the page ignoring them for the rest of the two seconds. */
+    let skipped = false;
+    const skip = () => {
+      if (skipped) return;
+      skipped = true;
       cancelAnimationFrame(raf);
-      if (videoBox.current) videoBox.current.style.transform = "scale(1)";
-      setLive(true);
+      apply(1);
       document.body.style.overflow = "";
+      unbind();
     };
-    finishRef.current = finish;
-    if (revisit) {
-      finish();
-      return;
-    }
-
-    /* The counter now waits on the page. The hero film is the one that
-       matters most — it is what the box expands into — but everything the
-       document declared is included, plus the glb the private-access
-       section lights, which no markup above would otherwise make anyone
-       wait for and which decides whether that section has an object in it
-       when a reader arrives. */
-    whenAssetsReady({ files: [privateAccess.model] }).then(() => {
-      ready = true;
-    });
-
-    /* Two failsafes, because there are now two ways to hang: a starved rAF
-       (the old one — background tabs and low-power throttling never reach
-       OPENING_MS) and a network that never finishes. */
-    const failsafe = window.setTimeout(finish, MAX_WAIT_MS);
-    /* Set here rather than beside `live`, so it is cleared by the same
-       cleanup and never fires for a revisit, which has already returned. */
-    const slowMark = window.setTimeout(() => setSlow(true), SKIP_AFTER_MS);
-
+    const keys = (e: KeyboardEvent) => {
+      if (["ArrowDown", "PageDown", " ", "End", "Enter", "Escape"].includes(e.key)) skip();
+    };
+    const unbind = () => {
+      window.removeEventListener("wheel", skip);
+      window.removeEventListener("touchmove", skip);
+      window.removeEventListener("keydown", keys);
+    };
+    window.addEventListener("wheel", skip, { passive: true });
+    window.addEventListener("touchmove", skip, { passive: true });
+    window.addEventListener("keydown", keys);
     const tick = (now: number) => {
-      if (done) return;
-      const ms = now - start - held;
-
-      /* Hold the readout at HOLD_AT while the page is still loading by
-         freezing the clock rather than the number: everything downstream is
-         a function of `ms`, so one subtraction pauses the whole opening —
-         counter, dot and box together — and releases it in step. */
-      if (!ready && ms > COUNT_MS * HOLD_AT) {
-        held += ms - COUNT_MS * HOLD_AT;
-        raf = requestAnimationFrame(tick);
-        return;
-      }
-
-      const cp = clamp01(ms / COUNT_MS);
-      const pct = cp * 100;
-      if (barNum.current) {
-        barNum.current.textContent = String(Math.round(pct));
-        barNum.current.style.left = `${pct}%`;
-      }
-      if (barFill.current) barFill.current.style.width = `${pct}%`;
-      if (barWrap.current) barWrap.current.style.opacity = cp >= 1 ? "0" : "1";
-
-      const [s, expandT] = openingScale(ms);
-      if (videoBox.current) {
-        videoBox.current.style.transform = `scale(${s})`;
-      }
-
-      /* The stacks start at normal spacing and are DRIVEN APART by the box:
-         push == the box's own half-height, so they ride its edges exactly.
-         Past the mini size the push freezes while the box keeps growing —
-         that is what lets the expansion overtake and swallow them. */
-      const push = Math.min(s, MINI_SCALE) * 50 * PUSH_MULT; // vh
-      const textOpacity = String(1 - clamp01(expandT / 0.65));
-      if (stackA.current) {
-        stackA.current.style.transform = `translateY(${-push}vh)`;
-        stackA.current.style.opacity = textOpacity;
-      }
-      if (stackB.current) {
-        stackB.current.style.transform = `translateY(${push}vh)`;
-        stackB.current.style.opacity = textOpacity;
-      }
-
-      if (ms < OPENING_MS) {
-        raf = requestAnimationFrame(tick);
-      } else {
-        finish();
+      const p = reduce ? 1 : clamp01((now - start - EXPAND_DELAY_MS) / EXPAND_MS);
+      apply(p);
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else {
+        document.body.style.overflow = "";
+        unbind();
       }
     };
-
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
-      clearTimeout(failsafe);
-      clearTimeout(slowMark);
+      unbind();
+      document.body.style.overflow = "";
     };
   }, []);
 
   /* ---------- scroll choreography (all in frames) ---------- */
   useEffect(() => {
-    if (!live) return;
-
     /* Read per frame rather than captured once: a phone rotating into
        landscape crosses this breakpoint, and a scene half-played on one
        budget and half on the other would jump. */
@@ -371,6 +198,13 @@ export function Experience() {
 
     const onScroll = () => {
       const vh = window.innerHeight;
+      /* How far down the whole page, as a hairline under the nav: four
+         screens of runway with no sign of their length reads as a page
+         that might not end. */
+      if (progressBar.current) {
+        const room = document.documentElement.scrollHeight - vh;
+        progressBar.current.style.transform = `scaleX(${room > 0 ? clamp01(window.scrollY / room) : 0})`;
+      }
       const frame = (window.scrollY / vh) * perVh();
 
       const shrink = clamp01(frame / F.videoShrinkEnd);
@@ -442,28 +276,19 @@ export function Experience() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [live]);
+  }, []);
 
   return (
     <>
-      {/* ---------- return-visit wipe ----------
-          Inert on a first load: the CSS keeps it out of the document
-          unless <html> carries `revisit`, so the opening choreography
-          owns the screen alone. On every load after that it is the whole
-          transition — one black panel already covering the viewport,
-          travelling up and off. */}
-      <div className="opening-wipe" aria-hidden />
-
       {/* ---------- video ---------- */}
       <div
-        className={`pointer-events-none fixed inset-0 flex items-center justify-center ${
-          live ? "z-0" : "z-40"
-        }`}
+        className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center"
       >
         <div
           ref={videoBox}
-          className="h-screen w-screen origin-center overflow-hidden will-change-transform"
-          style={{ transform: "scale(0)" }}
+          /* First paint, before the scroll handler has run: see
+             .home-open in interactions.css. */
+          className="home-open-box h-screen w-screen origin-center overflow-hidden will-change-transform"
         >
           {/* `autoPlay` is a request the browser may decline — Low Power
               Mode, Data Saver, a tab that opened in the background. This
@@ -495,12 +320,13 @@ export function Experience() {
              * asks, lib/autoplay still asks again on visibility and on the
              * first interaction, and the poster below the film still holds
              * the opening image until it genuinely rolls. */
-            preload="metadata"
+            preload="auto"
+            style={{ transform: `scale(${MEDIA_ZOOM})` }}
           />
         </div>
       </div>
 
-      {live && !filmGone && (
+      {!filmGone && (
         <button
           type="button"
           onClick={toggleFilm}
@@ -516,107 +342,25 @@ export function Experience() {
         </button>
       )}
 
-      {/* ---------- opening (video is above this and overtakes it) ---------- */}
-      {!live && (
-        <>
-          <div className="fixed inset-0 z-30 bg-ink" />
-
-          <div className="pointer-events-none fixed inset-0 z-[35]">
-            {/* flush to the centre line at rest — the box drives them apart */}
-            <div
-              ref={stackA}
-              className="absolute inset-x-0 bottom-1/2 text-center will-change-transform"
-            >
-              {opening.stackA.map((line) => (
-                <div
-                  key={line}
-                  className="font-display text-4xl leading-[1.05] tracking-tight text-paper sm:text-6xl md:text-7xl"
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-            <div
-              ref={stackB}
-              className="absolute inset-x-0 top-1/2 text-center will-change-transform"
-            >
-              {opening.stackB.map((line) => (
-                <div
-                  key={line}
-                  className="font-display text-4xl leading-[1.05] tracking-tight text-paper sm:text-6xl md:text-7xl"
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div
-            ref={barWrap}
-            className="pointer-events-none fixed inset-x-0 bottom-10 z-[45] px-8 transition-opacity duration-500"
-          >
-            <div className="relative h-px w-full bg-paper/20">
-              <div
-                ref={barFill}
-                className="absolute inset-y-0 left-0 bg-paper"
-                style={{ width: "0%" }}
-              />
-              <span
-                ref={barNum}
-                className="absolute -top-7 -translate-x-1/2 font-ui text-xs tabular-nums text-paper"
-                style={{ left: "0%" }}
-              >
-                0
-              </span>
-            </div>
-          </div>
-
-          {/* The way past, once the wait is longer than the show. The
-              layer above is `pointer-events-none` so that a counter
-              cannot swallow a press; this one is its own fixed layer and
-              takes them back. It fades in rather than appearing, because
-              a control that pops onto a held screen reads as an error
-              the page has just hit.
-
-              `-mr-4` pulls the button's own padding back out, so the word
-              still sits on the page's right margin while the box around
-              it is the 44px the rest of the build now uses. */}
-          {slow && (
-            <div className="fixed bottom-7 right-8 z-[46] -mr-4 animate-[fade-in_400ms_ease-out_both]">
-              <button
-                type="button"
-                onClick={() => finishRef.current()}
-                className="flex min-h-11 items-center px-4 font-ui text-xs uppercase tracking-[0.18em] text-paper/60 transition-colors hover:text-paper focus-visible:text-paper focus-visible:outline-none"
-              >
-                Skip
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
       {/* ---------- navbar ---------- */}
       {/* showMark=false: this page flies its own animated mark into the
           navbar slot below, so the static one would double up */}
-      <SiteNav visible={live} showMark={false} />
+      <SiteNav visible showMark={false} />
 
       {/* ---------- logo: centre → navbar ----------
-          Mounted only once live, so the SVG's own draw-in animation plays as
-          it appears. It has to be an <img> (or inline SVG): a CSS mask does
+          Mounted with the page, so the SVG's own draw-in plays on arrival. It has to be an <img> (or inline SVG): a CSS mask does
           not run the animation embedded in the file. Sizing stays width-based
           so the vector re-rasterises crisply instead of being scaled. */}
       <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center mix-blend-difference">
         <div ref={logoWrap} className="will-change-transform">
-          {live && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              ref={logoMark}
-              src="/logo/aria-loader.svg"
-              alt="Aria Noir"
-              className="block h-auto"
-              style={{ width: HERO_LOGO_W }}
-            />
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={logoMark}
+            src="/logo/aria-loader.svg"
+            alt="Aria Noir"
+            className="block h-auto"
+            style={{ width: HERO_LOGO_W }}
+          />
         </div>
       </div>
 
@@ -635,7 +379,7 @@ export function Experience() {
           {sectionTwo.body.map((para) => (
             <p
               key={para}
-              className="font-ui text-xs leading-relaxed text-paper/70 sm:text-sm"
+              className="font-ui text-sm leading-relaxed text-paper/85 sm:text-base"
             >
               {para}
             </p>
@@ -649,6 +393,13 @@ export function Experience() {
           {sectionTwo.cta}
         </CtaLink>
       </div>
+
+      <div
+        ref={progressBar}
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 z-[71] h-px origin-left bg-paper/40 mix-blend-difference"
+        style={{ transform: "scaleX(0)" }}
+      />
 
       <main id="main" tabIndex={-1} className="relative">
         {/* The page's one H1. The mark above is an image and the opening

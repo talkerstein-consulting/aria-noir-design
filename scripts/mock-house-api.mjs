@@ -142,16 +142,20 @@ createServer((req, res) => {
        has no network and no client secret, and a local mock that refused
        every token would make the button untestable. It is a mock: nothing
        here should be read as how to treat a JWT in production. */
-    if (path === "/auth/google" && req.method === "POST") {
+    /* Apple is the same door with a different key name, and the name
+       arriving beside the token rather than in it. Decoded, not verified,
+       for the same reason as Google's above. */
+    if ((path === "/auth/google" || path === "/auth/apple") && req.method === "POST") {
+      const apple = path === "/auth/apple";
       let claims = {};
       try {
-        const part = String(body.credential || "").split(".")[1] || "";
+        const part = String((apple ? body.idToken : body.credential) || "").split(".")[1] || "";
         claims = JSON.parse(Buffer.from(part, "base64url").toString("utf8"));
       } catch {
-        return json(res, 400, { error: { message: "That Google sign-in could not be read." } });
+        return json(res, 400, { error: { message: `That ${apple ? "Apple" : "Google"} sign-in could not be read.` } });
       }
       const e = String(claims.email || "").toLowerCase();
-      if (!e) return json(res, 400, { error: { message: "That Google account has no email address on it." } });
+      if (!e) return json(res, 400, { error: { message: `That ${apple ? "Apple" : "Google"} account has no email address on it.` } });
       let u = users.get(e);
       if (!u) {
         /* First time in: the account is made from the Google profile, with
@@ -159,8 +163,8 @@ createServer((req, res) => {
         u = {
           id: randomUUID(),
           email: e,
-          firstName: claims.given_name || "",
-          lastName: claims.family_name || "",
+          firstName: (apple ? body.name?.firstName : claims.given_name) || "",
+          lastName: (apple ? body.name?.lastName : claims.family_name) || "",
           phone: null,
           passwordHash: null,
         };
@@ -254,6 +258,11 @@ createServer((req, res) => {
     }
 
     /* promo, quote, checkout */
+    if (path === "/public/storefront/newsletter" && req.method === "POST") {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(body.email || "").trim()))
+        return json(res, 400, { error: { message: "That address does not look complete." } });
+      return json(res, 200, { ok: true });
+    }
     if (path === "/public/storefront/promo-code") {
       const code = String(body.code || "").toUpperCase();
       return code === "ARIA10"

@@ -1,6 +1,7 @@
 import { houses } from "@/lib/navigation";
 import { ProductCard } from "@/components/product-card";
 import { houseCard } from "@/lib/product-cards";
+import { CtaLink } from "@/components/cta-link";
 
 /**
  * The six houses, as a grid.
@@ -42,16 +43,34 @@ export function HouseGrid() {
   return (
     <section className="on-ink section relative z-[36] bg-ink">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-        {houses.map((house, i) => (
-          <div key={house.slug} className="flex">
-            {/* What the card SAYS is `houseCard(house, "grid")` — the
-                worn photograph on hover, the house's note, and no price.
-                See lib/product-cards for why this grid carries no number.
-                The stagger stays here: it depends on where the card sits
-                in this list, which is the one thing only this file knows. */}
-            <ProductCard {...houseCard(house, "grid")} reveal revealDelay={i * 70} />
-          </div>
-        ))}
+        {houses.map((house, i) => {
+          /* What the card SAYS is `houseCard(house, "grid")` — the worn
+             photograph on hover, the house's note, and no price. See
+             lib/product-cards for why this grid carries no number. The
+             stagger stays here: it depends on where the card sits in this
+             list, which is the one thing only this file knows. */
+          const card = houseCard(house, "grid");
+          return (
+            <div key={house.slug} className="flex">
+              <ProductCard
+                {...card}
+                detail={undefined}
+                reveal
+                revealDelay={i * 70}
+                /* A phone has no hover to say "this is a way in", so the
+                   card carries its way in as a button, raised above the
+                   card's stretched link so it takes the press itself. */
+                action={
+                  card.href ? (
+                    <span className="relative z-[1] block w-full [&>*]:w-full">
+                      <CtaLink href={card.href}>{`View ${house.name}`}</CtaLink>
+                    </span>
+                  ) : undefined
+                }
+              />
+            </div>
+          );
+        })}
       </div>
     </section>
   );

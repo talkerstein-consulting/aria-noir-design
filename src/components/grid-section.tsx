@@ -33,7 +33,7 @@ type GridContent = {
 type GridSectionProps = {
   /** Defaults to the home page's gallery. The lookbook passes its own set. */
   content?: GridContent;
-  /** Where the CTA goes. */
+  /** Where the CTA goes. No href, no CTA — the heading stands alone. */
   href?: string;
   /** WhiteDotOverlay anchors its handoff to this id, so a page running its
    *  own iris must give this section an id that page's overlay names. */
@@ -42,7 +42,7 @@ type GridSectionProps = {
 
 export function GridSection({
   content = gallery,
-  href = "#gallery",
+  href,
   id = "gallery",
 }: GridSectionProps = {}) {
   const wrap = useRef<HTMLDivElement>(null);
@@ -113,9 +113,11 @@ export function GridSection({
           text={content.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl"
         />
-        <CtaLink href={href} className="mt-4">
-          {content.cta}
-        </CtaLink>
+        {href ? (
+          <CtaLink href={href} className="mt-4">
+            {content.cta}
+          </CtaLink>
+        ) : null}
       </div>
 
       {/* 3-column curtain — equal photo counts, so it always rests aligned;

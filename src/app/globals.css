@@ -254,6 +254,17 @@ html.light-scroll::-webkit-scrollbar-corner {
   background: var(--paper);
 }
 
+/* Phone widths: no sideways scroll, and no eased scrolling of any kind.
+   `clip` rather than `hidden` so no scroll container is made and every
+   `position: sticky` on the site keeps working. */
+@media (max-width: 899px) {
+  html,
+  body {
+    overflow-x: clip;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Lenis — keep native smooth-scroll from fighting it on programmatic jumps */
 html.lenis,
 html.lenis body {
@@ -403,43 +414,3 @@ html.lenis {
    well as the tokens. Both, not either. */
 
 
-/* ── Return-visit wipe ────────────────────────────────────────────────
-   The counter-and-expanding-video opening runs once per session. Every
-   load after it is covered by this instead: a black panel that is already
-   over the viewport at first paint and leaves upward, so the page is
-   never seen assembling itself but nobody sits through the full sequence
-   twice.
-
-   `display: none` by default is load-bearing — on a first load the panel
-   must not exist at all, or it would sit on top of the choreography it is
-   meant to replace. */
-.opening-wipe {
-  display: none;
-}
-html.revisit .opening-wipe {
-  display: block;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  background: var(--ink);
-  pointer-events: none;
-  transform-origin: top;
-  animation: opening-wipe-up 0.72s var(--ease-inout-strong) forwards;
-}
-@keyframes opening-wipe-up {
-  /* Holds for a beat first: leaving immediately means the wipe is already
-     gone before a slower connection has painted anything behind it, which
-     is the exact flash of half-built page it exists to hide. */
-  0%,
-  22% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  html.revisit .opening-wipe {
-    animation-duration: 0.01s;
-  }
-}

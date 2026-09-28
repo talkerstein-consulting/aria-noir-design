@@ -262,6 +262,17 @@ export const house = {
       method: "POST",
       body: JSON.stringify({ credential, tenantSlug: TENANT }),
     }),
+  /**
+   * Sign in with Apple. The same contract as `googleLogin`: Apple's ID
+   * token goes straight through and is verified by the house API against
+   * Apple's keys. `name` is sent because Apple only reveals it on the
+   * first sign-in and never puts it in the token.
+   */
+  appleLogin: (idToken: string, name?: { firstName?: string; lastName?: string }) =>
+    api<{ user: User }>("/auth/apple", {
+      method: "POST",
+      body: JSON.stringify({ idToken, name, tenantSlug: TENANT }),
+    }),
   logout: () => api<null>("/auth/logout", { method: "POST" }),
   deleteAccount: (confirmation: string) =>
     api<null>("/storefront/account", {
@@ -306,6 +317,12 @@ export const house = {
     api<{ ok: true }>("/storefront/house-card", {
       method: "POST",
       body: JSON.stringify({ ...input, consent: true }),
+    }),
+
+  subscribe: (email: string) =>
+    api<{ ok: true }>("/public/storefront/newsletter", {
+      method: "POST",
+      body: JSON.stringify({ email, tenantSlug: TENANT }),
     }),
 
   promoCode: (code: string) =>

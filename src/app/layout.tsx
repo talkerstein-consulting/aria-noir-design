@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
-import { BagBar } from "@/components/shop/bag-bar";
 import { RouteWipe } from "@/components/route-wipe";
 import "./globals.css";
 
@@ -43,34 +42,12 @@ export const metadata: Metadata = {
 };
 
 /**
- * Runs before first paint, and does two jobs that both have to happen
- * BEFORE anything is on screen.
- *
- * 1. Arms the reveals. They only animate once this has marked the
- *    document — so if JS is off or fails to load, every heading and plate
- *    renders plainly visible instead of staying at the start of an
- *    animation that will never run.
- *
- * 2. Marks a return visit. The counter-and-expanding-video opening is a
- *    first-impression, not a toll gate: on every load after the first it
- *    is replaced by a plain black wipe. This has to be a class set before
- *    paint rather than React state, because state is only known after
- *    hydration and by then the opening has already flashed on screen.
- *
- *    sessionStorage, not localStorage: the opening belongs to arriving at
- *    the site, so it should return for a genuinely new visit while a
- *    refresh — the thing that made it feel like a toll gate — skips it.
- *    Wrapped, because Safari's private mode throws on access, and a
- *    throwing preloader gate would take the whole page down with it.
+ * Runs before first paint and arms the reveals. They only animate once
+ * this has marked the document — so if JS is off or fails to load, every
+ * heading and plate renders plainly visible instead of staying at the
+ * start of an animation that will never run.
  */
-const BOOT = `document.documentElement.classList.add("reveal-ready");
-try {
-  if (sessionStorage.getItem("an:opened")) {
-    document.documentElement.classList.add("revisit");
-  } else {
-    sessionStorage.setItem("an:opened", "1");
-  }
-} catch (e) {}`;
+const BOOT = `document.documentElement.classList.add("reveal-ready");`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -93,9 +70,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         {children}
-        {/* The bag at the foot of a phone's screen, while the reader
-            keeps looking. Drawn only where it is a way on — see BagBar. */}
-        <BagBar />
         {/* Last in the body, so it is over the page without needing to
             out-rank anything on it. See RouteWipe. */}
         <RouteWipe />

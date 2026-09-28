@@ -18,7 +18,7 @@ export function AtelierSection() {
       stickyAlt={atelier.stickyAlt}
       pairOne={atelier.pairOne}
       pairTwo={atelier.pairTwo}
-      feature={{ ...atelier.feature, href: "#process" }}
+      feature={atelier.feature}
       quote={atelier.quote}
       quoteAttribution={atelier.quoteAttribution}
     />

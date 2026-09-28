@@ -259,18 +259,6 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             <span aria-hidden />
           </button>
 
-          {/* The same tap both ways: it opens the sheet and it closes it,
-              and the glyph turns into the cross that says so. */}
-          <button
-            type="button"
-            className="nav-icon nav-icon--morph"
-            onClick={() => only("search", !searchOpen)}
-            aria-expanded={searchOpen}
-            aria-label={searchOpen ? "Close search" : "Search"}
-          >
-            <Search className="morph-in" aria-hidden />
-            <X className="morph-out" aria-hidden />
-          </button>
         </div>
 
         {showMark ? (
@@ -306,6 +294,19 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             mount the count is unknown, not zero, and a 0 that becomes a 2
             a frame later reads as the shop finding things it had lost. */}
         <div className="nav-cluster justify-self-end">
+          {/* Search sits with the errands, on the right, where most sites
+              keep it. The same tap both ways: it opens the sheet and it closes it,
+              and the glyph turns into the cross that says so. */}
+          <button
+            type="button"
+            className="nav-icon nav-icon--morph"
+            onClick={() => only("search", !searchOpen)}
+            aria-expanded={searchOpen}
+            aria-label={searchOpen ? "Close search" : "Search"}
+          >
+            <Search className="morph-in" aria-hidden />
+            <X className="morph-out" aria-hidden />
+          </button>
           {/* Opens the desk drawer rather than leaving for /desk. It was
               the one control in this band that navigated, and beside two
               glyphs that open a panel and close it again with the same tap,

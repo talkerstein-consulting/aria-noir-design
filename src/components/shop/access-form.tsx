@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { CtaButton } from "@/components/cta-link";
 import { GoogleSignIn } from "@/components/shop/google-sign-in";
+import { AppleButton, AppleSignIn, type AppleName } from "@/components/shop/apple-sign-in";
 import { announceSession, house } from "@/lib/house-api";
 import { useSession } from "@/lib/session";
 import { emailError, isValidEmail, phoneError } from "@/lib/validation";
@@ -35,6 +36,10 @@ import { emailError, isValidEmail, phoneError } from "@/lib/validation";
 type Mode = "in" | "new" | "forgot" | "reset";
 
 const noop = () => () => {};
+
+const HAS_GOOGLE = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+const HAS_APPLE = Boolean(process.env.NEXT_PUBLIC_APPLE_CLIENT_ID);
+const DEV = process.env.NODE_ENV !== "production";
 
 export function AccessForm({
   mode: initialMode = "in",
@@ -103,6 +108,25 @@ export function AccessForm({
     } catch (cause) {
       setError(
         cause instanceof Error ? cause.message : "That Google sign-in did not go through.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /* Apple's door, the same shape as Google's: the ID token goes to the
+     house API, which verifies it and sets the same session cookie. The
+     name comes alongside because Apple only sends it on a first sign-in. */
+  const withApple = async (idToken: string, name?: AppleName) => {
+    setError("");
+    setNote("");
+    setBusy(true);
+    try {
+      await house.appleLogin(idToken, name);
+      arrive();
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "That Apple sign-in did not go through.",
       );
     } finally {
       setBusy(false);
@@ -282,15 +306,49 @@ export function AccessForm({
         ) : null}
       </div>
 
-      {/* The other door. On the two modes where it means anything: there
-          is no Google equivalent of "email me a reset link", and the
-          reset form is reached from an email and already knows who it is
-          for. Renders nothing at all until a client id is configured. */}
-      {mode === "in" || mode === "new" ? (
-        <GoogleSignIn
-          label={mode === "new" ? "signup_with" : "signin_with"}
-          onCredential={(credential) => void withGoogle(credential)}
-        />
+      {/* The other doors. On the two modes where they mean anything:
+          there is no Google or Apple equivalent of "email me a reset
+          link", and the reset form is reached from an email and already
+          knows who it is for. Each renders nothing until its client id
+          is configured; in development an unconfigured one is drawn as a
+          disabled stand-in, so the layout can be seen before the keys
+          exist. */}
+      {(mode === "in" || mode === "new") && (HAS_GOOGLE || HAS_APPLE || DEV) ? (
+        <div className="access-google">
+          {/* The rule and the word, so the doors read as alternatives
+              rather than as a stack of buttons. */}
+          <p className="access-google__or" aria-hidden>
+            or
+          </p>
+          <div className="access-social">
+            {HAS_GOOGLE ? (
+              <GoogleSignIn
+                label={mode === "new" ? "signup_with" : "signin_with"}
+                onCredential={(credential) => void withGoogle(credential)}
+              />
+            ) : DEV ? (
+              <button
+                type="button"
+                className="access-apple"
+                disabled
+                title="Set NEXT_PUBLIC_GOOGLE_CLIENT_ID to enable"
+              >
+                <span>{mode === "new" ? "Sign up with Google" : "Sign in with Google"}</span>
+              </button>
+            ) : null}
+            {HAS_APPLE ? (
+              <AppleSignIn
+                label={mode === "new" ? "Sign up with Apple" : "Sign in with Apple"}
+                disabled={busy}
+                onCredential={(token, name) => void withApple(token, name)}
+              />
+            ) : DEV ? (
+              <AppleButton disabled title="Set NEXT_PUBLIC_APPLE_CLIENT_ID to enable">
+                {mode === "new" ? "Sign up with Apple" : "Sign in with Apple"}
+              </AppleButton>
+            ) : null}
+          </div>
+        </div>
       ) : null}
     </form>
   );

@@ -354,7 +354,7 @@ export function BuyHero({ house }: { house: House }) {
 
           <p className="t-body mt-6 text-[var(--fg-tertiary)]">{house.note}</p>
 
-          <p className="buy-price mt-6 tabular-nums">
+          <p className="buy-price mt-6 tabular-nums" aria-live="polite" aria-atomic="true">
             {priceOf(house, chosen ?? undefined)}
           </p>
 
@@ -391,7 +391,7 @@ export function BuyHero({ house }: { house: House }) {
             <p className="t-caption mt-6">
               {available
                 ? "Ships in 3–5 days. Free worldwide standard shipping."
-                : "Made in runs. Tell us and we will write when this one returns."}
+                : "Made in runs. Hold it below and it stays on your desk until it returns."}
             </p>
 
             {/* The third thing a reader can do with a frame, after buying

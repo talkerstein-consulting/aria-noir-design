@@ -78,6 +78,15 @@
     opacity var(--dur-base, .4s) var(--ease-out, ease),
     transform var(--dur-base, .4s) var(--ease-out, ease);
 }
+/* The 3D canvas writes `pointer-events: auto` inline on its wrapper and
+   canvas, which beat the `none` above: once mounted, the invisible coin
+   in the middle of the screen still counted as part of the link, so
+   passing over that spot re-summoned it (and a click opened the site).
+   Forced off for everything inside. */
+.tcg-coin,
+.tcg-coin * {
+  pointer-events: none !important;
+}
 .tcg-coin > div,
 .tcg-coin canvas {
   width: 100% !important;

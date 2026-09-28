@@ -19,6 +19,7 @@ import { CtaButton } from "@/components/cta-link";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { BagAdded } from "@/components/shop/bag-added";
+import { HoldToggle } from "@/components/shop/hold-toggle";
 import { RevealText } from "@/components/reveal";
 
 /**
@@ -183,7 +184,7 @@ export function ProductBuy({
             <h3 className="t-display-lg mt-3">{house.name}</h3>
             <p className="buy-colourway mt-2">{chosen}</p>
 
-            <p className="buy-price mt-6 tabular-nums">
+            <p className="buy-price mt-6 tabular-nums" aria-live="polite" aria-atomic="true">
               {priceOf(house, chosen ?? undefined)}
             </p>
 
@@ -213,8 +214,15 @@ export function ProductBuy({
               <p className="t-caption mt-6">
                 {available
                   ? "Ships in 3–5 days. Free worldwide standard shipping."
-                  : "Made in runs. Tell us and we will write when this one returns."}
+                  : "Made in runs. Hold it below and it stays on your desk until it returns."}
               </p>
+
+              {/* Out of the workshop, the caption promises a hold — so the
+                  hold is here, not only on the buy page. In stock it stays
+                  off: this counter's one job is the bag. */}
+              {available ? null : (
+                <HoldToggle slug={house.slug} colorway={chosen} className="mt-6" />
+              )}
 
               {/* No second way out of here.
               

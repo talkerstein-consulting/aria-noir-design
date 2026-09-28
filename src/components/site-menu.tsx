@@ -84,15 +84,15 @@ const STEP_MS = 22;
 const STACK_STYLE: CSSProperties = {
   fontFamily: "var(--font-display-stack)",
   /* Sized off the PANEL, not the page. The sheet is 80vh and does not
-     scroll, so the four items and their gaps have to fit inside it at any
+     scroll, so the six items and their gaps have to fit inside it at any
      viewport height — `vh` in the size is what makes a short window shrink
      the type instead of hiding the last destination. The vw term keeps a
      wide, short window from setting them at footnote scale, and the rem
      bounds stop both terms at a size that is still Bodoni.
 
-     Four destinations rather than seven is most of the ceiling: the same
-     80vh divided four ways carries a word half again as large, and the
-     tighter gaps below are what stop the extra size being spent on air. */
+     Six destinations rather than seven is part of the ceiling: fewer
+     lines in the same 80vh carry a larger word, and the tighter gaps
+     below are what stop the extra size being spent on air. */
   fontSize: "clamp(1.35rem, min(6.4vw, 7.4vh), 4rem)",
   /* Stated, not inherited. At this size the body's line-height would set
      the items nearly two words apart, and the gap below is doing that job

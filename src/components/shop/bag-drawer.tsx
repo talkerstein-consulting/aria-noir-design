@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trash2 } from "lucide-react";
 import {
   useBag,
@@ -55,7 +55,18 @@ export function BagDrawer({
   onClose: () => void;
 }) {
   const panel = useRef<HTMLDivElement>(null);
-  const { resolved, ready, setQty, remove, count } = useBag();
+  const { resolved, ready, setQty, remove, add, count } = useBag();
+  /* The last line the bin took, so it can be put back. One deep: a
+     second removal replaces it, and the note clears itself after a while
+     rather than sitting in the panel as a standing reproach. */
+  const [removed, setRemoved] = useState<{
+    slug: string; colorway: string; qty: number; size?: string; title: string;
+  } | null>(null);
+  useEffect(() => {
+    if (!removed) return;
+    const t = window.setTimeout(() => setRemoved(null), 8000);
+    return () => window.clearTimeout(t);
+  }, [removed]);
   const total = subtotal(resolved);
   /* The checkout is on this origin now; the drawer only needs to know
      whether anything in the bag can be sent. */
@@ -126,6 +137,23 @@ export function BagDrawer({
             this since it was built; these two did not, which is why a bag
             with more lines than fit could not be reached. */}
         <div className="drawer-lines px-7" data-lenis-prevent>
+          <p role="status" aria-live="polite" className="t-caption">
+            {removed ? (
+              <span className="mb-4 flex items-baseline justify-between gap-4">
+                <span>{removed.title} is out of the bag.</span>
+                <button
+                  type="button"
+                  className="t-micro underline underline-offset-4 min-h-[2.75rem] px-2"
+                  onClick={() => {
+                    add(removed.slug, removed.colorway, removed.qty, removed.size);
+                    setRemoved(null);
+                  }}
+                >
+                  Undo
+                </button>
+              </span>
+            ) : null}
+          </p>
           {!ready ? (
             <p className="t-caption">Opening the bag…</p>
           ) : !resolved.length ? (
@@ -222,8 +250,8 @@ export function BagDrawer({
                         reader tapping down through a quantity does not
                         stop to re-read a key that has not moved, so the
                         press that was undoing a choice becomes the press
-                        that destroys the line — and there is no undo
-                        here to catch it.
+                        that destroys the line — and an undo note after
+                        the fact is a net, not a reason to stand there.
 
                         So the bin has its own key, outside the group and
                         set apart from it, and it is drawn on every line
@@ -264,7 +292,16 @@ export function BagDrawer({
                       <button
                         type="button"
                         className="bag-qty-btn bag-qty-bin"
-                        onClick={() => remove(line.slug, line.colorway, line.size)}
+                        onClick={() => {
+                          setRemoved({
+                            slug: line.slug,
+                            colorway: line.colorway,
+                            qty: line.qty,
+                            size: line.size,
+                            title,
+                          });
+                          remove(line.slug, line.colorway, line.size);
+                        }}
                         aria-label={`Remove ${title}, ${meta}, from the bag`}
                       >
                         <Trash2 size={13} strokeWidth={1.5} aria-hidden />

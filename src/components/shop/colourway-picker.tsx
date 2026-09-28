@@ -80,6 +80,11 @@ export function ColourwayPicker({
       >
         {stock.map(({ colorway: name, available: inStock }) => {
           const on = name === chosen;
+          /* One Tab stop, arrows between — what a radiogroup promises.
+             The checked swatch holds the stop; if the checked one is out
+             of the workshop (so disabled), the first live one does. */
+          const live = stock.filter((s) => s.available).map((s) => s.colorway);
+          const stop = live.includes(chosen ?? "") ? chosen : live[0];
           return (
               <button
                 key={name}
@@ -88,7 +93,23 @@ export function ColourwayPicker({
                 aria-checked={on}
                 aria-label={inStock ? name : `${name} — out of the workshop`}
                 disabled={!inStock}
+                tabIndex={name === stop ? 0 : -1}
+                data-colorway={name}
                 onClick={() => setChosen(name)}
+                onKeyDown={(e) => {
+                  const d =
+                    e.key === "ArrowRight" || e.key === "ArrowDown" ? 1
+                    : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1
+                    : 0;
+                  if (!d || live.length === 0) return;
+                  e.preventDefault();
+                  const i = live.indexOf(name);
+                  const next = live[(i + d + live.length) % live.length];
+                  setChosen(next);
+                  e.currentTarget.parentElement
+                    ?.querySelector<HTMLElement>(`[data-colorway="${CSS.escape(next)}"]`)
+                    ?.focus();
+                }}
                 /* ---- Fetch the mesh while the hand is still travelling ----
                 
                    Each colourway has its own glb (~830kb). Prefetching all

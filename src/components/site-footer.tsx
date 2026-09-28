@@ -1,6 +1,7 @@
 import { footer } from "@/lib/content";
 import { SitemapTabs } from "./sitemap-tabs";
-import { Camera, ChevronRight } from "lucide-react";
+import { Camera } from "lucide-react";
+import { NewsletterField } from "./newsletter-field";
 import { CtaLink } from "@/components/cta-link";
 import { FooterMark } from "./footer-mark";
 import { TcgBadge } from "./tcg-badge";
@@ -46,24 +47,7 @@ export function SiteFooter({
         <div className="flex flex-col gap-14 lg:flex-row lg:items-start lg:justify-between lg:gap-20">
           <div className="flex flex-col gap-4 lg:w-[19rem] lg:shrink-0">
             <p className="t-label">{footer.newsletterLabel}</p>
-            <form className="field-row">
-              <label htmlFor="footer-email" className="sr-only">
-                {footer.newsletterPlaceholder}
-              </label>
-              <input
-                id="footer-email"
-                type="email"
-                placeholder={footer.newsletterPlaceholder}
-                className="field"
-              />
-              <button
-                type="submit"
-                aria-label="Subscribe"
-                className="field-submit"
-              >
-                <ChevronRight aria-hidden="true" size={18} strokeWidth={1.5} />
-              </button>
-            </form>
+            <NewsletterField placeholder={footer.newsletterPlaceholder} />
             {/* ---- The one social account, as an offer ----
             
                 It was a bare word — "Instagram" — in the quiet link style

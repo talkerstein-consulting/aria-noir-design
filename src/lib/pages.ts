@@ -473,8 +473,11 @@ export const contact = {
     ],
     back: "Back",
     next: "Continue",
-    send: "Send",
+    send: "Open in your email app",
     sent: "Opening your mail client.",
+    /* When no mail app answered the mailto: the address itself, so the
+       reader is never left with a message that went nowhere. */
+    fallback: "Nothing opened? Write to",
   },
   /* The live site's own line, and only its own addresses: support@ (the
      contact page and the warranty procedure), admin@ (service, on the
