@@ -2,6 +2,15 @@ import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 
 import './ImageTrail.css';
+import { getImageProps } from "next/image";
+/* The tiles are painted as CSS backgrounds, which bypass next/image — so
+   each 190px tile was downloading its 1547px original (the nine came to
+   about 2MB). Route them through the optimizer at 640w: sharp at 2x on a
+   210px tile, and a fraction of the bytes. `getImageProps` builds the URL
+   the same way <Image> would, so it follows the site's image config. */
+const trailSrc = (url) =>
+  getImageProps({ src: url, alt: "", width: 640, height: 640, quality: 75 }).props.src;
+
 
 function lerp(a, b, n) {
   return (1 - n) * a + n * b;
@@ -1070,7 +1079,7 @@ export default function ImageTrail({ items = [], variant = 1 }) {
     <div className="content" ref={containerRef}>
       {items.map((url, i) => (
         <div className="content__img" key={i}>
-          <div className="content__img-inner" style={{ backgroundImage: `url(${url})` }} />
+          <div className="content__img-inner" style={{ backgroundImage: `url(${trailSrc(url)})` }} />
         </div>
       ))}
     </div>

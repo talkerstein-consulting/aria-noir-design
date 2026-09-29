@@ -281,6 +281,16 @@
    scroller, so the field stays put under the reader's hands. */
 .sheet-panel--fixed {
   overflow: hidden;
+  /* Sized to its answers, not to the menu's 80vh. A fixed 80vh cut the
+     product cards off mid-tile, so a reader saw half a frame and a hard
+     edge. The panel grows with the results and stops at the screen;
+     only past that does the result list scroll. */
+  height: auto;
+  max-height: 100dvh;
+}
+.sheet-panel--fixed .search-inner {
+  height: auto;
+  max-height: 100dvh;
 }
 @media (prefers-reduced-motion: reduce) {
   .sheet-glass,
@@ -574,6 +584,37 @@
   .search-cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2.5rem 1.75rem;
+  }
+}
+/* The tiles arrive after the panel, not with it. The panel's slide is one
+   transform on one layer; five photographs fading in on the same frames
+   is what made it stutter on a slow phone. Each card lifts in a beat
+   after the slide lands, staggered, and only opacity/transform move —
+   nothing that re-lays-out the sheet. */
+.sheet[data-open="true"] .search-cards > * {
+  animation: search-card-in var(--dur-base) var(--ease-out) both;
+  animation-delay: calc(var(--dur-base) * 0.6 + var(--i, 0) * 40ms);
+}
+.search-cards > :nth-child(2) { --i: 1; }
+.search-cards > :nth-child(3) { --i: 2; }
+.search-cards > :nth-child(4) { --i: 3; }
+.search-cards > :nth-child(5) { --i: 4; }
+.search-cards > :nth-child(n + 6) { --i: 5; }
+@keyframes search-card-in {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet[data-open="true"] .search-cards > * { animation: none; }
+}
+
+/* The whole house is five frames. At three across the fifth wrapped onto
+   a second row that the sheet cut through; from a desktop width they sit
+   as one row, so the sheet shows every frame whole without scrolling. */
+@media (min-width: 1024px) {
+  .search-cards {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2.5rem 1.25rem;
   }
 }
 

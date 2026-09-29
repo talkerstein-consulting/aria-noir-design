@@ -169,7 +169,7 @@ export function ProductBuy({
                     src={src}
                     alt={`${house.name} in ${chosen}`}
                     fill
-                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    sizes="(min-width: 1280px) 640px, (min-width: 1024px) 50vw, 100vw"
                     className="object-cover"
                     /* cover is safe: the box is the plate's own ratio. */
                   />

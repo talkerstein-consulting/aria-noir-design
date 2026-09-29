@@ -574,14 +574,22 @@ function Ground({
         alt=""
         fill
         sizes="100vw"
-        /* 90, not the default 75. This is the largest picture on the
-           site — one photograph filling the window — and at 75 the
-           optimizer's own softening lands on top of a source that is
-           already being scaled up on a 2x screen. The extra bytes buy
-           the one image nobody can look away from. */
+        /* The file itself, not the optimizer's copy. These plates are
+           already web-sized webp (~1700px wide, ~90kb), and asking the
+           optimizer for 3840w at q90 only re-encoded the same pixels
+           into twice the bytes. Serving the original keeps every bit of
+           the quality the q90 was reaching for, at half the weight.
+           Phones still go through the optimizer: the upright plates are
+           heavier (up to ~270kb) and a phone's 100vw is a smaller width. */
+        unoptimized={!narrow}
         quality={90}
         className="object-cover"
-        priority={eager}
+        /* Never `priority`: even the first plate sits four screens below
+           the fold on the home page, and a preload there competed with
+           the hero film for the first paint. `eager` now only lifts the
+           lazy-load so the leading plates start early, not first. */
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority="low"
         style={
           narrow && item.imageNarrow && item.narrowZoom
             ? {

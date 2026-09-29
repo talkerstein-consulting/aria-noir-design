@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ArtDirectedImage } from "@/components/art-directed-image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { kickPlay } from "@/lib/autoplay";
@@ -149,26 +149,16 @@ export function HeroFilm({
 
   return (
     <>
-      <Image
+      {/* First paint of the page, and the LCP candidate whether or not
+          the film ever arrives. One <picture>: a phone fetches only the
+          portrait poster. See ArtDirectedImage. */}
+      <ArtDirectedImage
         src={poster}
+        portrait={posterPortrait}
         alt={alt}
-        fill
-        /* First paint of the page, and the LCP candidate whether or not
-           the film ever arrives. */
         priority={priority}
-        sizes="100vw"
-        className={`${className} ${posterPortrait ? "hidden sm:block" : ""}`}
+        className={className}
       />
-      {posterPortrait ? (
-        <Image
-          src={posterPortrait}
-          alt={alt}
-          fill
-          priority={priority}
-          sizes="100vw"
-          className={`${className} sm:hidden`}
-        />
-      ) : null}
       <video
         ref={attach}
         className={`${className} absolute inset-0 h-full w-full transition-opacity duration-1000 ease-out ${

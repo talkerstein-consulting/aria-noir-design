@@ -68,7 +68,7 @@ export function ProductShoot({
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="(min-width: 1024px) 25vw, 50vw"
+                sizes="(min-width: 1280px) 300px, (min-width: 1024px) 25vw, 50vw"
                 className="object-cover"
               />
             </RevealPlate>

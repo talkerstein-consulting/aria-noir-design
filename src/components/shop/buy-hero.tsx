@@ -437,7 +437,12 @@ export function BuyHero({ house }: { house: House }) {
               src={images[0]}
               alt={`${house.name}${chosen ? ` — ${chosen}` : ""}, ${house.material}`}
               fill
-              sizes="100vw"
+              /* The column's own sizes string, not 100vw. This lead is
+                 hidden from 1024 up, but its `priority` preload fires
+                 anyway — at 100vw that was a full-width copy nobody saw.
+                 Matching the column's first plate makes both resolve to
+                 the same URL, so the browser fetches it once. */
+              sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
               priority
               className="object-cover object-[50%_62%]"
             />
@@ -487,7 +492,7 @@ export function BuyHero({ house }: { house: House }) {
                       : ""
                   }
                   fill
-                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
                   priority={i === 0}
                   /* cover, not contain: the box now IS the plate's ratio,
                      so the two agree and there is nothing to letterbox. */

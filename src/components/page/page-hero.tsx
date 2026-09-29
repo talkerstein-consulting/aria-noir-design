@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ArtDirectedImage } from "@/components/art-directed-image";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { RevealText } from "@/components/reveal";
 
@@ -48,24 +48,13 @@ export function PageHero({
     <section className="on-ink relative flex min-h-[72svh] flex-col justify-end overflow-hidden bg-ink">
       {plate && (
         <>
-          <Image
+          <ArtDirectedImage
             src={plate}
+            portrait={platePortrait}
             alt={alt ?? ""}
-            fill
             priority
-            sizes="100vw"
-            className={`object-cover opacity-50 ${platePortrait ? "hidden sm:block" : ""}`}
+            className="object-cover opacity-50"
           />
-          {platePortrait ? (
-            <Image
-              src={platePortrait}
-              alt={alt ?? ""}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover opacity-50 sm:hidden"
-            />
-          ) : null}
           <div
             aria-hidden
             className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30"

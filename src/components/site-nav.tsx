@@ -73,6 +73,20 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
   const ref = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  /* Warm the search sheet ahead of the click: on the way to the icon, and
+     once the page has gone quiet. See `warm` on SiteSearch. */
+  const [searchWarm, setSearchWarm] = useState(false);
+  useEffect(() => {
+    if (searchWarm) return;
+    const go = () => setSearchWarm(true);
+    const idle = (window as Window & {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+    }).requestIdleCallback;
+    /* After load and a beat, so the warm-up never competes with the page's
+       own first images; idle-callback where it exists, a timer where not. */
+    const t = window.setTimeout(() => (idle ? idle(go, { timeout: 4000 }) : go()), 3000);
+    return () => window.clearTimeout(t);
+  }, [searchWarm]);
   const [bagOpen, setBagOpen] = useState(false);
   const [deskOpen, setDeskOpen] = useState(false);
 
@@ -301,6 +315,8 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             type="button"
             className="nav-icon nav-icon--morph"
             onClick={() => only("search", !searchOpen)}
+            onPointerEnter={() => setSearchWarm(true)}
+            onFocus={() => setSearchWarm(true)}
             aria-expanded={searchOpen}
             aria-label={searchOpen ? "Close search" : "Search"}
           >
@@ -355,7 +371,11 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
       </header>
 
       <SiteMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-      <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SiteSearch
+        open={searchOpen}
+        warm={searchWarm}
+        onClose={() => setSearchOpen(false)}
+      />
       <BagDrawer open={bagOpen} onClose={() => setBagOpen(false)} />
       <DeskDrawer open={deskOpen} onClose={() => setDeskOpen(false)} />
     </>

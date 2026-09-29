@@ -55,7 +55,7 @@ function PlatePair({ srcs }: { srcs: Pair }) {
             src={src}
             alt=""
             fill
-            sizes="(min-width: 1024px) 25vw, 50vw"
+            sizes="(min-width: 1280px) 300px, (min-width: 1024px) 25vw, 50vw"
             className="object-cover"
           />
         </RevealPlate>
@@ -101,7 +101,7 @@ export function StickyFeature({
               src={stickyImage}
               alt={stickyAlt}
               fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes="(min-width: 1280px) 620px, (min-width: 1024px) 50vw, 100vw"
               className="object-cover"
             />
           </RevealPlate>

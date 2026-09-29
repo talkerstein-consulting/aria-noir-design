@@ -300,7 +300,6 @@ export function Experience() {
           <video
             ref={setFilm}
             className="h-full w-full object-cover"
-            src="/video/hero-bg.mp4"
             poster="/video/hero-bg-poster.webp"
             muted
             loop
@@ -320,9 +319,21 @@ export function Experience() {
              * asks, lib/autoplay still asks again on visibility and on the
              * first interaction, and the poster below the film still holds
              * the opening image until it genuinely rolls. */
-            preload="auto"
+            preload="metadata"
             style={{ transform: `scale(${MEDIA_ZOOM})` }}
-          />
+          >
+            {/* A phone gets the 720p cut (1.6MB, not 2.5MB): the film is a
+                background behind type, and a 1080p frame on a 390px screen
+                is bytes the display throws away. An old browser that
+                ignores `media` on <source> takes the first one, so it gets
+                the 720p cut at any width — soft on a desktop, never broken. */}
+            <source
+              src="/video/hero-bg-720.mp4"
+              type="video/mp4"
+              media="(max-width: 1023px)"
+            />
+            <source src="/video/hero-bg.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
 

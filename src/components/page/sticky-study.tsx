@@ -52,7 +52,7 @@ export function StickyStudy({
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
+                sizes="(min-width: 1280px) 620px, (min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
             </RevealPlate>

@@ -55,6 +55,11 @@ export function BagDrawer({
   onClose: () => void;
 }) {
   const panel = useRef<HTMLDivElement>(null);
+  /* The drawer is always mounted, parked just off the right edge — inside
+     the browser's lazy-load margin — so a full bag downloaded its
+     thumbnails on every page view. They wait for the first open. */
+  const [opened, setOpened] = useState(false);
+  if (open && !opened) setOpened(true);
   const { resolved, ready, setQty, remove, add, count } = useBag();
   /* The last line the bin took, so it can be put back. One deep: a
      second removal replaces it, and the note clears itself after a while
@@ -196,7 +201,7 @@ export function BagDrawer({
                     className="line-row-shot"
                     style={{ background: swatchFor(line.colorway) }}
                   >
-                    {shot ? (
+                    {shot && opened ? (
                       <Image
                         src={shot}
                         alt={`${title} in ${line.colorway}`}

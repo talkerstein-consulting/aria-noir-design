@@ -36,15 +36,27 @@ import { ProductCard } from "@/components/product-card";
  */
 export function SiteSearch({
   open,
+  warm = false,
   onClose,
 }: {
   open: boolean;
+  /** Build the results before the sheet opens — the nav sets this when a
+   *  pointer or focus reaches the search icon, and once the page is idle,
+   *  so the photographs are already in hand by the time it opens. */
+  warm?: boolean;
   onClose: () => void;
 }) {
   const [term, setTerm] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const hits = useMemo(() => query(term), [term]);
+  /* The sheet is always mounted, only hidden — and a hidden sheet still
+     has layout, so its lazy card images were downloading on every page
+     for a panel most visits never open. Nothing in the results renders
+     until the first open — or until the nav says one is coming (`warm`);
+     after that it stays, so closing still animates. */
+  const [opened, setOpened] = useState(false);
+  if ((open || warm) && !opened) setOpened(true);
   const asked = term.trim().length >= 2;
 
   /* Focus follows the sheet, both ways. Opening a field nobody is typing
@@ -138,7 +150,7 @@ export function SiteSearch({
           </div>
 
           <div className="search-results" aria-live="polite">
-            {!asked ? (
+            {!opened ? null : !asked ? (
               <Suggested onGo={onClose} />
             ) : hits.length ? (
               <Answered hits={hits} onGo={onClose} />
@@ -159,8 +171,10 @@ function Suggested({ onGo }: { onGo: () => void }) {
     <div className="search-group">
       <p className="t-eyebrow mb-4 text-[var(--fg-quiet)]">The whole house</p>
       <Hits hits={frames.filter((h) => h.kind === "frame")} onGo={onGo} />
-      <div className="mt-8">
-        <CtaLink href="/eyewear">Browse all frames</CtaLink>
+      <div className="mt-10 flex justify-center">
+        <CtaLink href="/eyewear" kind="secondary">
+          Browse all frames
+        </CtaLink>
       </div>
     </div>
   );
@@ -221,7 +235,12 @@ function Hits({ hits, onGo }: { hits: readonly Hit[]; onGo: () => void }) {
        on the site. */
     <div className="search-cards" onClick={onGo}>
       {cards.map((hit) => (
-        <ProductCard key={hit.href} {...hit.card!} />
+        /* Name and picture only. The price and the "cuts · colourways" detail
+           line are the catalogue's business; in the sheet they were two
+           more rows under every tile and the reader is choosing a frame,
+           not comparing them. `images` goes too: without a shoot to page
+           through, the card draws one photograph and no chevrons. */
+        <ProductCard key={hit.href} {...hit.card!} hoverEager images={undefined} meta={undefined} detail={undefined} price={undefined} note={undefined} />
       ))}
     </div>
   );

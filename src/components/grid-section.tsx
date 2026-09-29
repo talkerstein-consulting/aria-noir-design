@@ -150,7 +150,7 @@ export function GridSection({
                   src={src}
                   alt=""
                   fill
-                  sizes="30vw"
+                  sizes="(min-width: 1152px) 340px, 30vw"
                   /* crop in slightly: several plates run bright right to
                      the edge, which reads as a pale border around the tile */
                   className="scale-[1.06] object-cover"

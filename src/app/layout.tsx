@@ -33,7 +33,12 @@ const manrope = Manrope({
 const plexMono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  /* 400 only. Nothing on the site sets the mono heavier, and Plex Mono is
+     not a variable font — each weight listed was its own file on every
+     page. Not preloaded: it sets a handful of small labels, never the
+     first thing read, so it can arrive after the faces that are. */
+  weight: ["400"],
+  preload: false,
 });
 
 export const metadata: Metadata = {

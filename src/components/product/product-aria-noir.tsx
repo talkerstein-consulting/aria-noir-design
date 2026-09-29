@@ -45,7 +45,7 @@ export function ProductAriaNoir({
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="(min-width: 640px) 50vw, 100vw"
+                sizes="(min-width: 1280px) 640px, (min-width: 640px) 50vw, 100vw"
                 className="object-cover"
               />
             </RevealPlate>

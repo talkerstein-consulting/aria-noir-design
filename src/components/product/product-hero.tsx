@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ArtDirectedImage } from "@/components/art-directed-image";
 import type { Hero } from "@/lib/product";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { RevealText } from "@/components/reveal";
@@ -51,32 +51,20 @@ export function ProductHero({ hero }: { hero: Hero }) {
         />
       ) : (
         <>
-          <Image
+          {/* The one plate above the fold on this page, so it is the LCP
+              candidate — fetched eagerly rather than waiting on the
+              observer that governs every other image here. One <picture>,
+              so a phone fetches only the portrait cut and a desktop only
+              the wide one. See ArtDirectedImage. */}
+          <ArtDirectedImage
             src={hero.image}
+            portrait={hero.imagePortrait}
             alt={hero.alt}
-            fill
-            /* The one plate above the fold on this page, so it is the LCP
-               candidate — fetched eagerly rather than waiting on the
-               observer that governs every other image here. */
             priority
-            sizes="100vw"
-            style={{ objectPosition: hero.focus ?? "50% 30%" }}
-            className={`object-cover ${hero.imagePortrait ? "hidden sm:block" : ""}`}
+            focus={hero.focus ?? "50% 30%"}
+            focusPortrait={hero.focusPortrait ?? "50% 40%"}
+            className="object-cover"
           />
-          {/* The portrait cut on a phone, where the wide plate would lose
-              the frame to the crop. Both are in the DOM and CSS picks one,
-              so there is no flash while a media query is read in JS. */}
-          {hero.imagePortrait ? (
-            <Image
-              src={hero.imagePortrait}
-              alt={hero.alt}
-              fill
-              priority
-              sizes="100vw"
-              style={{ objectPosition: hero.focusPortrait ?? "50% 40%" }}
-              className="object-cover sm:hidden"
-            />
-          ) : null}
         </>
       )}
       </div>

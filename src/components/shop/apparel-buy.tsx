@@ -252,7 +252,7 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
               src={plate.src}
               alt={plate.alt}
               fill
-              sizes="(min-width: 1024px) 55vw, 100vw"
+              sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
               priority={i === 0}
               className="object-cover"
             />

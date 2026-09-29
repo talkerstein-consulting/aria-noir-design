@@ -82,10 +82,11 @@ export function ModelStill({
           opacity: drawn ? 0 : 1,
           padding: `${(2.5 * MODEL_AIR) / (air ?? MODEL_AIR)}rem`,
         }}
-        /* The one image on the section that is worth fetching before the
-           reader reaches it: it is what they will see if anything at all
-           goes wrong with the scene. */
-        priority
+        /* Not `priority`: this section is most of a page down, and a
+           preload here competed with the hero for the first paint. Eager
+           but low, so it is still in hand before the reader arrives. */
+        loading="eager"
+        fetchPriority="low"
       />
 
       {built ? (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HoldToggle } from "@/components/shop/hold-toggle";
 import type { ReactNode } from "react";
 import { CardShots } from "@/components/card-shots";
+import { CardUnder } from "@/components/card-under";
 import { RevealPlate } from "@/components/reveal";
 import { SWATCH_FALLBACK } from "@/lib/shop";
 
@@ -120,6 +121,13 @@ export type ProductCardProps = {
    * measurement the campaign run needs.
    */
   focal?: string;
+  /** Crop in on the main photograph (not the hover one): `scale` past its box, from `origin`. Uses
+   *  the CSS `scale` property, not `transform`, so the hover zoom (which
+   *  animates `transform`) still runs on top of it. */
+  zoom?: { scale: number; origin: string };
+  /** Mount the hover photograph with the card instead of on first hover —
+   *  for a caller that warms its cards ahead of view (the search sheet). */
+  hoverEager?: boolean;
   /** The `sizes` hint, which only the grid knows. */
   sizes?: string;
   /** Fade the picture up on scroll, staggered by index. Off by default:
@@ -150,6 +158,8 @@ export function ProductCard({
   note,
   soldOut = false,
   focal,
+  zoom,
+  hoverEager = false,
   sizes = DEFAULT_SIZES,
   reveal = false,
   revealDelay = 0,
@@ -182,7 +192,10 @@ export function ProductCard({
             fill
             sizes={sizes}
             priority={priority}
-            style={focal ? { objectPosition: focal } : undefined}
+            style={{
+              ...(focal ? { objectPosition: focal } : null),
+              ...(zoom ? { scale: String(zoom.scale), transformOrigin: zoom.origin } : null),
+            }}
             /* A card with a second photograph lifts a little under the
                pointer and swaps. A card with ONE photograph has only the
                lift to say the same thing with, so it goes further — the
@@ -191,14 +204,7 @@ export function ProductCard({
             className={`card-img ${hoverImage ? "card-img--swaps" : "card-img--zooms"}`}
           />
           {hoverImage ? (
-            <Image
-              src={hoverImage}
-              alt=""
-              fill
-              sizes={sizes}
-              style={focal ? { objectPosition: focal } : undefined}
-              className="card-img card-img--under"
-            />
+            <CardUnder src={hoverImage} sizes={sizes} focal={focal} eager={hoverEager} />
           ) : null}
         </>
       ) : (

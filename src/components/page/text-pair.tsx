@@ -49,7 +49,7 @@ export function TextPair({
                 src={img.src}
                 alt={img.alt}
                 fill
-                sizes="(min-width: 640px) 50vw, 100vw"
+                sizes="(min-width: 1152px) 620px, (min-width: 640px) 50vw, 100vw"
                 className="object-cover"
               />
             </RevealPlate>

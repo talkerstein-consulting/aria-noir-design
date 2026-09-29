@@ -83,6 +83,13 @@ const MAX_HEIGHT = 1080;
  */
 const LEVEL = "4.0";
 
+/* Per-film overrides. hero-bg is a background under type on the home page
+   and is fetched on every first visit, so it takes a lighter CRF and also
+   gets a 720p cut for phones (experience.tsx picks it by `media`). */
+const OVERRIDES = {
+  "hero-bg": { crf: 30, extra: [{ suffix: "-720", crf: 28, height: 720 }] },
+};
+
 const only = process.argv[2];
 
 mkdirSync(OUT, { recursive: true });
@@ -101,6 +108,23 @@ for (const file of files) {
   const to = path.join(OUT, `${path.parse(file).name}.mp4`);
   const before = statSync(from).size;
 
+  const name = path.parse(file).name;
+  const o = OVERRIDES[name] ?? {};
+  for (const cut of o.extra ?? []) {
+    execFileSync(
+      "ffmpeg",
+      [
+        "-y", "-i", from, "-an",
+        "-c:v", "libx264", "-crf", String(cut.crf), "-preset", PRESET,
+        "-profile:v", "high", "-level:v", LEVEL, "-pix_fmt", "yuv420p",
+        "-vf", `scale=-2:${cut.height}`,
+        "-movflags", "+faststart",
+        path.join(OUT, `${name}${cut.suffix}.mp4`),
+      ],
+      { stdio: ["ignore", "ignore", "inherit"] },
+    );
+  }
+
   execFileSync(
     "ffmpeg",
     [
@@ -108,7 +132,7 @@ for (const file of files) {
       "-i", from,
       "-an",
       "-c:v", "libx264",
-      "-crf", String(CRF),
+      "-crf", String(o.crf ?? CRF),
       "-preset", PRESET,
       "-profile:v", "high",
       "-level:v", LEVEL,

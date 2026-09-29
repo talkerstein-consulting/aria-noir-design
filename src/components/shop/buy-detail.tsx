@@ -154,7 +154,7 @@ export function BuyDetail({
             src={image}
             alt={alt}
             fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
+            sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
             className="object-contain"
           />
         ) : null}

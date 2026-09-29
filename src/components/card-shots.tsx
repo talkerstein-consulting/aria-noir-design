@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useCardEngaged } from "@/lib/use-card-engaged";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
@@ -48,6 +49,11 @@ export function CardShots({
   priority?: boolean;
 }) {
   const [at, setAt] = useState(0);
+  /* Only the first photograph until the reader reaches for the card: the
+     rest are opacity-0 slides with layout, so they downloaded with the
+     grid whether or not anyone ever paged. See useCardEngaged. */
+  const mark = useRef<HTMLSpanElement>(null);
+  const engaged = useCardEngaged(mark);
 
   /* Wraps, both ways. A set this short has no end worth defending, and a
      dead arrow on the last picture is a control that has to be looked at
@@ -60,7 +66,8 @@ export function CardShots({
 
   return (
     <>
-      {images.map((src, i) => (
+      <span ref={mark} hidden />
+      {images.map((src, i) => (i === 0 || i === at || engaged) && (
         <Image
           key={src}
           src={src}

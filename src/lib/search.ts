@@ -98,7 +98,10 @@ function shots(...sets: readonly (string | undefined | null | readonly string[])
 
 /* The sheet's grid: two up on a phone, three from the small breakpoint.
    Narrower than any full-page grid because the panel is 56rem at most. */
-const SIZES = "(min-width: 640px) 18rem, 45vw";
+/* The tile's real width: five across from 1024 (about 10rem in a 56rem
+   sheet), three across from 640, two on a phone. It asked for 18rem, which
+   fetched each photograph at about twice the pixels the tile draws. */
+const SIZES = "(min-width: 1024px) 10rem, (min-width: 640px) 30vw, 45vw";
 
 /** Built once, at module scope. It cannot change without a deploy. */
 export const INDEX: readonly Hit[] = [
@@ -117,6 +120,12 @@ export const INDEX: readonly Hit[] = [
          whole shoot, in the order the site introduces it. */
       images: shots(house.plate, cardHover(house), house.gallery),
       sizes: SIZES,
+      /* ARCA II's plate is shot wide — the frame is a small object on a
+         long sill — so at sheet size it read as a windowsill. Cropped in
+         on the frame. */
+      ...(house.slug === "arca-ii"
+        ? { zoom: { scale: 1.5, origin: "51% 52%" } }
+        : null),
     },
   })),
 

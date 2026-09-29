@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
    * for; 90 is for the full-screen plates alone (see sticky-panels).
    */
   images: {
+    /* AVIF first, WebP where a browser cannot take AVIF. AVIF is usually
+       a further 20-30% under WebP at the same look; the cost is a slower
+       first encode per size, which the optimizer's cache absorbs. */
+    formats: ["image/avif", "image/webp"],
     qualities: [75, 90],
   },
   async rewrites() {

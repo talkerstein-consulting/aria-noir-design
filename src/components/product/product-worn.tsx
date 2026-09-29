@@ -135,7 +135,7 @@ export function ProductWorn({
                   src={img.src}
                   alt={img.alt}
                   fill
-                  sizes="30vw"
+                  sizes="(min-width: 1280px) 400px, 30vw"
                   /* The shoot blows out along the outer edges on several
                      plates (bright floor, sky, a lit wall running to 200+).
                      A small crop-in pushes those margins outside the frame
