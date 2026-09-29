@@ -7,8 +7,9 @@
 }
 
 .tcg-plaque {
-  /* The full width of the column, centred under the mark. */
-  --w: 100%;
+  /* The full width of the column, centred under the mark. Capped at
+     640px so the 16:1 strip tops out at 40px tall on desktop. */
+  --w: min(100%, 640px);
   margin-inline: auto;
   --pad-x: 8px;
   /* The hit area, over and under the lettering. The strip itself is under
