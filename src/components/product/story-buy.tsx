@@ -17,13 +17,10 @@ import { CtaLink } from "@/components/cta-link";
  * which put it in the gap between two arguments: attached to neither, and
  * reading as a strip of furniture the page had to be interrupted for.
  *
- * ---- Why it is quiet ----
+ * ---- Why it is filled ----
  *
- * Eight of these on one page, so each is a `secondary` — a hairline box,
- * no fill. A page of solid CTAs would be a page shouting at eight-section
- * intervals, and the STYLE-GUIDE rule is one main CTA per screen. The
- * counter at the foot is still the loud one; these are doors along the
- * corridor, not the room.
+ * It is the purchase, so it takes the main CTA style. It was briefly an
+ * outlined `secondary`, which read as an aside rather than the offer.
  *
  * ---- Why it carries no box of its own ----
  *
@@ -43,7 +40,7 @@ export function StoryBuy({
 }) {
   return (
     <div className="story-buy">
-      <CtaLink href={href} kind="secondary">
+      <CtaLink href={href}>
         {label ? `Buy ${label}` : "See the offer"}
       </CtaLink>
     </div>

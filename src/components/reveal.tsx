@@ -156,7 +156,12 @@ export function useReveal<T extends Element>() {
 
 /** A run of a heading set in one style. Exported because the content
  *  modules now type their own mixed roman/italic headings against it. */
-export type Segment = { text: string; italic?: boolean };
+export type Segment = {
+  text: string;
+  italic?: boolean;
+  /** Start the next segment on a new line. */
+  break?: boolean;
+};
 
 type RevealTextProps = {
   /** Rendered element — the caller owns the semantics (h1/h2/p/…). */
@@ -207,7 +212,8 @@ export function RevealText({
       // the natural word spacing the font already carries.
       if (wi < words.length - 1) children.push(" ");
     });
-    if (si < segments.length - 1) children.push(" ");
+    if (si < segments.length - 1)
+      children.push(seg.break ? <br key={`br-${si}`} /> : " ");
   });
 
   return createElement(

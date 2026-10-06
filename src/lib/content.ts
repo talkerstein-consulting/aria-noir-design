@@ -144,7 +144,7 @@ export const collections = {
 export const gallery = {
   preheader: "Selected Work",
   heading: [
-    { text: "Every pair,", italic: true },
+    { text: "Every pair,", italic: true, break: true },
     { text: "ITS OWN FACE.", italic: false },
   ],
   cta: "See the gallery",

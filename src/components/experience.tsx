@@ -43,6 +43,38 @@ const PrivateAccessSection = dynamic(
   { ssr: false, loading: () => <div className="h-[260vh] bg-ink" /> },
 );
 
+/**
+ * `dynamic` alone splits the code but still fetches it the moment the page
+ * hydrates — three.js, fiber, drei and the frame's glTF, well over a
+ * megabyte, racing the hero film for the first seconds of the visit. This
+ * holds the import back until the reader is two screens away, so the
+ * opening gets the whole connection to itself.
+ */
+function PrivateAccessWhenNear() {
+  const [near, setNear] = useState(false);
+  const hold = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = hold.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "200% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  if (near) return <PrivateAccessSection />;
+  /* Carries the section's id so the white iris can anchor to it before
+     the real one lands. */
+  return <div ref={hold} id="private-access" className="h-[260vh] bg-ink" />;
+}
+
 
 /* ---------- opening: the scaling rectangle ----------
    The React Bits ScrollExpand move, on the page's own fixed film. The film
@@ -131,7 +163,7 @@ export function Experience() {
     window.scrollTo(0, 0);
     const narrow = window.matchMedia("(max-width: 1023px)").matches;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const start = performance.now();
+    let start = performance.now();
     let raf = 0;
     const apply = (p: number) => {
         const e = smoothstep(0, 1, p);
@@ -178,8 +210,18 @@ export function Experience() {
         unbind();
       }
     };
-    raf = requestAnimationFrame(tick);
+    /* Held behind the boot sheet on a first visit (see layout.tsx), so
+       the rectangle and the mark's draw-in start when they can be seen. */
+    const begin = () => {
+      start = performance.now();
+      if (logoMark.current) logoMark.current.src = "/logo/aria-loader.svg?play";
+      raf = requestAnimationFrame(tick);
+    };
+    const booted = document.documentElement.dataset.boot === "done";
+    if (booted) raf = requestAnimationFrame(tick);
+    else window.addEventListener("aria:boot", begin, { once: true });
     return () => {
+      window.removeEventListener("aria:boot", begin);
       cancelAnimationFrame(raf);
       unbind();
       document.body.style.overflow = "";
@@ -426,7 +468,7 @@ export function Experience() {
         <GridSection />
         {/* The last black on the page, and the one offer that is not for
             everybody. */}
-        <PrivateAccessSection />
+        <PrivateAccessWhenNear />
         {/* The dark→light handoff. The iris is anchored to the END of
             whatever section precedes the closing block, and that is the
             private-access film rather than the gallery. Anchored by id

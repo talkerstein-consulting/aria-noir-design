@@ -22,16 +22,10 @@ import { NavShuffleLink } from "@/components/cta-link";
  * The CTA is normally a UI-face object, and this is the one place it is
  * not: at menu scale these words are the panel's only typography, and
  * Bodoni caps are what the house sounds like. Everything around them —
- * numerals, desk details, small print — stays in the UI face, so the
+ * desk details, small print — stays in the UI face, so the
  * exception reads as one deliberate voice rather than the panel drifting.
  *
  * Nothing here is italic.
- *
- * Roman numerals are real information: a fixed, ordered set, and the
- * numeral says how far down it you are. They hang in a gutter to the
- * left of the centred column rather than sitting inside each item — as a
- * flex sibling a numeral's width would push its word off-centre, and by a
- * different amount for a I than for a VI.
  *
  * Nothing in the stack is a CTA. The CTA vocabulary is two styles — filled
  * and outlined — and six filled blocks stacked down the middle of a black
@@ -70,9 +64,6 @@ import { NavShuffleLink } from "@/components/cta-link";
  * inline here is only what is this menu's own: the stack's fluid size and
  * the per-item entrance stagger, neither of which search has any use for.
  */
-
-/** Deliberately small and local — the list is six long and fixed. */
-const NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
 /** Per-item entrance delay. The token layer's char stagger, so the menu
  *  wave and the CTA's glyph shuffle stay one gesture. */
@@ -225,19 +216,14 @@ export function SiteMenu({
              what a display face is FOR on a wide screen and what it costs
              on a narrow one — five ragged-both-sides words in a 375px
              column read as a poster rather than a list of places to go. A
-             left edge gives the thumb one column to travel and the numerals
-             a straight rule to hang off. */
+             left edge gives the thumb one column to travel. */
           className="flex flex-1 flex-col items-start justify-center gap-[min(2vh,2.5rem)] py-[min(2vh,2.5rem)] sm:items-center"
         >
           {/* Generous vertical air. With the rules gone there is nothing
               between one word and the next but space, so the space has to
               do the separating — and these are the largest CTAs on the
               site, which need room to lift into. */}
-          {/* The left padding is the numerals' gutter. They hang outside
-              the word, so a stack flush to the panel's own padding would
-              hang them off the edge of the screen; from `sm` the stack is
-              centred and there is nothing to reserve. */}
-          <ul className="flex flex-col items-start gap-[min(1.6vh,1.5rem)] pl-7 sm:items-center sm:pl-0">
+          <ul className="flex flex-col items-start gap-[min(1.6vh,1.5rem)] sm:items-center">
             {menu.primary.map((link, i) => {
               const here = pathname === link.href;
               return (
@@ -246,12 +232,6 @@ export function SiteMenu({
                   className="relative motion-reduce:transform-none"
                   style={riseStyle(i)}
                 >
-                  <span
-                    aria-hidden
-                    className="t-micro absolute top-[0.55em] right-full mr-3 tabular-nums sm:mr-5"
-                  >
-                    {NUMERALS[i]}
-                  </span>
                   <NavShuffleLink
                     href={link.href}
                     onClick={onClose}

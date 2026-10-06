@@ -64,6 +64,7 @@ export function useSmoothScroll(enabled: boolean) {
     let raf = 0;
     /* The import is a round trip; the effect can be torn down inside it. */
     let cancelled = false;
+    let stopSnap: (() => void) | undefined;
 
     void import("lenis").then(({ default: Lenis }) => {
       if (cancelled) return;
@@ -76,6 +77,10 @@ export function useSmoothScroll(enabled: boolean) {
         anchors: true,
       });
       window.__lenis = lenis;
+      void attachSnap(lenis).then((stop) => {
+        if (cancelled) stop();
+        else stopSnap = stop;
+      });
 
       const loop = (time: number) => {
         lenis?.raf(time);
@@ -86,9 +91,50 @@ export function useSmoothScroll(enabled: boolean) {
 
     return () => {
       cancelled = true;
+      stopSnap?.();
       cancelAnimationFrame(raf);
       lenis?.destroy();
       delete window.__lenis;
     };
   }, [enabled]);
+}
+
+/** Which elements a scroll can settle on: every top-level section of the
+ *  page, plus anything that opts in. */
+const SNAP_TARGETS = "main section:not(section section), main [data-snap], footer";
+
+/**
+ * Anchors, so a flick does not glide past a section. `proximity`, not
+ * `mandatory`: it only takes over when a scroll comes to rest close to a
+ * section's top, so the scroll-driven scenes inside the tall sections still
+ * play under the reader's own hand. Re-scanned when `main` changes, because
+ * the home page mounts its lower sections late.
+ */
+async function attachSnap(lenis: Lenis) {
+  const { default: Snap } = await import("lenis/snap");
+  const snap = new Snap(lenis, {
+    type: "proximity",
+    distanceThreshold: "20%",
+    debounce: 220,
+    duration: 0.9,
+  });
+
+  let removers: (() => void)[] = [];
+  const scan = () => {
+    removers.forEach((remove) => remove());
+    removers = Array.from(
+      document.querySelectorAll<HTMLElement>(SNAP_TARGETS),
+      (el) => snap.addElement(el, { align: ["start"] }),
+    );
+  };
+  scan();
+
+  const main = document.querySelector("main");
+  const watch = new MutationObserver(scan);
+  if (main) watch.observe(main, { childList: true });
+
+  return () => {
+    watch.disconnect();
+    snap.destroy();
+  };
 }

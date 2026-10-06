@@ -54,6 +54,33 @@ export const metadata: Metadata = {
  */
 const BOOT = `document.documentElement.classList.add("reveal-ready");`;
 
+/**
+ * Lifts the boot sheet. Every route here is prerendered, so `loading.tsx`
+ * never shows on a first visit — the HTML is already there, and what the
+ * reader waits on is fonts, scripts and the first images. This waits for
+ * the window's `load` (and the fonts), holds the mark long enough to be
+ * read, and never longer than BOOT_MAX_MS: a slow line gets the page late
+ * rather than a loader forever. `aria:boot` tells the home opening it can
+ * start now that someone can see it.
+ */
+const BOOT_MIN_MS = 900;
+const BOOT_MAX_MS = 4000;
+const BOOT_LIFT = `(function(){
+  var d=document.documentElement,t0=Date.now(),done=false;
+  function lift(){
+    if(done)return;done=true;
+    d.dataset.boot="done";
+    window.dispatchEvent(new Event("aria:boot"));
+  }
+  function ready(){
+    var f=document.fonts&&document.fonts.ready||Promise.resolve();
+    f.then(function(){setTimeout(lift,Math.max(0,${BOOT_MIN_MS}-(Date.now()-t0)))});
+  }
+  if(document.readyState==="complete")ready();
+  else window.addEventListener("load",ready,{once:true});
+  setTimeout(lift,${BOOT_MAX_MS});
+})();`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -63,6 +90,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
+        <script dangerouslySetInnerHTML={{ __html: BOOT_LIFT }} />
       </head>
       <body className="min-h-full bg-ink text-paper">
         {/* First thing in the tab order on every page, visible only while
@@ -74,6 +102,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        {/* The first-visit loader. Server-rendered so it is the first thing
+            painted, and lifted by BOOT_LIFT above; see `.boot-loader`. */}
+        <div className="site-loading boot-loader" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element --
+              the mark animates inside the SVG; next/image would rasterise it. */}
+          <img src="/logo/aria-loader.svg" alt="" className="site-loading-mark" />
+        </div>
         {children}
         {/* Last in the body, so it is over the page without needing to
             out-rank anything on it. See RouteWipe. */}

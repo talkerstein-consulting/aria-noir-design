@@ -1702,8 +1702,12 @@
   height: min(50cqw, 50cqh);
   transform: translate(-50%, -50%);
   touch-action: none;
-  cursor: ew-resize;
+  /* The open hand says "this can be turned"; it closes while held. */
+  cursor: grab;
   z-index: 2;
+}
+.model-grab:active {
+  cursor: grabbing;
 }
 
 /* A stage whose canvas is deliberately inert — the buy page's opening turns
