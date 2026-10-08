@@ -140,6 +140,25 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
   const card = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<"idle" | "raster" | "burn" | "shown">("idle");
   const [picture, setPicture] = useState<string | null>(null);
+  /* The burn layer stays invisible until its WebGL canvas exists and has
+     drawn: before that it showed as a black box for a beat. */
+  const burnLayer = useRef<HTMLDivElement>(null);
+  const [inked, setInked] = useState(false);
+  useEffect(() => {
+    if (phase !== "burn") {
+      setInked(false);
+      return;
+    }
+    let raf = 0;
+    let frames = 0;
+    const wait = () => {
+      if (burnLayer.current?.querySelector("canvas")) frames += 1;
+      if (frames >= 3) setInked(true);
+      else raf = requestAnimationFrame(wait);
+    };
+    raf = requestAnimationFrame(wait);
+    return () => cancelAnimationFrame(raf);
+  }, [phase]);
 
   useEffect(() => {
     if (!open) {
@@ -225,7 +244,11 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
         {/* The card burns in from its centre. The overlay holds the
             card's picture; the live card stays invisible until it is done. */}
         {phase === "burn" && picture ? (
-          <div className="pointer-events-none absolute inset-0 z-20">
+          <div
+            ref={burnLayer}
+            className="pointer-events-none absolute inset-0 z-20"
+            style={{ opacity: inked ? 1 : 0 }}
+          >
             <EmberReveal
               images={[picture, picture]}
               burnThrough="form"
