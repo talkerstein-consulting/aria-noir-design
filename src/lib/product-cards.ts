@@ -11,7 +11,6 @@ import {
 } from "@/lib/colourway-cards.generated";
 import { colorwayCount, shopPath, type House } from "@/lib/navigation";
 import {
-  defaultColorway,
   formatPrice,
   galleryFor,
   isAvailable,
@@ -73,23 +72,6 @@ import {
  * a fifth variant. What a caller should NOT be doing is retyping the
  * house's meta line, and now it cannot.
  */
-
-/**
- * What a HOUSE-level card puts on the held list.
- *
- * The list is keyed by house and colourway, and a card showing a whole
- * house names no colourway — so it holds the one the house leads with, the
- * same acetate the buy page opens on and the picker starts from. That
- * keeps one rule for "which colourway did they mean" across the build
- * rather than a second answer invented here.
- *
- * A house the storefront carries nothing for returns an empty string, and
- * the card then draws no bookmark at all: `ProductCard` needs both halves of
- * the key before it renders one.
- */
-function holdFor(house: House) {
-  return { holdSlug: house.slug, holdColorway: defaultColorway(house) || null };
-}
 
 export type CardVariant = "index" | "grid" | "cross-sell";
 
@@ -197,7 +179,6 @@ export function houseCard(
       hoverImage: cardHover(house),
       swatch: house.swatch ?? swatchFor(house.colorwayNames[0]),
       name: house.name,
-      ...holdFor(house),
       sizes: "(min-width: 1024px) 20vw, 45vw",
     };
   }
@@ -213,7 +194,6 @@ export function houseCard(
     /* A grid of products is a list of products, and each name is that
        list's heading. Both full-page grids sit under the page's h1. */
     as: "h2",
-    ...holdFor(house),
     detail: cardDetail(house),
   } satisfies ProductCardProps;
 
@@ -352,7 +332,9 @@ export function colourwayCard(
     price: priceOf(house, colorway),
     detail: out ? "Out of the workshop" : undefined,
     soldOut: out,
-    sizes: "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 45vw",
+    /* Three columns on desktop, two on a tablet, one on a phone; the
+       card zooms into the photo, so it asks for the full width. */
+    sizes: "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
   };
 }
 
@@ -400,6 +382,8 @@ export function apparelColourwayCard(
     price: formatPrice(colourway.cents),
     detail: colourway.available ? undefined : "Out of the workshop",
     soldOut: !colourway.available,
-    sizes: "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 45vw",
+    /* Three columns on desktop, two on a tablet, one on a phone; the
+       card zooms into the photo, so it asks for the full width. */
+    sizes: "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
   };
 }

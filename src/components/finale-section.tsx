@@ -54,7 +54,7 @@ export function FinaleSection() {
          letting the circle be the only transition. */
       /* `on-paper` declares the ground: it is what the type recipes read,
          and it is what the fixed nav probes to know it must go dark here. */
-      className="on-paper relative z-[38] overflow-hidden px-6 pt-[29vh] pb-20 text-ink sm:px-10 sm:pb-48"
+      className="on-paper relative z-[38] overflow-hidden px-6 pt-[16vh] pb-20 text-ink sm:px-10 sm:pt-[29vh] sm:pb-48"
     >
       {/* ---- quote zone: the trail's full extent ---- */}
       <div className="relative">
@@ -82,7 +82,7 @@ export function FinaleSection() {
 
       {/* ---- the way on: outside the quote zone, so the trail never covers it ---- */}
       <div className="relative z-30 mx-auto mt-24 flex justify-center sm:mt-32">
-        <CtaLink href="/eyewear">See the eyeglasses</CtaLink>
+        <CtaLink href="/eyewear">See the collections</CtaLink>
       </div>
     </section>
   );

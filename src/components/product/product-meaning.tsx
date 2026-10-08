@@ -71,7 +71,7 @@ export function ProductMeaning({ meaning }: { meaning: Meaning }) {
       <div className="relative z-10 flex h-full items-center px-6 sm:px-10">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-5">
           <div className="flex flex-col gap-5 sm:max-w-[58%] lg:max-w-[48%]">
-            <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase italic">
+            <p className="hidden preheader font-ui text-[11px] tracking-[0.35em] text-gold uppercase italic">
               {meaning.eyebrow}
             </p>
             <RevealText
@@ -79,7 +79,7 @@ export function ProductMeaning({ meaning }: { meaning: Meaning }) {
               text={meaning.heading}
               className="font-display text-3xl leading-[1.1] tracking-tight text-balance text-paper italic sm:text-5xl"
             />
-            <p className="max-w-[52ch] font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base">
+            <p className="max-w-[52ch] t-body text-pretty text-paper/70">
               {meaning.body}
             </p>
           </div>

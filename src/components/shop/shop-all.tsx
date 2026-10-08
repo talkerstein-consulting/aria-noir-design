@@ -1,12 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { formatPrice } from "@/lib/shop";
+import { SortMenu } from "@/components/shop/sort-menu";
+import { allHouses } from "@/lib/navigation";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { ProductCard } from "@/components/product-card";
+import { framingFor } from "@/lib/card-framing";
 import {
   FilterDrawer,
   FilterGroup,
@@ -107,7 +113,99 @@ const slide = (i: number) => ({
    nothing is worse than one that just shows the shelf. */
 type Tile =
   | { kind: "piece"; piece: Piece }
-  | { kind: "heading"; slug: string; name: string };
+  | { kind: "family"; slug: string; pieces: Piece[] }
+  | { kind: "heading"; slug: string; name: string }
+  | { kind: "highlight" }
+  | { kind: "breaker"; slug: string; name: string; image: string | null | undefined; href: string };
+
+/** The highlight image takes the first 2x2 of the grid, but only when there
+ *  are enough products to flow around it. */
+const HIGHLIGHT_MIN = 6;
+
+/* ---- The product tile ----
+   DITA's: light grey ground, the frame alone from the front (the
+   turntable's frame 000, cut out), and the name, colourway and price
+   inside the tile. Hover turns it to the quarter view (frame 014).
+
+   Only the renders that exist are used; anything without one (the
+   knitwear, Black Wood, AHAVA Dark Tortoise) keeps its photograph on the
+   same grey. Keyed `collection/colourway`; the value is the file stem in
+   /images/fronts-cut/. */
+const TURNTABLE: Record<string, string> = {
+  "arca-i/309 Blue": "arca-i-309-blue",
+  "arca-i/K Black": "arca-i-k-black",
+  "arca-i/Proceso Brown": "arca-i-proceso-brown",
+  "arca-i/Z White": "arca-i-z-white",
+  "arca-ii/Caramel Stripe": "arca-ii-caramel-stripe",
+  "arca-ii/Dark Tortoise": "arca-ii-dark-tortoise",
+  "arca-ii/Dreamy Rose": "arca-ii-dreamy-rose",
+  "arca-ii/Noir": "arca-ii-noir",
+  "arca-ii/Pixie Dust": "arca-ii-pixie-dust",
+  "arca-ii/Root Beer Float": "arca-ii-root-beer-float",
+  "arca-ii/Tutti Frutti": "arca-ii-tutti-frutti",
+  "arca-ii/Velvet Rose": "arca-ii-velvet-rose",
+  "ahava/Caramel Stripe": "ahava-caramel-stripe",
+  "ahava/Dark Tortoise": "ahava-dark-tortoise",
+  "ahava/Noir": "ahava-noir",
+  "ahava/Root Beer Float": "ahava-root-beer-float",
+  "ahava/Rose": "ahava-rose",
+  "ahava/Tutti Frutti": "ahava-tutti-frutti",
+  "monarca/Caramel Stripe": "monarca-caramel-stripe",
+  "monarca/Dark Tortoise": "monarca-dark-tortoise",
+  "monarca/Dreamy Rose": "monarca-dreamy-rose",
+  "monarca/Noir": "monarca-noir",
+  "monarca/Pixie Dust": "monarca-pixie-dust",
+  "monarca/Tutti Frutti": "monarca-tutti-frutti",
+  "monarca/Velvet Rose": "monarca-velvet-rose",
+  "matriarca/Brown": "matriarca-brown",
+  "matriarca/Midnight Noir": "matriarca-noir",
+  "patriarca/Black": "patriarca-black",
+  "patriarca/Brown": "patriarca-brown",
+  "patriarca/Midnight Noir": "patriarca-midnight-noir",
+};
+
+function ShopTile({ piece }: { piece: Piece }) {
+  const stem = TURNTABLE[piece.id];
+  const href = piece.card.href ?? `/shop/${piece.collection}`;
+  return (
+    <Link href={href} className="shop-tile group relative block aspect-[7/8] w-full overflow-hidden sm:aspect-square">
+      {stem ? (
+        <>
+          <Image
+            src={`/images/fronts-cut/${stem}.webp`}
+            alt={`${piece.collectionName}, ${piece.name}, from the front`}
+            fill
+            sizes="(min-width: 1024px) 25vw, 50vw"
+            className="scale-110 object-cover pb-[34%] sm:pb-[22%] transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-0"
+          />
+          <Image
+            src={`/images/fronts-cut/${stem}-quarter.webp`}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 25vw, 50vw"
+            className="scale-110 object-cover pb-[34%] sm:pb-[22%] opacity-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100"
+          />
+        </>
+      ) : piece.card.image ? (
+        <Image
+          src={piece.card.image}
+          alt={`${piece.collectionName}, ${piece.name}`}
+          fill
+          sizes="(min-width: 1024px) 25vw, 50vw"
+          className="object-contain px-[6%] pt-[2%] pb-[20%]"
+        />
+      ) : null}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 px-2 pb-4 text-center sm:px-3 sm:pb-7">
+        <p className="font-display text-base leading-tight text-ink sm:text-xl">
+          {piece.collectionName}{" "}
+          <span className="block italic sm:inline">{piece.name}</span>
+        </p>
+        <p className="t-caption tabular-nums text-ink/65">{formatPrice(piece.cents)}</p>
+        {!piece.available ? <p className="t-caption text-ink/45">Sold out</p> : null}
+      </div>
+    </Link>
+  );
+}
 
 
 
@@ -149,6 +247,27 @@ function useStuck(bar: React.RefObject<HTMLDivElement | null>) {
   return { sentinel, stuck };
 }
 
+/** The filter mark: two sliders that fold into an X while the sidebar is
+ *  open. Two rules turn about their centres; the knobs fade out. */
+function FilterGlyph({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.25}
+      className="filter-glyph"
+      data-open={open || undefined}
+    >
+      <line className="filter-glyph-a" x1="1.5" y1="5" x2="14.5" y2="5" />
+      <line className="filter-glyph-b" x1="1.5" y1="11" x2="14.5" y2="11" />
+      <circle className="filter-glyph-knob" cx="10.5" cy="5" r="1.75" fill="var(--paper)" />
+      <circle className="filter-glyph-knob" cx="5.5" cy="11" r="1.75" fill="var(--paper)" />
+    </svg>
+  );
+}
+
 export function ShopAll() {
   const params = useSearchParams();
   const barRef = useRef<HTMLDivElement>(null);
@@ -169,6 +288,8 @@ export function ShopAll() {
     el.scrollBy({ left: dir * el.clientWidth * 0.66, behavior: "smooth" });
   };
   const [filtersOpen, setFiltersOpen] = useState(false);
+  /* The toolbar stays above the open sidebar; the rows start under it. */
+  const [filtersTop, setFiltersTop] = useState(0);
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -206,27 +327,40 @@ export function ShopAll() {
   const active = activeFilters(query);
   const current = collections.find((c) => c.slug === query.collection);
 
-  /* Grouped only while the grid is showing everything. A picked
-     collection is already one group and the heading above says which; a
-     search is a relevance list that happens to span collections, and
-     cutting it into labelled runs would bury the best match under a
-     subheading. */
-  const grouped = !query.collection && !query.q;
 
+  /* One card per model, its colours as thumbnails under it (the
+     Matsuda pattern Raviv referenced): a run of four ARCA I cards that
+     differ only by acetate is one product, not four. Grouped in the
+     order the filtered list first meets each model, so sorting and
+     search still decide what comes first. */
+  /* Individual product cards, one per colourway (the collections are
+     already shown as tiles above the shop). A single highlight image
+     breaks the grid after the first two rows, when there are enough
+     cards for it to sit between. */
+  /* Divided by collection, in the order the filtered list first meets
+     each one (so sort and search still decide what leads): a full-width
+     breaker image for the collection, then its frames. */
   const tiles = useMemo<Tile[]>(() => {
-    const items: Tile[] = list.map((piece) => ({ kind: "piece", piece }));
-    if (grouped) {
-      const out: Tile[] = [];
-      for (const c of collections) {
-        const run = list.filter((p) => p.collection === c.slug);
-        if (!run.length) continue;
-        out.push({ kind: "heading", slug: c.slug, name: c.name });
-        run.forEach((piece) => out.push({ kind: "piece", piece }));
+    const order: string[] = [];
+    const by = new Map<string, Piece[]>();
+    for (const piece of list) {
+      if (!by.has(piece.collection)) {
+        by.set(piece.collection, []);
+        order.push(piece.collection);
       }
-      return out;
+      by.get(piece.collection)!.push(piece);
     }
-    return items;
-  }, [list, grouped]);
+    return order.flatMap((slug): Tile[] => {
+      const group = by.get(slug)!;
+      const house = allHouses.find((h) => h.slug === slug);
+      /* A wide lifestyle photograph per collection (public/images/shop/breakers). */
+      const image = `/images/shop/breakers/${slug}.webp`;
+      return [
+        { kind: "breaker", slug, name: group[0].collectionName, image, href: house?.href ?? `/shop/${slug}` },
+        ...group.map((piece) => ({ kind: "piece" as const, piece })),
+      ];
+    });
+  }, [list]);
 
   /* ---- the drawer's groups ----
      Each always has an answer, so "everything" is a real option inside
@@ -263,121 +397,62 @@ export function ShopAll() {
   const suggestions = useMemo(() => fallback(), []);
 
   return (
-    <section className="on-ink section relative bg-ink pt-20 sm:pt-40" aria-labelledby="shop-heading">
-      <div className="mx-auto max-w-7xl">
-        {/* ---- the head ---- */}
-        <div className="stack stack--sm mb-12">
-          <CrumbEyebrow label="Shop all" className="t-eyebrow" />
-          <h1 id="shop-heading" className="t-display-lg">
+    <section className="on-paper section relative bg-paper !pt-10 sm:!pt-14" aria-labelledby="shop-heading">
+      {/* The page's heading lives in app/shop/page.tsx, above the
+          collection tiles. When a collection is chosen its name is said
+          here, so the grid below is never anonymous. */}
+      {current ? (
+        <div className="mx-auto max-w-7xl">
+          <h2 id="shop-heading" className="t-display-md mb-8">
             {heading}
-          </h1>
+          </h2>
         </div>
-      </div>
+      ) : (
+        <span id="shop-heading" className="sr-only">
+          {heading}
+        </span>
+      )}
 
-      {/* ---- the rail and the pin ----
-          Sticky under the header, at every width. The rail is browsing,
-          not filtering: it answers "what is there", which a first-time
-          visitor asks before they have anything to narrow. Picking a tab
-          sets the same state the drawer's Collections group does, so the
-          two always agree. */}
+      {/* ---- the toolbar ----
+          Filters on the left (opening the sidebar from the left), sort on
+          the right. Sticky under the header, at every width. */}
       <div ref={sentinel} aria-hidden="true" />
-      <div ref={barRef} className="shop-bar on-ink" data-stuck={stuck || undefined}>
-        <div className="mx-auto flex max-w-7xl items-center gap-4">
-          {/* ---- The rail asks what COLOUR, not which product ----
-          
-              It used to be the seven collections, which is the question the
-              menu already answers and the one a reader arriving at "shop
-              all" has least need of: they came here to see everything, and
-              the first cut they want is by eye. The houses are still a
-              filter — they are in the drawer, under Collections — so
-              nothing was taken away, only reordered by how often it is
-              wanted.
-          
-              Multi-select, because colour is: noir AND tortoise is a real
-              thing to ask for, where two collections at once rarely is.
-              Pressing a lit chip clears it; Everything clears them all. */}
-          <nav ref={railRef} className="shop-rail" aria-label="Filter by colour">
-            <CtaButton
-              kind="secondary"
-              current={!query.families.length}
-              onClick={() => patch({ families: [] })}
-            >
-              Everything
-            </CtaButton>
-            {FAMILIES.map((f) => {
-              const on = query.families.includes(f.id);
-              return (
-                <CtaButton
-                  key={f.id}
-                  kind="secondary"
-                  current={on}
-                  onClick={() =>
-                    patch({
-                      families: on
-                        ? query.families.filter((x) => x !== f.id)
-                        : [...query.families, f.id],
-                    })
-                  }
-                  /* The acetate itself, in the CTA's own glyph slot —
-                     which is already `aria-hidden`, and keeps the label a
-                     plain string for the character flip.
-                  
-                     Never the swatch ALONE: these are five browns and
-                     blacks at chip size, and a reader who cannot separate
-                     #141416 from #4a3220 would be guessing which filter
-                     they had pressed. Colour is the mark, the word is the
-                     label — the same rule the colourway picker follows. */
-                  icon={
-                    <span
-                      className="shop-chip-swatch"
-                      style={{ background: f.swatch }}
-                    />
-                  }
-                >
-                  {f.label}
-                </CtaButton>
-              );
-            })}
-          </nav>
-          {/* The rail's handles: two squares, then the filter box. They sit
-              on the right because that is the edge the rail runs off, and
-              before Filter because they belong to the rail rather than to
-              the drawer. `aria-hidden` is wrong here — they do something a
-              keyboard cannot otherwise do on a horizontally scrolled
-              region — so they are labelled buttons. */}
-          <div className="shop-nudge">
-            <button
-              type="button"
-              onClick={() => nudgeRail(-1)}
-              aria-label="Scroll the colours left"
-            >
-              <ChevronLeft aria-hidden />
-            </button>
-            <button
-              type="button"
-              onClick={() => nudgeRail(1)}
-              aria-label="Scroll the colours right"
-            >
-              <ChevronRight aria-hidden />
-            </button>
-          </div>
+      <div
+        ref={barRef}
+        className="shop-bar on-paper"
+        data-stuck={stuck || undefined}
+        data-filters={filtersOpen || undefined}
+      >
+        <div className="mx-auto grid max-w-7xl grid-cols-2 items-center sm:flex sm:justify-between sm:gap-4">
+          <div className="flex items-center gap-6 sm:gap-10">
           <button
             type="button"
-            onClick={() => setFiltersOpen(true)}
-            className="shop-filter-pin"
-            aria-label="Filter and sort"
+            onClick={() => {
+              setFiltersTop(barRef.current?.getBoundingClientRect().bottom ?? 0);
+              setFiltersOpen((o) => !o);
+            }}
+            className="shop-tool"
             aria-expanded={filtersOpen}
           >
-            <SlidersHorizontal aria-hidden="true" />
-            <span className="t-eyebrow">Filter</span>
-            {active > 0 ? (
-              <span className="font-mono tabular-nums text-[0.5625rem]">{active}</span>
-            ) : null}
+            <FilterGlyph open={filtersOpen} />
+            <span className="sm:hidden">Filters</span>
+            <span className="hidden sm:inline">{filtersOpen ? "Hide filters" : "Show filters"}</span>
+            {active > 0 ? <span className="tabular-nums opacity-70">({active})</span> : null}
           </button>
+          <span className="shop-tool shop-count pointer-events-none opacity-60" aria-live="polite">
+            {list.length} {list.length === 1 ? "product" : "products"}
+          </span>
+          </div>
+
+          <div className="justify-self-end">
+            <SortMenu value={query.sort} options={sortOptions} onChange={(sort) => patch({ sort })} />
+          </div>
         </div>
       </div>
 
       <FilterDrawer
+        side="left"
+        top={filtersTop}
         open={filtersOpen}
         onClose={closeFilters}
         showing={list.length}
@@ -393,12 +468,6 @@ export function ShopAll() {
           options={collectionOptions}
           value={query.collection ?? "all"}
           onChange={(next) => pickCollection(next === "all" ? null : next)}
-        />
-        <FilterGroup
-          title="Order"
-          options={sortOptions}
-          value={query.sort}
-          onChange={(sort) => patch({ sort })}
         />
         <FilterMulti
           title="Colour"
@@ -484,11 +553,74 @@ export function ShopAll() {
             their own last row and the page would step in and out. */}
         <div
           ref={gridRef}
-          className="shop-grid mt-12 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4"
+          /* DITA's grid: four across, narrow gaps, light grey tiles; the
+             highlight image takes the first 2x2. */
+          className="shop-grid -mx-[17px] mt-4 flex flex-wrap justify-center gap-1.5 sm:mx-0 sm:mt-8"
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {tiles.map((tile, i) =>
-              tile.kind === "heading" ? (
+              tile.kind === "breaker" ? (
+                /* The grid breaker: one per collection, every column wide,
+                   its photograph and its name, before its frames. */
+                <motion.figure
+                  key={`breaker-${tile.slug}`}
+                  id={`run-${tile.slug}`}
+                  layout
+                  className="shop-breaker relative w-full overflow-hidden"
+                  {...slide(i)}
+                >
+                  <Link href={tile.href} className="group block">
+                    <div className="relative aspect-[16/9] w-full sm:aspect-[21/8]">
+                      {tile.image ? (
+                        <Image
+                          src={tile.image}
+                          alt=""
+                          fill
+                          sizes="100vw"
+                          className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
+                        />
+                      ) : null}
+                      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
+                      <figcaption className="absolute inset-x-0 bottom-0 flex justify-center p-6 sm:p-10">
+                        <h2 className="font-display text-3xl text-paper sm:text-5xl">{tile.name}</h2>
+                      </figcaption>
+                    </div>
+                  </Link>
+                </motion.figure>
+              ) : tile.kind === "highlight" ? (
+                /* The image that breaks the grid: two columns by two rows,
+                   first in the grid, the products flowing around it. */
+                <motion.figure
+                  key="highlight"
+                  layout
+                  className="shop-highlight relative col-span-2 overflow-hidden lg:row-span-2"
+                  {...slide(i)}
+                >
+                  <Link href="/arca-ii" className="group block h-full">
+                    <div className="relative aspect-square h-full w-full">
+                      <Image
+                        src="/images/home/hero-m.webp"
+                        alt="Aria and Noir, together, in ARCA I"
+                        fill
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
+                      />
+                    </div>
+                  </Link>
+                </motion.figure>
+              ) : tile.kind === "family" ? (
+                <motion.article
+                  key={`family-${tile.slug}`}
+                  layout
+                  className="relative flex"
+                  {...slide(i)}
+                >
+                  <FamilyCard
+                    pieces={tile.pieces}
+                    inBag={(id) => ready && inBag.has(id)}
+                  />
+                </motion.article>
+              ) : tile.kind === "heading" ? (
                 <motion.h2
                   key={`heading-${tile.slug}`}
                   id={`run-${tile.slug}`}
@@ -502,10 +634,10 @@ export function ShopAll() {
                 <motion.article
                   key={tile.piece.id}
                   layout
-                  className="relative flex"
+                  className="shop-cell relative flex"
                   {...slide(i)}
                 >
-                  <ProductCard {...tile.piece.card} />
+                  <ShopTile piece={tile.piece} />
                   {/* Already chosen. Said in words, at the corner of the
                       picture, and only once the bag is known: a mark that
                       appears a frame after the card reads as the shop
@@ -520,5 +652,91 @@ export function ShopAll() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * One model with its colourways. The big card is the chosen colour;
+ * the row underneath is every colour this list holds for the model, as
+ * small product shots. Tapping one swaps the card (picture, name, price,
+ * the heart, the link) to that colour, so saving and buying stay per
+ * colour.
+ */
+function FamilyCard({
+  pieces,
+  inBag,
+}: {
+  pieces: Piece[];
+  inBag: (id: string) => boolean;
+}) {
+  const [at, setAt] = useState(0);
+  const piece = pieces[Math.min(at, pieces.length - 1)];
+  return (
+    <div className="flex w-full flex-col">
+      <div className="relative flex">
+        <ProductCard {...piece.card} />
+        {piece.bagKey && inBag(piece.id) ? (
+          <span className="shop-in-bag t-eyebrow">In the bag</span>
+        ) : null}
+      </div>
+      {pieces.length > 1 ? (
+        <div
+          role="radiogroup"
+          aria-label={`${piece.collectionName} colours`}
+          className="family-thumbs mt-4"
+          /* Every colour visible, spanning the photo's width: one row up
+             to five, then two even rows (eight colours = 4 + 4). Never
+             fewer than four columns, so a two-colour model keeps small
+             thumbnails, flush left. */
+          style={
+            {
+              "--thumb-cols":
+                pieces.length <= 5
+                  ? Math.max(4, pieces.length)
+                  : Math.max(4, Math.ceil(pieces.length / 2)),
+            } as React.CSSProperties
+          }
+        >
+          {pieces.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              role="radio"
+              aria-checked={i === at}
+              aria-label={p.name}
+              title={p.name}
+              data-on={i === at}
+              onClick={() => setAt(i)}
+              className="family-thumb"
+            >
+              {p.card.image ? (
+                <Image
+                  src={p.card.image}
+                  alt=""
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                  /* The same measured crop as the big card, so the
+                     thumbnails line up with it and with each other. */
+                  style={(() => {
+                    /* Tighter than the card: at thumbnail size the frame
+                       is the whole point, the room around it is noise. */
+                    const [z, x, y] = framingFor(p.card.image);
+                    const k = 1.45;
+                    return { scale: String(z * k), translate: `${x * k}% ${y * k}%` };
+                  })()}
+                />
+              ) : (
+                <span
+                  aria-hidden
+                  className="absolute inset-0"
+                  style={{ background: p.card.swatch }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }

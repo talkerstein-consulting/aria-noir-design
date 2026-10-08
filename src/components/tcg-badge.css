@@ -7,9 +7,9 @@
 }
 
 .tcg-plaque {
-  /* The full width of the column, centred under the mark. Capped at
-     640px so the 16:1 strip tops out at 40px tall on desktop. */
-  --w: min(100%, 640px);
+  /* Centred under the mark, and kept small: it is a maker's credit, not a
+     second logo. 320px caps the 16:1 strip at 20px tall on desktop. */
+  --w: min(60%, 320px);
   margin-inline: auto;
   --pad-x: 8px;
   /* The hit area, over and under the lettering. The strip itself is under
@@ -98,11 +98,10 @@
 
 
 @media (max-width: 640px) {
-  /* The last line of the page, under the ARIA mark, as wide as the
-     screen allows: let out past the gutters so the lettering is the
-     width of the mark above it rather than a stamp in a corner. */
-  .tcg-footer { width: calc(100% + 2rem); margin-inline: -1rem; }
-  .tcg-plaque { --w: 100%; --pad-x: 10px; }
+  /* The last line of the page, centred under the ARIA mark and kept
+     small, as on desktop. */
+  .tcg-footer { width: 100%; margin-inline: 0; }
+  .tcg-plaque { --w: min(70%, 260px); --pad-x: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

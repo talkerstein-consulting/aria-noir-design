@@ -793,6 +793,10 @@ export function CheckoutView() {
                 >
                   <span className="phase-index">{p.index}</span>
                   <span className="phase-label t-eyebrow">{p.label}</span>
+                  <span className="sr-only">
+                    {`Step ${Number(p.index)} of ${phases.length}`}
+                    {p.state === "done" ? ", done" : ""}
+                  </span>
                 </button>
               </li>
             ))}

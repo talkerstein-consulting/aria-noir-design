@@ -1,9 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Fragment, useEffect, useRef, type CSSProperties } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { menu } from "@/lib/navigation";
+import { Search, UserRound, X } from "lucide-react";
+import { NO_RESULT_ROUTES, query } from "@/lib/search";
 import { NavShuffleLink } from "@/components/cta-link";
 
 /**
@@ -96,12 +98,45 @@ const STACK_STYLE: CSSProperties = {
 export function SiteMenu({
   open,
   onClose,
+  onSearch,
+  onAccount,
 }: {
   open: boolean;
   onClose: () => void;
+  /* Phones only: the bar keeps just the bag, so search and the account
+     are reached from here. */
+  onSearch?: () => void;
+  onAccount?: () => void;
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  /* ---- phone: search in place ----
+     The search bar at the top of the panel turns into the field itself
+     rather than handing over to the search sheet: the destinations step
+     aside and text results take their place, no image previews. Closing
+     the menu resets it. */
+  const [searching, setSearching] = useState(false);
+  const [q, setQ] = useState("");
+  const field = useRef<HTMLInputElement>(null);
+  const hits = useMemo(() => query(q), [q]);
+  const [wasOpen, setWasOpen] = useState(open);
+  if (wasOpen !== open) {
+    setWasOpen(open);
+    if (!open) {
+      setSearching(false);
+      setQ("");
+    }
+  }
+  const startSearch = () => {
+    setSearching(true);
+    /* Focus inside the tap, so iOS raises the keyboard. */
+    field.current?.focus();
+  };
+  const stopSearch = () => {
+    setSearching(false);
+    setQ("");
+  };
 
   /* Escape closes; focus moves into the panel on open; the page behind
      stops scrolling. Lenis drives real document scroll, so locking the
@@ -208,9 +243,85 @@ export function SiteMenu({
       <div className="sheet-panel on-ink px-4 py-3 sm:px-6 sm:py-4 md:px-8 md:py-6">
         <div className="min-h-8" aria-hidden />
 
+        {/* ---- phone: search first ----
+            Jakob's law: a phone menu opens on its search field. A full-width,
+            48px-tall bar is also the largest target in the panel (Fitts),
+            set where the eye lands first. It opens the search sheet. */}
+        {onSearch ? (
+          <div
+            className="search-box mt-6 sm:hidden"
+            data-active={searching}
+            style={riseStyle(0)}
+            onClick={() => !searching && startSearch()}
+          >
+            <Search aria-hidden size={18} strokeWidth={1.5} className="shrink-0" />
+            <input
+              ref={field}
+              type="search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onFocus={() => setSearching(true)}
+              onKeyDown={(e) => e.key === "Escape" && (e.stopPropagation(), stopSearch())}
+              placeholder={searching ? "Frame, colour or page" : "Search frames, pages"}
+              aria-label="Search"
+              enterKeyHint="search"
+              className="min-w-0 flex-1 bg-transparent font-ui text-sm text-paper outline-none placeholder:text-[var(--fg-quiet)]"
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                stopSearch();
+              }}
+              aria-label="Cancel search"
+              tabIndex={searching ? 0 : -1}
+              className="search-box-cancel"
+            >
+              <X aria-hidden size={18} strokeWidth={1.5} />
+            </button>
+          </div>
+        ) : null}
+
+        {searching ? (
+          <div className="search-results mt-4 flex-1 overflow-y-auto sm:hidden" aria-live="polite">
+            {q.trim().length < 2 ? (
+              <p className="t-micro py-3 text-[var(--fg-quiet)]">Type two letters or more.</p>
+            ) : hits.length ? (
+              <ul>
+                {hits.map((h) => (
+                  <li key={h.href + h.label}>
+                    <Link
+                      href={h.href}
+                      onClick={onClose}
+                      className="flex min-h-12 items-center justify-between gap-4 border-b border-[var(--fg-rule)] py-3"
+                    >
+                      <span className="font-display text-lg text-paper">{h.label}</span>
+                      <span className="t-micro shrink-0 text-[var(--fg-quiet)]">{h.note}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="py-3">
+                <p className="t-micro text-[var(--fg-quiet)]">Nothing by that name. Try:</p>
+                <ul className="mt-2">
+                  {NO_RESULT_ROUTES.map((r) => (
+                    <li key={r.href}>
+                      <Link href={r.href} onClick={onClose} className="flex min-h-12 items-center border-b border-[var(--fg-rule)] font-display text-lg text-paper">
+                        {r.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : null}
+
         {/* ---- the stack, centred on both axes ---- */}
         <nav
           aria-label="Main"
+          data-hidden-mobile={searching || undefined}
           /* Left on a phone, centred from `sm` up. A centred stack needs
              the eye to find a new starting point on every line, which is
              what a display face is FOR on a wide screen and what it costs
@@ -223,13 +334,15 @@ export function SiteMenu({
               between one word and the next but space, so the space has to
               do the separating — and these are the largest CTAs on the
               site, which need room to lift into. */}
-          <ul className="flex flex-col items-start gap-[min(1.6vh,1.5rem)] sm:items-center">
+          {/* On a phone each destination is a full-width row at least 48px
+              tall, so the whole line is the target, not just the word. */}
+          <ul className="flex w-full flex-col items-stretch gap-[min(1.6vh,1.5rem)] max-sm:gap-1 sm:w-auto sm:items-center">
             {menu.primary.map((link, i) => {
               const here = pathname === link.href;
               return (
                 <li
                   key={link.href}
-                  className="relative motion-reduce:transform-none"
+                  className="relative flex min-h-12 items-center motion-reduce:transform-none sm:block sm:min-h-0"
                   style={riseStyle(i)}
                 >
                   <NavShuffleLink
@@ -253,43 +366,29 @@ export function SiteMenu({
 
         </nav>
 
-        {/* ---- the foot: one centred line of small print ----
-            The desk column that used to sit on the left is gone. Contact is
-            already the sixth destination in the stack above it, set at
-            display size — repeating the address underneath in label type
-            was the menu answering a question it had just answered, and it
-            pulled the whole foot off-centre for the privilege.
+        {/* ---- phone: the account, in the thumb zone ----
+            The bottom of the panel is the easiest reach for one hand, and
+            the last item is the second one remembered (serial position).
+            Full width and 48px tall, the secondary CTA shape. */}
+        {onAccount ? (
+          <div
+            className={`mt-6 border-t border-[var(--fg-rule)] pt-5 pb-3 sm:hidden ${searching ? "hidden" : ""}`}
+            style={riseStyle(menu.primary.length)}
+          >
+            <button
+              type="button"
+              onClick={onAccount}
+              className="flex min-h-12 w-full items-center justify-center gap-3 border border-paper/40 font-ui text-xs tracking-[0.25em] text-paper uppercase transition-colors hover:border-paper focus-visible:outline focus-visible:outline-1 focus-visible:outline-paper"
+            >
+              <UserRound aria-hidden size={18} strokeWidth={1.5} />
+              Sign in / Account
+            </button>
+          </div>
+        ) : null}
 
-            What is left is genuinely small print: the pages people go
-            looking for rather than browse into, centred under the stack and
-            separated by dots. The dots are what stop six short words in a
-            row from reading as one sentence, and they are `aria-hidden`
-            because they are punctuation for the eye only. */}
-        <ul
-          /* The small print follows the stack: flush left under it on a
-             phone, centred under it above. */
-          className="flex flex-wrap items-center justify-start gap-x-3 gap-y-2 motion-reduce:transform-none sm:justify-center"
-          style={riseStyle(menu.primary.length)}
-        >
-          {menu.secondary.map((link, i) => (
-            <Fragment key={link.href}>
-              {i > 0 ? (
-                <li aria-hidden className="link-quiet link-quiet--micro">
-                  ·
-                </li>
-              ) : null}
-              <li>
-                <Link
-                  href={link.href}
-                  onClick={onClose}
-                  className="link-quiet link-quiet--micro"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            </Fragment>
-          ))}
-        </ul>
+        {/* The small print (care, policies) used to sit under the stack.
+            It lives in the footer, where readers look for it, so the
+            menu is the six destinations and nothing else. */}
       </div>
     </div>
   );

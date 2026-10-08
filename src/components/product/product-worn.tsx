@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef } from "react";
 import type { Worn } from "@/lib/product";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 import { SECTION_PAD } from "@/lib/timeline";
-import { CtaLink } from "@/components/cta-link";
 import { RevealText, RevealPlate } from "@/components/reveal";
 
 /** All columns reach their final position at this progress — together. */
@@ -100,7 +99,7 @@ export function ProductWorn({
       className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}
     >
       <div className="mx-auto mb-24 flex max-w-4xl flex-col items-center gap-6 text-center sm:mb-32">
-        <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+        <p className="hidden preheader font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
           {worn.preheader}
         </p>
         <RevealText
@@ -108,22 +107,19 @@ export function ProductWorn({
           text={worn.heading}
           className="font-display text-5xl leading-[1.02] tracking-tight text-paper sm:text-7xl md:text-8xl"
         />
-        <CtaLink href={buyHref} className="mt-4">
-          {worn.cta}
-        </CtaLink>
       </div>
 
-      {/* Three columns at every width — same fix as the gallery curtain.
-          `grid-cols-2` wrapped the third stack onto its own row, so the
-          object arrived on a phone as two columns and a remainder. */}
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-3 sm:gap-10 lg:gap-14">
+      {/* Three drifting columns from sm up. On a phone the columns dissolve
+          (`contents`) and the plates flow into a plain two-column grid: three
+          columns there were 84px thumbnails, staggered by the drift. */}
+      <div className="worn-grid mx-auto grid max-w-7xl grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-10 lg:gap-14">
         {worn.columns.map((col, i) => (
           <div
             key={i}
             ref={(el) => {
               cols.current[i] = el;
             }}
-            className="flex flex-col gap-3 will-change-transform sm:gap-10 lg:gap-14"
+            className="worn-col contents will-change-transform sm:flex sm:flex-col sm:gap-10 lg:gap-14"
           >
             {col.map((img, j) => (
               <RevealPlate
@@ -135,7 +131,7 @@ export function ProductWorn({
                   src={img.src}
                   alt={img.alt}
                   fill
-                  sizes="(min-width: 1280px) 400px, 30vw"
+                  sizes="(min-width: 1280px) 400px, (min-width: 640px) 30vw, 50vw"
                   /* The shoot blows out along the outer edges on several
                      plates (bright floor, sky, a lit wall running to 200+).
                      A small crop-in pushes those margins outside the frame

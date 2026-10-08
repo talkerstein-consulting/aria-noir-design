@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
-import { SiteFooter } from "@/components/site-footer";
-import { SmoothScroll } from "@/components/smooth-scroll";
-import { PageHero } from "@/components/page/page-hero";
-import { GalleryRooms } from "@/components/page/gallery-rooms";
-import { PageClose } from "@/components/page/page-close";
+import { GalleryRibbon } from "@/components/page/gallery-ribbon";
 import { gallery } from "@/lib/pages";
 
 export const metadata: Metadata = {
@@ -17,14 +13,10 @@ export const metadata: Metadata = {
 export default function GalleryPage() {
   return (
     <>
-      <SmoothScroll />
       <SiteNav />
-      <main className="relative">
-        <PageHero {...gallery.hero} />
-        <GalleryRooms rooms={gallery.rooms} />
-        <PageClose tone="ink" {...gallery.close} />
+      <main className="relative h-svh overflow-hidden">
+        <GalleryRibbon rooms={gallery.rooms} />
       </main>
-      <SiteFooter tone="ink" />
     </>
   );
 }

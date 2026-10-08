@@ -35,7 +35,7 @@ export function StickyStudy({
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
         <div className="lg:sticky lg:top-28">
           <div className="stack stack--sm mb-16 sm:mb-20">
-            <p className="t-eyebrow">{preheader}</p>
+            <p className="hidden t-eyebrow preheader">{preheader}</p>
             <RevealText as="h2" text={heading} className="t-display-lg" />
           </div>
           <SpecRows rows={rows} />

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { Offering } from "@/lib/product";
-import { CtaLink } from "@/components/cta-link";
 import { RevealText } from "@/components/reveal";
 import { preloadModels } from "@/components/product/product-model";
 import { ModelStill } from "@/components/product/model-still";
@@ -329,9 +328,6 @@ export function ProductOffering({
             </p>
           ) : null}
 
-          <CtaLink href={href} className="pointer-events-auto mt-5">
-            {offering.cta}
-          </CtaLink>
 
           <p className="mt-5 max-w-md font-ui text-xs leading-relaxed text-pretty text-paper/50">
             {offering.registryNote}

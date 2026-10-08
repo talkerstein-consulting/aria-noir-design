@@ -19,7 +19,7 @@ export function ProductSpec({ spec }: { spec: Spec }) {
         {/* ---- column 1: sticky bench sheet ---- */}
         <div className="lg:sticky lg:top-28">
           <div className="stack stack--sm mb-16 sm:mb-20">
-            <p className="t-eyebrow">{spec.preheader}</p>
+            <p className="hidden t-eyebrow preheader">{spec.preheader}</p>
             <RevealText as="h2" text={spec.heading} className="t-display-lg" />
           </div>
 

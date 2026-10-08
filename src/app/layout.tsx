@@ -1,19 +1,23 @@
-import type { Metadata } from "next";
-import { IBM_Plex_Mono, Libre_Bodoni, Manrope } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Cormorant, Figtree, IBM_Plex_Mono } from "next/font/google";
 import { RouteWipe } from "@/components/route-wipe";
+import { AriaWordmark } from "@/components/aria-wordmark";
+import { HouseNotices } from "@/components/house-notices";
 import "./globals.css";
 
-const libreBodoni = Libre_Bodoni({
+/* Headings. Cormorant at 500: its 400 is too fine to hold on black. */
+const cormorant = Cormorant({
   variable: "--font-display",
   subsets: ["latin"],
   style: ["normal", "italic"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
-const manrope = Manrope({
+/* Body, labels, controls, and Display XS. */
+const figtree = Figtree({
   variable: "--font-ui",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
 });
 
 /**
@@ -41,6 +45,14 @@ const plexMono = IBM_Plex_Mono({
   preload: false,
 });
 
+/* `cover` lets the black run under the iPhone's home indicator and
+   toolbar instead of stopping short of them; anything pinned to the bottom
+   pads itself with env(safe-area-inset-bottom). */
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#000000",
+};
+
 export const metadata: Metadata = {
   title: "Aria Noir",
   description: "Eyewear, carved not assembled.",
@@ -63,14 +75,42 @@ const BOOT = `document.documentElement.classList.add("reveal-ready");`;
  * rather than a loader forever. `aria:boot` tells the home opening it can
  * start now that someone can see it.
  */
-const BOOT_MIN_MS = 900;
+/* Long enough for the mark to fade up and hold before it flies to the nav. */
+const BOOT_MIN_MS = 400;
 const BOOT_MAX_MS = 4000;
+/** How long the loader's mark takes to land on the nav's. */
+const BOOT_MORPH_MS = 850;
 const BOOT_LIFT = `(function(){
   var d=document.documentElement,t0=Date.now(),done=false;
-  function lift(){
-    if(done)return;done=true;
+  function finish(){
     d.dataset.boot="done";
     window.dispatchEvent(new Event("aria:boot"));
+  }
+  /* The loader's mark travels into the nav's mark: measure both, move and
+     scale the one onto the other while the sheet fades, then hand over.
+     Falls back to the slide if there is no nav mark or motion is off. */
+  function lift(){
+    if(done)return;done=true;
+    var m=document.querySelector(".boot-loader .site-loading-mark");
+    var n=document.querySelector(".site-nav .nav-mark svg");
+    var still=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(!m||!n||still){finish();return;}
+    var a=m.getBoundingClientRect(),b=n.getBoundingClientRect();
+    if(!a.width||!b.width){finish();return;}
+    /* Width, not scale: the mark is redrawn crisp at every size and lands
+       pixel-identical to the nav's. Its parent centres it, so shrinking the
+       width keeps its centre still and the translate stays true. */
+    var dx=(b.left+b.width/2)-(a.left+a.width/2);
+    var dy=(b.top+b.height/2)-(a.top+a.height/2);
+    d.dataset.boot="morph";
+    var handed=false;
+    function hand(){if(handed)return;handed=true;finish();}
+    m.addEventListener("transitionend",function(e){if(e.propertyName==="transform")hand();});
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      m.style.width=b.width+"px";
+      m.style.transform="translate("+dx+"px,"+dy+"px)";
+    });});
+    setTimeout(hand,${BOOT_MORPH_MS}+250);
   }
   function ready(){
     var f=document.fonts&&document.fonts.ready||Promise.resolve();
@@ -86,7 +126,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${libreBodoni.variable} ${manrope.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${figtree.variable} ${plexMono.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
@@ -104,15 +144,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         {/* The first-visit loader. Server-rendered so it is the first thing
             painted, and lifted by BOOT_LIFT above; see `.boot-loader`. */}
-        <div className="site-loading boot-loader" aria-hidden>
-          {/* eslint-disable-next-line @next/next/no-img-element --
-              the mark animates inside the SVG; next/image would rasterise it. */}
-          <img src="/logo/aria-loader.svg" alt="" className="site-loading-mark" />
+        <div className="site-loading boot-loader" role="status" aria-label="Loading">
+          {/* The same mark as the nav, so the page arrives under the logo it
+              keeps. */}
+          <AriaWordmark className="site-loading-mark text-paper" />
         </div>
         {children}
         {/* Last in the body, so it is over the page without needing to
             out-rank anything on it. See RouteWipe. */}
         <RouteWipe />
+        <HouseNotices />
       </body>
     </html>
   );

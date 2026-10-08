@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { House } from "@/lib/navigation";
+import { Heart } from "lucide-react";
 import { defaultColorway, stockFor, swatchFor } from "@/lib/shop";
+import { useHeld } from "@/lib/held";
+import { HoldToggle } from "@/components/shop/hold-toggle";
 
 /**
  * Pick a colourway.
@@ -50,6 +53,10 @@ export function ColourwayPicker({
      it: the frame that opens the page turning has to be the frame this
      control says is selected. */
   const [chosen, setChosen] = useState(() => defaultColorway(house, asked));
+  /* Saves are per colourway, so the picker is where they show: a heart
+     badge on every saved swatch, and the save control beside the chosen
+     colour's name. */
+  const { holds, ready } = useHeld();
   /* Announce the opening position too, not only the changes — the first
      thing shown has to agree with the first thing selected. */
   useEffect(() => {
@@ -64,7 +71,15 @@ export function ColourwayPicker({
             thumbnail. At six or eight across, the label under the selected
             square is easy to lose, and the reader is about to spend money
             on the strength of it. */}
-        <p className="t-label text-[var(--fg-primary)]">{chosen}</p>
+        <div className="flex items-center gap-3">
+          <p className="t-label text-[var(--fg-primary)]">{chosen}</p>
+          <HoldToggle
+            slug={house.slug}
+            colorway={chosen}
+            label={`${house.name}, ${chosen ?? ""}`}
+            className="colourway-hold"
+          />
+        </div>
       </div>
 
       {/* A `div`, not a `ul`. This was a list of list items with
@@ -74,12 +89,13 @@ export function ColourwayPicker({
           not a lint preference. A radiogroup's children are its radios;
           there is no list here to keep. */}
       <div
-        className="mt-3 flex flex-wrap gap-3"
+        className="swatch-row mt-3 flex gap-2"
         role="radiogroup"
         aria-label="Colourway"
       >
         {stock.map(({ colorway: name, available: inStock }) => {
           const on = name === chosen;
+          const saved = ready && holds(house.slug, name);
           /* One Tab stop, arrows between — what a radiogroup promises.
              The checked swatch holds the stop; if the checked one is out
              of the workshop (so disabled), the first live one does. */
@@ -91,7 +107,7 @@ export function ColourwayPicker({
                 type="button"
                 role="radio"
                 aria-checked={on}
-                aria-label={inStock ? name : `${name} — out of the workshop`}
+                aria-label={`${inStock ? name : `${name} — out of the workshop`}${saved ? ", saved" : ""}`}
                 disabled={!inStock}
                 tabIndex={name === stop ? 0 : -1}
                 data-colorway={name}
@@ -139,6 +155,11 @@ export function ColourwayPicker({
                   className="swatch-chip"
                   style={{ background: swatchFor(name) }}
                 />
+                {saved ? (
+                  <span aria-hidden className="swatch-saved">
+                    <Heart size={9} strokeWidth={1.5} />
+                  </span>
+                ) : null}
               </button>
           );
         })}

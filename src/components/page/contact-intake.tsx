@@ -34,7 +34,7 @@ export function ContactIntake() {
   const id = useId();
   const [step, setStep] = useState(0);
   const [subject, setSubject] = useState<number | null>(null);
-  const [who, setWho] = useState({ name: "", email: "", phone: "" });
+  const [who, setWho] = useState({ name: "", email: "", phone: "", source: "" });
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState<false | "opening" | "fallback">(false);
 
@@ -54,6 +54,7 @@ export function ContactIntake() {
       `Name: ${who.name}`,
       `Email: ${who.email}`,
       `Phone: ${who.phone || "not given"}`,
+      `Found us via: ${who.source || "not given"}`,
       "",
       message,
     ].join("\n");
@@ -145,7 +146,28 @@ export function ContactIntake() {
             value={who.phone}
             onChange={(v) => setWho({ ...who, phone: v })}
             autoComplete="tel"
+            inputMode="tel"
           />
+          <div className="flex flex-col gap-2">
+            <label htmlFor={`${id}-source`} className="t-label">
+              {form.source}
+            </label>
+            <div className="field-row">
+              <select
+                id={`${id}-source`}
+                value={who.source}
+                onChange={(e) => setWho({ ...who, source: e.target.value })}
+                className="field bg-transparent [&_option]:bg-ink [&_option]:text-paper"
+              >
+                <option value="">Choose one</option>
+                {form.sources.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <Nav
             step={step}
             last={last}
@@ -209,6 +231,7 @@ function Field({
   type = "text",
   required,
   autoComplete,
+  inputMode,
 }: {
   id: string;
   label: string;
@@ -217,6 +240,7 @@ function Field({
   type?: string;
   required?: boolean;
   autoComplete?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -230,6 +254,7 @@ function Field({
           value={value}
           required={required}
           autoComplete={autoComplete}
+          inputMode={inputMode}
           onChange={(e) => onChange(e.target.value)}
           className="field"
         />

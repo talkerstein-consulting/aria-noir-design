@@ -4,7 +4,6 @@ import { Camera } from "lucide-react";
 import { NewsletterField } from "./newsletter-field";
 import { CtaLink } from "@/components/cta-link";
 import { FooterMark } from "./footer-mark";
-import { TcgBadge } from "./tcg-badge";
 
 /**
  * Two grounds, one object.
@@ -31,12 +30,12 @@ export function SiteFooter({
   return (
     /* `sm:pb-0` is not a footer with no foot: from `sm` up the space
        under the mark is set INSIDE the column below, so both gaps in the
-       lockup resolve against the same box. See the credit line. */
+       lockup resolve against the same box. See the mark. */
     <footer className={`${ground} relative z-[39] border-t border-[var(--fg-rule)] px-6 pt-24 pb-10 sm:px-10 sm:pb-0`}>
       {/* The lockup's column, and the box every percentage in it
-          resolves against — the mark's own gaps, the credit's, and the
+          resolves against — the mark's own gaps and the
           room under the last line. Carried here rather than as the
-          footer's padding so all three read the same width. */}
+          footer's padding so both read the same width. */}
       <div className="mx-auto max-w-7xl sm:pb-[calc(6.49%_-_0.6rem)]">
         {/* ---- newsletter, then the sitemap as tabs ----
             Two blocks rather than a four-column grid. The desk (field and
@@ -100,16 +99,16 @@ export function SiteFooter({
           </div>
         </div>
 
-        {/* ── the closing row, then the mark, then the credit ───────
+        {/* ── the closing row, then the mark ───────────────────
             Left: the legal pages, which is where a reader looks for
-            them. Right: the copyright, which is the other thing a foot
-            of a page says and the only counterweight that is not a
+            them. Right: the maker's credit, as plain text, the only
+            counterweight that is not a
             second set of links — the four columns above already carry
             every route, and repeating three of them here to fill the
             space would be the footer saying the same thing twice.
 
-            Under both, ARIA closes the page alone, and the maker's
-            credit is the last line, centred beneath the mark. */}
+            Under both, the ARIA NOIR mark closes the page; NOIR is
+            the last thing on it. */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[var(--fg-rule)] pt-8 sm:flex-row">
           <ul className="flex flex-wrap justify-center gap-6">
             {footer.legalLinks.map((l) => (
@@ -120,31 +119,19 @@ export function SiteFooter({
               </li>
             ))}
           </ul>
-          <p className="t-micro text-[var(--fg-quiet)]">{footer.legal}</p>
+          <a
+            href={footer.credit.href}
+            target="_blank"
+            rel="noopener"
+            className="link-quiet link-quiet--micro"
+          >
+            {footer.credit.label}
+          </a>
         </div>
 
         {/* enlarged ARIA mark — draws itself in when it scrolls into view */}
         <FooterMark />
 
-        {/* ---- the credit, in the lockup's own measure ----
-
-            The space under NOIR is the space between ARIA and NOIR:
-            12.98% of this column, the number footer-mark sets the top
-            gap with, so the two cannot drift. The credit sits in the
-            middle of it — half above, half below, less half its own
-            height each side — which is why this carries the footer's
-            bottom room as a margin rather than the footer carrying it as
-            padding: a percentage on the footer would resolve against the
-            page, and this one has to resolve against the same column the
-            mark is drawn in.
-
-            On a phone the mark is smaller and the plaque runs the width
-            of the screen, so it keeps the flat 2rem it had. */}
-        <div
-          className="mt-8 flex justify-center sm:mt-[calc(6.49%_-_0.6rem)]"
-        >
-          <TcgBadge tone={tone} />
-        </div>
       </div>
     </footer>
   );

@@ -30,7 +30,8 @@ import type {
   Spec,
   Worn,
 } from "@/lib/product";
-import { houseBySlug } from "@/lib/shop";
+import { houseBySlug, priceOf } from "@/lib/shop";
+import { StoryIndex } from "@/components/product/story-index";
 
 /**
  * The story page, as a page.
@@ -74,7 +75,8 @@ export type Story = {
    */
   palette?: readonly PaletteColour[];
   structure: Opening;
-  ariaNoir: AriaNoir;
+  /** Optional: ARCA I runs without it. */
+  ariaNoir?: AriaNoir;
   shoot: Shoot;
   meaning: Meaning;
   detail: Detail;
@@ -128,6 +130,19 @@ export function StoryPage({
     <>
       <SmoothScroll />
       <SiteNav />
+      <StoryIndex
+        chapters={[
+          { id: "story", label: "Story" },
+          { id: "approach-film", label: "Approach" },
+          { id: "offering", label: "The Object" },
+          { id: "specification", label: "Specification" },
+          { id: "worn", label: "Worn" },
+          { id: "acquire", label: house ? "Acquire" : "The Offer" },
+        ]}
+        name={house?.name}
+        price={house ? priceOf(house) : undefined}
+        buyHref={buyHref}
+      />
       <main id="main" tabIndex={-1} className="relative">
         <ProductHero hero={story.hero} />
         <ProductOpening structure={story.structure} buyHref={buyHref} buyLabel={house?.name} />
@@ -135,7 +150,9 @@ export function StoryPage({
             turntable's swatches. A story page argues for the cut; the
             colours are the buy page's question, and asking it twice let a
             reader answer in a place that could not remember. */}
-        <ProductAriaNoir ariaNoir={story.ariaNoir} buyHref={buyHref} buyLabel={house?.name} />
+        {story.ariaNoir ? (
+          <ProductAriaNoir ariaNoir={story.ariaNoir} buyHref={buyHref} buyLabel={house?.name} />
+        ) : null}
         <ProductShoot shoot={story.shoot} buyHref={buyHref} buyLabel={house?.name} />
         {/* One continuous run from here to the registry. There was a
             wrapper around the next four sections once, holding the "Arca"

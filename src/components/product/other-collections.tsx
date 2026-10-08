@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CtaLink } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
 import { houses, type House } from "@/lib/navigation";
 import { houseCard } from "@/lib/product-cards";
@@ -87,9 +86,6 @@ export function OtherCollections({ current }: { current: House }) {
                 <ChevronRight aria-hidden />
               </button>
             </div>
-            <CtaLink href="/eyewear" kind="secondary">
-              Shop all
-            </CtaLink>
           </div>
         </div>
 

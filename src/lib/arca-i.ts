@@ -15,7 +15,6 @@
 
 import type { Approach } from "@/components/product/product-approach";
 import type {
-  AriaNoir,
   Close,
   Detail,
   Hero,
@@ -57,19 +56,8 @@ export const structure: Opening = {
   ],
 };
 
-export const ariaNoir: AriaNoir = {
-  preheader: "The Silhouette",
-  heading: "Made to disappear.",
-  body: [
-    "A strong, understated profile designed to sit close to the face. Charcoal tones and defined geometry create a silhouette that feels composed, severe, and unmistakably ARCA.",
-  ],
-  /* The two plates the Aria / Noir block ran. They are the set's only pair
-     of straight profiles, which is what this beat is now about. */
-  images: [
-    { src: `${P}/aria.webp`, alt: "Profile in a black sleeveless dress against poured concrete" },
-    { src: `${P}/noir.webp`, alt: "Profile looking down, ARCA I close to the face" },
-  ],
-};
+/* No Aria / Noir beat on ARCA I ("Made to disappear." was removed). */
+
 
 export const shoot: Shoot = {
   preheader: "The Architecture",

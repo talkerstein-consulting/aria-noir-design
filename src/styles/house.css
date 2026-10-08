@@ -1,0 +1,496 @@
+/* ═══════════════════════════════════════════════════════════════════
+   The house rules, October v2. Imported last, so these win.
+
+   The reference rendering is docs/style-guide.html. Every rule there
+   has its global counterpart here:
+
+     Type      Headings Cormorant 500, body Figtree, Display XS in Figtree.
+               Scale lives in tokens.css (~1.25 ratio on a 16–17px body).
+     Pre-      None. A label sitting directly above a heading is hidden.
+     headers
+     Corners   Square, everywhere.
+     Dividers  None. Single-side hairlines were set to 0 in place
+               (search "v2: no dividers"); `.hairline` and <hr> go here.
+     Logo      Always the logo file (AriaWordmark / public/logo), never text.
+     CTA       Hover: tumble.
+     Images    Hover: slight zoom.
+     Load      Elements slide up softly from below (see `.rise`, and the
+               existing RevealText / RevealPlate, retimed below).
+     Breaker   The emblem, monoline, small, faint, across the column.
+     Colour    No decorative colour blocks.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Type ── */
+h1, h2, h3, h4,
+.t-display-hero, .t-display-xl, .t-display-lg, .t-display-md, .t-quote {
+  font-weight: 500;
+}
+.t-display-xs {
+  font-family: var(--font-ui-stack);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ── No preheaders ──
+   The eyebrow is kept as a style for labels that stand alone (filters,
+   table heads, the footer map); only the one that opens a heading stack
+   goes. */
+.stack > .t-eyebrow:first-child,
+.stack > :first-child:has(> .t-eyebrow:only-child),
+.t-eyebrow.preheader,
+:is(p, span, div):has(+ :is(h1, h2, h3, h4)):is(.t-eyebrow, [class*="tracking-[0.3"], [class*="tracking-[0.4"]) {
+  display: none;
+}
+
+/* ── Square corners ── */
+*, *::before, *::after { border-radius: 0 !important; }
+
+/* ── No dividers ── */
+hr { display: none; }
+.hairline { border-top: 0 !important; border-bottom: 0 !important; }
+/* A field without its underline keeps a place to type: no grey fill (it
+   read as a grey box), a thin outline in the text colour instead. The
+   sort dropdown is dressed as a label and opts out (.shop-sort). */
+:is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select) {
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+}
+:is(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select):focus {
+  border-color: currentColor;
+}
+/* Already boxed: the footer's field sits in a .field-row that draws the
+   outline; the sort dropdown reads as a label. */
+.field-row .field,
+.search-box input,
+.shop-sort select { border: 0 !important; background-color: transparent !important; }
+
+/* ── CTA hover: tumble ──
+   The site's CTAs already split into per-letter stacks (.cta-char-line)
+   that slide on hover. The tumble turns that slide into a roll: each
+   letter tips forward out of view while its twin rolls up into place. */
+.cta-char-clip { perspective: 12em; }
+.cta-char-line {
+  transform-origin: 50% 0;
+  transition:
+    transform var(--dur-base) cubic-bezier(0.65, 0, 0.35, 1),
+    opacity var(--dur-base) cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--d);
+}
+.cta-char-line + .cta-char-line { transform-origin: 50% 100%; transform: rotateX(-90deg); opacity: 0; }
+:is(.cta-main, .cta-secondary, .menu-link):is(:hover, :focus-visible) .cta-char-line {
+  transform: translateY(-100%) rotateX(90deg);
+  opacity: 0;
+}
+:is(.cta-main, .cta-secondary, .menu-link):is(:hover, :focus-visible) .cta-char-line + .cta-char-line {
+  transform: translateY(-100%) rotateX(0deg);
+  opacity: 1;
+}
+
+/* ── Image hover: slight zoom ──
+   Opt in with `.zoom` on the frame, and on by default for product card
+   shots. The frame clips; the image scales 4%, slowly. */
+.zoom, .card-shot { overflow: hidden; }
+:is(.zoom, .card-shot) img {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+:is(.zoom, .card-shot):hover img,
+a:hover :is(.zoom, .card-shot) img {
+  transform: scale(1.04);
+}
+
+/* ── On load: slide softly from below ──
+   CSS only, no script, so nothing here can race React's hydration.
+
+   `.rise-now`  above the fold: plays once as the page appears.
+   `.rise`      below the fold: plays as it scrolls into view, on a
+                scroll-driven `view()` timeline. A browser without
+                scroll timelines shows the element where it stands. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.rise-now { animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+.rise-now + .rise-now { animation-delay: 0.3s; }
+@supports (animation-timeline: view()) {
+  .rise {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+
+/* ── The breaker ──
+   The emblem from the logo, traced monoline, repeated across the content
+   column. Drawn as a mask so it takes the ground's colour; 30% of it.
+   `space` lays only whole emblems and flexes the gaps to fit. */
+.breaker {
+  height: 12px;
+  color: currentColor;
+  background-color: currentColor;
+  opacity: 0.3;
+  -webkit-mask: var(--breaker-emblem) space no-repeat 0 50% / 19px 12px;
+  mask: var(--breaker-emblem) space no-repeat 0 50% / 19px 12px;
+}
+:root {
+  --breaker-emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -1 116 72' fill='none' stroke='black' stroke-width='6'%3E%3Cpath d='M32 70H0V0h100v70H68M32 70V28.5h36V70M0 42 50 0l50 42M12 0 0 10M24 0 0 20M36 0 0 30M88 0l12 10M76 0l24 20M64 0l36 30M26 22 32 28.5M74 22l-6 6.5M50 0v28.5M50 0 44 28.5M50 0 38 28.5M50 0 32.5 27M50 0 56 28.5M50 0 62 28.5M50 0 67.5 27M0 42 32 70M0 70 32 28.5M100 42 68 70M100 70 68 28.5'/%3E%3C/svg%3E");
+}
+
+/* ── No colour blocks ──
+   Decorative fills only. Colourway swatches on the buy page are a
+   control, not decoration, and stay. */
+.chip { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-ready .rise { opacity: 1; transform: none; transition: none; }
+  .cta-char-line, :is(.zoom, .card-shot) img { transition: none !important; }
+  :is(.zoom, .card-shot):hover img { transform: none; }
+}
+
+/* ---- Story index (components/product/story-index.tsx) ----
+   Desktop: chapter list at the right edge. Mobile: bar pinned to the foot,
+   whose list tumbles open above it. Both wait for the hero to pass. */
+.story-index,
+.story-pin {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base, 400ms) ease, transform var(--dur-base, 400ms) ease;
+}
+.story-index[data-shown="true"],
+.story-pin[data-shown="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+.story-index { mix-blend-mode: difference; color: var(--paper); }
+.story-index__link { opacity: 0.4; transition: opacity 200ms ease; }
+.story-index__link:hover,
+.story-index__link[aria-current="true"] { opacity: 1; }
+
+.story-pin {
+  display: flex; align-items: center;
+  /* Centred: half its own width back from the middle of the screen. */
+  transform: translate(-50%, 1rem);
+  background: var(--ink); color: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--paper) 15%, transparent);
+  margin-bottom: env(safe-area-inset-bottom);
+}
+.story-pin[data-shown="true"] { transform: translate(-50%, 0); }
+.story-pin__price { padding: 0.75rem 1rem; }
+.story-pin__buy { padding: 0.75rem 1rem; background: var(--paper); color: var(--ink); }
+
+/* ── Notices: cookies and the gift ──
+   The cookie bar rises once. The gift sheet slides up from the bottom
+   over a tint that fades in with it, and both go back the way they came. */
+@keyframes notice-rise { from { transform: translateY(100%); } to { transform: none; } }
+.notice-in { animation: notice-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.notice-btn { padding: 0.75rem 1.25rem; }
+
+.gift-root { pointer-events: none; }
+.gift-root[data-open] { pointer-events: auto; }
+.gift-tint { opacity: 0; transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.gift-root[data-open] .gift-tint { opacity: 1; }
+/* The sheet does not slide: it burns in from the centre (EmberReveal,
+   burnThrough="form", in house-notices.tsx). The live card stays at
+   opacity 0 until the burn has finished drawing its picture; the tint
+   comes up alongside. */
+.gift-sheet { visibility: hidden; }
+.gift-root[data-open] .gift-sheet { visibility: visible; }
+.gift-card { opacity: 0; }
+.gift-sheet[data-phase="shown"] .gift-card { opacity: 1; }
+@media (min-width: 768px) { .gift-sheet { bottom: 50%; transform: translateY(50%); } }
+
+/* ── Nav: words on the left (desktop), burger on the left (phone) ── */
+.nav-words { display: none; gap: 1.75rem; }
+@media (min-width: 1024px) {
+  .nav-words { display: flex; }
+  .nav-burger { display: none !important; }
+}
+.nav-words a { font-family: var(--font-ui-stack); font-size: var(--text-eyebrow); letter-spacing: var(--track-label); text-transform: uppercase; opacity: 0.85; }
+.nav-words a:hover, .nav-words a[aria-current="page"] { opacity: 1; }
+/* On a phone the bar is burger, mark, bag. */
+@media (max-width: 1023px) { .nav-icon--wide { display: none !important; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .notice-in { animation: none; }
+  .gift-tint, .gift-sheet { transition: none; }
+}
+/* ── Form fields: always the sans ──
+   The body default is the serif, and fields inherit it. Typed text and
+   placeholders in every intake (gift, house letter, footer, checkout) are
+   Figtree. */
+input, textarea, select, button { font-family: var(--font-ui-stack); }
+::placeholder { font-family: var(--font-ui-stack); }
+/* ── Preloader: the nav's mark ──
+   The loader shows the same ARIA NOIR lockup as the nav (AriaWordmark),
+   at a size that reads as the logo, fading up softly. */
+@keyframes mark-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.site-loading .site-loading-mark { width: min(240px, 52vw); animation: mark-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) { .site-loading .site-loading-mark { animation: none; } }
+/* ── Preloader morph ──
+   layout.tsx (BOOT_LIFT) sets data-boot="morph" and gives the loader's mark
+   a transform that lands it on the nav's mark. The sheet's black fades out
+   underneath it; the nav's own mark stays hidden until the hand-over, so
+   there is only ever one logo on screen. */
+html:not([data-boot="done"]) .site-nav .nav-mark svg { visibility: hidden; }
+html[data-boot="morph"] .boot-loader {
+  transform: none;
+  background-color: transparent;
+  /* The black holds while the logo sets off, then goes: the page appears
+     under a logo that is already most of the way home. */
+  transition: background-color 0.45s ease 0.35s;
+}
+html[data-boot="morph"] .boot-loader .site-loading-mark {
+  animation: none;
+  opacity: 1;
+  max-width: none;
+  /* Width and position together, one curve: the mark is redrawn at every
+     size rather than scaled, so it lands crisp on the nav's. */
+  /* Ease-out: it leaves at once and settles into the nav, rather than
+     idling mid-screen over the page and then rushing the last stretch. */
+  transition:
+    width 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* After the morph there is nothing left to slide away. */
+html[data-boot="done"] .boot-loader:has(.site-loading-mark[style*="translate"]) {
+  transform: none;
+  transition: none;
+}
+/* ── Colour dots ──
+   The one round thing on the site: a colourway swatch is a dot, and wins
+   over the square-corners rule above. */
+.swatch-dot { border-radius: 9999px !important; display: inline-block; }
+/* ── Route change: the same morph as the first visit (route-wipe.tsx) ── */
+.route-cover {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background-color: var(--ink);
+  pointer-events: none;
+  transition: background-color 0.45s ease 0.35s;
+}
+.route-cover[data-phase="morph"] { background-color: transparent; }
+.route-cover-mark { display: block; }
+.route-cover[data-phase="morph"] .site-loading-mark {
+  animation: none;
+  opacity: 1;
+  max-width: none;
+  /* Ease-out: it leaves at once and settles into the nav, rather than
+     idling mid-screen over the page and then rushing the last stretch. */
+  transition:
+    width 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.route-cover .site-loading-mark { width: min(240px, 52vw); display: block; animation: mark-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* One logo on screen at a time: the nav's waits for the hand-over. */
+html:has(.route-cover) .site-nav .nav-mark svg { visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .route-cover .site-loading-mark { animation: none; } }
+/* ── Collection tiles: dots appear on hover ──
+   Static: the name alone. Hover (or a dot holding focus): the dots rise in
+   under it. On touch screens there is no hover, so they stay shown. */
+.tile-dots {
+  opacity: 0;
+  transform: translateY(6px);
+  visibility: hidden;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.5s;
+}
+.tile:hover .tile-dots,
+.tile:focus-within .tile-dots {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+@media (hover: none) {
+  .tile-dots { opacity: 1; transform: none; visibility: visible; }
+}
+/* ── Shop All: the toolbar and the left sidebar ── */
+.drawer--left .drawer-panel { right: auto; left: 0; transform: translateX(-100%); }
+.drawer--left[data-open="true"] .drawer-panel { transform: none; }
+
+.shop-tool {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--paper);
+  cursor: pointer;
+}
+.shop-tool svg { width: 1rem; height: 1rem; stroke-width: 1.25; }
+.shop-tool:hover { opacity: 0.75; }
+/* The native select, dressed as the label beside it; its chevron is ours. */
+.shop-sort select {
+  appearance: none;
+  background: transparent !important;
+  border: 0;
+  padding: 0 1.4rem 0 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.shop-sort select:focus-visible { outline: 1px solid var(--paper); outline-offset: 4px; }
+.shop-sort select option { background: var(--ink); color: var(--paper); text-transform: none; }
+.shop-sort svg { position: absolute; right: 0; }
+/* ── Shop All: white below the collections, very light grey cards ── */
+.shop-tile { background: #f4f4f2; }
+.shop-tile:hover { background: #efefec; }
+/* The toolbar is white on the white section. When it sticks, the band it
+   paints behind the header stays ink, so the white navbar stays legible. */
+.shop-bar.on-paper { background: var(--paper); color: var(--ink); }
+.shop-bar.on-paper .shop-tool { color: var(--ink); }
+
+/* Centred grid: four across on desktop, two on phones, and a short
+   collection sits in the middle of the row rather than at its left. */
+.shop-cell { width: calc((100% - 0.375rem) / 2); }
+@media (min-width: 1024px) { .shop-cell { width: calc((100% - 3 * 0.375rem) / 4); } }
+/* ── Sort menu (sort-menu.tsx): branded dropdown ── */
+.sort-menu { position: relative; }
+.sort-menu-chevron { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.sort-menu[data-open] .sort-menu-chevron { transform: rotate(180deg); }
+.sort-menu-list {
+  position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 50;
+  min-width: 15rem; padding: 0.5rem 0;
+  background: var(--paper); color: var(--ink);
+  box-shadow: 0 18px 50px -12px rgb(0 0 0 / 0.28), 0 2px 8px rgb(0 0 0 / 0.06);
+  opacity: 0; transform: translateY(-6px); visibility: hidden; pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.35s;
+}
+.sort-menu[data-open] .sort-menu-list {
+  opacity: 1; transform: none; visibility: visible; pointer-events: auto;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+.sort-menu-item {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1.5rem;
+  padding: 0.7rem 1.25rem;
+  font-family: var(--font-ui-stack); font-size: var(--text-body-sm); text-align: left;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.sort-menu-item:hover, .sort-menu-item:focus-visible { color: var(--ink); background: #f4f4f2; outline: none; }
+.sort-menu-item[aria-selected="true"] { color: var(--ink); }
+.sort-menu-tick { width: 0.9rem; height: 0.9rem; stroke-width: 1.5; opacity: 0; }
+.sort-menu-item[aria-selected="true"] .sort-menu-tick { opacity: 1; }
+
+/* ── Filter sidebar: refined type ──
+   Title in the serif; group names as small spaced caps; rows in Figtree at
+   body size; counts quiet and tabular. */
+.drawer .drawer-panel > div:first-child .t-eyebrow:first-child {
+  font-family: var(--font-display-stack); font-size: var(--display-sm);
+  letter-spacing: -0.01em; text-transform: none; font-weight: 500;
+}
+.drawer .filter-group > h3,
+.drawer .filter-more-head {
+  font-family: var(--font-ui-stack); font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--paper) 50%, transparent);
+  margin-bottom: 0.75rem;
+}
+.drawer .filter-group + .filter-group { margin-top: 2rem; }
+.drawer .filter-row { min-height: 2.5rem; font-size: 1rem; letter-spacing: -0.005em; }
+.drawer .filter-row-count { font-family: var(--font-ui-stack); font-size: 0.75rem; opacity: 0.5; }
+/* ── Over white, the nav and the filter bar are white ──
+   The nav already works out its ground (site-nav.tsx, the tone probe) and
+   letters itself in ink over .on-paper. Over white it now also becomes a
+   solid white band rather than a fading wash, and the filter bar's sticky
+   band under it matches, so the two read as one white lid with the colours
+   inverted. */
+.site-nav { transition: color var(--dur-fast) var(--ease-out), opacity 0.7s var(--ease-out), background-color 0.35s var(--ease-out); }
+.site-nav[data-tone="light"] { background-color: var(--paper); }
+.site-nav[data-tone="light"]::before { opacity: 0; }
+.shop-bar.on-paper[data-stuck]::before { background: var(--paper); }
+/* Toolbar labels never wrap (they did on a phone: "SHOW / FILTERS"). */
+.shop-tool { white-space: nowrap; }/* On a phone the toolbar is two halves, Filters and Sort (DITA); the count
+   steps out of the way. */
+@media (max-width: 639px) { .shop-count { display: none; } }
+/* Preheaders are gone, everywhere: any line marked .preheader (the small
+   caps above a heading, in the story pages and section components) is not
+   shown. */
+.preheader { display: none !important; }
+/* ── Filter sidebar: white, under the toolbar ──
+   The panel is paper with ink type. The toolbar lifts above the drawer
+   while it is open, so the Filters button stays where it was pressed and
+   becomes the close. */
+.shop-bar[data-filters] { z-index: 70; }
+.drawer-panel--paper { background: var(--paper); color: var(--ink); }
+.drawer-panel-head { height: 9rem; flex: none; }
+.drawer .drawer-panel--paper .filter-group > h3,
+.drawer .drawer-panel--paper .filter-more-head { color: color-mix(in srgb, var(--ink) 50%, transparent); }
+.drawer-panel--paper .filter-row { color: color-mix(in srgb, var(--ink) 65%, transparent); }
+.drawer-panel--paper .filter-row:hover,
+.drawer-panel--paper .filter-row[data-on] { color: var(--ink); }
+.drawer--left .drawer-glass { background: rgb(0 0 0 / 0.2); }
+
+/* The filter mark folding into an X. */
+.filter-glyph line,
+.filter-glyph circle {
+  transform-box: view-box;
+  transform-origin: 8px 8px;
+  transition: transform var(--dur-base) cubic-bezier(0.65, 0, 0.35, 1), opacity var(--dur-fast) var(--ease-out);
+}
+.filter-glyph[data-open] .filter-glyph-a { transform: translateY(3px) rotate(45deg); }
+.filter-glyph[data-open] .filter-glyph-b { transform: translateY(-3px) rotate(-45deg); }
+.filter-glyph[data-open] .filter-glyph-knob { opacity: 0; transform: scale(0.4); }
+.filter-glyph circle { transform-box: fill-box; transform-origin: center; }
+
+/* In-panel close: the X shoppers look for at the panel's top right, beside
+   the header control that also closes it. */
+.drawer-close { align-self: center; margin-inline-end: -0.5rem; }
+.drawer-panel-head .drawer-close { margin-bottom: 0.5rem; }
+
+/* Holds the burn-in's place while three.js loads, so nothing jumps. */
+.ember-placeholder { position: absolute; inset: 0; background: var(--ink, #0b0b0b); }
+
+/* The pinned offer is one line at every width: never wraps, sized to its words. */
+.story-pin { width: max-content; max-width: calc(100vw - 2rem); white-space: nowrap; }
+
+/* Colourways: solid dots on a single row. No mount, no border: the colour
+   is the control. The chosen dot gets a thin ring standing off it. */
+.swatch-row { flex-wrap: nowrap; gap: 0.875rem; align-items: center; }
+.swatch-row .swatch {
+  flex: none; width: 1.5rem; height: 1.5rem; padding: 0; border: 0;
+  border-radius: 9999px !important; position: relative;
+  box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 18%, transparent);
+  transition: outline-color var(--dur-fast) ease;
+}
+.swatch-row .swatch-chip { width: 100%; height: 100%; border-radius: 9999px !important; }
+.swatch-row .swatch:hover:not(:disabled) { outline: 1px solid color-mix(in srgb, currentColor 45%, transparent); outline-offset: 3px; }
+.swatch-row .swatch[data-on="true"] { outline: 1px solid currentColor; outline-offset: 3px; }
+.swatch-row .swatch[data-out="true"] { opacity: 0.35; }
+.swatch-row .swatch[data-out="true"]::after { border-radius: 9999px; }
+.swatch-row .swatch-saved { display: none; }
+
+/* ── Search in the navbar (desktop) ──
+   The field grows out of the bar to the left of the magnifier; answers
+   drop down under the bar, right-aligned. No box: a single underline. */
+.nav-search {
+  width: 0; overflow: hidden; opacity: 0;
+  transition: width var(--dur-base) cubic-bezier(0.65, 0, 0.35, 1), opacity var(--dur-fast) var(--ease-out);
+}
+.nav-search[data-open] { width: min(20rem, 30vw); opacity: 1; }
+/* A black block behind the open field, on any ground: paper type on ink. */
+.nav-search[data-open] { background: var(--ink); color: var(--paper); padding: 0.5rem 1rem; }
+.nav-search input {
+  width: 100%; border: 0 !important; background: transparent !important;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent) !important;
+  padding: 0.35rem 0; font-family: var(--font-ui-stack); font-size: 0.875rem;
+  color: inherit; outline: none;
+}
+.nav-search input::placeholder { color: color-mix(in srgb, currentColor 50%, transparent); }
+.nav-search input::-webkit-search-cancel-button { display: none; }
+.nav-search-results {
+  position: absolute; top: calc(100% + 1rem); right: 0;
+  width: min(26rem, 90vw); max-height: 70vh; overflow-y: auto;
+  padding: 1rem 1.25rem; background: var(--ink); color: var(--paper);
+}
+.nav-search-hit {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  padding: 0.6rem 0; transition: opacity var(--dur-fast) var(--ease-out);
+}
+.nav-search-hit:hover { opacity: 0.7; }
+/* The search sits in the menu on a phone; the field never shows there. */
+@media (max-width: 767px) { .nav-search, .nav-search-results { display: none; } }

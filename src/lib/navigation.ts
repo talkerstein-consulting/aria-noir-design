@@ -71,7 +71,7 @@ export const menu = {
      the six campaigns walked as six rooms. */
   primary: [
     { label: "Home", href: "/" },
-    { label: "Eyeglasses", href: "/eyewear" },
+    { label: "Collections", href: "/collections" },
     { label: "Shop All", href: "/shop" },
     { label: "Gallery", href: "/gallery" },
     { label: "About us", href: "/house/about" },
@@ -1036,7 +1036,8 @@ export const sitemap: readonly SitemapGroup[] = [
     links: [
       { label: "Terms", href: "/policies/terms" },
       { label: "Privacy", href: "/policies/privacy" },
-      { label: "All pages", href: "/sitemap" },
+      /* "All pages" (/sitemap) is a designer's index, not a client's, and
+         is kept off the footer by request. The route still answers. */
     ],
   },
 ];
@@ -1112,6 +1113,12 @@ export const architecture: readonly RouteGroup[] = [
         label: "Eyewear",
         href: "/eyewear",
         note: `The index. ${housesOnShow()}, with a turntable above the grid.`,
+        kind: "designed",
+      },
+      {
+        label: "Collections",
+        href: "/collections",
+        note: "Every collection, indexed and numbered, then each one as a chapter with all its colourways.",
         kind: "designed",
       },
       {

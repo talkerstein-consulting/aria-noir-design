@@ -9,6 +9,7 @@ import { nav } from "@/lib/content";
 import { AriaWordmark } from "@/components/aria-wordmark";
 import { SiteMenu } from "@/components/site-menu";
 import { SiteSearch } from "@/components/site-search";
+import { NavSearch } from "@/components/nav-search";
 import { BagDrawer } from "@/components/shop/bag-drawer";
 import { DeskDrawer } from "@/components/shop/desk-drawer";
 import { menu } from "@/lib/navigation";
@@ -73,6 +74,8 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
   const ref = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  /* Desktop: search opens IN the bar rather than as a sheet. */
+  const [inlineSearch, setInlineSearch] = useState(false);
   /* Warm the search sheet ahead of the click: on the way to the icon, and
      once the page has gone quiet. See `warm` on SiteSearch. */
   const [searchWarm, setSearchWarm] = useState(false);
@@ -96,6 +99,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
      the page back while the first is still over it. Opening any control
      shuts the other three. */
   const only = (which: "menu" | "search" | "bag" | "desk", next: boolean) => {
+    setInlineSearch(false);
     setMenuOpen(which === "menu" && next);
     setSearchOpen(which === "search" && next);
     setBagOpen(which === "bag" && next);
@@ -272,6 +276,20 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             <span aria-hidden />
             <span aria-hidden />
           </button>
+          {/* Desktop: the menu's first words, laid out in the bar. */}
+          <nav aria-label="Primary" className="nav-words">
+            {menu.primary
+              .filter((l) => l.href !== "/")
+              .map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  aria-current={pathname === l.href ? "page" : undefined}
+                >
+                  {l.label}
+                </Link>
+              ))}
+          </nav>
 
         </div>
 
@@ -279,7 +297,10 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
           <Link
             href="/"
             aria-label="Aria Noir — home"
-            className="justify-self-center transition-opacity hover:opacity-70"
+            className="nav-mark justify-self-center transition-opacity hover:opacity-70"
+            /* The home page fades this in as its hero mark fades out, by
+               writing --home-mark on <html>. Unset everywhere else. */
+            style={{ opacity: "var(--home-mark, 1)" }}
           >
             {/* stacked ARIA / NOIR lockup — sized off height with width:auto,
               since a fixed width squashes the two lines at small sizes */}
@@ -307,18 +328,23 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             waits for `ready`: the bag lives in localStorage, so before
             mount the count is unknown, not zero, and a 0 that becomes a 2
             a frame later reads as the shop finding things it had lost. */}
-        <div className="nav-cluster justify-self-end">
+        <div className="nav-cluster relative justify-self-end">
+          <NavSearch open={inlineSearch} onClose={() => setInlineSearch(false)} />
           {/* Search sits with the errands, on the right, where most sites
               keep it. The same tap both ways: it opens the sheet and it closes it,
               and the glyph turns into the cross that says so. */}
           <button
             type="button"
-            className="nav-icon nav-icon--morph"
-            onClick={() => only("search", !searchOpen)}
-            onPointerEnter={() => setSearchWarm(true)}
-            onFocus={() => setSearchWarm(true)}
-            aria-expanded={searchOpen}
-            aria-label={searchOpen ? "Close search" : "Search"}
+            /* On a phone, search and the account live in the menu; the
+               bag is the one errand kept in the bar. */
+            className="nav-icon nav-icon--morph nav-icon--wide"
+            onClick={() => {
+              const next = !inlineSearch;
+              only("search", false);
+              setInlineSearch(next);
+            }}
+            aria-expanded={inlineSearch}
+            aria-label={inlineSearch ? "Close search" : "Search"}
           >
             <Search className="morph-in" aria-hidden />
             <X className="morph-out" aria-hidden />
@@ -330,7 +356,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
               page still exists and the drawer links to it. */}
           <button
             type="button"
-            className="nav-icon nav-icon--morph"
+            className="nav-icon nav-icon--morph nav-icon--wide"
             onClick={() => only("desk", !deskOpen)}
             aria-expanded={deskOpen}
             aria-label={deskOpen ? "Close your account" : "Your account"}
@@ -370,7 +396,15 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
 
       </header>
 
-      <SiteMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <SiteMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onSearch={() => {
+          setSearchWarm(true);
+          only("search", true);
+        }}
+        onAccount={() => only("desk", true)}
+      />
       <SiteSearch
         open={searchOpen}
         warm={searchWarm}

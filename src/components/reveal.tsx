@@ -63,7 +63,10 @@ let observer: IntersectionObserver | null = null;
 let listening = false;
 
 function reveal(el: Element) {
-  el.classList.add("is-revealed");
+  /* A data attribute, not a class: React owns `className` and rewrites it on
+     any re-render, which used to wipe the mark and snap a revealed plate
+     shut again. React leaves attributes it never rendered alone. */
+  el.setAttribute("data-revealed", "");
   pending.delete(el);
   observer?.unobserve(el);
   if (pending.size === 0) stopListening();
@@ -120,7 +123,7 @@ function observe(el: Element) {
   // fonts, the sticky columns) can still be settling after the first.
   for (const delay of [80, 500]) {
     setTimeout(() => {
-      if (!el.classList.contains("is-revealed") && isOnScreen(el)) reveal(el);
+      if (!el.hasAttribute("data-revealed") && isOnScreen(el)) reveal(el);
     }, delay);
   }
 
@@ -130,7 +133,7 @@ function observe(el: Element) {
   // later — reacting immediately would throw the animation away for every
   // one of those.
   setTimeout(() => {
-    if (!el.classList.contains("is-revealed") && document.visibilityState === "hidden") {
+    if (!el.hasAttribute("data-revealed") && document.visibilityState === "hidden") {
       reveal(el);
     }
   }, 1200);

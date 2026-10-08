@@ -25,7 +25,6 @@ import { RevealPlate } from "@/components/reveal";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { BagAdded } from "@/components/shop/bag-added";
-import { HoldToggle } from "@/components/shop/hold-toggle";
 
 
 
@@ -227,10 +226,12 @@ export function BuyHero({ house }: { house: House }) {
         return;
       }
 
-      /* Height is frozen BEFORE the row leaves the flow — once it is out,
-         the slot has nothing left to measure. */
+      /* Measured BEFORE the row leaves the flow. On a phone the row is
+         pinned for the life of the page, so the slot collapses rather than
+         holding the row's height: held, it was an empty 46px band between
+         the price and the shipping line. */
       const box = slot.getBoundingClientRect();
-      slot.style.height = `${box.height}px`;
+      slot.style.height = "0px";
       row.style.position = "fixed";
       row.style.bottom = "0px";
       row.style.left = `${box.left}px`;
@@ -362,7 +363,7 @@ export function BuyHero({ house }: { house: House }) {
             {/* The slot keeps the row's height in the offer's flow while the
                 row itself is pinned to the top of a phone's screen, so the
                 panel does not collapse by 48px the instant it pins. */}
-            <div ref={buySlotRef} className="buy-slot mt-2">
+            <div ref={buySlotRef} className="buy-slot max-lg:mt-0 mt-2">
               <div ref={buyRowRef} className="buy-row">
               <QtyStepper value={qty} onChange={setQty} />
               {/* The swap said "In the bag" before, and it described the bag
@@ -391,21 +392,9 @@ export function BuyHero({ house }: { house: House }) {
             <p className="t-caption mt-6">
               {available
                 ? "Ships in 3–5 days. Free worldwide standard shipping."
-                : "Made in runs. Hold it below and it stays on your desk until it returns."}
+                : "Made in runs. Save this colour and it stays on your desk until it returns."}
             </p>
 
-            {/* The third thing a reader can do with a frame, after buying
-                it and leaving. It sits UNDER the shipping line rather than
-                beside Add to bag: a save is the quieter of the two
-                intentions and should not be competing for the same
-                pixels. For a colourway that is out of the workshop it is
-                the only thing left to press, which is the whole reason it
-                exists on this panel. */}
-            <HoldToggle
-              slug={house.slug}
-              colorway={chosen}
-              className="mt-6"
-            />
 
           </div>
           </div>

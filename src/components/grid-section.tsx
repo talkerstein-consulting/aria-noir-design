@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gallery } from "@/lib/content";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 import { SECTION_PAD } from "@/lib/timeline";
@@ -14,6 +14,8 @@ const SETTLE_AT = 0.68;
  *  because one shared `settle` scales all four, deeper columns necessarily
  *  move faster yet still land on the same beat. */
 const TRAVEL_VH = [18, 44, 30];
+/** Two columns on a phone: the same curtain, one fewer stack. */
+const TRAVEL_VH_NARROW = [18, 40];
 /** Chase coefficient — lower is heavier. This is what keeps the curtain
  *  drifting for a moment after the wheel stops. */
 const CHASE = 0.075;
@@ -48,6 +50,26 @@ export function GridSection({
   const wrap = useRef<HTMLDivElement>(null);
   const cols = useRef<(HTMLDivElement | null)[]>([]);
 
+  /* Below sm the curtain is two stacks, not three: the same photographs
+     dealt round-robin into two columns (trimmed to an even count so the
+     two still rest level), each falling at its own speed as on desktop. */
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  const columns = useMemo(() => {
+    if (!narrow) return content.columns;
+    const flat = content.columns.flat();
+    const even = flat.slice(0, flat.length - (flat.length % 2));
+    return [0, 1].map((c) => even.filter((_, i) => i % 2 === c));
+  }, [narrow, content.columns]);
+  const travel = narrow ? TRAVEL_VH_NARROW : TRAVEL_VH;
+  const travelRef = useRef(travel);
+
   const target = useRef(0);
   const current = useRef(0);
   const kick = useRef<() => void>(() => {});
@@ -66,7 +88,7 @@ export function GridSection({
       const settle = easeOutCubic(clamp01(current.current / SETTLE_AT));
       cols.current.forEach((el, i) => {
         if (el) {
-          el.style.transform = `translateY(${(1 - settle) * TRAVEL_VH[i]}vh)`;
+          el.style.transform = `translateY(${(1 - settle) * (travelRef.current[i] ?? 0)}vh)`;
         }
       });
 
@@ -93,6 +115,15 @@ export function GridSection({
   }, []);
 
   useScrollProgress(wrap, onProgress);
+
+  /* A breakpoint change swaps the stacks: drop the stale third ref and
+     re-run one frame so the new columns take their offsets. */
+  useEffect(() => {
+    travelRef.current = travel;
+    cols.current.length = columns.length;
+    current.current = -1;
+    kick.current();
+  }, [travel, columns.length]);
 
   return (
     <section
@@ -122,23 +153,18 @@ export function GridSection({
 
       {/* 3-column curtain — equal photo counts, so it always rests aligned;
           the only difference between columns is how fast they fall */}
-      {/* THREE columns at every width. It was `grid-cols-2` below sm, which
-          quietly broke the whole object: the curtain is three vertical
-          stacks, so a two-column grid wrapped the third stack onto a second
-          row — two columns side by side and an orphan hanging underneath,
-          each still translating at its own speed. A curtain with a piece
-          fallen off it. Narrower tiles are the correct trade. */}
-      <div className="mx-auto grid max-w-6xl grid-cols-3 gap-x-3 sm:gap-x-14 lg:gap-x-20">
-        {content.columns.map((col, i) => (
+      {/* Three stacks from sm up, two on a phone (see `columns`). */}
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-3 sm:grid-cols-3 sm:gap-x-14 lg:gap-x-20">
+        {columns.map((col, i) => (
           <div
-            key={i}
+            key={`${columns.length}-${i}`}
             ref={(el) => {
               cols.current[i] = el;
             }}
             /* the in-column gap tracks the tile width, or a phone reads as
                three sparse ribbons rather than one dense curtain */
             className="flex flex-col gap-3 will-change-transform sm:gap-14 lg:gap-20"
-            style={{ transform: `translateY(${TRAVEL_VH[i]}vh)` }}
+            style={{ transform: `translateY(${travel[i]}vh)` }}
           >
             {col.map((src, j) => (
               <RevealPlate
@@ -150,7 +176,7 @@ export function GridSection({
                   src={src}
                   alt=""
                   fill
-                  sizes="(min-width: 1152px) 340px, 30vw"
+                  sizes="(min-width: 1152px) 340px, (min-width: 640px) 30vw, 45vw"
                   /* crop in slightly: several plates run bright right to
                      the edge, which reads as a pale border around the tile */
                   className="scale-[1.06] object-cover"

@@ -75,7 +75,13 @@ export function StickyFeature({
   quote,
   quoteAttribution,
   id,
-}: StickyFeatureContent & { id?: string }) {
+  still = false,
+}: StickyFeatureContent & {
+  id?: string;
+  /** No scroll effect: the plate does not pin and the column does not
+   *  run past it. The two sit side by side and scroll together. */
+  still?: boolean;
+}) {
   return (
     <section
       id={id}
@@ -83,7 +89,7 @@ export function StickyFeature({
     >
       {/* preheader + italic/caps heading */}
       <div className="mx-auto mb-24 flex max-w-5xl flex-col items-center gap-5 text-center sm:mb-32">
-        <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+        <p className="hidden preheader font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
           {preheader}
         </p>
         <RevealText
@@ -95,8 +101,10 @@ export function StickyFeature({
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
         {/* ---- column 1: sticky ---- */}
-        <div className="lg:sticky lg:top-28">
-          <RevealPlate className="relative h-[60vh] w-full overflow-hidden lg:h-[calc(100vh-9rem)]">
+        <div className={still ? "" : "lg:sticky lg:top-28"}>
+          <RevealPlate
+            className={`relative w-full overflow-hidden ${still ? "aspect-[4/5]" : "h-[60vh] lg:h-[calc(100vh-9rem)]"}`}
+          >
             <Image
               src={stickyImage}
               alt={stickyAlt}
@@ -118,7 +126,7 @@ export function StickyFeature({
                 text={feature.heading}
                 className="font-display text-4xl leading-tight tracking-tight text-paper sm:text-5xl"
               />
-              <p className="max-w-md font-ui text-sm leading-relaxed text-paper/70">
+              <p className="t-body max-w-md text-paper/70">
                 {feature.body}
               </p>
               {feature.cta && feature.href ? (
@@ -136,7 +144,7 @@ export function StickyFeature({
           {quote ? (
             <>
               {/* abundant spacing, then the quote line */}
-              <div className="h-[30vh]" />
+              {still ? null : <div className="hidden h-[30vh] lg:block" />}
               <blockquote className="flex flex-col gap-5 border-t border-paper/15 pt-10">
                 <p className="font-display text-2xl leading-snug tracking-tight text-paper italic sm:text-3xl">
                   “{quote}”

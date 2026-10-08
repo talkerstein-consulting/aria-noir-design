@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Bookmark, UserRoundPlus } from "lucide-react";
+import { Heart, UserRoundPlus } from "lucide-react";
 import { CtaLink } from "@/components/cta-link";
 import { VIEWS } from "@/components/shop/desk-view";
 import { useSession } from "@/lib/session";
 import { announceSession, house } from "@/lib/house-api";
+import { SHOW_HOLD } from "@/components/shop/hold-toggle";
 import { useHeld } from "@/lib/held";
 
 /**
@@ -157,13 +158,15 @@ export function DeskDrawer({
                   Icon={UserRoundPlus}
                   note="Make an account"
                 />
-                <DeskRoom
-                  href="/desk#held"
-                  onClick={onClose}
-                  label="Saved"
-                  Icon={Bookmark}
-                  note={heldNote}
-                />
+                {SHOW_HOLD ? (
+                  <DeskRoom
+                    href="/desk#held"
+                    onClick={onClose}
+                    label="Saved"
+                    Icon={Heart}
+                    note={heldNote}
+                  />
+                ) : null}
               </ul>
             </>
           )}
@@ -226,7 +229,7 @@ function DeskRoom({
   note: string;
   /** The desk's own glyph for this room, so the drawer and the desk
    *  name it the same way twice. Chrome weight, per STYLE-GUIDE 4. */
-  Icon?: typeof Bookmark;
+  Icon?: typeof Heart;
   onClick?: () => void;
 }) {
   return (

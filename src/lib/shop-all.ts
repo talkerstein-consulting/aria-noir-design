@@ -204,7 +204,7 @@ export function inFamily(piece: Piece, family: Family) {
 export type Sort = "featured" | "price-asc" | "price-desc" | "az";
 
 export const SORTS: readonly { id: Sort; label: string }[] = [
-  { id: "featured", label: "As the house lists them" },
+  { id: "featured", label: "Featured" },
   { id: "price-asc", label: "Price, low to high" },
   { id: "price-desc", label: "Price, high to low" },
   { id: "az", label: "A to Z" },

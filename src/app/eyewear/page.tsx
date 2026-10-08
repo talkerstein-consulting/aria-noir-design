@@ -9,7 +9,7 @@ import { eyewear } from "@/lib/pages";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Eyewear — Aria Noir",
+  title: "Collections — Aria Noir",
   description:
     "The houses, one hand. ARCA I and ARCA II, in the round.",
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { CtaButton } from "@/components/cta-link";
 
 /**
@@ -170,7 +170,14 @@ export function FilterDrawer({
   canClear,
   onClear,
   children,
+  side = "right",
+  top = 0,
 }: {
+  /** Where the panel's contents start: below the toolbar that opened it. */
+  top?: number;
+  /** Which edge the sidebar comes from. Shop All opens it on the left,
+   *  under the Filters button. */
+  side?: "left" | "right";
   open: boolean;
   onClose: () => void;
   showing: number;
@@ -209,11 +216,11 @@ export function FilterDrawer({
 
   return (
     <div
-      className="drawer"
+      className={side === "left" ? "drawer drawer--left" : "drawer"}
       data-open={open}
       role="dialog"
       aria-modal="true"
-      aria-label="Filter and sort"
+      aria-label="Filters"
     >
       <button
         type="button"
@@ -222,11 +229,13 @@ export function FilterDrawer({
         className="drawer-glass"
       />
 
-      <div ref={panel} className="drawer-panel on-ink">
-        <div className="flex items-baseline justify-between px-7 pt-28 pb-6">
-          <p className="t-eyebrow">Filter and sort</p>
-          <button type="button" onClick={onClose} className="link-quiet t-eyebrow">
-            Close
+      {/* White, under the toolbar: the Filters button stays where it was
+          pressed, above this panel, and closes it as an X. No title; the
+          button already says what this is. */}
+      <div ref={panel} className="drawer-panel drawer-panel--paper on-paper">
+        <div className="drawer-panel-head flex items-end justify-end px-5" style={top ? { height: top + 16 } : undefined}>
+          <button type="button" className="nav-icon drawer-close" aria-label="Close" onClick={onClose}>
+            <X size={18} strokeWidth={1.5} aria-hidden />
           </button>
         </div>
 

@@ -29,6 +29,10 @@ import { CtaLink } from "@/components/cta-link";
  * centred masthead it centres and in the two-column shoot it sits under
  * the left column, without either being told about it.
  */
+/* Switched off: the story page's inline CTAs were removed; the pinned
+   offer and the buy section carry the purchase. */
+const SHOW_STORY_BUY = false;
+
 export function StoryBuy({
   href,
   label,
@@ -38,6 +42,7 @@ export function StoryBuy({
    *  offer; a bare "Buy" reads as a button someone forgot to name. */
   label?: string;
 }) {
+  if (!SHOW_STORY_BUY) return null;
   return (
     <div className="story-buy">
       <CtaLink href={href}>

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><text x='50' y='68' font-size='58' font-family='Georgia,serif' fill='%23fff' text-anchor='middle'>A</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&family=Manrope:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300..700;1,300..700&family=Figtree:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 /* ══ Tokens ═══════════════════════════════════════════════════════════
    Transcribed from src/styles/tokens.css. Nothing is imported: this page
@@ -34,31 +34,31 @@
   --text-accent-light: var(--gold-on-light);
   --rule-light: color-mix(in srgb, var(--ink) 10%, transparent);
 
-  --font-display-stack: "Libre Bodoni", Georgia, "Times New Roman", serif;
-  --font-ui-stack: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display-stack: "Cormorant", Georgia, "Times New Roman", serif;
+  --font-ui-stack: "Figtree", ui-sans-serif, system-ui, sans-serif;
   --font-mono-stack: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  --display-hero: clamp(3.5rem, 17vw, 12rem);
-  --display-xl: clamp(3rem, 9vw, 6rem);
-  --display-lg: clamp(2.25rem, 6.5vw, 3.75rem);
-  --display-md: clamp(1.875rem, 4.5vw, 3rem);
-  --display-sm: clamp(1.25rem, 2.6vw, 1.875rem);
-  --display-xs: clamp(1rem, 1.6vw, 1.25rem);
+  --display-hero: clamp(4rem, 16vw, 13rem);
+  --display-xl: clamp(3.25rem, 8vw, 7rem);
+  --display-lg: clamp(2.5rem, 5.5vw, 4.5rem);
+  --display-md: clamp(2rem, 3.8vw, 3rem);
+  --display-sm: clamp(1.5rem, 2.4vw, 2rem);
+  --display-xs: clamp(1.125rem, 1.5vw, 1.375rem);
 
   --leading-display-hero: 0.82;
-  --leading-display-xl: 1.02;
-  --leading-display-lg: 1.05;
-  --leading-display-md: 1.12;
-  --leading-display-quote: 1.3;
-  --leading-display-xs: 1.35;
+  --leading-display-xl: 1;
+  --leading-display-lg: 1.04;
+  --leading-display-md: 1.1;
+  --leading-display-quote: 1.25;
+  --leading-display-xs: 1.4;
 
-  --text-eyebrow: 0.6875rem;
-  --text-micro: 0.625rem;
-  --text-caption: 0.75rem;
-  --text-body-sm: 0.875rem;
-  --text-body: 1rem;
-  --text-body-lg: 1.125rem;
-  --leading-body: 1.65;
+  --text-eyebrow: 0.75rem;
+  --text-micro: 0.6875rem;
+  --text-caption: 0.8125rem;
+  --text-body-sm: 0.9375rem;
+  --text-body: 1.0625rem;
+  --text-body-lg: 1.25rem;
+  --leading-body: 1.6;
 
   --track-display: -0.02em;
   --track-body: -0.01em;
@@ -375,13 +375,97 @@ footer.page a { color: inherit; }
   html { scroll-behavior: auto; }
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+/* ══ October v2 overrides ═══════════════════════════════════════════
+   1/  No preheaders (eyebrows).      2/  Headings: Cormorant.
+   3/  Body: Figtree.                 4/  No rounded corners.
+   5,10/ No line dividers or separators.
+   6/  CTA hover: tumble.             7/  Image hover: slight zoom.
+   8/  On load: elements slide softly up from below.
+   9/  The logo is always the logo file, never live text. */
+body { font-family: var(--font-ui-stack); }
+h1, h2, h3, h4, [class*="t-display"], .card-name { font-family: var(--font-display-stack); font-weight: 500; }
+
+/* 1 */
+.t-eyebrow, .head .num { display: none !important; }
+
+/* 4 */
+*, *::before, *::after { border-radius: 0 !important; }
+
+/* 5 + 10 — hairlines, rules, separators gone; a field keeps its focus state on the ground tone. */
+hr, .crumbs .sep { display: none !important; }
+section.band, .bar, .steps, .step, .spec, .motion-card, .rules li, footer.page,
+th, td, .field input, .chrome, .panel, table { border-top: 0 !important; border-bottom: 0 !important; }
+.field input { background: color-mix(in srgb, var(--fg-primary) 6%, transparent); padding-inline: 0.75rem; }
+.crumbs a + span, .crumbs a + a { margin-left: 0.9em; }
+
+/* 9 */
+.mark .logo { height: 1.5rem; width: auto; display: block; }
+.chrome .wordmark { letter-spacing: 0; display: inline-flex; }
+.chrome .wordmark .logo { height: 1.75rem; width: auto; display: block; }
+
+/* 6 — tumble: the label falls out the bottom and the same word drops in from the top. */
+.cta-main, .cta-secondary { position: relative; overflow: hidden; }
+.cta-main > .tumble, .cta-secondary > .tumble { display: inline-block; position: relative; }
+.tumble > span { display: inline-block; transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.45s; }
+.tumble > span:nth-child(2) { position: absolute; left: 0; top: 0; transform: translateY(-120%) rotateX(90deg); opacity: 0; }
+.cta-main:hover .tumble > span:first-child, .cta-secondary:hover .tumble > span:first-child,
+.cta-main:focus-visible .tumble > span:first-child, .cta-secondary:focus-visible .tumble > span:first-child { transform: translateY(120%) rotateX(-90deg); opacity: 0; }
+.cta-main:hover .tumble > span:nth-child(2), .cta-secondary:hover .tumble > span:nth-child(2),
+.cta-main:focus-visible .tumble > span:nth-child(2), .cta-secondary:focus-visible .tumble > span:nth-child(2) { transform: none; opacity: 1; }
+
+/* 7 */
+.zoom-frame { overflow: hidden; }
+.zoom-frame > img, .zoom-frame > .zoom-target { transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.zoom-frame:hover > img, .zoom-frame:hover > .zoom-target { transform: scale(1.04); }
+
+/* 8 */
+.rise { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.rise.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { opacity: 1; transform: none; transition: none; }
+  .tumble > span, .zoom-frame > img, .zoom-frame > .zoom-target { transition: none !important; }
+  .cta-main:hover .tumble > span:first-child, .cta-secondary:hover .tumble > span:first-child { transform: none; opacity: 1; }
+  .tumble > span:nth-child(2) { display: none; }
+}
+/* Type scale v2: ~1.25 ratio on a 16–17px body. Display XS is sans. */
+.t-display-xs { font-family: var(--font-ui-stack) !important; font-weight: 500; letter-spacing: -0.01em; }
+.t-label, .cta-main, .cta-secondary, .field label, .step-head .title, .step-head .change, .crumbs { letter-spacing: 0.16em; }
+@media (min-width: 768px) { .t-body, .head p, .rules li, .step-body, .step-summary { font-size: var(--text-body); } }
+/* No vertical dividers: boxes lose their outlines; panels sit on a tint. */
+.panel, .chrome, .card-shot, .plate-45 { border: 0 !important; }
+.panel, .chrome { background: color-mix(in srgb, var(--fg-primary) 4%, transparent); }
+
+/* Pattern, drawn from the logo lockup. */
+.pat-demo { position: relative; overflow: hidden; background: var(--ground); }
+.pat-demo svg { display: block; width: 100%; height: 100%; opacity: var(--o, 0.1); }
+.pat-field { aspect-ratio: 16 / 7; }
+.pat-band { height: 72px; margin: 1.5rem 0; }
+.pat-card { aspect-ratio: 4 / 5; }
+.pat-grid { display: grid; gap: 1.5rem; margin-top: 2rem; }
+@media (min-width: 768px) { .pat-grid { grid-template-columns: 2fr 1fr; } }
+.pat-cap { margin-top: 0.75rem; font-size: var(--text-caption); color: var(--fg-quiet); }
+.pat-dont { opacity: 0.85; }
+/* The breaker: the ARCA emblem, monoline, repeated across the content width. */
+.breaker {
+  width: 100%; height: 12px;
+  background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii04IC0xIDExNiA3MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiPjxnIHZlY3Rvci1lZmZlY3Q9Im5vbi1zY2FsaW5nLXN0cm9rZSI+PHBhdGggdmVjdG9yLWVmZmVjdD0ibm9uLXNjYWxpbmctc3Ryb2tlIiBkPSJNMzIgNzBIMFYwaDEwMHY3MEg2OE0zMiA3MFYyOC41aDM2VjcwTTAgNDIgNTAgMGw1MCA0Mk0xMiAwIDAgMTBNMjQgMCAwIDIwTTM2IDAgMCAzME04OCAwbDEyIDEwTTc2IDBsMjQgMjBNNjQgMGwzNiAzME0yNiAyMiAzMiAyOC41TTc0IDIybC02IDYuNU01MCAwdjI4LjVNNTAgMCA0NCAyOC41TTUwIDAgMzggMjguNU01MCAwIDMyLjUgMjdNNTAgMCA1NiAyOC41TTUwIDAgNjIgMjguNU01MCAwIDY3LjUgMjdNMCA0MiAzMiA3ME0wIDcwIDMyIDI4LjVNMTAwIDQyIDY4IDcwTTEwMCA3MCA2OCAyOC41Ii8+PC9nPjwvc3ZnPg==) 0 50% / 19px 12px repeat-x;
+  background-repeat: space no-repeat; opacity: 0.3;
+}
+.breaker-row { max-width: var(--page-measure); margin: 0 auto; padding: 1.5rem var(--gutter); }
+@media (min-width: 768px) { .breaker-row { padding-inline: var(--gutter-wide); } }
+.motif-big { max-width: 480px; color: var(--paper); }
+.motif-big svg { display: block; width: 100%; height: auto; } .motif-big { max-width: 360px; }
+/* No colour blocks. */
+.chip, .swatch, .swatches, .chip-row { display: none !important; }
+.card-shot, .plate-45 { background: color-mix(in srgb, var(--fg-primary) 4%, transparent) !important; }
 </style>
 </head>
 <body>
 
 <div class="bar">
   <div class="bar-inner">
-    <span class="mark">Aria Noir</span>
+    <span class="mark"><img class="logo" src="data:image/svg+xml;base64,77u/PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjIxOCIgdmlld0JveD0iMCAwIDUwMCAyMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfMTE0XzEzKSI+DQo8cGF0aCBkPSJNMTUxLjU1OSAxLjcxNTUzQzE2Ni4zMDUgMS41MjMzMiAxODEuMDUzIDEuNDgxNjMgMTk1LjggMS41OTA0NUMyMTQuNDIgMS41NzEyMiAyMzkuMTM1IC0wLjgxNTg3NSAyNTEuMzQyIDE3LjEwNzlDMjU2LjUyNiAyNC43MjA2IDI1Ni45NDMgMzUuODM1NSAyNTIuODA2IDQ0LjAxOTRDMjQ3LjYzMiA1NC4yNTI3IDIzNy43NjkgNTguODU0NiAyMjcuNTQ3IDYyLjQ2NzFDMjI4LjU1MyA2My42ODQgMjMxLjg1OCA2OS4yMzI3IDIzMy4wNjYgNzEuMDcwMkMyMzcuMzc4IDc3LjcxNzMgMjQxLjg0NCA4NC4yNjM0IDI0Ni40NiA5MC43MDMxQzI1My4xODUgMTAwLjAyNCAyNjEuMTA1IDExMC44OTEgMjcyLjk1MiAxMTIuODA5QzI3My42MDIgMTEzLjY2OCAyNzMuNDQgMTEzLjI4NiAyNzMuNTYyIDExNC4zNzlDMjcyLjI0OSAxMTcuMjcgMjU5Ljc1IDExNS42ODYgMjU2LjY0MyAxMTYuMjA4QzI1NS45ODcgMTE2LjIyMyAyNTUuMjQ5IDExNi4wMTcgMjU0LjYwNSAxMTUuODg5QzIzNi4yNjIgMTEyLjIzMyAyMTkuNzE2IDc5LjU0MjYgMjA5Ljg1MSA2NC43ODU4QzIwNC4zNTQgNjQuNDA5MyAxOTguMDIxIDY0LjgyMjkgMTkyLjQ3MSA2NC42NzU5QzE5MC4wODEgNjQuNjEyNCAxODcuMDYgNjQuODc5NyAxODQuNzY2IDY0LjQ3ODdDMTg0LjI1OCA2OS42MTg2IDE4NC42MjIgNzcuMDMzMyAxODQuNTQ0IDgyLjQxNTRDMTg0LjU5MyA4OC41OTg4IDE4NC4zNDMgOTQuNjc3NCAxODQuODYzIDEwMC44NEMxODUuODQ4IDExMi41MSAxOTUuODkxIDExMi4zMTYgMjA0Ljg5NCAxMTMuMTRDMjA0Ljg4MiAxMTQuNDU3IDIwNS4wNzUgMTE1LjY5NCAyMDQuMjE1IDExNi42MDlDMTk5LjExMyAxMTYuODg0IDE1Mi44MzQgMTE3LjA0MSAxNTEuNzE1IDExNi4yNzJDMTUxLjMxOCAxMTUuMzY0IDE1MS40ODUgMTE0LjAyMyAxNTEuNTI4IDExMi45OTRDMTU5LjM1MiAxMTIuNzYgMTY3LjUyNCAxMTIuMzEzIDE2Ny45NzMgMTAyLjU2NEMxNjguMjIgOTcuMjA4OSAxNjguMTgzIDkyLjA2MTQgMTY4LjE3OSA4Ni42OTgxTDE2OC4xNzUgNTkuODE5NkwxNjguMTgxIDMxLjg0NThDMTY4LjE4MSAyNi40MzM2IDE2OC4yMDUgMjEuMTkyIDE2Ny45NjQgMTUuNzgzMkMxNjcuNTAzIDUuNDM4NTQgMTU5LjM1IDUuOTUwNzggMTUxLjI5MSA1LjI1MTYyQzE1MS40MDYgNC4xMTYzOCAxNTEuNDc1IDIuODYzNDMgMTUxLjU1OSAxLjcxNTUzWk0xODQuNjQzIDU4LjQ4MDRDMTk4LjE3MyA1OC4zMDIyIDIxOC40MzggNjAuNjUwNCAyMjguOTE2IDUxLjA3NjRDMjM0LjUwNyA0NS44OTIzIDIzNi44NCA0MS40ODczIDIzNy4xNjUgMzMuNzc3OEMyMzcuNTUxIDI0LjYxOTggMjM0LjY2NCAxNi44MTc1IDIyNi41NjUgMTEuNzk3M0MyMTYuOTUgNS44MzYzNiAyMDMuNjUxIDguMzA1MzggMTkyLjg3NCA3Ljc5MzIxQzE5MC42MTggNy42ODU5NCAxODYuOTc4IDguMTMxNDQgMTg0Ljk0NyA3LjY0NTQ3QzE4NC40MjEgOS42ODE2MSAxODQuNTE3IDIzLjA1ODUgMTg0LjU1OSAyNi4xNzYzQzE4NC43MDQgMzYuNzc1MyAxODQuMzI0IDQ3Ljk0NTggMTg0LjY0MyA1OC40ODA0WiIgZmlsbD0id2hpdGUiLz4NCjxwYXRoIGQ9Ik0zMDkuOTQyIDEuNTg2ODRDMzIyLjU3OCAxLjQ3ODA1IDMzNS4yMTMgMS41MjM1MiAzNDcuODQ3IDEuNzIzMjVDMzQ3Ljc5NiAyLjkzODc2IDM0Ny44MTggNC4xNzMwMSAzNDcuODI1IDUuMzkwNzVDMzM3LjgzNSA2LjE4MTk4IDMzMS4xODEgNS43ODgxNiAzMzAuNzA4IDE4LjIzODFDMzMwLjQ5NSAyMy44NzcgMzMwLjYxIDI5LjU3ODIgMzMwLjYxNSAzNS4yMjQ1TDMzMC42MTMgNjUuNjY0NEwzMzAuNjEgODguNzYzNEMzMzAuNjEzIDkzLjIwODggMzMwLjUyIDk3LjQ2ODMgMzMwLjgzIDEwMS45MDhDMzMxLjU3NCAxMTIuNTc0IDMzOS4zMjYgMTEyLjYzMSAzNDcuODU5IDExMy4wODNMMzQ3Ljc1NCAxMTYuNzM0QzM0Ni41MzkgMTE2LjU1NCAzMzYuOTIgMTE2LjY3NyAzMzUuMDYyIDExNi42N0MzMzAuNTI3IDExNi42OTIgMjk4Ljc2MSAxMTcuMTcgMjk3LjM0MyAxMTUuOTU2QzI5Ny4wMjEgMTE1LjE3MSAyOTcuMjc0IDExMy45NDMgMjk3LjM4MiAxMTMuMDU2QzMxMC4xOTYgMTEyLjA3MiAzMTQuODA5IDExMS4zNzggMzE0LjQxMyA5Ni43NTY0QzMxNC4zNTIgOTQuNDgyNyAzMTQuNDE4IDkxLjc2MDUgMzE0LjQxOCA4OS40NTM1TDMxNC40MTMgNjUuNDA0N0wzMTQuNDIxIDMzLjYyNzdDMzE0LjQyMSAyNy45MTMzIDMxNC40ODkgMjIuMjM4NCAzMTQuMjc3IDE2LjUyNzVDMzEzLjg1OSA1LjI4NDMyIDMwNS41MjkgNi4xNTA0OCAyOTcuMDU1IDUuMTQxMzlDMjk3LjIwNCA0LjE2MTYxIDI5Ny4yNCAyLjc3NDczIDI5Ny4yOTkgMS43NTcxNUMzMDEuNDA0IDEuNTgzNTMgMzA1LjgxNSAxLjYyMTQyIDMwOS45NDIgMS41ODY4NFoiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMjcyLjk1MiAxMTIuODA5QzI3My43MTQgMTEyLjkwOCAyNzQuNDk1IDExMi44ODkgMjc0Ljk2MyAxMTMuNDQxQzI3NS4xMzkgMTE0LjQ2NSAyNzUuMTkzIDExNS42NDQgMjc0LjU3OCAxMTYuNTNDMjcyLjYyMyAxMTcuMDUzIDI1OC44NjcgMTE2LjcyNCAyNTYuNjQzIDExNi4yMDhDMjU5Ljc1IDExNS42ODYgMjcyLjI0OSAxMTcuMjcgMjczLjU2MiAxMTQuMzc5QzI3My40NCAxMTMuMjg2IDI3My42MDEgMTEzLjY2OCAyNzIuOTUyIDExMi44MDlaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjkyNTQ5Ii8+DQo8cGF0aCBkPSJNNjUuMDQwNiAwSDY4LjM2MUM2OS45MTIxIDQuNTA0MzUgNzEuOTc4MiA4Ljc4NDk4IDczLjc5MzYgMTMuMTg4OEM3OS4zODMyIDI2Ljc0NzEgODUuMzEyOCA0MC4xOTk0IDkxLjAwNTggNTMuNzIzMkwxMDYuMDI1IDg5LjI3ODRDMTA4LjM1NyA5NC42ODAxIDExMC4yOTIgOTkuODY2OSAxMTMuMDA4IDEwNS4xMDFDMTE2Ljc0MiAxMTIuMjk3IDEyMS41MDMgMTEyLjQ3OCAxMjguOTMgMTEzLjA3NUwxMjguNzk0IDExNi43NDJDMTI2LjAwNiAxMTYuNSAxMTkuMjExIDExNi42OTUgMTE2LjA0NiAxMTYuNjlMODcuNzg4NyAxMTYuNjgzQzg1LjE5MDUgMTE2LjY3NSA3Ny44ODU4IDExNi44MTIgNzUuNTk3MyAxMTYuNTI2Qzc1LjAyNTIgMTE1Ljc1NiA3NS4zMjc0IDExMy44NjcgNzUuNDMzOCAxMTIuODdDNzkuNTM1NSAxMTIuNzU2IDk0LjI3NjcgMTEyLjMzOSA5My4zNjgzIDEwNS44NjhDOTIuMDI3OCA5Ni4zMjA2IDg2LjAzNjcgODYuODMzOCA4My4wNTkyIDc3LjUyNTVDNjcuOTUwNyA3Ni44OTI1IDUwLjMwMTggNzcuNDc3NCAzNS4wMjMyIDc3LjQ4NTlDMzEuNzQzMyA4NS4zNTI3IDI0LjMyMTEgMTAwLjE4MyAyNi4yNDU3IDEwOC4xNDZDMzEuNTM0MyAxMTMuMDI0IDM1LjIyOTQgMTEyLjQ1OSA0Mi40OTM4IDExMy4xMTdDNDIuNDY5MiAxMTQuMTQ3IDQyLjU2MDUgMTE1LjU1NCA0Mi4wNjg0IDExNi40MDRDNDEuNDgwNyAxMTYuNzc1IDIuNDg5MjEgMTE2LjkzIDAgMTE2LjQ0MVYxMTNDNS44NTk5MiAxMTIuMjQzIDEyLjIxNjYgMTEwLjMwMSAxNS41MTU3IDEwNC45MTNDMjEuODg0NiA5NC41MTE0IDI1LjgwMTcgODIuNDYxNCAzMC41NTEgNzEuMjQ1MkMzNi4wMjgzIDU4LjQ5OTIgNDEuMzQ4NiA0NS42ODYgNDYuNTEwOCAzMi44MDg5QzQ5LjA2NTggMjYuNTIxMSA1MS45MTIgMjAuMjg4NiA1NC4xMjUzIDEzLjg1ODJDNTMuNTg4MyAxMi42NzY2IDUxLjM0NyA4LjM0MjI3IDUyLjg5NTYgNy41ODU1QzU3LjM5NDIgNS4zODcyNCA2MS4wODQ4IDMuMDU0MjUgNjUuMDQwNiAwWk0zNy4yNzc0IDcxLjM2NDZDNDQuNjYyIDcxLjQ2NTkgNTIuMDQ3NCA3MS40OTEzIDU5LjQzMjQgNzEuNDQwOEw3My40Nzk3IDcxLjQ0NjZDNzUuMTM1OCA3MS40NDY2IDc5LjA4MDMgNzEuNTQ4NCA4MC41OTI2IDcxLjM2OTJDNzcuODI4NyA2Ni4xMTQzIDc1LjY5MDEgNTkuOTM2NiA3My40NjczIDU0LjM5Nkw2My44NjUxIDMxLjAzODNDNjIuOTk2NyAyOC45MjMgNTkuODU3OSAxOS45MjUyIDU4LjQxNDQgMTkuMTYxMkM1Ny4wMDg4IDIzLjIyOSA1NS4xNDMzIDI3LjM4NTIgNTMuNTAwNCAzMS4zODc0TDQ2LjU3OTQgNDguNjE1NUw0MC44NDI5IDYzLjAwMTdDMzkuNTkzIDY2LjExNzIgMzguOTAyMyA2OC40MDQ0IDM3LjI3NzQgNzEuMzY0NloiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNNDM1LjYxOSAwSDQzOC44NzhDNDQwLjI0OSAyLjkxMTM5IDQ0MS44NDggNy4xMTk2OSA0NDMuMTg2IDEwLjI0NTZMNDU1LjA1NSAzOC42MTI0QzQ1OS45OCA1MC41NDI4IDQ2NS4yMzggNjIuMzk5NSA0NzAuMzAyIDc0LjI3NDNDNDc0LjkwOCA4NS4wNzQ0IDQ3OC45NDMgOTYuMDgyOCA0ODQuMzEgMTA2LjUzNEM0ODguMTIgMTEzLjk1MiA0OTUuNTg5IDExMS4yMiA0OTkuODY3IDExMy41MTZWMTE2LjE1NkM0OTguNDE1IDExNy4wNDQgNDg1LjM0NSAxMTYuNzAxIDQ4Mi43ODkgMTE2LjdMNDUzLjYxNSAxMTYuNjUxQzQ1MS4yODkgMTE2LjYzNSA0NDcuODc3IDExNi40MSA0NDUuNzUxIDExNi41NDNMNDQ1Ljk5IDExMy4xMDJDNDQ5LjYzNiAxMTIuNDY1IDQ1My40IDExMi41NzUgNDU3LjAzOSAxMTEuNzg3QzQ1OS4xOSAxMTEuMzIyIDQ2Mi4zMDIgMTEwLjA1IDQ2My40OSAxMDguMTAzQzQ2Ni4yNDEgMTAzLjYwNCA0NTQuOTkyIDgzLjQyMzkgNDUzLjYxNyA3Ny40OTY0QzQ1Mi41ODIgNzcuNDA3OCA0NTEuMjIxIDc3LjM5NDEgNDUwLjE3MSA3Ny40MDM5QzQzNS4zMjkgNzcuNTQyNiA0MjAuMzIzIDc3LjA3MTQgNDA1LjQ5OCA3Ny41MTc0QzQwMi43NTIgODUuMzc2NCAzOTQuNDA3IDEwMC45MzEgMzk3LjAxMSAxMDguMzU1QzQwMS44OTggMTEyLjY1MyA0MDQuODkgMTEyLjM5MiA0MTEuMzE3IDExMi45MjFDNDExLjUwOSAxMTMuODA1IDQxMS41ODUgMTEzLjk5NyA0MTEuMzUxIDExNC44NjVDNDA5LjUyMyAxMTcuNjU1IDQwMy43NzUgMTE1LjUxNiA0MDEuMTA0IDExNi42MzZDMzk5LjQwOCAxMTYuNjg2IDM5Ny42OTcgMTE2LjY5NiAzOTUuOTk2IDExNi42ODVDMzg3Ljc3OCAxMTYuNjMzIDM3OS41MjYgMTE2Ljg2IDM3MS4zMTcgMTE2LjUwN0MzNzEuMzE3IDExNi41MDcgMzcwLjk4OCAxMTYuMTc5IDM3MC45NTYgMTE2LjE0N0MzNzAuNTk3IDExNS4xNzcgMzcwLjc4MyAxMTMuOTMzIDM3MC44NTQgMTEyLjg3NUMzODMuMTI2IDExMi4xNjggMzg3LjI5IDEwNC4zMzEgMzkxLjY5OCA5NC4xMDk2QzM5My4xODkgOTAuNjQ4IDM5NC42NDQgODcuMTM2MyAzOTYuMDk4IDgzLjY1NjZMNDA4LjgyOSA1Mi43NTI2QzQxMy44MjYgNDAuNTE3MiA0MTguOTk1IDI4LjM1MTcgNDI0LjExOCAxNi4xNzE2QzQyNS4zMTkgMTMuMzE3NyA0MjMuODgyIDEwLjgyNTIgNDIyLjY2MSA4LjI4NzczQzQyNC44NjggNi43NDQ3IDQyNi44MDggNS45MTA3MyA0MjkuMDczIDQuNTc2OTdDNDMxLjE4NyAzLjMzMzEzIDQzMy42MiAxLjQ3NTY4IDQzNS42MTkgMFpNNDA3LjkgNzEuMzgzN0M0MTUuNDA1IDcxLjQ1NTkgNDIyLjkwOCA3MS40NjgxIDQzMC40MTMgNzEuNDIwM0M0MzYuODMgNzEuNDM1OSA0NDQuNjU1IDcxLjY1MzIgNDUwLjk1OSA3MS4zODlDNDUwLjI1NiA2OS4zODcgNDQ5LjIxNCA2Ny4yMTk0IDQ0OC40MzggNjUuMjIwM0M0NDUuNjQ2IDU4LjAzMSA0NDIuMzc4IDUwLjA2MjQgNDM5LjMxNSA0My4xMDI1QzQzNy45OTIgNDAuMDk0OSA0MzAuMjEgMTkuODMwOCA0MjkuMTUxIDE5LjE0NzNMNDA3LjkgNzEuMzgzN1oiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNNDExLjMxNyAxMTIuOTIxQzQxMi4zNzEgMTEzLjAxNiA0MTIuMjgxIDExMi44NDcgNDEzLjAwMyAxMTMuNDAyQzQxMy4yNjQgMTE0LjIyMSA0MTMuMTQgMTE0Ljk0IDQxMy4wNjQgMTE1Ljc5NEM0MTEuOTMyIDExNy40NTcgNDAzLjI0NSAxMTYuNjk2IDQwMS4xMDQgMTE2LjYzNkM0MDMuNzc1IDExNS41MTYgNDA5LjUyMyAxMTcuNjU1IDQxMS4zNTEgMTE0Ljg2NEM0MTEuNTg1IDExMy45OTcgNDExLjUwOSAxMTMuODA0IDQxMS4zMTcgMTEyLjkyMVoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOTM3MjU1Ii8+DQo8cGF0aCBkPSJNMTgwLjY0OSAxODIuMTU4VjIxNy44NkgxNzYuNDY1TDE1Ny4wMSAxODkuODI4SDE1Ni42NjFWMjE3Ljg2SDE1Mi4zMzhWMTgyLjE1OEgxNTYuNTIyTDE3Ni4wNDYgMjEwLjI1OUgxNzYuMzk1VjE4Mi4xNThIMTgwLjY0OVoiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMjQ4LjEzMyAyMDAuMDA5QzI0OC4xMzMgMjAzLjc3NCAyNDcuNDUzIDIwNy4wMjggMjQ2LjA5MyAyMDkuNzcxQzI0NC43MzMgMjEyLjUxNCAyNDIuODY4IDIxNC42MjkgMjQwLjQ5NyAyMTYuMTE2QzIzOC4xMjYgMjE3LjYwNCAyMzUuNDE5IDIxOC4zNDggMjMyLjM3NCAyMTguMzQ4QzIyOS4zMjkgMjE4LjM0OCAyMjYuNjIxIDIxNy42MDQgMjI0LjI1IDIxNi4xMTZDMjIxLjg3OSAyMTQuNjI5IDIyMC4wMTQgMjEyLjUxNCAyMTguNjU0IDIwOS43NzFDMjE3LjI5NSAyMDcuMDI4IDIxNi42MTUgMjAzLjc3NCAyMTYuNjE1IDIwMC4wMDlDMjE2LjYxNSAxOTYuMjQzIDIxNy4yOTUgMTkyLjk4OSAyMTguNjU0IDE5MC4yNDZDMjIwLjAxNCAxODcuNTA0IDIyMS44NzkgMTg1LjM4OSAyMjQuMjUgMTgzLjkwMUMyMjYuNjIxIDE4Mi40MTMgMjI5LjMyOSAxODEuNjcgMjMyLjM3NCAxODEuNjdDMjM1LjQxOSAxODEuNjcgMjM4LjEyNiAxODIuNDEzIDI0MC40OTcgMTgzLjkwMUMyNDIuODY4IDE4NS4zODkgMjQ0LjczMyAxODcuNTA0IDI0Ni4wOTMgMTkwLjI0NkMyNDcuNDUzIDE5Mi45ODkgMjQ4LjEzMyAxOTYuMjQzIDI0OC4xMzMgMjAwLjAwOVpNMjQzLjk0OSAyMDAuMDA5QzI0My45NDkgMTk2LjkxNyAyNDMuNDMyIDE5NC4zMDggMjQyLjM5NyAxOTIuMTgxQzI0MS4zNzUgMTkwLjA1NSAyMzkuOTg2IDE4OC40NDUgMjM4LjIzMSAxODcuMzUzQzIzNi40ODggMTg2LjI2IDIzNC41MzUgMTg1LjcxNCAyMzIuMzc0IDE4NS43MTRDMjMwLjIxMiAxODUuNzE0IDIyOC4yNTQgMTg2LjI2IDIyNi40OTkgMTg3LjM1M0MyMjQuNzU2IDE4OC40NDUgMjIzLjM2NyAxOTAuMDU1IDIyMi4zMzMgMTkyLjE4MUMyMjEuMzEgMTk0LjMwOCAyMjAuNzk4IDE5Ni45MTcgMjIwLjc5OCAyMDAuMDA5QzIyMC43OTggMjAzLjEgMjIxLjMxIDIwNS43MDkgMjIyLjMzMyAyMDcuODM2QzIyMy4zNjcgMjA5Ljk2MyAyMjQuNzU2IDIxMS41NzIgMjI2LjQ5OSAyMTIuNjY1QzIyOC4yNTQgMjEzLjc1NyAyMzAuMjEyIDIxNC4zMDMgMjMyLjM3NCAyMTQuMzAzQzIzNC41MzUgMjE0LjMwMyAyMzYuNDg4IDIxMy43NTcgMjM4LjIzMSAyMTIuNjY1QzIzOS45ODYgMjExLjU3MiAyNDEuMzc1IDIwOS45NjMgMjQyLjM5NyAyMDcuODM2QzI0My40MzIgMjA1LjcwOSAyNDMuOTQ5IDIwMy4xIDI0My45NDkgMjAwLjAwOVoiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMjg5LjAwMyAxODIuMTU4VjIxNy44NkgyODQuNjhWMTgyLjE1OEgyODkuMDAzWiIgZmlsbD0id2hpdGUiLz4NCjxwYXRoIGQ9Ik0zMjYuNzggMjE3Ljg2VjE4Mi4xNThIMzM4Ljg0M0MzNDEuNjMzIDE4Mi4xNTggMzQzLjkyMiAxODIuNjM0IDM0NS43MTIgMTgzLjU4N0MzNDcuNTAyIDE4NC41MjggMzQ4LjgyNiAxODUuODI0IDM0OS42ODYgMTg3LjQ3NUMzNTAuNTQ2IDE4OS4xMjUgMzUwLjk3NiAxOTEuMDAyIDM1MC45NzYgMTkzLjEwNUMzNTAuOTc2IDE5NS4yMDkgMzUwLjU0NiAxOTcuMDc0IDM0OS42ODYgMTk4LjcwMUMzNDguODI2IDIwMC4zMjggMzQ3LjUwNyAyMDEuNjA3IDM0NS43MjkgMjAyLjUzNkMzNDMuOTUxIDIwMy40NTQgMzQxLjY3OSAyMDMuOTE0IDMzOC45MTMgMjAzLjkxNEgzMjkuMTUxVjIwMC4wMDlIMzM4Ljc3NEMzNDAuNjggMjAwLjAwOSAzNDIuMjE0IDE5OS43MyAzNDMuMzc2IDE5OS4xNzJDMzQ0LjU1IDE5OC42MTQgMzQ1LjM5OCAxOTcuODI0IDM0NS45MjEgMTk2LjgwMUMzNDYuNDU2IDE5NS43NjcgMzQ2LjcyMyAxOTQuNTM1IDM0Ni43MjMgMTkzLjEwNUMzNDYuNzIzIDE5MS42NzYgMzQ2LjQ1NiAxOTAuNDI3IDM0NS45MjEgMTg5LjM1N0MzNDUuMzg2IDE4OC4yODggMzQ0LjUzMiAxODcuNDYzIDM0My4zNTggMTg2Ljg4MkMzNDIuMTg1IDE4Ni4yODkgMzQwLjYzMyAxODUuOTkzIDMzOC43MDQgMTg1Ljk5M0gzMzEuMTAzVjIxNy44NkgzMjYuNzhaTTM0My41ODUgMjAxLjgyMkwzNTIuMzcxIDIxNy44NkgzNDcuMzVMMzM4LjcwNCAyMDEuODIySDM0My41ODVaIiBmaWxsPSJ3aGl0ZSIvPg0KPC9nPg0KPGRlZnM+DQo8Y2xpcFBhdGggaWQ9ImNsaXAwXzExNF8xMyI+DQo8cmVjdCB3aWR0aD0iNDk5Ljg2NyIgaGVpZ2h0PSIyMTgiIGZpbGw9IndoaXRlIi8+DQo8L2NsaXBQYXRoPg0KPC9kZWZzPg0KPC9zdmc+DQo=" alt="Aria Noir" /></span>
     <nav aria-label="Sections">
       <a href="#tokens">Tokens</a>
       <a href="#type">Type</a>
@@ -392,7 +476,7 @@ footer.page a { color: inherit; }
       <a href="#steps">Steps</a>
       <a href="#product">Product</a>
       <a href="#states">States</a>
-      <a href="#motion">Motion</a>
+      <a href="#pattern">Pattern</a><a href="#motion">Motion</a>
       <a href="#floor">Floor</a>
     </nav>
   </div>
@@ -507,57 +591,58 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 2 · TYPE ════════════════════════════════════════════════════ -->
 <section class="band on-ink" id="type">
   <div class="wrap">
     <div class="head">
       <span class="num">02</span>
       <h2 class="t-display-md">Type</h2>
-      <p>Three families. Libre Bodoni for headings and the one-line answers in a search result —
-      never for a label. Manrope for body, labels, buttons, fields. IBM Plex Mono for numerals
+      <p>Three families. Cormorant for headings and the one-line answers in a search result —
+      never for a label. Figtree for body, labels, buttons, fields. IBM Plex Mono for numerals
       being compared, step indices, route paths and the bag's tally.</p>
     </div>
 
     <div class="spec">
-      <div class="meta"><span>.t-display-xl</span><span>clamp(3rem, 9vw, 6rem)</span><span>lh 1.02</span></div>
+      <div class="meta"><span>.t-display-xl</span><span>52 → 112px</span><span>lh 1.0</span></div>
       <p class="t-display-xl">Arca I</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-display-lg</span><span>clamp(2.25rem, 6.5vw, 3.75rem)</span><span>lh 1.05</span></div>
+      <div class="meta"><span>.t-display-lg</span><span>40 → 72px</span><span>lh 1.04</span></div>
       <p class="t-display-lg">The house, carved</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-display-md</span><span>clamp(1.875rem, 4.5vw, 3rem)</span><span>lh 1.12</span></div>
+      <div class="meta"><span>.t-display-md</span><span>32 → 48px</span><span>lh 1.1</span></div>
       <p class="t-display-md">Section headings sit here</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-display-sm</span><span>clamp(1.25rem, 2.6vw, 1.875rem)</span><span>pull quote</span></div>
+      <div class="meta"><span>.t-display-sm</span><span>24 → 32px</span><span>pull quote · lh 1.25</span></div>
       <p class="t-display-sm"><em>Every frame is cut from one block, and the block remembers.</em></p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-display-xs</span><span>clamp(1rem, 1.6vw, 1.25rem)</span><span>hero standfirst</span></div>
+      <div class="meta"><span>.t-display-xs</span><span>18 → 22px · Figtree 500</span><span>hero standfirst · lh 1.4</span></div>
       <p class="t-display-xs">The standfirst keeps the serif because it carries the italic half of the mix.</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-body--lede</span><span>1.125rem</span><span>lh 1.65 · 52ch</span></div>
+      <div class="meta"><span>.t-body--lede</span><span>20px</span><span>lh 1.6 · 52ch</span></div>
       <p class="t-body t-body--lede">The lede is the widest body voice on the site, and it is only
       allowed on the light sections past the white iris.</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-body</span><span>0.875rem</span><span>62ch</span></div>
+      <div class="meta"><span>.t-body</span><span>15 → 17px</span><span>lh 1.6 · 62ch</span></div>
       <p class="t-body">Default body. Copy is never allowed to run the full width of a section —
       52ch, 62ch and 68ch are the only three line lengths in use.</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-caption</span><span>0.75rem</span></div>
+      <div class="meta"><span>.t-caption</span><span>13px</span></div>
       <p class="t-caption">A caption, a note under a field, the quiet line under a card name.</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-eyebrow</span><span>0.6875rem</span><span>tracking 0.35em</span></div>
+      <div class="meta"><span>.t-eyebrow</span><span>12px</span><span>hidden · no preheaders</span></div>
       <p class="t-eyebrow">The interface's smallest voice</p>
     </div>
     <div class="spec">
-      <div class="meta"><span>.t-label</span><span>0.6875rem</span><span>tracking 0.3em</span></div>
+      <div class="meta"><span>.t-label</span><span>12px</span><span>tracking 0.16em</span></div>
       <p class="t-label">Telephone</p>
     </div>
     <div class="spec">
@@ -580,6 +665,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 3 · CHROME ══════════════════════════════════════════════════ -->
 <section class="band on-ink" id="chrome">
   <div class="wrap">
@@ -598,7 +684,7 @@ footer.page a { color: inherit; }
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         </button>
       </div>
-      <a class="wordmark" href="#chrome" aria-label="Aria Noir — home">Aria</a>
+      <a class="wordmark" href="#chrome" aria-label="Aria Noir — home"><img class="logo" src="data:image/svg+xml;base64,77u/PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjIxOCIgdmlld0JveD0iMCAwIDUwMCAyMTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfMTE0XzEzKSI+DQo8cGF0aCBkPSJNMTUxLjU1OSAxLjcxNTUzQzE2Ni4zMDUgMS41MjMzMiAxODEuMDUzIDEuNDgxNjMgMTk1LjggMS41OTA0NUMyMTQuNDIgMS41NzEyMiAyMzkuMTM1IC0wLjgxNTg3NSAyNTEuMzQyIDE3LjEwNzlDMjU2LjUyNiAyNC43MjA2IDI1Ni45NDMgMzUuODM1NSAyNTIuODA2IDQ0LjAxOTRDMjQ3LjYzMiA1NC4yNTI3IDIzNy43NjkgNTguODU0NiAyMjcuNTQ3IDYyLjQ2NzFDMjI4LjU1MyA2My42ODQgMjMxLjg1OCA2OS4yMzI3IDIzMy4wNjYgNzEuMDcwMkMyMzcuMzc4IDc3LjcxNzMgMjQxLjg0NCA4NC4yNjM0IDI0Ni40NiA5MC43MDMxQzI1My4xODUgMTAwLjAyNCAyNjEuMTA1IDExMC44OTEgMjcyLjk1MiAxMTIuODA5QzI3My42MDIgMTEzLjY2OCAyNzMuNDQgMTEzLjI4NiAyNzMuNTYyIDExNC4zNzlDMjcyLjI0OSAxMTcuMjcgMjU5Ljc1IDExNS42ODYgMjU2LjY0MyAxMTYuMjA4QzI1NS45ODcgMTE2LjIyMyAyNTUuMjQ5IDExNi4wMTcgMjU0LjYwNSAxMTUuODg5QzIzNi4yNjIgMTEyLjIzMyAyMTkuNzE2IDc5LjU0MjYgMjA5Ljg1MSA2NC43ODU4QzIwNC4zNTQgNjQuNDA5MyAxOTguMDIxIDY0LjgyMjkgMTkyLjQ3MSA2NC42NzU5QzE5MC4wODEgNjQuNjEyNCAxODcuMDYgNjQuODc5NyAxODQuNzY2IDY0LjQ3ODdDMTg0LjI1OCA2OS42MTg2IDE4NC42MjIgNzcuMDMzMyAxODQuNTQ0IDgyLjQxNTRDMTg0LjU5MyA4OC41OTg4IDE4NC4zNDMgOTQuNjc3NCAxODQuODYzIDEwMC44NEMxODUuODQ4IDExMi41MSAxOTUuODkxIDExMi4zMTYgMjA0Ljg5NCAxMTMuMTRDMjA0Ljg4MiAxMTQuNDU3IDIwNS4wNzUgMTE1LjY5NCAyMDQuMjE1IDExNi42MDlDMTk5LjExMyAxMTYuODg0IDE1Mi44MzQgMTE3LjA0MSAxNTEuNzE1IDExNi4yNzJDMTUxLjMxOCAxMTUuMzY0IDE1MS40ODUgMTE0LjAyMyAxNTEuNTI4IDExMi45OTRDMTU5LjM1MiAxMTIuNzYgMTY3LjUyNCAxMTIuMzEzIDE2Ny45NzMgMTAyLjU2NEMxNjguMjIgOTcuMjA4OSAxNjguMTgzIDkyLjA2MTQgMTY4LjE3OSA4Ni42OTgxTDE2OC4xNzUgNTkuODE5NkwxNjguMTgxIDMxLjg0NThDMTY4LjE4MSAyNi40MzM2IDE2OC4yMDUgMjEuMTkyIDE2Ny45NjQgMTUuNzgzMkMxNjcuNTAzIDUuNDM4NTQgMTU5LjM1IDUuOTUwNzggMTUxLjI5MSA1LjI1MTYyQzE1MS40MDYgNC4xMTYzOCAxNTEuNDc1IDIuODYzNDMgMTUxLjU1OSAxLjcxNTUzWk0xODQuNjQzIDU4LjQ4MDRDMTk4LjE3MyA1OC4zMDIyIDIxOC40MzggNjAuNjUwNCAyMjguOTE2IDUxLjA3NjRDMjM0LjUwNyA0NS44OTIzIDIzNi44NCA0MS40ODczIDIzNy4xNjUgMzMuNzc3OEMyMzcuNTUxIDI0LjYxOTggMjM0LjY2NCAxNi44MTc1IDIyNi41NjUgMTEuNzk3M0MyMTYuOTUgNS44MzYzNiAyMDMuNjUxIDguMzA1MzggMTkyLjg3NCA3Ljc5MzIxQzE5MC42MTggNy42ODU5NCAxODYuOTc4IDguMTMxNDQgMTg0Ljk0NyA3LjY0NTQ3QzE4NC40MjEgOS42ODE2MSAxODQuNTE3IDIzLjA1ODUgMTg0LjU1OSAyNi4xNzYzQzE4NC43MDQgMzYuNzc1MyAxODQuMzI0IDQ3Ljk0NTggMTg0LjY0MyA1OC40ODA0WiIgZmlsbD0id2hpdGUiLz4NCjxwYXRoIGQ9Ik0zMDkuOTQyIDEuNTg2ODRDMzIyLjU3OCAxLjQ3ODA1IDMzNS4yMTMgMS41MjM1MiAzNDcuODQ3IDEuNzIzMjVDMzQ3Ljc5NiAyLjkzODc2IDM0Ny44MTggNC4xNzMwMSAzNDcuODI1IDUuMzkwNzVDMzM3LjgzNSA2LjE4MTk4IDMzMS4xODEgNS43ODgxNiAzMzAuNzA4IDE4LjIzODFDMzMwLjQ5NSAyMy44NzcgMzMwLjYxIDI5LjU3ODIgMzMwLjYxNSAzNS4yMjQ1TDMzMC42MTMgNjUuNjY0NEwzMzAuNjEgODguNzYzNEMzMzAuNjEzIDkzLjIwODggMzMwLjUyIDk3LjQ2ODMgMzMwLjgzIDEwMS45MDhDMzMxLjU3NCAxMTIuNTc0IDMzOS4zMjYgMTEyLjYzMSAzNDcuODU5IDExMy4wODNMMzQ3Ljc1NCAxMTYuNzM0QzM0Ni41MzkgMTE2LjU1NCAzMzYuOTIgMTE2LjY3NyAzMzUuMDYyIDExNi42N0MzMzAuNTI3IDExNi42OTIgMjk4Ljc2MSAxMTcuMTcgMjk3LjM0MyAxMTUuOTU2QzI5Ny4wMjEgMTE1LjE3MSAyOTcuMjc0IDExMy45NDMgMjk3LjM4MiAxMTMuMDU2QzMxMC4xOTYgMTEyLjA3MiAzMTQuODA5IDExMS4zNzggMzE0LjQxMyA5Ni43NTY0QzMxNC4zNTIgOTQuNDgyNyAzMTQuNDE4IDkxLjc2MDUgMzE0LjQxOCA4OS40NTM1TDMxNC40MTMgNjUuNDA0N0wzMTQuNDIxIDMzLjYyNzdDMzE0LjQyMSAyNy45MTMzIDMxNC40ODkgMjIuMjM4NCAzMTQuMjc3IDE2LjUyNzVDMzEzLjg1OSA1LjI4NDMyIDMwNS41MjkgNi4xNTA0OCAyOTcuMDU1IDUuMTQxMzlDMjk3LjIwNCA0LjE2MTYxIDI5Ny4yNCAyLjc3NDczIDI5Ny4yOTkgMS43NTcxNUMzMDEuNDA0IDEuNTgzNTMgMzA1LjgxNSAxLjYyMTQyIDMwOS45NDIgMS41ODY4NFoiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMjcyLjk1MiAxMTIuODA5QzI3My43MTQgMTEyLjkwOCAyNzQuNDk1IDExMi44ODkgMjc0Ljk2MyAxMTMuNDQxQzI3NS4xMzkgMTE0LjQ2NSAyNzUuMTkzIDExNS42NDQgMjc0LjU3OCAxMTYuNTNDMjcyLjYyMyAxMTcuMDUzIDI1OC44NjcgMTE2LjcyNCAyNTYuNjQzIDExNi4yMDhDMjU5Ljc1IDExNS42ODYgMjcyLjI0OSAxMTcuMjcgMjczLjU2MiAxMTQuMzc5QzI3My40NCAxMTMuMjg2IDI3My42MDEgMTEzLjY2OCAyNzIuOTUyIDExMi44MDlaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjkyNTQ5Ii8+DQo8cGF0aCBkPSJNNjUuMDQwNiAwSDY4LjM2MUM2OS45MTIxIDQuNTA0MzUgNzEuOTc4MiA4Ljc4NDk4IDczLjc5MzYgMTMuMTg4OEM3OS4zODMyIDI2Ljc0NzEgODUuMzEyOCA0MC4xOTk0IDkxLjAwNTggNTMuNzIzMkwxMDYuMDI1IDg5LjI3ODRDMTA4LjM1NyA5NC42ODAxIDExMC4yOTIgOTkuODY2OSAxMTMuMDA4IDEwNS4xMDFDMTE2Ljc0MiAxMTIuMjk3IDEyMS41MDMgMTEyLjQ3OCAxMjguOTMgMTEzLjA3NUwxMjguNzk0IDExNi43NDJDMTI2LjAwNiAxMTYuNSAxMTkuMjExIDExNi42OTUgMTE2LjA0NiAxMTYuNjlMODcuNzg4NyAxMTYuNjgzQzg1LjE5MDUgMTE2LjY3NSA3Ny44ODU4IDExNi44MTIgNzUuNTk3MyAxMTYuNTI2Qzc1LjAyNTIgMTE1Ljc1NiA3NS4zMjc0IDExMy44NjcgNzUuNDMzOCAxMTIuODdDNzkuNTM1NSAxMTIuNzU2IDk0LjI3NjcgMTEyLjMzOSA5My4zNjgzIDEwNS44NjhDOTIuMDI3OCA5Ni4zMjA2IDg2LjAzNjcgODYuODMzOCA4My4wNTkyIDc3LjUyNTVDNjcuOTUwNyA3Ni44OTI1IDUwLjMwMTggNzcuNDc3NCAzNS4wMjMyIDc3LjQ4NTlDMzEuNzQzMyA4NS4zNTI3IDI0LjMyMTEgMTAwLjE4MyAyNi4yNDU3IDEwOC4xNDZDMzEuNTM0MyAxMTMuMDI0IDM1LjIyOTQgMTEyLjQ1OSA0Mi40OTM4IDExMy4xMTdDNDIuNDY5MiAxMTQuMTQ3IDQyLjU2MDUgMTE1LjU1NCA0Mi4wNjg0IDExNi40MDRDNDEuNDgwNyAxMTYuNzc1IDIuNDg5MjEgMTE2LjkzIDAgMTE2LjQ0MVYxMTNDNS44NTk5MiAxMTIuMjQzIDEyLjIxNjYgMTEwLjMwMSAxNS41MTU3IDEwNC45MTNDMjEuODg0NiA5NC41MTE0IDI1LjgwMTcgODIuNDYxNCAzMC41NTEgNzEuMjQ1MkMzNi4wMjgzIDU4LjQ5OTIgNDEuMzQ4NiA0NS42ODYgNDYuNTEwOCAzMi44MDg5QzQ5LjA2NTggMjYuNTIxMSA1MS45MTIgMjAuMjg4NiA1NC4xMjUzIDEzLjg1ODJDNTMuNTg4MyAxMi42NzY2IDUxLjM0NyA4LjM0MjI3IDUyLjg5NTYgNy41ODU1QzU3LjM5NDIgNS4zODcyNCA2MS4wODQ4IDMuMDU0MjUgNjUuMDQwNiAwWk0zNy4yNzc0IDcxLjM2NDZDNDQuNjYyIDcxLjQ2NTkgNTIuMDQ3NCA3MS40OTEzIDU5LjQzMjQgNzEuNDQwOEw3My40Nzk3IDcxLjQ0NjZDNzUuMTM1OCA3MS40NDY2IDc5LjA4MDMgNzEuNTQ4NCA4MC41OTI2IDcxLjM2OTJDNzcuODI4NyA2Ni4xMTQzIDc1LjY5MDEgNTkuOTM2NiA3My40NjczIDU0LjM5Nkw2My44NjUxIDMxLjAzODNDNjIuOTk2NyAyOC45MjMgNTkuODU3OSAxOS45MjUyIDU4LjQxNDQgMTkuMTYxMkM1Ny4wMDg4IDIzLjIyOSA1NS4xNDMzIDI3LjM4NTIgNTMuNTAwNCAzMS4zODc0TDQ2LjU3OTQgNDguNjE1NUw0MC44NDI5IDYzLjAwMTdDMzkuNTkzIDY2LjExNzIgMzguOTAyMyA2OC40MDQ0IDM3LjI3NzQgNzEuMzY0NloiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNNDM1LjYxOSAwSDQzOC44NzhDNDQwLjI0OSAyLjkxMTM5IDQ0MS44NDggNy4xMTk2OSA0NDMuMTg2IDEwLjI0NTZMNDU1LjA1NSAzOC42MTI0QzQ1OS45OCA1MC41NDI4IDQ2NS4yMzggNjIuMzk5NSA0NzAuMzAyIDc0LjI3NDNDNDc0LjkwOCA4NS4wNzQ0IDQ3OC45NDMgOTYuMDgyOCA0ODQuMzEgMTA2LjUzNEM0ODguMTIgMTEzLjk1MiA0OTUuNTg5IDExMS4yMiA0OTkuODY3IDExMy41MTZWMTE2LjE1NkM0OTguNDE1IDExNy4wNDQgNDg1LjM0NSAxMTYuNzAxIDQ4Mi43ODkgMTE2LjdMNDUzLjYxNSAxMTYuNjUxQzQ1MS4yODkgMTE2LjYzNSA0NDcuODc3IDExNi40MSA0NDUuNzUxIDExNi41NDNMNDQ1Ljk5IDExMy4xMDJDNDQ5LjYzNiAxMTIuNDY1IDQ1My40IDExMi41NzUgNDU3LjAzOSAxMTEuNzg3QzQ1OS4xOSAxMTEuMzIyIDQ2Mi4zMDIgMTEwLjA1IDQ2My40OSAxMDguMTAzQzQ2Ni4yNDEgMTAzLjYwNCA0NTQuOTkyIDgzLjQyMzkgNDUzLjYxNyA3Ny40OTY0QzQ1Mi41ODIgNzcuNDA3OCA0NTEuMjIxIDc3LjM5NDEgNDUwLjE3MSA3Ny40MDM5QzQzNS4zMjkgNzcuNTQyNiA0MjAuMzIzIDc3LjA3MTQgNDA1LjQ5OCA3Ny41MTc0QzQwMi43NTIgODUuMzc2NCAzOTQuNDA3IDEwMC45MzEgMzk3LjAxMSAxMDguMzU1QzQwMS44OTggMTEyLjY1MyA0MDQuODkgMTEyLjM5MiA0MTEuMzE3IDExMi45MjFDNDExLjUwOSAxMTMuODA1IDQxMS41ODUgMTEzLjk5NyA0MTEuMzUxIDExNC44NjVDNDA5LjUyMyAxMTcuNjU1IDQwMy43NzUgMTE1LjUxNiA0MDEuMTA0IDExNi42MzZDMzk5LjQwOCAxMTYuNjg2IDM5Ny42OTcgMTE2LjY5NiAzOTUuOTk2IDExNi42ODVDMzg3Ljc3OCAxMTYuNjMzIDM3OS41MjYgMTE2Ljg2IDM3MS4zMTcgMTE2LjUwN0MzNzEuMzE3IDExNi41MDcgMzcwLjk4OCAxMTYuMTc5IDM3MC45NTYgMTE2LjE0N0MzNzAuNTk3IDExNS4xNzcgMzcwLjc4MyAxMTMuOTMzIDM3MC44NTQgMTEyLjg3NUMzODMuMTI2IDExMi4xNjggMzg3LjI5IDEwNC4zMzEgMzkxLjY5OCA5NC4xMDk2QzM5My4xODkgOTAuNjQ4IDM5NC42NDQgODcuMTM2MyAzOTYuMDk4IDgzLjY1NjZMNDA4LjgyOSA1Mi43NTI2QzQxMy44MjYgNDAuNTE3MiA0MTguOTk1IDI4LjM1MTcgNDI0LjExOCAxNi4xNzE2QzQyNS4zMTkgMTMuMzE3NyA0MjMuODgyIDEwLjgyNTIgNDIyLjY2MSA4LjI4NzczQzQyNC44NjggNi43NDQ3IDQyNi44MDggNS45MTA3MyA0MjkuMDczIDQuNTc2OTdDNDMxLjE4NyAzLjMzMzEzIDQzMy42MiAxLjQ3NTY4IDQzNS42MTkgMFpNNDA3LjkgNzEuMzgzN0M0MTUuNDA1IDcxLjQ1NTkgNDIyLjkwOCA3MS40NjgxIDQzMC40MTMgNzEuNDIwM0M0MzYuODMgNzEuNDM1OSA0NDQuNjU1IDcxLjY1MzIgNDUwLjk1OSA3MS4zODlDNDUwLjI1NiA2OS4zODcgNDQ5LjIxNCA2Ny4yMTk0IDQ0OC40MzggNjUuMjIwM0M0NDUuNjQ2IDU4LjAzMSA0NDIuMzc4IDUwLjA2MjQgNDM5LjMxNSA0My4xMDI1QzQzNy45OTIgNDAuMDk0OSA0MzAuMjEgMTkuODMwOCA0MjkuMTUxIDE5LjE0NzNMNDA3LjkgNzEuMzgzN1oiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNNDExLjMxNyAxMTIuOTIxQzQxMi4zNzEgMTEzLjAxNiA0MTIuMjgxIDExMi44NDcgNDEzLjAwMyAxMTMuNDAyQzQxMy4yNjQgMTE0LjIyMSA0MTMuMTQgMTE0Ljk0IDQxMy4wNjQgMTE1Ljc5NEM0MTEuOTMyIDExNy40NTcgNDAzLjI0NSAxMTYuNjk2IDQwMS4xMDQgMTE2LjYzNkM0MDMuNzc1IDExNS41MTYgNDA5LjUyMyAxMTcuNjU1IDQxMS4zNTEgMTE0Ljg2NEM0MTEuNTg1IDExMy45OTcgNDExLjUwOSAxMTMuODA0IDQxMS4zMTcgMTEyLjkyMVoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOTM3MjU1Ii8+DQo8cGF0aCBkPSJNMTgwLjY0OSAxODIuMTU4VjIxNy44NkgxNzYuNDY1TDE1Ny4wMSAxODkuODI4SDE1Ni42NjFWMjE3Ljg2SDE1Mi4zMzhWMTgyLjE1OEgxNTYuNTIyTDE3Ni4wNDYgMjEwLjI1OUgxNzYuMzk1VjE4Mi4xNThIMTgwLjY0OVoiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMjQ4LjEzMyAyMDAuMDA5QzI0OC4xMzMgMjAzLjc3NCAyNDcuNDUzIDIwNy4wMjggMjQ2LjA5MyAyMDkuNzcxQzI0NC43MzMgMjEyLjUxNCAyNDIuODY4IDIxNC42MjkgMjQwLjQ5NyAyMTYuMTE2QzIzOC4xMjYgMjE3LjYwNCAyMzUuNDE5IDIxOC4zNDggMjMyLjM3NCAyMTguMzQ4QzIyOS4zMjkgMjE4LjM0OCAyMjYuNjIxIDIxNy42MDQgMjI0LjI1IDIxNi4xMTZDMjIxLjg3OSAyMTQuNjI5IDIyMC4wMTQgMjEyLjUxNCAyMTguNjU0IDIwOS43NzFDMjE3LjI5NSAyMDcuMDI4IDIxNi42MTUgMjAzLjc3NCAyMTYuNjE1IDIwMC4wMDlDMjE2LjYxNSAxOTYuMjQzIDIxNy4yOTUgMTkyLjk4OSAyMTguNjU0IDE5MC4yNDZDMjIwLjAxNCAxODcuNTA0IDIyMS44NzkgMTg1LjM4OSAyMjQuMjUgMTgzLjkwMUMyMjYuNjIxIDE4Mi40MTMgMjI5LjMyOSAxODEuNjcgMjMyLjM3NCAxODEuNjdDMjM1LjQxOSAxODEuNjcgMjM4LjEyNiAxODIuNDEzIDI0MC40OTcgMTgzLjkwMUMyNDIuODY4IDE4NS4zODkgMjQ0LjczMyAxODcuNTA0IDI0Ni4wOTMgMTkwLjI0NkMyNDcuNDUzIDE5Mi45ODkgMjQ4LjEzMyAxOTYuMjQzIDI0OC4xMzMgMjAwLjAwOVpNMjQzLjk0OSAyMDAuMDA5QzI0My45NDkgMTk2LjkxNyAyNDMuNDMyIDE5NC4zMDggMjQyLjM5NyAxOTIuMTgxQzI0MS4zNzUgMTkwLjA1NSAyMzkuOTg2IDE4OC40NDUgMjM4LjIzMSAxODcuMzUzQzIzNi40ODggMTg2LjI2IDIzNC41MzUgMTg1LjcxNCAyMzIuMzc0IDE4NS43MTRDMjMwLjIxMiAxODUuNzE0IDIyOC4yNTQgMTg2LjI2IDIyNi40OTkgMTg3LjM1M0MyMjQuNzU2IDE4OC40NDUgMjIzLjM2NyAxOTAuMDU1IDIyMi4zMzMgMTkyLjE4MUMyMjEuMzEgMTk0LjMwOCAyMjAuNzk4IDE5Ni45MTcgMjIwLjc5OCAyMDAuMDA5QzIyMC43OTggMjAzLjEgMjIxLjMxIDIwNS43MDkgMjIyLjMzMyAyMDcuODM2QzIyMy4zNjcgMjA5Ljk2MyAyMjQuNzU2IDIxMS41NzIgMjI2LjQ5OSAyMTIuNjY1QzIyOC4yNTQgMjEzLjc1NyAyMzAuMjEyIDIxNC4zMDMgMjMyLjM3NCAyMTQuMzAzQzIzNC41MzUgMjE0LjMwMyAyMzYuNDg4IDIxMy43NTcgMjM4LjIzMSAyMTIuNjY1QzIzOS45ODYgMjExLjU3MiAyNDEuMzc1IDIwOS45NjMgMjQyLjM5NyAyMDcuODM2QzI0My40MzIgMjA1LjcwOSAyNDMuOTQ5IDIwMy4xIDI0My45NDkgMjAwLjAwOVoiIGZpbGw9IndoaXRlIi8+DQo8cGF0aCBkPSJNMjg5LjAwMyAxODIuMTU4VjIxNy44NkgyODQuNjhWMTgyLjE1OEgyODkuMDAzWiIgZmlsbD0id2hpdGUiLz4NCjxwYXRoIGQ9Ik0zMjYuNzggMjE3Ljg2VjE4Mi4xNThIMzM4Ljg0M0MzNDEuNjMzIDE4Mi4xNTggMzQzLjkyMiAxODIuNjM0IDM0NS43MTIgMTgzLjU4N0MzNDcuNTAyIDE4NC41MjggMzQ4LjgyNiAxODUuODI0IDM0OS42ODYgMTg3LjQ3NUMzNTAuNTQ2IDE4OS4xMjUgMzUwLjk3NiAxOTEuMDAyIDM1MC45NzYgMTkzLjEwNUMzNTAuOTc2IDE5NS4yMDkgMzUwLjU0NiAxOTcuMDc0IDM0OS42ODYgMTk4LjcwMUMzNDguODI2IDIwMC4zMjggMzQ3LjUwNyAyMDEuNjA3IDM0NS43MjkgMjAyLjUzNkMzNDMuOTUxIDIwMy40NTQgMzQxLjY3OSAyMDMuOTE0IDMzOC45MTMgMjAzLjkxNEgzMjkuMTUxVjIwMC4wMDlIMzM4Ljc3NEMzNDAuNjggMjAwLjAwOSAzNDIuMjE0IDE5OS43MyAzNDMuMzc2IDE5OS4xNzJDMzQ0LjU1IDE5OC42MTQgMzQ1LjM5OCAxOTcuODI0IDM0NS45MjEgMTk2LjgwMUMzNDYuNDU2IDE5NS43NjcgMzQ2LjcyMyAxOTQuNTM1IDM0Ni43MjMgMTkzLjEwNUMzNDYuNzIzIDE5MS42NzYgMzQ2LjQ1NiAxOTAuNDI3IDM0NS45MjEgMTg5LjM1N0MzNDUuMzg2IDE4OC4yODggMzQ0LjUzMiAxODcuNDYzIDM0My4zNTggMTg2Ljg4MkMzNDIuMTg1IDE4Ni4yODkgMzQwLjYzMyAxODUuOTkzIDMzOC43MDQgMTg1Ljk5M0gzMzEuMTAzVjIxNy44NkgzMjYuNzhaTTM0My41ODUgMjAxLjgyMkwzNTIuMzcxIDIxNy44NkgzNDcuMzVMMzM4LjcwNCAyMDEuODIySDM0My41ODVaIiBmaWxsPSJ3aGl0ZSIvPg0KPC9nPg0KPGRlZnM+DQo8Y2xpcFBhdGggaWQ9ImNsaXAwXzExNF8xMyI+DQo8cmVjdCB3aWR0aD0iNDk5Ljg2NyIgaGVpZ2h0PSIyMTgiIGZpbGw9IndoaXRlIi8+DQo8L2NsaXBQYXRoPg0KPC9kZWZzPg0KPC9zdmc+DQo=" alt="" /></a>
       <div class="right">
         <button class="nav-icon" type="button" aria-label="Your desk">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
@@ -632,6 +718,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 4 · CRUMBS ══════════════════════════════════════════════════ -->
 <section class="band on-ink" id="crumbs">
   <div class="wrap">
@@ -670,6 +757,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 5 · CONTROLS ════════════════════════════════════════════════ -->
 <section class="band on-ink" id="controls">
   <div class="wrap">
@@ -728,6 +816,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 6 · FIELD ═══════════════════════════════════════════════════ -->
 <section class="band on-ink" id="field">
   <div class="wrap">
@@ -769,6 +858,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 7 · STEPS ═══════════════════════════════════════════════════ -->
 <section class="band on-ink" id="steps">
   <div class="wrap">
@@ -812,6 +902,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 8 · PRODUCT ═════════════════════════════════════════════════ -->
 <section class="band on-ink" id="product">
   <div class="wrap">
@@ -831,7 +922,7 @@ footer.page a { color: inherit; }
         <p class="card-note mono">£1,180</p>
       </a>
       <a class="card" href="#product">
-        <div class="card-shot" style="background:#c6a664"><span style="color:rgba(0,0,0,.5)">Miel</span></div>
+        <div class="card-shot" style="background:#c6a664"><span>Miel</span></div>
         <p class="card-name">Arca I</p>
         <p class="card-note mono">£1,180</p>
       </a>
@@ -883,6 +974,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 9 · STATES ══════════════════════════════════════════════════ -->
 <section class="band on-ink" id="states">
   <div class="wrap">
@@ -927,7 +1019,7 @@ footer.page a { color: inherit; }
       <div class="panel">
         <p class="t-eyebrow">A bag line that went out of the workshop</p>
         <div style="display:flex;gap:1rem;align-items:center;margin-top:1.25rem;opacity:.45">
-          <span style="width:3rem;height:3rem;background:#6b4a2f;border:var(--rule-weight) solid var(--fg-rule)"></span>
+          
           <div>
             <p style="margin:0;color:var(--fg-primary)">Arca II · Perdiz</p>
             <p class="t-caption" style="margin:0.25rem 0 0">Out of the workshop — it will not be taken to checkout.</p>
@@ -955,6 +1047,57 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
+<!-- ══ PATTERN ═════════════════════════════════════════════════════ -->
+<section class="band on-ink" id="pattern">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="t-display-md">Pattern</h2>
+      <p>The breaker. A narrow frieze that sits between chapters, the way Jacques Marie Mage closes one block and opens the next. It is the bridge plaque on the frame, the same emblem the logo carries, redrawn as a single hairline: a doorway under a fan, hatched corners, crossed panels. Repeated across the width of the content, nothing else.</p>
+    </div>
+
+    <svg width="0" height="0" style="position:absolute;color:color-mix(in srgb, var(--paper) 80%, transparent)" aria-hidden="true"><defs>
+        <!-- The emblem from the logo, traced monoline: frame, doorway, fan, hatched corners, X panels. 100 x 70. -->
+        <symbol id="arca-emblem" viewBox="-1 -1 102 72" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square">
+          <path vector-effect="non-scaling-stroke" d="M32 70H0V0h100v70H68" />
+          <path vector-effect="non-scaling-stroke" d="M32 70V28.5h36V70" />
+          <path vector-effect="non-scaling-stroke" d="M0 42 50 0l50 42" />
+          <path vector-effect="non-scaling-stroke" d="M12 0 0 10M24 0 0 20M36 0 0 30M88 0l12 10M76 0l24 20M64 0l36 30" />
+          <path vector-effect="non-scaling-stroke" d="M26 22 32 28.5M74 22l-6 6.5" />
+          <path vector-effect="non-scaling-stroke" d="M50 0v28.5M50 0 44 28.5M50 0 38 28.5M50 0 32.5 27M50 0 56 28.5M50 0 62 28.5M50 0 67.5 27" />
+          <path vector-effect="non-scaling-stroke" d="M0 42 32 70M0 70 32 28.5M100 42 68 70M100 70 68 28.5" />
+        </symbol>
+        <!-- Breaker unit: emblem 18 tall, rails top and bottom. 34 x 24. -->
+        <symbol id="arca-unit" viewBox="0 0 34 24" fill="none" stroke="currentColor" stroke-width="1">
+          <use href="#arca-emblem" x="4" y="3" width="26" height="18" />
+        </symbol>
+        <pattern id="arca-frieze" width="34" height="24" patternUnits="userSpaceOnUse">
+          <use href="#arca-unit" width="34" height="24" />
+        </pattern>
+    </defs></svg>
+
+    <figure style="margin-top:2.5rem">
+      <div class="motif-big"><svg viewBox="-1 -1 102 72" aria-hidden="true"><use href="#arca-emblem" /></svg></div>
+      <figcaption class="pat-cap">The emblem, traced from the logo in one line weight: the frame, the doorway, the fan over the lintel, the hatched corners and the crossed panels either side of the door.</figcaption>
+    </figure>
+
+    <figure style="margin-top:3rem">
+      <div class="breaker"></div>
+      <figcaption class="pat-cap" style="text-align:center">The breaker at size: 12px tall, 30%, across the content column. Between every section on this page.</figcaption>
+    </figure>
+
+    <ul class="rules" style="margin-top:3rem">
+      <li><b>Source.</b> The bridge plaque, as the logo draws it. Monoline only: every stroke the same weight, no fills, no thick-and-thin from the logo lockup.</li>
+      <li><b>Build.</b> The emblem alone. No rails, no rules, no ornaments between. Only whole emblems: the spacing flexes so the row starts and ends on a full one. Stroke stays 1px.</li>
+      <li><b>Size.</b> Small: 12px tall, about 17px wide, roughly 2px apart. It is texture, not an illustration; it should read as a line from a step back and as the emblem only up close.</li>
+      <li><b>Opacity.</b> 30% of paper on ink, 30% of ink on paper. Never above 40%. Quieter than the quietest text beside it.</li>
+      <li><b>Width.</b> Spans the margin: exactly the content column, gutter to gutter, the same edges the text aligns to. Never full bleed, never narrower than the column.</li><li><b>Place.</b> Between chapters, with equal space above and below. One per break, never inside a card, never over an image.</li>
+      <li><b>Orientation.</b> Horizontal and upright. The doorway always stands on the bottom rail.</li>
+      <li><b>Motion.</b> None. It is a breath between sections, not a ticker.</li>
+    </ul>
+  </div>
+</section>
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 10 · MOTION ═════════════════════════════════════════════════ -->
 <section class="band on-ink" id="motion">
   <div class="wrap">
@@ -1004,6 +1147,7 @@ footer.page a { color: inherit; }
   </div>
 </section>
 
+<div class="breaker-row" aria-hidden="true"><div class="breaker"></div></div>
 <!-- ══ 11 · FLOOR ══════════════════════════════════════════════════ -->
 <section class="band on-ink" id="floor">
   <div class="wrap">
@@ -1090,6 +1234,27 @@ footer.page a { color: inherit; }
       });
     });
   })();
+</script>
+<script>
+/* October v2 behaviour: CTA tumble markup, image zoom frames, rise on load. */
+(() => {
+  document.querySelectorAll('.cta-main, .cta-secondary').forEach((b) => {
+    const t = b.textContent.trim();
+    if (!t || b.querySelector('.tumble')) return;
+    b.innerHTML = `<span class="tumble"><span>${t}</span><span aria-hidden="true">${t}</span></span>`;
+  });
+  document.querySelectorAll('.card-shot, figure, .plate').forEach((el) => el.classList.add('zoom-frame'));
+  document.querySelectorAll('.card-shot > *:first-child').forEach((el) => el.classList.add('zoom-target'));
+  const items = document.querySelectorAll('section h1, section h2, section h3, section p, .panel, .spec, section table, figure, .card, section button, section a.cta-main, section a.cta-secondary, section li');
+  items.forEach((el) => el.classList.add('rise'));
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const sibs = [...e.target.parentElement.children].filter((n) => n.classList.contains('rise'));
+    e.target.style.transitionDelay = `${Math.min(sibs.indexOf(e.target), 6) * 60}ms`;
+    e.target.classList.add('in'); io.unobserve(e.target);
+  }), { rootMargin: '0px 0px -8% 0px' });
+  items.forEach((el) => io.observe(el));
+})();
 </script>
 </body>
 </html>

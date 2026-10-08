@@ -9,7 +9,7 @@ import { StickyFeature } from "@/components/page/sticky-feature";
  * section and a second copy of it would have drifted within a month. This
  * file is just the home page's content bound to it.
  */
-export function AtelierSection() {
+export function AtelierSection({ still = false }: { still?: boolean } = {}) {
   return (
     <StickyFeature
       preheader={atelier.preheader}

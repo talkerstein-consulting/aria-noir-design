@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { ArrowDown } from "lucide-react";
 import { CtaLink } from "@/components/cta-link";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 import { MODEL_MARGIN } from "@/lib/model-fit";
@@ -256,6 +257,31 @@ export function ModelStage({
      computing that during render rather than setting it from inside the
      effect keeps the "ready" state out of the effect's hands entirely. */
   const hasModels = items.some((item) => !!item.model);
+
+  /* ---- the down arrow ----
+     Scroll still drives the turntable; the arrow is the same thing as a
+     button, for a reader who wants to step rather than scrub. Each press
+     lands on the start of the next unit, where the next frame is at rest
+     facing front. Past the last frame it carries on to the grid. */
+  const stepDown = useCallback(() => {
+    const el = wrap.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
+    const travel = rect.height - window.innerHeight;
+    const at = travel > 0 ? Math.max(0, -rect.top) / travel : 0;
+    const next = Math.floor(at * units + 0.02) + 1;
+    const target =
+      next >= units ? top + rect.height : top + (next / units) * travel;
+    const lenis = window.__lenis;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.scrollTo({ top: target });
+    } else if (lenis) {
+      lenis.scrollTo(target);
+    } else {
+      window.scrollTo({ top: target, behavior: "smooth" });
+    }
+  }, [units]);
   const ready = !hasModels || firstArrived;
 
   /* Scroll and pointer live in refs, not state: the loop below writes
@@ -862,6 +888,15 @@ export function ModelStage({
             ))}
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={stepDown}
+          aria-label="Next frame"
+          className="absolute bottom-14 left-1/2 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-paper/30 bg-ink/40 text-paper backdrop-blur transition-colors hover:border-paper/70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-paper sm:bottom-8"
+        >
+          <ArrowDown size={16} strokeWidth={1.5} aria-hidden />
+        </button>
 
         {/* ---- stepper: where you are in the set ---- */}
         {/* Where you are in the set.

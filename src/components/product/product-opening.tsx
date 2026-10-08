@@ -22,7 +22,7 @@ export function ProductOpening({
   return (
     <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-16 sm:gap-20">
-        <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+        <p className="hidden preheader font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
           {structure.preheader}
         </p>
         <div className="grid grid-cols-1 gap-x-16 gap-y-10 lg:grid-cols-[1.1fr_1fr]">
@@ -35,7 +35,7 @@ export function ProductOpening({
             {structure.body.map((para) => (
               <p
                 key={para}
-                className="max-w-[68ch] font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base"
+                className="max-w-[68ch] t-body text-pretty text-paper/70"
               >
                 {para}
               </p>

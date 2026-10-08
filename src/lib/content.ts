@@ -285,6 +285,7 @@ export const footer = {
     },
   ],
   legal: "© 2026 Aria Noir. All rights reserved.",
+  credit: { label: "Handcrafted by Talkerstein Consulting Group", href: "https://talkerstein.ca" },
   legalLinks: [
     { label: "Privacy", href: "/policies/privacy" },
     { label: "Terms", href: "/policies/terms" },

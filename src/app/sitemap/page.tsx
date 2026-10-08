@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { architecture, routeCount, type RouteKind } from "@/lib/navigation";
+import { architecture, routeCount } from "@/lib/navigation";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
+import { SitemapMap } from "@/components/sitemap-map";
 
 export const metadata: Metadata = {
   title: "All pages — Aria Noir",
@@ -40,14 +40,6 @@ export const metadata: Metadata = {
  * `next dev`. Two documents, two jobs. See `sitemap` vs `architecture`.
  */
 
-/** The one word that says what state a route is in. */
-const KIND_LABEL: Record<RouteKind, string> = {
-  designed: "Designed",
-  built: "Built",
-  private: "Private",
-  tool: "Tool",
-};
-
 export default function SitemapPage() {
   return (
     <>
@@ -55,13 +47,14 @@ export default function SitemapPage() {
       <SiteNav />
       <main id="main" tabIndex={-1} className="relative">
         <section className="on-ink section bg-ink pt-20 sm:pt-40">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-7xl">
             <div className="stack stack--sm mb-16">
               <CrumbEyebrow label="The architecture" className="t-eyebrow" />
               <h1 className="t-display-lg">All pages.</h1>
               <p className="t-body t-body--lede mt-2">
                 Every room the house answers on, whether or not anything
-                points at it. {routeCount()} routes, one click from here.
+                points at it. {routeCount()} routes, all unlocked. Select a page to
+                preview it live; double click or Open to go there.
               </p>
               {/* The gates are off, and that is a state worth saying out
                   loud on the page that benefits from it — otherwise the
@@ -74,29 +67,7 @@ export default function SitemapPage() {
               </p>
             </div>
 
-            {architecture.map((group) => (
-              <section key={group.title} className="hairline mt-16 pt-10">
-                <div className="mb-8">
-                  <h2 className="t-display-xs">{group.title}</h2>
-                  <p className="t-caption mt-2 max-w-xl">{group.note}</p>
-                </div>
-
-                <ul>
-                  {group.routes.map((route) => (
-                    <li key={route.href} className="arch-row">
-                      <Link href={route.href} className="arch-link">
-                        <span className="arch-name">{route.label}</span>
-                        <span className="arch-path">{route.href}</span>
-                        <span className="arch-note">{route.note}</span>
-                        <span className="arch-kind" data-kind={route.kind}>
-                          {KIND_LABEL[route.kind]}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
+            <SitemapMap groups={architecture} />
           </div>
         </section>
       </main>

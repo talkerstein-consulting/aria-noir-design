@@ -17,7 +17,6 @@ import {
 import { useBag } from "@/lib/cart";
 import { CtaButton } from "@/components/cta-link";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
-import { QtyStepper } from "@/components/shop/qty-stepper";
 import { BagAdded } from "@/components/shop/bag-added";
 import { HoldToggle } from "@/components/shop/hold-toggle";
 import { RevealText } from "@/components/reveal";
@@ -130,7 +129,7 @@ export function ProductBuy({
       <div className="mx-auto max-w-7xl">
         {/* The close, still the close. */}
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
-          {close.eyebrow ? <p className="t-eyebrow">{close.eyebrow}</p> : null}
+          {close.eyebrow ? <p className="hidden t-eyebrow preheader">{close.eyebrow}</p> : null}
           {close.heading ? (
             <RevealText
               as="h2"
@@ -180,7 +179,7 @@ export function ProductBuy({
 
           {/* the offer */}
           <div className="lg:sticky lg:top-32">
-            <p className="t-eyebrow">{COLLECTION_LABEL}</p>
+            <p className="hidden t-eyebrow preheader">{COLLECTION_LABEL}</p>
             <h3 className="t-display-lg mt-3">{house.name}</h3>
             <p className="buy-colourway mt-2">{chosen}</p>
 
@@ -194,7 +193,6 @@ export function ProductBuy({
               </Suspense>
 
               <div className="buy-row mt-10">
-                <QtyStepper value={qty} onChange={setQty} />
                 {available ? (
                   <CtaButton
                     className="flex-1"
@@ -214,7 +212,7 @@ export function ProductBuy({
               <p className="t-caption mt-6">
                 {available
                   ? "Ships in 3–5 days. Free worldwide standard shipping."
-                  : "Made in runs. Hold it below and it stays on your desk until it returns."}
+                  : "Made in runs. This colourway returns with the next one."}
               </p>
 
               {/* Out of the workshop, the caption promises a hold — so the

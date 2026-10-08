@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { CreditCard, Bookmark, MapPin, Package, UserRound } from "lucide-react";
+import { CreditCard, Heart, MapPin, Package, UserRound } from "lucide-react";
 import { CtaLink, CtaButton } from "@/components/cta-link";
 import { AddressBook } from "@/components/shop/address-book";
 import { addressLine } from "@/components/shop/address-form";
@@ -71,7 +71,7 @@ export type View = "orders" | "held" | "profile" | "addresses" | "payment";
  */
 export const VIEWS: readonly { id: View; label: string; Icon: typeof UserRound }[] = [
   { id: "orders", label: "Orders", Icon: Package },
-  { id: "held", label: "Saved", Icon: Bookmark },
+  { id: "held", label: "Saved", Icon: Heart },
   { id: "profile", label: "Profile", Icon: UserRound },
   { id: "addresses", label: "Addresses", Icon: MapPin },
   { id: "payment", label: "Payment", Icon: CreditCard },

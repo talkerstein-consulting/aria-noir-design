@@ -2,7 +2,6 @@
 
 import ImageTrail from "@/components/ImageTrail";
 import type { Close } from "@/lib/product";
-import { CtaLink } from "@/components/cta-link";
 import { RevealText } from "@/components/reveal";
 
 /**
@@ -84,9 +83,6 @@ export function ProductClose({
         <p className="relative z-30 max-w-xl font-ui text-base leading-relaxed text-pretty text-ink/65 sm:text-lg">
           {close.body}
         </p>
-        <CtaLink href={buyHref} className="relative z-30 mt-4">
-          {close.cta}
-        </CtaLink>
       </div>
     </section>
   );

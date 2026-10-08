@@ -25,7 +25,7 @@ const ENTER_MS = 1000;
 
 export function ProductHero({ hero }: { hero: Hero }) {
   return (
-    <section className="on-ink relative flex min-h-svh flex-col justify-end overflow-hidden bg-ink">
+    <section id="story" className="on-ink relative flex min-h-svh flex-col justify-end overflow-hidden bg-ink">
       {/* FULL BLEED, and the one plate on the page that is.
 
           Every other film and photograph on a story page stands in the
@@ -104,7 +104,7 @@ export function ProductHero({ hero }: { hero: Hero }) {
             /* Lifted clear of the name. The block is bottom-anchored, so
                margin BELOW the eyebrow is what raises it while the name and
                the line hold their position against the foot of the frame. */
-            className="t-eyebrow mb-6 sm:mb-10"
+            className="hidden t-eyebrow preheader mb-6 sm:mb-10"
           />
           {/* `--display-hero` is 17vw, and it was set for a NAME: six
               glyphs, one line, filling the frame. A hero line that is a

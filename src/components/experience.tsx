@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
 import { AtelierSection } from "./atelier-section";
 import { CollectionsSection } from "./collections-section";
 import { GridSection } from "./grid-section";
@@ -10,17 +9,9 @@ import { WhiteDotOverlay } from "./white-dot-overlay";
 import { FinaleSection } from "./finale-section";
 import { SiteFooter } from "./site-footer";
 import { SiteNav } from "./site-nav";
+import { PatternBand } from "./pattern-band";
 import { sectionTwo } from "@/lib/content";
 import { CtaLink } from "@/components/cta-link";
-import {
-  F,
-  FRAMES_PER_VH,
-  NARROW_FRAMES_PER_VH,
-  EXIT_VH,
-  VIDEO_REST_SCALE,
-  VIDEO_REST_LIFT_VH,
-  H2_GAP_VH,
-} from "@/lib/timeline";
 import { useSmoothScroll } from "@/hooks/use-smooth-scroll";
 import { kickPlay } from "@/lib/autoplay";
 
@@ -78,7 +69,7 @@ function PrivateAccessWhenNear() {
 
 /* ---------- opening: the scaling rectangle ----------
    The React Bits ScrollExpand move, on the page's own fixed film. The film
-   starts as a rounded rectangle in the middle of the screen and grows to
+   starts as a square-cornered rectangle in the middle of the screen and grows to
    full bleed on its own, about two seconds after load — no counter and no
    preload gate. The scroll scene then plays exactly as it did.
 
@@ -91,7 +82,7 @@ const START_W = 42;
 const START_H = 58;
 const START_W_NARROW = 74;
 const START_H_NARROW = 48;
-const START_RADIUS = 24; // px
+const START_RADIUS = 0; // px — sharp corners, no radii anywhere
 const MEDIA_ZOOM = 1.35;
 
 const smoothstep = (a: number, b: number, x: number) => {
@@ -99,14 +90,8 @@ const smoothstep = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-const HERO_LOGO_W = 288; // px
-const NAV_LOGO_W = 80; // px
-const NAV_CENTER_Y = 40; // px from top
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-/** The JS equivalent of cubic-bezier(0.83, 0, 0.17, 1). */
 export function Experience() {
   useSmoothScroll(true);
 
@@ -114,18 +99,14 @@ export function Experience() {
 
   const logoWrap = useRef<HTMLDivElement>(null);
   const logoMark = useRef<HTMLImageElement>(null);
-  const headGroup = useRef<HTMLDivElement>(null);
   const progressBar = useRef<HTMLDivElement>(null);
 
-  /* ---------- the film's pause control ----------
-     A looping film with no way to stop it fails WCAG 2.2.2, and a reader
-     who has asked the OS for less motion should not be shown one at all.
-     `held` is the reader's decision; lib/autoplay reads the same flag off
-     the element so its retries do not undo it. `filmGone` hides the control
-     once the choreography has carried the film off the top of the page. */
+  /* ---------- the film ----------
+     No on-screen pause control, by request (the button sat over the
+     opening film). A reader who has asked the OS for less motion still
+     gets a still: the film is held on attach and lib/autoplay reads the
+     same flag, so its retries do not undo it. */
   const film = useRef<HTMLVideoElement>(null);
-  const [held, setHeld] = useState(false);
-  const [filmGone, setFilmGone] = useState(false);
 
   const setFilm = (el: HTMLVideoElement | null) => {
     film.current = el;
@@ -133,25 +114,10 @@ export function Experience() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       el.dataset.held = "true";
       el.pause();
-      setHeld(true);
     }
     /* On screen from the first frame now, inside the rectangle, so it is
        asked to play on attach. The poster holds the frame until it can. */
     if (!el.dataset.held) kickPlay(el);
-  };
-
-  const toggleFilm = () => {
-    const el = film.current;
-    if (!el) return;
-    if (held) {
-      delete el.dataset.held;
-      setHeld(false);
-      kickPlay(el);
-    } else {
-      el.dataset.held = "true";
-      el.pause();
-      setHeld(true);
-    }
   };
 
   /* ---------- opening: the rectangle expands by itself ----------
@@ -228,87 +194,30 @@ export function Experience() {
     };
   }, []);
 
-  /* ---------- scroll choreography (all in frames) ---------- */
+  /* ---------- scroll ----------
+     A standard scroll, by request: the film no longer shrinks to a framed
+     rectangle and hangs. It is still the fixed layer (the opening iris
+     expands it in place), but it now travels up 1:1 with the page, so it
+     reads as the first section scrolling away. The heading below it is in
+     normal flow. Only the logo's flight into the navbar is still timed. */
   useEffect(() => {
-    /* Read per frame rather than captured once: a phone rotating into
-       landscape crosses this breakpoint, and a scene half-played on one
-       budget and half on the other would jump. */
-    const perVh = () =>
-      window.matchMedia("(max-width: 1023px)").matches
-        ? NARROW_FRAMES_PER_VH
-        : FRAMES_PER_VH;
-
     const onScroll = () => {
       const vh = window.innerHeight;
-      /* How far down the whole page, as a hairline under the nav: four
-         screens of runway with no sign of their length reads as a page
-         that might not end. */
+      const y = window.scrollY;
+      /* How far down the whole page, as a hairline under the nav. */
       if (progressBar.current) {
         const room = document.documentElement.scrollHeight - vh;
-        progressBar.current.style.transform = `scaleX(${room > 0 ? clamp01(window.scrollY / room) : 0})`;
+        progressBar.current.style.transform = `scaleX(${room > 0 ? clamp01(y / room) : 0})`;
       }
-      const frame = (window.scrollY / vh) * perVh();
-
-      const shrink = clamp01(frame / F.videoShrinkEnd);
-      /* the lift starts LATER than the shrink — nothing moves up until 94 */
-      const lift = clamp01(
-        (frame - F.videoLiftStart) / (F.videoShrinkEnd - F.videoLiftStart),
-      );
-      const logoP = clamp01(frame / F.logoDocked);
-      const headIn = clamp01(
-        (frame - F.h2Start) / (F.videoShrinkEnd - F.h2Start),
-      );
-      /* The heading used to hold until F.productStart, because the ARCA I
-         block was what replaced it. With that block gone it leaves WITH the
-         video instead — same two frames — so the section ends as one motion
-         rather than the type outliving the thing it was captioning. */
-      const headOut = clamp01(
-        (frame - F.modelStart) / (F.modelEntryEnd - F.modelStart),
-      );
-      /* The model and the ARCA I block are both gone from this page, but
-         F.modelStart still times the video's exit — so `entry` stays,
-         driving the video off screen on its own. */
-      const entry = easeOutCubic(
-        clamp01((frame - F.modelStart) / (F.modelEntryEnd - F.modelStart)),
-      );
-
-      /* ---- video ---- */
-      const scale = lerp(1, VIDEO_REST_SCALE, shrink);
-      const liftVh = -VIDEO_REST_LIFT_VH * lift;
-      const exitVh = -(EXIT_VH - VIDEO_REST_LIFT_VH) * entry;
       if (videoBox.current) {
-        videoBox.current.style.transform = `translateY(${liftVh + exitVh}vh) scale(${scale})`;
-      }
-      /* The film's bottom edge, in vh from the top of the viewport. Once it
-         is above zero the film is off screen and its control goes with it. */
-      setFilmGone(50 + scale * 50 + liftVh + exitVh <= 0);
-
-      /* ---- heading group is ANCHORED to the video's bottom edge, so the two
-         are one unit. It naturally HANGS while the video rests. ---- */
-      if (headGroup.current) {
-        const videoBottomVh = scale * 50 + liftVh + exitVh;
-        const headAlpha = headIn * (1 - headOut);
-        headGroup.current.style.transform = `translateY(${videoBottomVh + H2_GAP_VH}vh)`;
-        headGroup.current.style.opacity = String(headAlpha);
-        /* The group carries the page's only link into /eyewear, and the
-           group is a FIXED layer that spends most of the scroll invisible.
-           An invisible fixed layer with a live link in it is a trap: the
-           reader clicks a photograph three sections later and lands on the
-           index. So the whole group's pointer-events follow its own
-           opacity, written in the same frame as the opacity, which is the
-           only way the two cannot fall out of step. */
-        headGroup.current.style.pointerEvents = headAlpha > 0.9 ? "auto" : "none";
+        videoBox.current.style.transform = `translateY(${-Math.min(y, vh * 1.05)}px)`;
       }
 
-      /* ---- logo ---- */
-      if (logoWrap.current) {
-        logoWrap.current.style.transform = `translateY(${-logoP * (vh / 2 - NAV_CENTER_Y)}px)`;
-      }
-      if (logoMark.current) {
-        /* cap the hero size on narrow screens so the mark keeps real margin */
-        const heroW = Math.min(HERO_LOGO_W, window.innerWidth * 0.72);
-        logoMark.current.style.width = `${heroW - logoP * (heroW - NAV_LOGO_W)}px`;
-      }
+      /* ---- logo: stays centred and fades out; the nav's own mark fades
+         in over the same stretch, so there is never one in flight. ---- */
+      const fade = clamp01(y / (vh * 0.35));
+      if (logoWrap.current) logoWrap.current.style.opacity = String(1 - fade);
+      document.documentElement.style.setProperty("--home-mark", String(fade));
     };
 
     onScroll();
@@ -317,6 +226,7 @@ export function Experience() {
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      document.documentElement.style.removeProperty("--home-mark");
     };
   }, []);
 
@@ -379,28 +289,12 @@ export function Experience() {
         </div>
       </div>
 
-      {!filmGone && (
-        <button
-          type="button"
-          onClick={toggleFilm}
-          aria-pressed={held}
-          aria-label={held ? "Play the film" : "Pause the film"}
-          className="fixed bottom-6 right-6 z-[46] flex h-11 w-11 items-center justify-center rounded-full border border-paper/30 bg-ink/60 text-paper backdrop-blur transition-colors hover:border-paper/60 focus-visible:outline focus-visible:outline-1 focus-visible:outline-paper"
-        >
-          {held ? (
-            <Play size={16} strokeWidth={1.5} aria-hidden />
-          ) : (
-            <Pause size={16} strokeWidth={1.5} aria-hidden />
-          )}
-        </button>
-      )}
-
       {/* ---------- navbar ---------- */}
-      {/* showMark=false: this page flies its own animated mark into the
-          navbar slot below, so the static one would double up */}
-      <SiteNav visible showMark={false} />
+      {/* The nav's mark fades in as the hero mark below fades out (see
+          --home-mark in the scroll handler). */}
+      <SiteNav visible />
 
-      {/* ---------- logo: centre → navbar ----------
+      {/* ---------- logo: centred, fades on scroll ----------
           Mounted with the page, so the SVG's own draw-in plays on arrival. It has to be an <img> (or inline SVG): a CSS mask does
           not run the animation embedded in the file. Sizing stays width-based
           so the vector re-rasterises crisply instead of being scaled. */}
@@ -412,39 +306,9 @@ export function Experience() {
             src="/logo/aria-loader.svg"
             alt="Aria Noir"
             className="block h-auto"
-            style={{ width: HERO_LOGO_W }}
+            style={{ width: "min(288px, 72vw)" }}
           />
         </div>
-      </div>
-
-      {/* ---------- heading + 2-column body, welded under the video ---------- */}
-      <div
-        ref={headGroup}
-        className="pointer-events-none fixed inset-x-0 top-1/2 z-10 flex flex-col items-center gap-8 px-8 will-change-transform"
-        style={{ opacity: 0 }}
-      >
-        <h2 className="max-w-3xl text-center font-display text-3xl leading-tight text-paper sm:text-5xl">
-          {sectionTwo.heading}
-        </h2>
-        {/* no separate reveal — the group's own opacity carries both, so the
-            heading and the two columns arrive together */}
-        <div className="grid max-w-3xl grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
-          {sectionTwo.body.map((para) => (
-            <p
-              key={para}
-              className="font-ui text-sm leading-relaxed text-paper/85 sm:text-base"
-            >
-              {para}
-            </p>
-          ))}
-        </div>
-        {/* `pointer-events-auto` on the link and nothing else in the group:
-            the parent is pointer-events-none so the type never intercepts a
-            scroll gesture, and the parent's own gate above decides whether
-            this is reachable at all. */}
-        <CtaLink href={sectionTwo.href} className="pointer-events-auto mt-2">
-          {sectionTwo.cta}
-        </CtaLink>
       </div>
 
       <div
@@ -463,8 +327,37 @@ export function Experience() {
             scene needs, and nothing else. Shorter on a phone because the
             scene itself is compressed there; see NARROW_FRAMES_PER_VH. */}
         <div className="home-runway" />
+        {/* The opening's heading and two columns, in normal flow right
+            after the film's screen. The space above it mirrors the space
+            below: the Collections heading that follows is centred in a
+            full-screen sticky panel, so its lead-in is about half the
+            screen less half that heading block (~16rem), and this top
+            padding is the same sum. */}
+        <section className="relative z-10 flex flex-col items-center gap-8 bg-ink px-8 pt-[max(5rem,calc(50svh-16rem))]">
+          <h2 className="max-w-3xl text-center font-display text-3xl leading-tight text-paper sm:text-5xl">
+            {sectionTwo.heading}
+          </h2>
+          <div className="grid max-w-3xl grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2">
+            {sectionTwo.body.map((para) => (
+              <p
+                key={para}
+                className="font-ui text-sm leading-relaxed text-paper/85 sm:text-base"
+              >
+                {para}
+              </p>
+            ))}
+          </div>
+          <CtaLink href={sectionTwo.href} className="mt-2">
+            {sectionTwo.cta}
+          </CtaLink>
+        </section>
         <CollectionsSection />
         <AtelierSection />
+        {/* A chapter break, in the house pattern (Raviv's Jacques Marie
+            Mage reference). */}
+        <div className="relative z-[37] bg-ink">
+          <PatternBand />
+        </div>
         <GridSection />
         {/* The last black on the page, and the one offer that is not for
             everybody. */}

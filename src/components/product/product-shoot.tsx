@@ -24,7 +24,7 @@ export function ProductShoot({
     <section className={`relative bg-ink px-6 sm:px-10 ${SECTION_PAD}`}>
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-16 gap-y-14 lg:grid-cols-2">
         <div className="flex flex-col gap-4">
-          <p className="font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
+          <p className="hidden preheader font-ui text-[11px] tracking-[0.35em] text-gold uppercase">
             {shoot.preheader}
           </p>
           <RevealText
@@ -36,7 +36,7 @@ export function ProductShoot({
             {shoot.body.map((para) => (
               <p
                 key={para}
-                className="max-w-[62ch] font-ui text-sm leading-relaxed text-pretty text-paper/70 sm:text-base"
+                className="max-w-[62ch] t-body text-pretty text-paper/70"
               >
                 {para}
               </p>
@@ -50,7 +50,7 @@ export function ProductShoot({
               <span className="mr-2">①</span>
               {shoot.note.label}
             </summary>
-            <p className="mt-4 max-w-[56ch] font-ui text-sm leading-relaxed text-pretty text-paper/60">
+            <p className="mt-4 max-w-[56ch] t-body text-pretty text-paper/60">
               {shoot.note.body}
             </p>
           </details>

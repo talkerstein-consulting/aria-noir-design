@@ -72,7 +72,9 @@ for (const house of HOUSES) {
   for (const baseSrc of files.filter((f) => f.endsWith("-sill.webp"))) {
     const key = baseSrc.replace(/-sill\.webp$/, "");
     const out = path.join(dir, `${key}-card.webp`);
-    const sq = path.join(dir, `${key}-square.webp`);
+    /* The outpainted squares are source, not site: they live outside
+       public/ so they are never deployed. */
+    const sq = path.join(process.cwd(), "assets-src", "images", house, "variants", `${key}-square.webp`);
     if (!fs.existsSync(sq)) {
       throw new Error(`${house}/${key}: no ${key}-square.webp. Outpaint the sill first; the card is never a blurred crop.`);
     }

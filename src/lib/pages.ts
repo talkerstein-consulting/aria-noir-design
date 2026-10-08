@@ -490,6 +490,17 @@ export const contact = {
     name: "Name",
     email: "Email",
     phone: "Phone (optional)",
+    /* Where the reader came from, so enquiries can be traced to more than
+       the one door marked Contact. */
+    source: "How did you find us?",
+    sources: [
+      "Instagram",
+      "A friend",
+      "Press",
+      "Search",
+      "In person",
+      "Other",
+    ],
     message: "How can we help?",
     submit: "Send",
     note: "We reply within two business days.",

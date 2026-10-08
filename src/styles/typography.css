@@ -252,5 +252,5 @@ body {
    are no heavier borders anywhere, and there should not be. */
 .hairline {
   border: 0;
-  border-top: var(--rule-weight) solid var(--fg-rule);
+  border-top: 0; /* v2: no dividers */
 }

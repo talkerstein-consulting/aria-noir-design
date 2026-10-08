@@ -25,7 +25,7 @@ export function TextPair({
   return (
     <section className="on-ink section relative z-[35] bg-ink">
       <div className="mx-auto flex max-w-6xl flex-col gap-16 sm:gap-20">
-        <p className="t-eyebrow">{preheader}</p>
+        <p className="hidden t-eyebrow preheader">{preheader}</p>
 
         <div className="grid grid-cols-1 gap-x-16 gap-y-10 lg:grid-cols-[1.1fr_1fr]">
           <RevealText as="h2" text={heading} className="t-display-lg" />

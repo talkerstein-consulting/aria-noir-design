@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useHeld } from "@/lib/held";
 
 /**
@@ -22,6 +22,10 @@ import { useHeld } from "@/lib/held";
  * case is one extra press on something already held, which is a toggle, not
  * a loss.
  */
+/** Saving is switched off across the site (no favourites). The toggle
+ *  renders nothing until it is wanted back: set this to true. */
+export const SHOW_HOLD = false;
+
 export function HoldToggle({
   slug,
   colorway,
@@ -62,6 +66,8 @@ export function HoldToggle({
     ? `Saved${label ? `: ${label}` : ""}`
     : `Save${label ? `: ${label}` : ""}`;
 
+  if (!SHOW_HOLD) return null;
+
   return (
     <button
       type="button"
@@ -73,7 +79,7 @@ export function HoldToggle({
       title={compact ? says : undefined}
       onClick={() => colorway && toggle(slug, colorway)}
     >
-      <Bookmark aria-hidden />
+      <Heart aria-hidden />
       {compact ? null : <span>{held ? "Saved" : "Save"}</span>}
     </button>
   );

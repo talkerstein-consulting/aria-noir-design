@@ -191,7 +191,7 @@ export function houseBySlug(slug: string) {
  * label rather than a lookup — the day the site sells the alpaca knitwear
  * the storefront already carries, it becomes a field on the catalogue.
  */
-export const COLLECTION_LABEL = "Eyewear";
+export const COLLECTION_LABEL = "Collections";
 
 /**
  * The left column: the chosen colourway, and nothing else.

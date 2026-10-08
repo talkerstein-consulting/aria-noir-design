@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { StoryBuy } from "@/components/product/story-buy";
 import type { AriaNoir } from "@/lib/product";
 import { RevealText, RevealPlate } from "@/components/reveal";
 
@@ -24,7 +23,7 @@ export function ProductAriaNoir({
             gold caps preheader, display heading under it running the same
             italic-lowercase-against-roman-caps mechanic */}
         <div className="stack stack--sm mx-auto mb-24 max-w-5xl items-center text-center sm:mb-32">
-          <p className="t-eyebrow">
+          <p className="hidden t-eyebrow preheader">
             {ariaNoir.preheader}
           </p>
           <RevealText
@@ -61,7 +60,6 @@ export function ProductAriaNoir({
               {para}
             </p>
           ))}
-          <StoryBuy href={buyHref} label={buyLabel} />
         </div>
       </div>
     </section>

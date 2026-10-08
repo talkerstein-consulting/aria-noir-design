@@ -1,10 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HoldToggle } from "@/components/shop/hold-toggle";
+
+/** Favourites (the heart on each card) are switched off for now. Flip to
+ *  bring them back; nothing else about them has been removed. */
+const SHOW_FAVOURITES = false;
 import type { ReactNode } from "react";
 import { CardShots } from "@/components/card-shots";
 import { CardUnder } from "@/components/card-under";
 import { RevealPlate } from "@/components/reveal";
+import { framingFor } from "@/lib/card-framing";
+
+/** The measured crop for this photograph, as CSS `scale` + `translate`
+ *  (separate properties, so the hover's own transform still composes). */
+function framed(src: string | null | undefined) {
+  const [scale, x, y] = framingFor(src);
+  return { scale: String(scale), translate: `${x}% ${y}%` };
+}
 import { SWATCH_FALLBACK } from "@/lib/shop";
 
 /**
@@ -194,7 +206,9 @@ export function ProductCard({
             priority={priority}
             style={{
               ...(focal ? { objectPosition: focal } : null),
-              ...(zoom ? { scale: String(zoom.scale), transformOrigin: zoom.origin } : null),
+              ...(zoom
+                ? { scale: String(zoom.scale), transformOrigin: zoom.origin }
+                : framed(image)),
             }}
             /* A card with a second photograph lifts a little under the
                pointer and swaps. A card with ONE photograph has only the
@@ -225,13 +239,28 @@ export function ProductCard({
 
   const body: ReactNode = (
     <>
-      {reveal ? (
-        <RevealPlate delay={revealDelay} className="card-shot bg-ink">
-          {shot}
-        </RevealPlate>
-      ) : (
-        <div className="card-shot bg-ink">{shot}</div>
-      )}
+      {/* The heart sits on the photograph's top-right corner, where
+          every shop puts it (Jakob's law). It saves THIS colourway. */}
+      <div className="relative">
+        {reveal ? (
+          <RevealPlate delay={revealDelay} className="card-shot bg-ink">
+            {shot}
+          </RevealPlate>
+        ) : (
+          <div className="card-shot bg-ink">{shot}</div>
+        )}
+        {SHOW_FAVOURITES && holdSlug && holdColorway ? (
+          <HoldToggle
+            slug={holdSlug}
+            colorway={holdColorway}
+            /* Name AND meta: in a run every card shares the house name,
+               so the acetate is what tells the saves apart. */
+            label={meta ? `${name}, ${meta}` : name}
+            compact
+            className="card-hold card-hold--over"
+          />
+        ) : null}
+      </div>
 
       <div className="stack stack--sm">
         {/* ---- The name carries the link; the bookmark sits outside it ----
@@ -264,19 +293,6 @@ export function ProductCard({
               name
             )}
           </Heading>
-          {holdSlug && holdColorway ? (
-            <HoldToggle
-              slug={holdSlug}
-              colorway={holdColorway}
-              /* Name AND meta: on the shop list every card in a run is
-                 titled with the same house, so a bookmark labelled by the
-                 name alone would read "Save: AHAVA" eight times
-                 over. The acetate is what tells them apart. */
-              label={meta ? `${name}, ${meta}` : name}
-              compact
-              className="card-hold"
-            />
-          ) : null}
         </div>
         {/* ---- Second line: which one, and what it costs ----
         
