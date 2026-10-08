@@ -109,7 +109,10 @@ export function SiteFooter({
 
             Under both, the ARIA NOIR mark closes the page; NOIR is
             the last thing on it. */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[var(--fg-rule)] pt-8 sm:flex-row">
+        {/* The line over the legal row is the house pattern: the monoline
+            emblem repeated across the column, rather than a plain rule. */}
+        <div aria-hidden className="breaker mt-16" />
+        <div className="flex flex-col items-center justify-between gap-4 pt-8 sm:flex-row">
           <ul className="flex flex-wrap justify-center gap-6">
             {footer.legalLinks.map((l) => (
               <li key={l.label}>
