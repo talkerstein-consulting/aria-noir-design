@@ -76,7 +76,7 @@ function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean
       <Link href={href} className="relative isolate block aspect-[5/4] w-full overflow-hidden">
         {/* The zoom lives on this wrapper so it never fights the
             crossfade's own scale on each picture. */}
-        <div className="absolute inset-0 transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
+        <div className="absolute inset-0 isolate transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
         {layers.map((layer) => {
           const on = layer.key === shown;
           return (

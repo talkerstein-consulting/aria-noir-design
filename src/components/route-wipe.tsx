@@ -64,7 +64,25 @@ export function RouteWipe() {
       setPhase("off");
     };
 
-    const toMorph = window.setTimeout(() => {
+    /* The morph only starts once the incoming page has stopped blocking
+       the main thread: three smooth frames in a row (capped at 2s). Started
+       inside a long render, the move had no frames to play in and arrived
+       already finished, which read as the logo teleporting. */
+    let calmRaf = 0;
+    const whenCalm = (go: () => void) => {
+      let last = performance.now();
+      let calm = 0;
+      const start = last;
+      const tick = (now: number) => {
+        calm = now - last < 40 ? calm + 1 : 0;
+        last = now;
+        if (calm >= 3 || now - start > 2000) go();
+        else calmRaf = requestAnimationFrame(tick);
+      };
+      calmRaf = requestAnimationFrame(tick);
+    };
+
+    const toMorph = window.setTimeout(() => whenCalm(() => {
       svg = mark.current?.querySelector("svg") ?? null;
       const n = document.querySelector<SVGElement>(".site-nav .nav-mark svg");
       if (!svg || !n || still) {
@@ -83,18 +101,28 @@ export function RouteWipe() {
       const dx = b.left + b.width / 2 - (a.left + a.width / 2);
       const dy = b.top + b.height / 2 - (a.top + a.height / 2);
       svg.addEventListener("transitionend", hand);
+      /* The morph rules (transition on, entrance animation off) must be in
+         force BEFORE the new size and position are written, or the logo
+         jumps there. React's setPhase lands on its own schedule, so the
+         attribute is set on the DOM now, a style read commits it, and the
+         move waits two frames, as the first-visit loader does. */
+      svg.closest(".route-cover")?.setAttribute("data-phase", "morph");
+      void svg.getBoundingClientRect();
       setPhase("morph");
-      requestAnimationFrame(() => {
-        if (!svg) return;
-        svg.style.width = `${b.width}px`;
-        svg.style.transform = `translate(${dx}px, ${dy}px)`;
-      });
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          if (!svg) return;
+          svg.style.width = `${b.width}px`;
+          svg.style.transform = `translate(${dx}px, ${dy}px)`;
+        }),
+      );
       /* Hand over on the transition's end; this is only the safety net. */
       done = window.setTimeout(() => setPhase("off"), MORPH_MS + 250);
-    }, still ? 200 : ROUTE_MIN_MS);
+    }), still ? 200 : ROUTE_MIN_MS);
 
     return () => {
       clearTimeout(toMorph);
+      cancelAnimationFrame(calmRaf);
       clearTimeout(done);
       svg?.removeEventListener("transitionend", hand);
     };
