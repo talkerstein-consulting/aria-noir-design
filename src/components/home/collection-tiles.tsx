@@ -23,17 +23,25 @@ export type CollectionTile = {
   colourways: { name: string; swatch: string; image: string | null }[];
 };
 
-export function CollectionTiles({ items }: { items: CollectionTile[] }) {
+/** `scroll`: on a phone, one row that side-scrolls (Shop All) instead of
+ *  the two-column grid. From sm up it is the grid either way. */
+export function CollectionTiles({ items, scroll = false }: { items: CollectionTile[]; scroll?: boolean }) {
   return (
-    <ul className="grid grid-cols-2 lg:grid-cols-3">
+    <ul
+      className={
+        scroll
+          ? "tiles-scroll flex snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
+          : "grid grid-cols-2 lg:grid-cols-3"
+      }
+    >
       {items.map((item) => (
-        <Tile key={item.slug} item={item} />
+        <Tile key={item.slug} item={item} scroll={scroll} />
       ))}
     </ul>
   );
 }
 
-function Tile({ item }: { item: CollectionTile }) {
+function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean }) {
   const [chosen, setChosen] = useState<string | null>(null);
   /* What is on screen. Lags `chosen` until the new photograph has loaded,
      so a switch never fades to an empty frame. */
@@ -62,7 +70,9 @@ function Tile({ item }: { item: CollectionTile }) {
     /* `group` on the whole tile, dots included, so moving onto a dot keeps
        the hover. Static: the name. Hover: the name, the photograph zooms,
        the colour dots appear. */
-    <li className="tile group relative" onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
+    <li
+      className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""}`}
+      onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
       <Link href={href} className="relative isolate block aspect-[5/4] w-full overflow-hidden">
         {/* The zoom lives on this wrapper so it never fights the
             crossfade's own scale on each picture. */}

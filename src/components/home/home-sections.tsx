@@ -109,7 +109,7 @@ export function HomeStatement() {
 
 const COLLECTION_ORDER = ["arca-i", "arca-ii", "ahava", "monarca", "matriarca", "patriarca"];
 
-export function HomeCollections() {
+export function HomeCollections({ scroll = false }: { scroll?: boolean } = {}) {
   const items: CollectionTile[] = COLLECTION_ORDER.flatMap((slug) => {
     const house = allHouses.find((h) => h.slug === slug);
     if (!house) return [];
@@ -130,7 +130,7 @@ export function HomeCollections() {
 
   return (
     <section aria-label="The collections" className="bg-ink">
-      <CollectionTiles items={items} />
+      <CollectionTiles items={items} scroll={scroll} />
     </section>
   );
 }

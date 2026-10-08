@@ -34,7 +34,7 @@ export default function ShopAllPage() {
         <h1 className="sr-only">Shop all</h1>
         {/* Clear the fixed navbar. */}
         <div className="pt-16 sm:pt-[5.5rem]">
-          <HomeCollections />
+          <HomeCollections scroll />
         </div>
         {/* Not a black rectangle. The boundary suspends on every cold
             entry, and what it hands over is the page's own shape; see
