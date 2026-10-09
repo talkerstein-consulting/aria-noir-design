@@ -1,8 +1,6 @@
 import { footer } from "@/lib/content";
 import { SitemapTabs } from "./sitemap-tabs";
-import { Camera } from "lucide-react";
 import { NewsletterField } from "./newsletter-field";
-import { CtaLink } from "@/components/cta-link";
 import { FooterMark } from "./footer-mark";
 
 /**
@@ -47,39 +45,27 @@ export function SiteFooter({
           <div className="flex flex-col gap-4 lg:w-[19rem] lg:shrink-0">
             <p className="t-label">{footer.newsletterLabel}</p>
             <NewsletterField placeholder={footer.newsletterPlaceholder} />
-            {/* ---- The one social account, as an offer ----
-            
-                It was a bare word — "Instagram" — in the quiet link style
-                the legal row uses, sitting under the newsletter field
-                with no box and no verb. Next to a form with a submit
-                button it read as a footnote rather than as the second
-                thing the house is asking a reader to do.
-            
-                An outlined CTA says what pressing it does, and the glyph
-                names the destination faster than the word does. Secondary
-                and not filled: the newsletter field is this column's main
-                action and two solid blocks would fight.
-            
-                Still hidden on a phone, where the socials are a tab in
-                the map below rather than a stray control under the
-                field. */}
-            <div className="mt-3 hidden sm:block">
+            {/* ---- The one social account, as its glyph ----
+                Icon only: the Instagram mark names the destination on its
+                own; the label stays for screen readers. Still hidden on a
+                phone, where the socials are a tab in the map below. */}
+            <div className="mt-3 hidden sm:flex sm:gap-3">
               {footer.socials.map((social) => (
-                <CtaLink
+                <a
                   key={social.label}
                   href={social.href}
-                  external
-                  kind="secondary"
-                  /* `Camera`, not `Instagram`: lucide 1.x removed every brand
-                     mark from the set — there is no twitter, github or
-                     instagram glyph in the 4,070 icons installed — and the
-                     deleted one was a camera outline anyway. The word next
-                     to it names the destination; the glyph only has to say
-                     "this is the picture one". */
-                  icon={<Camera aria-hidden size={16} strokeWidth={1.5} />}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Follow us on ${social.label}`}
+                  className="inline-flex size-10 items-center justify-center opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100"
                 >
-                  {`Follow us on ${social.label}`}
-                </CtaLink>
+                  {/* lucide 1.x ships no brand marks, so the glyph is drawn here. */}
+                  <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
               ))}
             </div>
           </div>

@@ -124,15 +124,15 @@ a:hover :is(.zoom, .card-shot) img {
    column. Drawn as a mask so it takes the ground's colour; 30% of it.
    `space` lays only whole emblems and flexes the gaps to fit. */
 .breaker {
-  height: 12px;
+  height: 20px;
   color: currentColor;
   background-color: currentColor;
-  opacity: 0.3;
-  -webkit-mask: var(--breaker-emblem) space no-repeat 0 50% / 19px 12px;
-  mask: var(--breaker-emblem) space no-repeat 0 50% / 19px 12px;
+  opacity: 0.15;
+  -webkit-mask: var(--breaker-emblem) space no-repeat 0 50% / 32px 20px;
+  mask: var(--breaker-emblem) space no-repeat 0 50% / 32px 20px;
 }
 :root {
-  --breaker-emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -1 116 72' fill='none' stroke='black' stroke-width='6'%3E%3Cpath d='M32 70H0V0h100v70H68M32 70V28.5h36V70M0 42 50 0l50 42M12 0 0 10M24 0 0 20M36 0 0 30M88 0l12 10M76 0l24 20M64 0l36 30M26 22 32 28.5M74 22l-6 6.5M50 0v28.5M50 0 44 28.5M50 0 38 28.5M50 0 32.5 27M50 0 56 28.5M50 0 62 28.5M50 0 67.5 27M0 42 32 70M0 70 32 28.5M100 42 68 70M100 70 68 28.5'/%3E%3C/svg%3E");
+  --breaker-emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -1 116 72' fill='none' stroke='black' stroke-width='6'%3E%3Cpath d='M32 70H0V0h100v70H68M32 70V28.5h36V70M0 42 50 0l50 42M50 0v28.5'/%3E%3C/svg%3E");
 }
 
 /* ── No colour blocks ──

@@ -74,6 +74,7 @@ interface Controller {
   sync: () => void;
   travel: (cards: number) => void;
   focus: (index: number) => void;
+  step: (direction: number) => void;
   release: () => void;
   reveal: (show: boolean) => void;
   destroy: () => void;
@@ -942,6 +943,12 @@ const createRibbon = (
     schedule();
   };
 
+  /** With an image open, move to the next card along the ribbon. */
+  const step = (direction: number) => {
+    if (!focus || focus.target === 0 || !cardCount) return;
+    focusCard((((focus.card + direction) % cardCount) + cardCount) % cardCount);
+  };
+
   const release = () => {
     if (!focus || focus.target === 0) return;
     focus.target = 0;
@@ -1266,9 +1273,11 @@ const createRibbon = (
     } else if (event.key === "ArrowUp" || event.key === "ArrowRight") {
       event.preventDefault();
       if (!focus) velocity += 2.5;
+      else step(1);
     } else if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
       event.preventDefault();
       if (!focus) velocity -= 2.5;
+      else step(-1);
     } else if (event.key === "Enter" && event.target === root) {
       event.preventDefault();
       if (focus) release();
@@ -1353,6 +1362,7 @@ const createRibbon = (
       schedule();
     },
     focus: (index: number) => focusCard(index),
+    step,
     release,
     reveal: (show: boolean) => {
       peek = show;
@@ -1546,6 +1556,36 @@ export const DepthRibbon = forwardRef<DepthRibbonHandle, DepthRibbonProps>(funct
           <div style={{ pointerEvents: current ? "none" : "auto" }}>{children}</div>
         </div>
       ) : null}
+      {([-1, 1] as const).map((direction) => (
+        <button
+          key={direction}
+          type="button"
+          aria-label={direction < 0 ? "Previous image" : "Next image"}
+          tabIndex={current ? 0 : -1}
+          onClick={() => controllerRef.current?.step(direction)}
+          style={{
+            position: "absolute",
+            top: "50%",
+            [direction < 0 ? "left" : "right"]: "clamp(12px, 3vw, 40px)",
+            width: 48,
+            height: 48,
+            display: "grid",
+            placeItems: "center",
+            border: `1px solid ${light ? "rgba(10, 10, 10, 0.4)" : "rgba(255, 255, 255, 0.4)"}`,
+            background: "transparent",
+            color: light ? "rgba(10, 10, 10, 0.92)" : "rgba(255, 255, 255, 0.94)",
+            cursor: "pointer",
+            opacity: current ? 1 : 0,
+            pointerEvents: current ? "auto" : "none",
+            transform: "translateY(-50%)",
+            transition: current ? "opacity 420ms ease 520ms" : "opacity 160ms ease",
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+            <path d={direction < 0 ? "M10 2 4 8l6 6" : "M6 2l6 6-6 6"} />
+          </svg>
+        </button>
+      ))}
       {captions ? (
         <div
           aria-live="polite"
