@@ -11,6 +11,7 @@ import { SiteMenu } from "@/components/site-menu";
 import { SiteSearch } from "@/components/site-search";
 import { NavSearch } from "@/components/nav-search";
 import { BagDrawer } from "@/components/shop/bag-drawer";
+import { BagPin } from "@/components/shop/bag-pin";
 import { DeskDrawer } from "@/components/shop/desk-drawer";
 import { menu } from "@/lib/navigation";
 import { useBag } from "@/lib/cart";
@@ -411,6 +412,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
         onClose={() => setSearchOpen(false)}
       />
       <BagDrawer open={bagOpen} onClose={() => setBagOpen(false)} />
+      <BagPin hidden={bagOpen || menuOpen || searchOpen || deskOpen} />
       <DeskDrawer open={deskOpen} onClose={() => setDeskOpen(false)} />
     </>
   );
