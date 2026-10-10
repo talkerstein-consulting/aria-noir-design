@@ -302,7 +302,7 @@ export function ProductOffering({
           so lifting it takes nothing away from the drag. */}
       <div className="pointer-events-none relative z-10 px-6 pb-16 sm:px-10 sm:pb-20">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-3 text-center">
-          <p className="font-ui text-[11px] tracking-[0.35em] text-paper/50 uppercase">
+          <p className="t-eyebrow t-eyebrow--quiet">
             {offering.preheader}
           </p>
 
@@ -323,7 +323,7 @@ export function ProductOffering({
           {/* The rest of the run, and where it lives. Only where the
               turntable is holding a short list. */}
           {moreCount > 1 && offering.moreNote ? (
-            <p className="mt-1 font-ui text-[11px] tracking-[0.2em] text-paper/50 uppercase">
+            <p className="t-eyebrow t-eyebrow--quiet mt-1">
               {offering.moreNote}
             </p>
           ) : null}

@@ -120,12 +120,12 @@ export async function generateMetadata({
     const garment = apparel.find((a) => a.slug === slug);
     if (!garment) return {};
     return {
-      title: `${garment.name} — Aria Noir`,
+      title: `${garment.name} | Aria Noir`,
       description: `${garment.note} ${garment.colourways.length} colourways, ${garment.sizes.length} sizes.`,
     };
   }
   return {
-    title: `${house.name} — Aria Noir`,
+    title: `${house.name} | Aria Noir`,
     description: `${house.note} ${colorwayCount(house)} colourways, from ${priceOf(house)}.`,
   };
 }
@@ -155,9 +155,9 @@ function tabsFor(house: House): readonly DetailTab[] {
       label: "Details",
       paragraphs: [
         house.models === 1
-          ? `One shape, held in every colourway the house makes — ${house.colorwayNames.join(", ")}.`
-          : `${house.models} distinct shapes, each in its own colourway — ${house.colorwayNames.join(", ")}.`,
-        `${house.material}. A colourway is the acetate, not a different frame: the cut and the measurements are the same across the run, though the price is not — each colour is priced on its own.`,
+          ? `One shape, held in every colourway the house makes: ${house.colorwayNames.join(", ")}.`
+          : `${house.models} distinct shapes, each in its own colourway: ${house.colorwayNames.join(", ")}.`,
+        `${house.material}. A colourway is the acetate, not a different frame: the cut and the measurements are the same across the run, though the price is not. Each colour is priced on its own.`,
         "Fit is decided at the bridge and the brow, and adjustable at five points. A frame that sits wrong is usually minutes at a bench rather than a return.",
       ],
     },
@@ -166,7 +166,7 @@ function tabsFor(house: House): readonly DetailTab[] {
       label: "Packaging",
       paragraphs: [
         "Each piece is handcrafted and packed with intention: the frame in its protective case, with a pouch, and the accessories and tags alongside it.",
-        "Keep the case and the pouch. A return has to come back in them, and the case is also the answer to the most common warranty claim — frames stored loose are frames that come back with a hinge complaint.",
+        "Keep the case and the pouch. A return has to come back in them, and the case is also the answer to the most common warranty claim. Frames stored loose are frames that come back with a hinge complaint.",
         "Clean the lenses with the microfiber cloth only, and with approved solutions.",
       ],
     },

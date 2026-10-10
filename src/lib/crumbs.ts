@@ -24,7 +24,7 @@ export type Trail = {
 };
 
 const HOME: Crumb = { label: "Home", href: "/" };
-const EYEWEAR: Crumb = { label: COLLECTION_LABEL, href: "/eyewear" };
+const EYEWEAR: Crumb = { label: COLLECTION_LABEL, href: "/collections" };
 
 export function crumbsFor(pathname: string): Trail | null {
   const path = pathname.replace(/\/+$/, "") || "/";

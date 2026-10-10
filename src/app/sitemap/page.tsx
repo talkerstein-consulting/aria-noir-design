@@ -7,7 +7,7 @@ import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { SitemapMap } from "@/components/sitemap-map";
 
 export const metadata: Metadata = {
-  title: "All pages — Aria Noir",
+  title: "All pages | Aria Noir",
   description: "Every route the house answers on, in one page.",
   /* A working index of the site, not a page the house is presenting. It
      stays out of the search results for the same reason a contact sheet

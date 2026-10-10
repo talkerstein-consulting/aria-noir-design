@@ -46,7 +46,7 @@ export function ProductShoot({
 
           {shoot.note ? (
           <details className="group mt-6 border-t border-paper/15 pt-6">
-            <summary className="cursor-pointer list-none font-ui text-[11px] tracking-[0.25em] text-gold uppercase [&::-webkit-details-marker]:hidden">
+            <summary className="cursor-pointer list-none t-eyebrow [&::-webkit-details-marker]:hidden">
               <span className="mr-2">①</span>
               {shoot.note.label}
             </summary>

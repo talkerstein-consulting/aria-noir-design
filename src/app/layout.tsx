@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant, Figtree, IBM_Plex_Mono } from "next/font/google";
-import { RouteWipe } from "@/components/route-wipe";
 import { AriaWordmark } from "@/components/aria-wordmark";
 import { HouseNotices } from "@/components/house-notices";
 import "./globals.css";
@@ -138,7 +137,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             jump lands and the next Tab continues from there. */}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-paper focus:px-4 focus:py-2 focus:font-ui focus:text-xs focus:uppercase focus:tracking-[0.2em] focus:text-ink"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-paper focus:px-4 focus:py-2 focus:font-ui focus:text-xs focus:uppercase focus:tracking-[0.2em] focus:text-ink"
         >
           Skip to content
         </a>
@@ -150,9 +149,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <AriaWordmark className="site-loading-mark text-paper" />
         </div>
         {children}
-        {/* Last in the body, so it is over the page without needing to
-            out-rank anything on it. See RouteWipe. */}
-        <RouteWipe />
         <HouseNotices />
       </body>
     </html>

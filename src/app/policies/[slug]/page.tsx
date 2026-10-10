@@ -29,7 +29,7 @@ export async function generateMetadata({
   const policy = policies.find((p) => p.slug === slug);
   if (!policy) return {};
   return {
-    title: `${policy.title} — Aria Noir`,
+    title: `${policy.title} | Aria Noir`,
     description: `${policy.title}. Last updated ${policy.updated}.`,
   };
 }

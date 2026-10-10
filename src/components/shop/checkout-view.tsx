@@ -697,7 +697,7 @@ export function CheckoutView() {
           Nothing to check out yet. The frames are one room over.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/eyewear">See the frames</CtaLink>
+          <CtaLink href="/collections">See the frames</CtaLink>
           <CtaLink href="/held" kind="secondary">What you are holding</CtaLink>
         </div>
       </div>

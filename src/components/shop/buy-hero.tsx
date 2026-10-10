@@ -29,6 +29,7 @@ import { BagAdded } from "@/components/shop/bag-added";
 import { turntableStem } from "@/lib/turntable";
 import { ProductModel, posterFor } from "@/components/product/product-model";
 import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
+import { RotateHint } from "@/components/shop/rotate-hint";
 
 /* The turntable: the acetate's 3D model, turning slowly on its own on the
    shop tile's light grey, and draggable. The cut-out still sits under it
@@ -82,6 +83,14 @@ function TurntablePlate({
       {model ? (
         <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: drawn ? 1 : 0 }}>
           <ProductModel src={model} yaw={yaw} onReady={() => setDrawnFor(model)} />
+        </div>
+      ) : null}
+      {/* The hint that it turns, small and grey at the foot of the plate:
+          wherever the plate can be dragged, sequence or 3D model. */}
+      {(spin && stem) || model ? (
+        <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-ink/25">
+          <RotateHint className="w-9" />
+          <span aria-hidden className="font-ui text-[11px] font-semibold leading-none tracking-[0.12em]">3D</span>
         </div>
       ) : null}
     </div>

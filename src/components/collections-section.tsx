@@ -45,7 +45,7 @@ export function CollectionsSection() {
     /* The house's own page where there is one; the index otherwise. NOT
        the buy page — that sits after the story, and a home page panel is
        the furthest point from a checkout on the whole site. */
-    href: house.href ?? "/eyewear",
+    href: house.href ?? "/collections",
     cta: house.href ? `View ${house.name}` : "See it on the index",
   }));
 

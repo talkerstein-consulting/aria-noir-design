@@ -51,7 +51,7 @@ export default function Error({
             <button type="button" className="cta-main" onClick={reset}>
               <span className="cta-chars">Try again</span>
             </button>
-            <CtaLink href="/eyewear" kind="secondary">
+            <CtaLink href="/collections" kind="secondary">
               All frames
             </CtaLink>
             <CtaLink href="/contact" kind="secondary">

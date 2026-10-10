@@ -297,7 +297,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
         {showMark ? (
           <Link
             href="/"
-            aria-label="Aria Noir — home"
+            aria-label="Aria Noir, home"
             className="nav-mark justify-self-center transition-opacity hover:opacity-70"
             /* The home page fades this in as its hero mark fades out, by
                writing --home-mark on <html>. Unset everywhere else. */

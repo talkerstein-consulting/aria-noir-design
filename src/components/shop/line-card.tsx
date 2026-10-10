@@ -108,7 +108,7 @@ export function LineCard({
         body
       )}
       <p className="t-caption mt-2 tabular-nums">
-        {typeof cents === "number" ? formatPrice(cents * qty) : "—"}
+        {typeof cents === "number" ? formatPrice(cents * qty) : ""}
         {qty > 1 && typeof cents === "number" ? (
           <span className="text-[var(--fg-quiet)]"> · {formatPrice(cents)} each</span>
         ) : null}

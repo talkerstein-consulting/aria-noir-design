@@ -12,7 +12,7 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
     <section className="bg-ink relative h-svh w-full">
       <DepthRibbon
         items={items}
-        backgroundColor="#0a0a0a"
+        backgroundColor="#000000"
         radius={0}
         speed={1}
         ariaLabel="Aria Noir gallery"

@@ -75,6 +75,9 @@ export function SpinPlate({ stem, alt }: { stem: string; alt: string }) {
         cv.width = img.naturalWidth;
         cv.height = img.naturalHeight;
       }
+      /* Cleared first: the renders carry alpha, so drawing one over the
+         last left the previous angles showing through as a trail. */
+      ctx.clearRect(0, 0, cv.width, cv.height);
       ctx.drawImage(img, 0, 0);
       shown = i;
     };
@@ -90,7 +93,9 @@ export function SpinPlate({ stem, alt }: { stem: string; alt: string }) {
     };
     const move = (e: PointerEvent) => {
       if (!drag) return;
-      pos = drag.at - (e.clientX - drag.x) / DRAG_PX;
+      /* The front follows the pointer: frames advance as the near face
+         turns to the right, so a drag right steps forward. */
+      pos = drag.at + (e.clientX - drag.x) / DRAG_PX;
       const i = ((Math.round(pos) % FRAMES) + FRAMES) % FRAMES;
       if (i !== shown) draw(i);
     };

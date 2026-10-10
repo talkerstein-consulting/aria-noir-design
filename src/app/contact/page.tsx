@@ -7,7 +7,7 @@ import { ContactIntake } from "@/components/page/contact-intake";
 import { contact } from "@/lib/pages";
 
 export const metadata: Metadata = {
-  title: "Contact — Aria Noir",
+  title: "Contact | Aria Noir",
   description:
     "Support, adjustments and warranty. Write to the studio.",
 };

@@ -73,7 +73,7 @@ export function ConfirmedView() {
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/desk">Your account</CtaLink>
-          <CtaLink href="/eyewear" kind="secondary">Explore more</CtaLink>
+          <CtaLink href="/collections" kind="secondary">Explore more</CtaLink>
         </div>
       </div>
     );
@@ -195,7 +195,7 @@ export function ConfirmedView() {
       ) : (
         <div className="mt-16 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/desk">Orders in your account</CtaLink>
-          <CtaLink href="/eyewear" kind="secondary">Explore more</CtaLink>
+          <CtaLink href="/collections" kind="secondary">Explore more</CtaLink>
         </div>
       )}
     </>

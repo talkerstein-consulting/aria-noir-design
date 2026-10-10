@@ -73,7 +73,7 @@ export function ColourwayCards({ house }: { house: House }) {
     <>
       <div className="mx-auto max-w-7xl">
         <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
-          <h2 className="t-display-md">The run</h2>
+          <h2 className="t-display-lg">The Run</h2>
           <p className="t-caption">
             {house.material} · one cut, {shown.length} colourways
           </p>

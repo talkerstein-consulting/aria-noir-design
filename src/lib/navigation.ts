@@ -998,7 +998,7 @@ export const sitemap: readonly SitemapGroup[] = [
   {
     title: "Eyewear",
     links: [
-      { label: "All frames", href: "/eyewear" },
+      { label: "All frames", href: "/collections" },
       /* Every house on show, in catalogue order — its story where it has
          one, its buy page where it does not. Buy pages used to be kept out
          of the footer on the argument that the shop sits after the story;
@@ -1111,7 +1111,7 @@ export const architecture: readonly RouteGroup[] = [
     routes: [
       {
         label: "Eyewear",
-        href: "/eyewear",
+        href: "/collections",
         note: `The index. ${housesOnShow()}, with a turntable above the grid.`,
         kind: "designed",
       },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BagDoor } from "@/components/shop/bag-door";
 
 export const metadata: Metadata = {
-  title: "The Bag — Aria Noir",
+  title: "The Bag | Aria Noir",
   description: "What is in your bag.",
   /* Nobody arrives here from a search result, the contents are one
      person's, and there is no page here to index in any case. */

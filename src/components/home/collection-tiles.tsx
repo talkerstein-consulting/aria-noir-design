@@ -20,6 +20,9 @@ export type CollectionTile = {
   href: string;
   /** The house's own photograph, shown until a colourway is chosen. */
   image: string;
+  /** The colourway that photograph shows: its dot is marked until another
+   *  is chosen, so the dots say what is on screen from the start. */
+  cover?: string;
   colourways: { name: string; swatch: string; image: string | null }[];
 };
 
@@ -133,15 +136,18 @@ function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean
                 type="button"
                 title={c.name}
                 aria-label={c.name}
-                aria-pressed={chosen === c.name}
+                aria-pressed={(chosen ?? item.cover) === c.name}
                 onClick={() => {
                   /* Touch has no hover: a tap is also the warm-up. */
                   setWarm(true);
                   setChosen(chosen === c.name ? null : c.name);
                 }}
-                /* No stroke at rest: the ring appears on hover (and keyboard
-                   focus). The chosen dot is marked by size instead. */
-                className="swatch-dot block size-3 ring-paper/80 ring-offset-transparent transition-[box-shadow,transform] duration-300 hover:ring-1 hover:ring-offset-2 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none aria-pressed:scale-125 max-sm:size-2.5 sm:size-3.5"
+                /* The colourway on screen wears the ring (and a touch more
+                   size), so when the dots rise in they say which one this
+                   is; any other dot takes the ring under the pointer or
+                   keyboard focus. The chosen dot's ring and gap are cut by
+                   its 1.25 scale, so on screen they match the others. */
+                className="swatch-dot block size-3 ring-paper/80 ring-offset-transparent transition-[box-shadow,transform] duration-300 hover:ring-1 hover:ring-offset-2 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none aria-pressed:scale-125 aria-pressed:ring-[0.8px] aria-pressed:ring-offset-[1.6px] max-sm:size-2.5 sm:size-3.5"
                 style={{ background: c.swatch }}
               />
             </li>

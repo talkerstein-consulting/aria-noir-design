@@ -5,7 +5,7 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { ConfirmedView } from "@/components/shop/confirmed-view";
 
 export const metadata: Metadata = {
-  title: "Order confirmed — Aria Noir",
+  title: "Order confirmed | Aria Noir",
   description: "On the bench.",
   robots: { index: false, follow: false },
 };

@@ -371,7 +371,7 @@ export function ShopAll() {
           here, so the grid below is never anonymous. */}
       {current ? (
         <div className="mx-auto max-w-7xl">
-          <h2 id="shop-heading" className="t-display-md mb-8">
+          <h2 id="shop-heading" className="t-display-lg mb-8">
             {heading}
           </h2>
         </div>
@@ -501,7 +501,7 @@ export function ShopAll() {
             </div>
             {suggestions.length ? (
               <>
-                <h2 className="t-display-xs mt-20">The house leads with these.</h2>
+                <h2 className="t-display-lg mt-20">The house leads with these.</h2>
                 <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
                   {suggestions.map((piece) => (
                     <li key={piece.id} className="flex">
@@ -550,7 +550,7 @@ export function ShopAll() {
                       ) : null}
                       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
                       <figcaption className="absolute inset-x-0 bottom-0 flex justify-center p-6 sm:p-10">
-                        <h2 className="font-display text-3xl text-paper sm:text-5xl">{tile.name}</h2>
+                        <h2 className="t-display-md text-paper">{tile.name}</h2>
                       </figcaption>
                     </div>
                   </Link>

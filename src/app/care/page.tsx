@@ -9,7 +9,7 @@ import { PageClose } from "@/components/page/page-close";
 import { care } from "@/lib/pages";
 
 export const metadata: Metadata = {
-  title: "Care — Aria Noir",
+  title: "Care | Aria Noir",
   description:
     "How to keep an Aria Noir frame for the years it was built for, and what the two-year international limited warranty covers.",
 };

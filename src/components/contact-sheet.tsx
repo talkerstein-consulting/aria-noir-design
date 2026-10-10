@@ -1311,7 +1311,7 @@ export const ContactSheet = forwardRef<ContactSheetHandle, ContactSheetProps>(fu
     size = 0.17,
     sizeVariance = 0.25,
     aspect = 0.8,
-    radius = 12,
+    radius = 0,
     border = 0,
     borderColor = "#FFFFFF",
     rim = 0.12,
@@ -1428,7 +1428,7 @@ export const ContactSheet = forwardRef<ContactSheetHandle, ContactSheetProps>(fu
   const backgroundValue = backgroundColor.trim().toLowerCase();
   const transparent = backgroundValue === "transparent" || backgroundValue === "";
   const light = !transparent && isLight(backgroundValue);
-  const ink = transparent ? "currentColor" : light ? "#0a0a0a" : "#fafafa";
+  const ink = transparent ? "currentColor" : light ? "#000000" : "#ffffff";
   const opened = openIndex >= 0 ? list[openIndex] : null;
 
   return (

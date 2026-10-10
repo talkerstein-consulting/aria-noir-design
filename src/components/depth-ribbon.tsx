@@ -1112,7 +1112,7 @@ const createRibbon = (
       photo.visible = true;
       photoUniforms.uPlaneAspect.value = aspect;
       const corner = clamp(settings.radius, 0, 1) * Math.min(aspect, 1) * 0.5;
-      photoUniforms.uRadius.value = corner + (0.03 - corner) * clamp(focus.e, 0, 1);
+      photoUniforms.uRadius.value = corner + (0 - corner) * clamp(focus.e, 0, 1);
       const depth = Math.max(tmpC.subVectors(photo.position, camera.position).dot(forward), 0);
       const fog = Math.exp(-Math.pow(depth / fogLength.value, 1.5));
       photoUniforms.uOpacity.value = fog + (1 - fog) * clamp(focus.e, 0, 1);
@@ -1413,7 +1413,7 @@ export const DepthRibbon = forwardRef<DepthRibbonHandle, DepthRibbonProps>(funct
     speed = 0.6,
     cardSize = 0.72,
     aspect = 1,
-    radius = 0.12,
+    radius = 0,
     offset = 1,
     fov = 60,
     fog = 1,
@@ -1541,7 +1541,7 @@ export const DepthRibbon = forwardRef<DepthRibbonHandle, DepthRibbonProps>(funct
               key={item.src}
               src={item.src}
               alt={item.alt}
-              style={{ width: 96, height: 96, objectFit: "cover", borderRadius: 12 }}
+              style={{ width: 96, height: 96, objectFit: "cover" }}
             />
           ))}
         </div>

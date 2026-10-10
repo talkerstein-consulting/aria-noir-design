@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     qualities: [75, 90],
   },
+  /* `/eyewear` was the frames index; it is gone, and the collections page
+     is where every link to it now points. Old bookmarks follow. */
+  async redirects() {
+    return [{ source: "/eyewear", destination: "/collections", permanent: true }];
+  },
   async rewrites() {
     return [
       {

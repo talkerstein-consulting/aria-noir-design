@@ -122,6 +122,7 @@ export function collectionItems(exclude?: string): CollectionTile[] {
         name: house.name,
         href: house.href ?? shopPath(house),
         image: house.plate ?? `/images/home/collections/${slug}-closeup.webp`,
+        cover: house.heroColorway,
         colourways: (CATALOGUE[slug] ?? []).map((entry) => ({
           name: entry.colorway,
           swatch: swatchFor(entry.colorway),
@@ -178,7 +179,7 @@ export function HomeFronts() {
     /* No heading: the frames are the heading. DITA's rail on a white
        section: the shop's light grey tiles, the frame cut out of its
        render, name and price inside. */
-    <section aria-label="The frames" className="bg-white">
+    <section aria-label="The frames" className="bg-paper">
       <FrontTiles house="arca-ii" colorways={FRONTS.map((f) => f.colorway)} />
     </section>
   );
@@ -195,7 +196,7 @@ export function FrontTiles({ house: slug, colorways }: { house: string; colorway
     return file ? [{ colorway, file }] : [];
   });
   return (
-    <ul className="grid grid-cols-2 gap-px bg-white lg:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-px bg-paper lg:grid-cols-4">
       {tiles.map((f) => {
         const entry = CATALOGUE[slug]?.find((e) => e.colorway === f.colorway);
         return (

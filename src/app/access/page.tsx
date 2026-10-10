@@ -6,7 +6,7 @@ import { AccessForm } from "@/components/shop/access-form";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Access — Aria Noir",
+  title: "Access | Aria Noir",
   description: "Orders, addresses, and anything already on the bench.",
   robots: { index: false, follow: false },
 };

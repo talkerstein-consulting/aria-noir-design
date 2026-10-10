@@ -31,6 +31,18 @@ const CONSENT_KEY = "an:consent";
 const GIFT_KEY = "an:gift";
 const GIFT_DELAY_MS = 5000;
 const GIFT_QUIET_DAYS = 14;
+/** Where the reader last clicked or tapped: the gift's burn starts there. */
+let lastTap: { x: number; y: number } | null = null;
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "pointerdown",
+    (e) => {
+      lastTap = { x: e.clientX, y: e.clientY };
+    },
+    { capture: true, passive: true },
+  );
+}
+
 /** Rooms where an interruption costs more than it earns. */
 const QUIET_ROUTES = ["/checkout", "/sitemap", "/poster"];
 
@@ -135,11 +147,12 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
      swapping in the real, live card when the burn completes.
 
        raster  card laid out, invisible; html-to-image takes its picture
-       burn    the picture burns in from the centre
+       burn    the picture burns in from the last click (else the centre)
        shown   the live card; the overlay is gone */
   const card = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<"idle" | "raster" | "burn" | "shown">("idle");
   const [picture, setPicture] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<readonly [number, number]>([0.5, 0.5]);
   /* The burn layer stays invisible until its WebGL canvas exists and has
      drawn: before that it showed as a black box for a beat. */
   const burnLayer = useRef<HTMLDivElement>(null);
@@ -185,6 +198,16 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
           style: { opacity: "1" },
         });
         if (cancelled) return;
+        /* The last click, as a fraction of the card; past its edge it is
+           pinned to the nearest side, so the burn still enters from the
+           direction the reader was working in. Centre if nothing yet. */
+        const box = node.getBoundingClientRect();
+        const frac = (v: number) => Math.min(1, Math.max(0, v));
+        setOrigin(
+          lastTap && box.width && box.height
+            ? [frac((lastTap.x - box.left) / box.width), frac((lastTap.y - box.top) / box.height)]
+            : [0.5, 0.5],
+        );
         setPicture(png);
         setPhase("burn");
       } catch {
@@ -252,15 +275,15 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
             <EmberReveal
               images={[picture, picture]}
               burnThrough="form"
-              igniteAt={[0.5, 0.5]}
+              igniteAt={origin}
               aspectRatio={0}
               radius={0}
               hover={false}
               clickToBurn={false}
               autoplay={false}
-              burnDuration={1.4}
+              burnDuration={0.8}
               roughness={0.6}
-              emberColor="#C6A664"
+              emberColor="#FFFFFF"
               charColor="#121110"
               smoke={0.3}
               sparks={0.7}

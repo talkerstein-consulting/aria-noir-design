@@ -38,7 +38,7 @@ export function ProductPalette({
       className="relative bg-ink px-6 pb-16 sm:px-10"
     >
       <div className="mx-auto w-full max-w-7xl">
-        <p className="font-ui text-[11px] tracking-[0.35em] text-paper/55 uppercase">
+        <p className="t-eyebrow t-eyebrow--quiet">
           {label}
         </p>
 
@@ -69,13 +69,13 @@ export function ProductPalette({
           {colorways.map((c) => (
             <p
               key={c.name}
-              className="min-w-0 flex-1 pr-2 font-ui text-[10px] leading-tight tracking-[0.14em] text-paper/55 uppercase"
+              className="t-micro min-w-0 flex-1 pr-2 leading-tight uppercase"
             >
               {c.name}
             </p>
           ))}
         </div>
-        <p className="mt-3 font-ui text-[10px] leading-relaxed tracking-[0.14em] text-paper/55 uppercase sm:hidden">
+        <p className="t-micro mt-3 uppercase sm:hidden">
           {colorways.map((c, i) => (
             <span key={c.name} className="whitespace-nowrap">
               {c.name}

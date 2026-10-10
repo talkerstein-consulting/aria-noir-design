@@ -172,7 +172,7 @@ function Suggested({ onGo }: { onGo: () => void }) {
       <p className="t-eyebrow mb-4 text-[var(--fg-quiet)]">The whole house</p>
       <Hits hits={frames.filter((h) => h.kind === "frame")} onGo={onGo} />
       <div className="mt-10 flex justify-center">
-        <CtaLink href="/eyewear" kind="secondary">
+        <CtaLink href="/collections" kind="secondary">
           Browse all frames
         </CtaLink>
       </div>

@@ -82,7 +82,7 @@ export function FinaleSection() {
 
       {/* ---- the way on: outside the quote zone, so the trail never covers it ---- */}
       <div className="relative z-30 mx-auto mt-24 flex justify-center sm:mt-32">
-        <CtaLink href="/eyewear">See the collections</CtaLink>
+        <CtaLink href="/collections">See the collections</CtaLink>
       </div>
     </section>
   );

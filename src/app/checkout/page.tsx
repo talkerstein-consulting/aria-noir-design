@@ -6,7 +6,7 @@ import { CheckoutView } from "@/components/shop/checkout-view";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Checkout — Aria Noir",
+  title: "Checkout | Aria Noir",
   description: "Four questions, one press.",
   robots: { index: false, follow: false },
 };

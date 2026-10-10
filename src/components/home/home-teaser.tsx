@@ -27,7 +27,7 @@ export function HomeTeaser() {
        so the glasses are never cropped at the temples. */
     <section
       aria-labelledby="teaser-heading"
-      className="relative w-full bg-black lg:h-[100svh] lg:min-h-[560px] lg:overflow-hidden"
+      className="relative w-full bg-ink lg:h-[100svh] lg:min-h-[560px] lg:overflow-hidden"
     >
       <div className="relative aspect-video w-full lg:absolute lg:inset-0 lg:aspect-auto">
         <picture>
@@ -50,7 +50,7 @@ export function HomeTeaser() {
         />
 
         {/* A veil over the whole picture: the collection is not shown yet. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-black/25" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-ink/25" />
         {/* Dark at the top, out of the section above. */}
         <div
           aria-hidden

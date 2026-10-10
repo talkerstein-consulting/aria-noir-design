@@ -6,7 +6,7 @@ import { DeskView } from "@/components/shop/desk-view";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Account — Aria Noir",
+  title: "Account | Aria Noir",
   description: "Orders, saved pieces, and your details.",
   robots: { index: false, follow: false },
 };

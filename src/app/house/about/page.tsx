@@ -10,7 +10,7 @@ import { PageClose } from "@/components/page/page-close";
 import { about } from "@/lib/pages";
 
 export const metadata: Metadata = {
-  title: "The House — Aria Noir",
+  title: "The House | Aria Noir",
   description:
     "Eyewear by designers, for visionaries. The brand, the company, and the vision behind six houses and nine frames.",
 };

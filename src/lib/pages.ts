@@ -108,7 +108,7 @@ export const about = {
          exists. The gallery is the nearest true answer to a claim about
          restraint: the frames in their rooms, and no prices. */
       cta: "See the rooms",
-      href: "/gallery",
+      href: "/collections",
     },
     /* Two light studies and no product in either. After the feature's
        claim about restraint, a pair of rooms says it better than a pair
@@ -124,7 +124,7 @@ export const about = {
     heading: "Nine frames, and the reasons for each.",
     body: "The houses are where the thinking ends up. Start there, or read how a block of acetate becomes one of them.",
     cta: "See the frames",
-    href: "/eyewear",
+    href: "/collections",
   },
 } as const;
 

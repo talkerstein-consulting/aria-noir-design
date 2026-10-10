@@ -6,7 +6,7 @@ import { HeldView } from "@/components/shop/held-view";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Saved — Aria Noir",
+  title: "Saved | Aria Noir",
   description: "What you have saved.",
   /* Same reason the bag is not indexed: the contents are a person's, not
      the house's, and there is nothing here for a crawler to find. */

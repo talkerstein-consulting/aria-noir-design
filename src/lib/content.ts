@@ -36,7 +36,7 @@ export const sectionTwo = {
      sentence on the page that names the product, so it is the first place
      that should offer the frames. */
   cta: "See the frames",
-  href: "/eyewear",
+  href: "/collections",
   /** Two columns, sitting under the heading during its hang. */
   body: [
     "No two faces share a bridge, a temple length, or a line of brow. We measure all three before a single blank is cut.",

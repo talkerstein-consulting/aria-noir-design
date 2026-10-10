@@ -3,7 +3,7 @@ import { StoryPage } from "@/components/product/story-page";
 import * as arca from "@/lib/arca-ii";
 
 export const metadata: Metadata = {
-  title: "ARCA II — Aria Noir",
+  title: "ARCA II | Aria Noir",
   description:
     "The second cut. One shape, eight colourways, and an inlaid gold plaque that is the only part of the frame finished to catch light.",
 };

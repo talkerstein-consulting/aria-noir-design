@@ -31,7 +31,7 @@
 const KEY = "aria:last-browsed";
 
 /** Where to go when nothing has been remembered: the frames. */
-export const BROWSE_FALLBACK = "/eyewear";
+export const BROWSE_FALLBACK = "/collections";
 
 /**
  * Routes that are the till, not the shop.

@@ -233,7 +233,7 @@ function Orders({ session }: { session: Session }) {
           The first order will be here the moment it is placed, and its tracking the day it ships.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/eyewear">See the frames</CtaLink>
+          <CtaLink href="/collections">See the frames</CtaLink>
           <CtaLink href="/held" kind="secondary">What you are holding</CtaLink>
         </div>
       </div>
@@ -485,7 +485,7 @@ function ProfilePane({
                       await house.deleteAccount(confirmation);
                       announceSession();
                       known.set(false);
-                      router.push("/eyewear");
+                      router.push("/collections");
                     } catch (cause) {
                       setDeleteError(cause instanceof Error ? cause.message : "It could not be deleted.");
                       setDeleting(false);

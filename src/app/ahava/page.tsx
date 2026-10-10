@@ -3,7 +3,7 @@ import { StoryPage } from "@/components/product/story-page";
 import * as ahava from "@/lib/ahava";
 
 export const metadata: Metadata = {
-  title: "AHAVA — Aria Noir",
+  title: "AHAVA | Aria Noir",
   description:
     "A sculptural frame designed for quiet mornings, soft light, and moments entirely your own.",
 };

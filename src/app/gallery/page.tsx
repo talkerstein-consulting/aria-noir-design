@@ -4,7 +4,7 @@ import { GalleryRibbon } from "@/components/page/gallery-ribbon";
 import { gallery } from "@/lib/pages";
 
 export const metadata: Metadata = {
-  title: "Gallery — Aria Noir",
+  title: "Gallery | Aria Noir",
   description:
     "Six houses, six rooms. The campaign photography, house by house, from a Paris apartment to Giza.",
 };

@@ -63,7 +63,7 @@ export const GROUPS: readonly { kind: HitKind; title: string }[] = [
    The Process is the one page left out on purpose — it is reached from
    inside /house/about or not at all, and a search box is not "inside". */
 const PAGES: readonly MenuLink[] = [
-  { label: "Eyewear", href: "/eyewear" },
+  { label: "Eyewear", href: "/collections" },
   { label: "ARCA I, the story", href: "/arca-i" },
   { label: "ARCA II, the story", href: "/arca-ii" },
   { label: "The House", href: "/house/about" },
@@ -201,7 +201,7 @@ export function query(raw: string): readonly Hit[] {
 
 /** The three things the sheet offers when it has nothing. */
 export const NO_RESULT_ROUTES: readonly MenuLink[] = [
-  { label: "All frames", href: "/eyewear" },
+  { label: "All frames", href: "/collections" },
   { label: "Care", href: "/care" },
   { label: "Ask the studio", href: "/contact" },
 ];

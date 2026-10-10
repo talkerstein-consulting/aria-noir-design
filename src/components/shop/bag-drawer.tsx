@@ -168,7 +168,7 @@ export function BagDrawer({
                 Six houses, cut from block acetate. Every one of them is made
                 to order.
               </p>
-              <CtaLink href="/eyewear" onClick={onClose} className="mt-8">
+              <CtaLink href="/collections" onClick={onClose} className="mt-8">
                 See the showcase
               </CtaLink>
             </div>
@@ -226,7 +226,7 @@ export function BagDrawer({
                         <span className="t-caption">{line.slug}</span>
                       )}
                       <span className="t-micro tabular-nums">
-                        {entry ? formatPrice(entry.cents * line.qty) : "—"}
+                        {entry ? formatPrice(entry.cents * line.qty) : ""}
                       </span>
                     </div>
 

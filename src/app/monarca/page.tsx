@@ -3,7 +3,7 @@ import { StoryPage } from "@/components/product/story-page";
 import * as monarca from "@/lib/monarca";
 
 export const metadata: Metadata = {
-  title: "MONARCA — Aria Noir",
+  title: "MONARCA | Aria Noir",
   description:
     "A cinematic frame shaped by shadow, reflection, and the quiet drama of forgotten places.",
 };

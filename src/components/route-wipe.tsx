@@ -1,8 +1,13 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { EmberRevealHandle } from "@/components/ember-reveal";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { AriaWordmark } from "@/components/aria-wordmark";
+
+const loadEmber = () => import("@/components/ember-reveal");
+const EmberReveal = dynamic(loadEmber, { ssr: false });
 
 /**
  * Every page change, the same as the first visit: the black comes up with
@@ -14,9 +19,12 @@ import { AriaWordmark } from "@/components/aria-wordmark";
  * ---- Phases ----
  *
  *   cover  black sheet, logo fading up in the middle (ROUTE_MIN_MS)
- *   morph  the logo is measured against the nav's and moved onto it while
- *          the sheet fades (MORPH_MS)
+ *   burn   the sheet, logo and all, is photographed onto a canvas and set
+ *          alight where the reader clicked (EmberReveal, burnThrough): the
+ *          new page shows through the hole as it spreads
  *   off    unmounted
+ *
+ * Reduced motion, or no WebGL, skips the burn and simply lifts the sheet.
  *
  * ---- Why it lives in the layout ----
  *
@@ -36,16 +44,82 @@ import { AriaWordmark } from "@/components/aria-wordmark";
  * handles that one.
  */
 
-/** Minimum time the logo is shown before it moves. */
+/** Minimum time the logo is shown before the sheet burns. */
 const ROUTE_MIN_MS = 800;
-/** Matches the transform transition on `.route-cover` (house.css). */
-const MORPH_MS = 850;
+/** How long the fire takes to cross the screen. */
+const BURN_S = 1.5;
+/** If the burn never reports back (lost context, failed texture). */
+const BURN_MAX_MS = 4500;
+
+/* Where the last click landed, as 0..1 of the viewport: the fire starts
+   there, so the page burns open from the link that was pressed. A route
+   change with no click (back button) burns from the centre. */
+let lastPress: readonly [number, number] | null = null;
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "pointerdown",
+    (e) => {
+      lastPress = [e.clientX / window.innerWidth, e.clientY / window.innerHeight];
+    },
+    { capture: true, passive: true },
+  );
+}
+
+/** The cover as it looks right now, as an image: its colour, with the
+ *  wordmark drawn where it sits, so the swap to the canvas is invisible. */
+async function snapshotCover(cover: HTMLElement): Promise<string | null> {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = getComputedStyle(cover).backgroundColor;
+  ctx.fillRect(0, 0, w, h);
+
+  /* Taken the moment the cover goes up, while its logo is still fading in:
+     so the logo is placed by its wrapper (which does not animate) and drawn
+     at full strength, as it will look by the time it burns. */
+  const svg = cover.querySelector("svg");
+  const box = cover.querySelector(".route-cover-mark");
+  if (svg && box) {
+    const r = box.getBoundingClientRect();
+    const ink = getComputedStyle(svg).color;
+    const markup = new XMLSerializer()
+      .serializeToString(svg)
+      .replace(/currentColor/g, ink);
+    const img = new Image();
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
+    try {
+      await img.decode();
+      ctx.drawImage(img, r.left, r.top, r.width, r.height);
+    } catch {
+      /* The sheet burns without its logo. */
+    }
+  }
+  return canvas.toDataURL("image/png");
+}
 
 export function RouteWipe() {
   const pathname = usePathname();
   const mounted = useRef(false);
-  const mark = useRef<HTMLSpanElement>(null);
-  const [phase, setPhase] = useState<"off" | "cover" | "morph">("off");
+  const cover = useRef<HTMLDivElement>(null);
+  const fire = useRef<EmberRevealHandle>(null);
+  const [phase, setPhase] = useState<"off" | "cover" | "burn">("off");
+  const [picture, setPicture] = useState<string | null>(null);
+  const [lit, setLit] = useState(false);
+  const litRef = useRef(false);
+
+  /* Fetch the fire's code (and three.js) while the reader is still on the
+     first page, so the first change does not wait on a download. */
+  useEffect(() => {
+    const warm = () => void loadEmber();
+    if ("requestIdleCallback" in window) window.requestIdleCallback(warm);
+    else window.setTimeout(warm, 1500);
+  }, []);
 
   useLayoutEffect(() => {
     if (!mounted.current) {
@@ -54,20 +128,28 @@ export function RouteWipe() {
     }
 
     setPhase("cover");
+    setPicture(null);
+    setLit(false);
+    litRef.current = false;
+    const origin = lastPress ?? ([0.5, 0.5] as const);
+    lastPress = null;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let cancelled = false;
+    let giveUp = 0;
 
-    let done = 0;
-    let svg: SVGElement | null = null;
-    const hand = (e?: TransitionEvent) => {
-      if (e && e.propertyName !== "transform") return;
-      clearTimeout(done);
-      setPhase("off");
-    };
+    /* The canvas is built straight away, UNDER the cover: three.js, the
+       shaders and the texture all get ready during the logo's hold, so
+       when the fire starts all it has to do is draw. */
+    if (!still) {
+      requestAnimationFrame(async () => {
+        const el = cover.current;
+        const shot = el ? await snapshotCover(el) : null;
+        if (!cancelled && shot) setPicture(shot);
+      });
+    }
 
-    /* The morph only starts once the incoming page has stopped blocking
-       the main thread: three smooth frames in a row (capped at 2s). Started
-       inside a long render, the move had no frames to play in and arrived
-       already finished, which read as the logo teleporting. */
+    /* Lit only once the incoming page has stopped blocking the main
+       thread: three smooth frames in a row (capped at 2s). */
     let calmRaf = 0;
     const whenCalm = (go: () => void) => {
       let last = performance.now();
@@ -82,49 +164,27 @@ export function RouteWipe() {
       calmRaf = requestAnimationFrame(tick);
     };
 
-    const toMorph = window.setTimeout(() => whenCalm(() => {
-      svg = mark.current?.querySelector("svg") ?? null;
-      const n = document.querySelector<SVGElement>(".site-nav .nav-mark svg");
-      if (!svg || !n || still) {
+    const toBurn = window.setTimeout(() => whenCalm(() => {
+      if (still || !fire.current) {
         setPhase("off");
         return;
       }
-      const a = svg.getBoundingClientRect();
-      const b = n.getBoundingClientRect();
-      if (!a.width || !b.width) {
+      setPhase("burn");
+      fire.current.ignite(origin[0], origin[1]);
+      /* onIgnite runs inside ignite(). A canvas that was not ready ignores
+         it: lift the sheet rather than hold it. */
+      if (!litRef.current) {
         setPhase("off");
         return;
       }
-      /* Width, not scale: redrawn crisp at every size, landing
-         pixel-identical to the nav's mark. The cover centres it, so the
-         centre holds still as it shrinks and the translate stays true. */
-      const dx = b.left + b.width / 2 - (a.left + a.width / 2);
-      const dy = b.top + b.height / 2 - (a.top + a.height / 2);
-      svg.addEventListener("transitionend", hand);
-      /* The morph rules (transition on, entrance animation off) must be in
-         force BEFORE the new size and position are written, or the logo
-         jumps there. React's setPhase lands on its own schedule, so the
-         attribute is set on the DOM now, a style read commits it, and the
-         move waits two frames, as the first-visit loader does. */
-      svg.closest(".route-cover")?.setAttribute("data-phase", "morph");
-      void svg.getBoundingClientRect();
-      setPhase("morph");
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          if (!svg) return;
-          svg.style.width = `${b.width}px`;
-          svg.style.transform = `translate(${dx}px, ${dy}px)`;
-        }),
-      );
-      /* Hand over on the transition's end; this is only the safety net. */
-      done = window.setTimeout(() => setPhase("off"), MORPH_MS + 250);
+      giveUp = window.setTimeout(() => setPhase("off"), BURN_MAX_MS);
     }), still ? 200 : ROUTE_MIN_MS);
 
     return () => {
-      clearTimeout(toMorph);
+      cancelled = true;
+      clearTimeout(toBurn);
+      clearTimeout(giveUp);
       cancelAnimationFrame(calmRaf);
-      clearTimeout(done);
-      svg?.removeEventListener("transitionend", hand);
     };
   }, [pathname]);
 
@@ -134,10 +194,43 @@ export function RouteWipe() {
   const light = pathname.startsWith("/shop/");
 
   return (
-    <div aria-hidden className="route-cover" data-phase={phase} data-tone={light ? "light" : undefined}>
-      <span ref={mark} className="route-cover-mark">
-        <AriaWordmark className={`site-loading-mark ${light ? "text-ink" : "text-paper"}`} />
-      </span>
-    </div>
+    <>
+      {/* The solid sheet stays until the fire has caught, so there is
+          never a frame of page between the two. */}
+      {!lit ? (
+        <div ref={cover} aria-hidden className="route-cover" data-tone={light ? "light" : undefined}>
+          <span className="route-cover-mark">
+            <AriaWordmark className={`site-loading-mark ${light ? "text-ink" : "text-paper"}`} />
+          </span>
+        </div>
+      ) : null}
+      {picture ? (
+        <div aria-hidden className="route-burn" data-lit={lit ? "" : undefined}>
+          <EmberReveal
+            ref={fire}
+            images={[picture, picture]}
+            burnThrough
+            aspectRatio={0}
+            radius={0}
+            hover={false}
+            clickToBurn={false}
+            autoplay={false}
+            burnDuration={BURN_S}
+            roughness={0.6}
+            emberColor="#C6A664"
+            charColor="#121110"
+            smoke={0.3}
+            sparks={0.7}
+            maxPixelRatio={1}
+            onIgnite={() => {
+              litRef.current = true;
+              setLit(true);
+            }}
+            onChange={() => setPhase("off")}
+            className="!cursor-default"
+          />
+        </div>
+      ) : null}
+    </>
   );
 }

@@ -505,3 +505,28 @@ html:has(.route-cover) .site-nav .nav-mark svg { visibility: hidden; }
 /* Shop All collection tiles side-scroll on a phone; no scrollbar drawn. */
 .tiles-scroll { scrollbar-width: none; overscroll-behavior-x: contain; }
 .tiles-scroll::-webkit-scrollbar { display: none; }
+/* The route cover's fire (route-wipe.tsx). Above the cover, so the canvas
+   is ready under it during the logo's hold, and the cover is dropped
+   the moment the fire catches. Never takes a click. */
+.route-burn {
+  position: fixed; inset: 0; z-index: 199;
+  pointer-events: none;
+}
+.route-burn > * { pointer-events: none; }
+/* The nav's logo waits while the burn's copy of it is still on screen. */
+html:has(.route-burn) .site-nav .nav-mark svg { visibility: hidden; }
+
+/* ── Page changes: a crossfade (app/template.tsx) ──
+   The browser's own view transition: the old page fades out as the new
+   one fades in. Nothing captured, nothing drawn, so it costs next to
+   nothing on a phone. Clicks pass through while it plays. */
+::view-transition { pointer-events: none; }
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; }
+::view-transition-old(.page) { animation: page-fade 220ms ease-out both reverse; }
+::view-transition-new(.page) { animation: page-fade 320ms ease-out 80ms both; }
+@keyframes page-fade { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page),
+  ::view-transition-new(.page) { animation: none; }
+}

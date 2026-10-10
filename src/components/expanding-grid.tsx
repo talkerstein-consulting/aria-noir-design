@@ -1006,7 +1006,7 @@ export const ExpandingGrid = forwardRef<ExpandingGridHandle, ExpandingGridProps>
     magnify = 1.5,
     lensSize = 1.3,
     fill = 0.92,
-    radius = 0.14,
+    radius = 0,
     saturation = 0,
     dim = 0.25,
     follow = 0.45,
@@ -1122,7 +1122,7 @@ export const ExpandingGrid = forwardRef<ExpandingGridHandle, ExpandingGridProps>
               key={item.src}
               src={item.src}
               alt={item.alt}
-              style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 8 }}
+              style={{ width: 56, height: 56, objectFit: "cover" }}
             />
           ))}
         </div>

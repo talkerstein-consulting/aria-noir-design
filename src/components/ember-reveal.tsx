@@ -49,6 +49,10 @@ export interface EmberRevealProps {
   /** Ignite here (0..1, 0..1) as soon as the textures are ready. */
   igniteAt?: readonly [number, number];
   onChange?: (index: number) => void;
+  /** A burn has just started (not called under reduced motion). */
+  onIgnite?: () => void;
+  /** Cap on the canvas's pixel density. Full-screen use wants 1. */
+  maxPixelRatio?: number;
   className?: string;
   style?: CSSProperties;
 }
@@ -78,6 +82,8 @@ interface Settings {
   burnThrough: boolean | "form";
   igniteAt?: readonly [number, number];
   onChange?: (index: number) => void;
+  onIgnite?: () => void;
+  maxPixelRatio: number;
 }
 
 interface Controller {
@@ -711,7 +717,7 @@ const createReveal = (
     const rect = root.getBoundingClientRect();
     width = Math.max(1, rect.width);
     height = Math.max(1, rect.height);
-    ratio = Math.min(window.devicePixelRatio || 1, 2);
+    ratio = Math.min(window.devicePixelRatio || 1, settingsRef.current.maxPixelRatio);
     renderer.setPixelRatio(ratio);
     renderer.setSize(width, height, false);
     const scale = Math.min(1, 640 / Math.max(width, height));
@@ -778,6 +784,7 @@ const createReveal = (
     burnTime = 0;
     burnRadius = 0;
     burnReach = farthest(origin) + 0.25 + settings.roughness * 0.4;
+    settings.onIgnite?.();
     wake();
   };
 
@@ -1080,7 +1087,7 @@ const EmberReveal = forwardRef<EmberRevealHandle, EmberRevealProps>(function Emb
   {
     images,
     aspectRatio = 4 / 3,
-    radius = 16,
+    radius = 0,
     emberColor = "#FF7A1F",
     charColor = "#1C120C",
     glow = 1,
@@ -1103,6 +1110,8 @@ const EmberReveal = forwardRef<EmberRevealHandle, EmberRevealProps>(function Emb
     burnThrough = false,
     igniteAt,
     onChange,
+    onIgnite,
+    maxPixelRatio = 2,
     className,
     style,
   },
@@ -1140,6 +1149,8 @@ const EmberReveal = forwardRef<EmberRevealHandle, EmberRevealProps>(function Emb
     burnThrough,
     igniteAt,
     onChange,
+    onIgnite,
+    maxPixelRatio,
   });
 
   useEffect(() => {
@@ -1168,6 +1179,8 @@ const EmberReveal = forwardRef<EmberRevealHandle, EmberRevealProps>(function Emb
       burnThrough,
       igniteAt,
       onChange,
+      onIgnite,
+      maxPixelRatio,
     };
     controllerRef.current?.sync();
   });

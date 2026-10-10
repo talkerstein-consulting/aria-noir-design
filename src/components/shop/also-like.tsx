@@ -14,7 +14,7 @@ import type { House } from "@/lib/navigation";
  *
  * ---- These link to another BUY page, not to the story ----
  *
- * They used to go to the house's story, and to `/eyewear` for the four
+ * They used to go to the house's story, and to `/collections` for the four
  * houses that have none — so a reader comparing frames on a shop page was
  * put back on the index by four of the five cards, having asked to see a
  * frame and been shown the shelf.
@@ -31,8 +31,8 @@ export function AlsoLike({ current }: { current: House }) {
     <>
       <div className="mx-auto max-w-7xl">
         <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
-          <h2 className="t-display-md">The Collection</h2>
-          <CtaLink href="/eyewear" kind="secondary">
+          <h2 className="t-display-lg">The Collection</h2>
+          <CtaLink href="/collections" kind="secondary">
             Shop all
           </CtaLink>
         </div>

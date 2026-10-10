@@ -910,6 +910,12 @@
   border: var(--rule-weight) solid var(--fg-rule);
   transition: border-color var(--dur-fast) ease;
 }
+/* Beside a CTA the box is the CTA's 44px, border included, so the row
+   (and the button stretched to it) is no taller than every other button. */
+.buy-row .qty { box-sizing: border-box; height: 2.75rem; }
+.buy-row .qty-step,
+.buy-row .qty-field { min-height: 0; }
+
 /* No hover state on the box itself. Lighting the whole rule when the
    pointer is anywhere over it says "this control is live"; what a buyer
    needs to know is which of the three cells they are about to press. Each

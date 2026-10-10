@@ -49,7 +49,7 @@ export function HeldView() {
           another machine.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/eyewear">Browse all frames</CtaLink>
+          <CtaLink href="/collections">Browse all frames</CtaLink>
           <CtaLink href="/bag" kind="secondary">
             The bag
           </CtaLink>
@@ -118,7 +118,7 @@ export function HeldView() {
                still decides is what the card SAYS. */
             <ProductCard
               key={`${line.slug}:${line.colorway}`}
-              href={house || r.garment ? lineHref(r) : "/eyewear"}
+              href={house || r.garment ? lineHref(r) : "/collections"}
               image={image}
               /* The acetate under the photograph, for the colourways the
                  shoot has not reached. */

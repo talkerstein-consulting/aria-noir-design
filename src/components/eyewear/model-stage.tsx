@@ -893,7 +893,7 @@ export function ModelStage({
           type="button"
           onClick={stepDown}
           aria-label="Next frame"
-          className="absolute bottom-14 left-1/2 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-paper/30 bg-ink/40 text-paper backdrop-blur transition-colors hover:border-paper/70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-paper sm:bottom-8"
+          className="absolute bottom-14 left-1/2 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center border border-paper/30 bg-ink/40 text-paper backdrop-blur transition-colors hover:border-paper/70 focus-visible:outline focus-visible:outline-1 focus-visible:outline-paper sm:bottom-8"
         >
           <ArrowDown size={16} strokeWidth={1.5} aria-hidden />
         </button>
