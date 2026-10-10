@@ -25,13 +25,25 @@ export type CollectionTile = {
 
 /** `scroll`: on a phone, one row that side-scrolls (Shop All) instead of
  *  the two-column grid. From sm up it is the grid either way. */
-export function CollectionTiles({ items, scroll = false }: { items: CollectionTile[]; scroll?: boolean }) {
+/** `single`: the product page's grid: one column on a phone, and the
+ *  run's four across with hairline gaps on a wide screen. */
+export function CollectionTiles({
+  items,
+  scroll = false,
+  single = false,
+}: {
+  items: CollectionTile[];
+  scroll?: boolean;
+  single?: boolean;
+}) {
   return (
     <ul
       className={
         scroll
           ? "tiles-scroll flex snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
-          : "grid grid-cols-2 lg:grid-cols-3"
+          : single
+            ? "grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-4"
+            : "grid grid-cols-2 lg:grid-cols-3"
       }
     >
       {items.map((item) => (
@@ -107,7 +119,7 @@ function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean
           frame. Wider: over the foot of the tile, as before. */}
       <div className="pointer-events-none relative z-10 flex flex-col items-center gap-1.5 px-2 pt-2.5 pb-4 text-center sm:absolute sm:inset-x-0 sm:bottom-0 sm:gap-3 sm:p-6">
         {/* Same size as the product names in the frames grid. */}
-        <h3 className="font-display text-base leading-tight text-paper sm:text-2xl">
+        <h3 className="font-display text-base leading-tight text-[var(--fg-primary)] sm:text-2xl sm:text-paper">
           {item.name}
           {current ? <span className="italic"> {current.name}</span> : null}
         </h3>

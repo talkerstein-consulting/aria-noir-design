@@ -130,10 +130,13 @@ export function RouteWipe() {
 
   if (phase === "off") return null;
 
+  /* A product page opens on white, so its cover is white too. */
+  const light = pathname.startsWith("/shop/");
+
   return (
-    <div aria-hidden className="route-cover" data-phase={phase}>
+    <div aria-hidden className="route-cover" data-phase={phase} data-tone={light ? "light" : undefined}>
       <span ref={mark} className="route-cover-mark">
-        <AriaWordmark className="site-loading-mark text-paper" />
+        <AriaWordmark className={`site-loading-mark ${light ? "text-ink" : "text-paper"}`} />
       </span>
     </div>
   );

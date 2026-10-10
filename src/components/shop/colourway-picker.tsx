@@ -65,14 +65,11 @@ export function ColourwayPicker({
 
   return (
     <div className="stack stack--sm">
-      <div className="flex items-baseline justify-between gap-6">
-        <p className="t-eyebrow">Colourway</p>
-        {/* The chosen name is repeated here rather than only under its
-            thumbnail. At six or eight across, the label under the selected
-            square is easy to lose, and the reader is about to spend money
-            on the strength of it. */}
+      <div className="flex items-baseline justify-end gap-6">
+        {/* No label and no name here: the buy page names the chosen
+            colourway under its title, directly above, and the swatches say
+            what they are. The save control keeps its corner. */}
         <div className="flex items-center gap-3">
-          <p className="t-label text-[var(--fg-primary)]">{chosen}</p>
           <HoldToggle
             slug={house.slug}
             colorway={chosen}

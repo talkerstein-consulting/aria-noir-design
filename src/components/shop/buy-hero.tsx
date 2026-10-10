@@ -12,6 +12,7 @@ import type { House } from "@/lib/navigation";
 import {
   COLLECTION_LABEL,
   defaultColorway,
+  modelFor,
   galleryFor,
   squareFor,
   plateRatio,
@@ -25,7 +26,67 @@ import { RevealPlate } from "@/components/reveal";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { BagAdded } from "@/components/shop/bag-added";
+import { turntableStem } from "@/lib/turntable";
+import { ProductModel, posterFor } from "@/components/product/product-model";
+import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
 
+/* The turntable: the acetate's 3D model, turning slowly on its own on the
+   shop tile's light grey, and draggable. The cut-out still sits under it
+   until the first frame is drawn, and stays as the picture if WebGL never
+   arrives. Desktop only, as before: a phone gets the still. */
+function TurntablePlate({
+  stem,
+  model: modelSrc,
+  alt,
+  className = "",
+}: {
+  stem?: string;
+  model?: string | null;
+  alt: string;
+  className?: string;
+}) {
+  const [drawnFor, setDrawnFor] = useState<string | null>(null);
+  /* A rendered image sequence wins over the 3D model: a third of the
+     download, and it runs on a phone too. */
+  const spin = !!stem && SPIN.has(stem);
+  const model = spin ? null : modelSrc;
+  const drawn = (!!model && drawnFor === model) || spin;
+  const yaw = useRef(0);
+  useEffect(() => {
+    if (!model || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      yaw.current += ((now - last) / 1000) * 0.45;
+      last = now;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [model]);
+  const poster = stem ? `/images/fronts-cut/${stem}.webp` : model ? posterFor(model) : null;
+  return (
+    <div className={`shop-tile relative aspect-square w-full overflow-hidden ${className}`}>
+      {poster ? (
+        <Image
+          src={poster}
+          alt={alt}
+          fill
+          sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
+          priority
+          className="object-contain p-[8%] transition-opacity duration-700"
+          style={{ opacity: drawn ? 0 : 1 }}
+        />
+      ) : null}
+      {spin && stem ? <SpinPlate stem={stem} alt={alt} /> : null}
+      {model ? (
+        <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: drawn ? 1 : 0 }}>
+          <ProductModel src={model} yaw={yaw} onReady={() => setDrawnFor(model)} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 
 
@@ -109,6 +170,19 @@ export function BuyHero({ house }: { house: House }) {
      being bought. The 3D lives on the story page, which is where the
      object is being argued for rather than chosen. */
   const acetate = swatchFor(chosen ?? house.colorwayNames[0]);
+  const stem = turntableStem(house.slug, chosen);
+  /* The 3D model is a desktop object; measured after mount so the server
+     and a phone never mount the canvas. */
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const q = window.matchMedia("(min-width: 1024px)");
+    const read = () => setWide(q.matches);
+    read();
+    q.addEventListener("change", read);
+    return () => q.removeEventListener("change", read);
+  }, []);
+  const model = wide ? modelFor(house, chosen) : null;
+  const plateAlt = `${house.name}${chosen ? ` — ${chosen}` : ""}, ${house.material}`;
 
   const addToBag = () => {
     if (!chosen) return;
@@ -365,6 +439,10 @@ export function BuyHero({ house }: { house: House }) {
                 panel does not collapse by 48px the instant it pins. */}
             <div ref={buySlotRef} className="buy-slot max-lg:mt-0 mt-2">
               <div ref={buyRowRef} className="buy-row">
+              {/* Shown only when the row is pinned as the floating pill. */}
+              <span className="buy-row-price t-eyebrow tabular-nums" aria-hidden>
+                {priceOf(house, chosen ?? undefined)}
+              </span>
               <QtyStepper value={qty} onChange={setQty} />
               {/* The swap said "In the bag" before, and it described the bag
                   rather than the button: a filled CTA whose label is a
@@ -413,7 +491,9 @@ export function BuyHero({ house }: { house: House }) {
             out of it. The same file, so the browser fetches it once, and
             the copy in the column below is hidden at this width — see
             `.buy-grid-lead`. */}
-        {images.length ? (
+        {stem ? (
+          <TurntablePlate stem={stem} alt={plateAlt} className="buy-grid-lead" />
+        ) : images.length ? (
           /* 4:3 rather than square, and cropped towards the foot of the
              plate. A square lead put the acetates a full screen down on a
              phone; a quarter shorter, the name AND the colourways fit on
@@ -440,6 +520,8 @@ export function BuyHero({ house }: { house: House }) {
 
         {/* ---- the photographs ---- */}
         <div className="buy-grid-photos stack stack--sm">
+          {/* The turntable leads the column; the photograph follows it. */}
+          {stem || model ? <TurntablePlate stem={stem} model={model} alt={plateAlt} /> : null}
           {images.length ? (
             images.map((src, i) => (
               /* ONE WIDTH, and nothing cropped to reach it.
@@ -476,7 +558,7 @@ export function BuyHero({ house }: { house: House }) {
                 <Image
                   src={src}
                   alt={
-                    i === 0
+                    i === 0 && !stem
                       ? `${house.name}${chosen ? ` — ${chosen}` : ""}, ${house.material}`
                       : ""
                   }

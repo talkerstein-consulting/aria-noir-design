@@ -214,7 +214,7 @@ export default async function ShopHousePage({
         <SmoothScroll />
         <SiteNav />
         <main id="main" tabIndex={-1} className="buy-page relative">
-          <section className="on-ink section buy-section bg-ink">
+          <section className="on-paper section buy-section bg-paper">
             <ApparelBuy line={garment} />
           </section>
         </main>
@@ -229,7 +229,7 @@ export default async function ShopHousePage({
       <SiteNav />
       <main id="main" tabIndex={-1} className="buy-page relative">
         {/* ---- the transaction: photographs left, offer sticky right ---- */}
-        <section className="on-ink section buy-section bg-ink">
+        <section className="on-paper section buy-section bg-paper">
           {/* BuyHero reads `?colourway=` to open on the acetate a link
               meant. `useSearchParams` needs a boundary on a route that is
               prerendered by generateStaticParams — without one, the whole
@@ -248,13 +248,13 @@ export default async function ShopHousePage({
             with no story page this is the only place it is made. A house
             without a campaign renders nothing here. */}
         {house.campaign ? (
-          <section className="on-ink section bg-ink">
+          <section className="on-paper section bg-paper">
             <BuyCampaign house={house} />
           </section>
         ) : null}
 
         {/* ---- the detail, beside the film ---- */}
-        <section className="on-ink section bg-ink">
+        <section className="on-paper section bg-paper">
           <BuyDetail
             tabs={tabsFor(house)}
             video={house.video}
@@ -271,13 +271,13 @@ export default async function ShopHousePage({
             still shopping this house, and sending them to other houses
             first would answer a question they have not asked. */}
         {hasColourwayCards(house) ? (
-          <section className="on-ink section bg-ink">
+          <section className="on-paper section bg-paper">
             <ColourwayCards house={house} />
           </section>
         ) : null}
 
         {/* ---- the rest of the catalogue ---- */}
-        <section className="on-ink section bg-ink">
+        <section className="on-paper section bg-paper">
           <AlsoLike current={house} />
         </section>
       </main>

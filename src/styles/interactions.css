@@ -1648,10 +1648,45 @@
   inset: 0;
   inset-inline: calc(-1 * var(--gutter));
   z-index: -1;
-  background: color-mix(in srgb, var(--ink) 92%, transparent);
+  /* The ground of the page it is on: white on the (white) buy page. */
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
   backdrop-filter: blur(14px);
   border-top: 0; /* v2: no dividers */
 }
+
+/* ── Pinned, the row is a floating pill ──
+   The same compact pill as the bag's Checkout and the story's offer:
+   centred at the foot, the price beside Add to bag, no quantity and no
+   band. The pin's measured left and width are overridden here. */
+@media (max-width: 1023px) {
+  .buy-row[data-pinned] {
+    left: 50% !important;
+    width: max-content !important;
+    max-width: calc(100vw - 2rem);
+    bottom: 1rem !important;
+    padding: 0;
+    gap: 0;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid color-mix(in srgb, var(--paper) 15%, transparent);
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+  .buy-row[data-pinned][data-gone] { transform: translate(-50%, 160%); }
+  .buy-row[data-pinned]::before { display: none; }
+  .buy-row[data-pinned] .qty { display: none; }
+  .buy-row[data-pinned] .buy-row-price { display: flex; }
+  .buy-row[data-pinned] .cta-main {
+    flex: none;
+    min-height: 0;
+    padding: 0.75rem 1rem;
+    background: var(--paper);
+    color: var(--ink);
+  }
+}
+.buy-row-price { display: none; align-items: center; padding: 0.75rem 1rem; color: var(--paper); }
+/* The bag's Checkout pill stands down while this one holds the spot. */
+html:has(.buy-row[data-pinned]:not([data-gone])) .bag-pin { opacity: 0; pointer-events: none; }
 
 /* Reduced motion takes the slide and keeps the leaving: the control still
    goes away after the film, it just is not shown travelling there. */

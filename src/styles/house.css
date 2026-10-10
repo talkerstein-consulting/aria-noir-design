@@ -267,6 +267,8 @@ html[data-boot="done"] .boot-loader:has(.site-loading-mark[style*="translate"]) 
   pointer-events: none;
   transition: background-color 0.45s ease 0.35s;
 }
+.route-cover[data-tone="light"],
+.site-loading[data-tone="light"] { background-color: var(--paper); }
 .route-cover[data-phase="morph"] { background-color: transparent; }
 .route-cover-mark { display: block; }
 .route-cover[data-phase="morph"] .site-loading-mark {
@@ -299,7 +301,8 @@ html:has(.route-cover) .site-nav .nav-mark svg { visibility: hidden; }
   visibility: visible;
   transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
 }
-@media (hover: none) {
+/* Always shown on a phone-width screen, whatever the pointer. */
+@media (hover: none), (max-width: 1023px) {
   .tile-dots { opacity: 1; transform: none; visibility: visible; }
 }
 /* ── Shop All: the toolbar and the left sidebar ── */

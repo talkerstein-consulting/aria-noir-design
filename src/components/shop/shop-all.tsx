@@ -21,6 +21,7 @@ import {
   type FilterOption,
 } from "@/components/shop/filter-drawer";
 import { useBag } from "@/lib/cart";
+import { TURNTABLE } from "@/lib/turntable";
 import {
   activeFilters,
   collections,
@@ -131,39 +132,6 @@ const HIGHLIGHT_MIN = 6;
    knitwear, Black Wood, AHAVA Dark Tortoise) keeps its photograph on the
    same grey. Keyed `collection/colourway`; the value is the file stem in
    /images/fronts-cut/. */
-const TURNTABLE: Record<string, string> = {
-  "arca-i/309 Blue": "arca-i-309-blue",
-  "arca-i/K Black": "arca-i-k-black",
-  "arca-i/Proceso Brown": "arca-i-proceso-brown",
-  "arca-i/Z White": "arca-i-z-white",
-  "arca-ii/Caramel Stripe": "arca-ii-caramel-stripe",
-  "arca-ii/Dark Tortoise": "arca-ii-dark-tortoise",
-  "arca-ii/Dreamy Rose": "arca-ii-dreamy-rose",
-  "arca-ii/Noir": "arca-ii-noir",
-  "arca-ii/Pixie Dust": "arca-ii-pixie-dust",
-  "arca-ii/Root Beer Float": "arca-ii-root-beer-float",
-  "arca-ii/Tutti Frutti": "arca-ii-tutti-frutti",
-  "arca-ii/Velvet Rose": "arca-ii-velvet-rose",
-  "ahava/Caramel Stripe": "ahava-caramel-stripe",
-  "ahava/Dark Tortoise": "ahava-dark-tortoise",
-  "ahava/Noir": "ahava-noir",
-  "ahava/Root Beer Float": "ahava-root-beer-float",
-  "ahava/Rose": "ahava-rose",
-  "ahava/Tutti Frutti": "ahava-tutti-frutti",
-  "monarca/Caramel Stripe": "monarca-caramel-stripe",
-  "monarca/Dark Tortoise": "monarca-dark-tortoise",
-  "monarca/Dreamy Rose": "monarca-dreamy-rose",
-  "monarca/Noir": "monarca-noir",
-  "monarca/Pixie Dust": "monarca-pixie-dust",
-  "monarca/Tutti Frutti": "monarca-tutti-frutti",
-  "monarca/Velvet Rose": "monarca-velvet-rose",
-  "matriarca/Brown": "matriarca-brown",
-  "matriarca/Midnight Noir": "matriarca-noir",
-  "patriarca/Black": "patriarca-black",
-  "patriarca/Brown": "patriarca-brown",
-  "patriarca/Midnight Noir": "patriarca-midnight-noir",
-};
-
 function ShopTile({ piece }: { piece: Piece }) {
   const stem = TURNTABLE[piece.id];
   const href = piece.card.href ?? `/shop/${piece.collection}`;

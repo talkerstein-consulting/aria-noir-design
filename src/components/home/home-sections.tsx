@@ -6,6 +6,7 @@ import { allHouses, shopPath } from "@/lib/navigation";
 import { formatPrice, swatchFor } from "@/lib/shop";
 import { pieces } from "@/lib/shop-all";
 import { CollectionTiles, type CollectionTile } from "@/components/home/collection-tiles";
+import { turntableStem } from "@/lib/turntable";
 
 /**
  * The home page, October v2. Rhythm after DITA: a full-screen picture, then
@@ -109,8 +110,10 @@ export function HomeStatement() {
 
 const COLLECTION_ORDER = ["arca-i", "arca-ii", "ahava", "monarca", "matriarca", "patriarca"];
 
-export function HomeCollections({ scroll = false }: { scroll?: boolean } = {}) {
-  const items: CollectionTile[] = COLLECTION_ORDER.flatMap((slug) => {
+/** The collection tiles' data, in the house order; `exclude` drops one
+ *  house (the product page leaves out the one it is selling). */
+export function collectionItems(exclude?: string): CollectionTile[] {
+  return COLLECTION_ORDER.filter((slug) => slug !== exclude).flatMap((slug) => {
     const house = allHouses.find((h) => h.slug === slug);
     if (!house) return [];
     return [
@@ -127,7 +130,10 @@ export function HomeCollections({ scroll = false }: { scroll?: boolean } = {}) {
       },
     ];
   });
+}
 
+export function HomeCollections({ scroll = false }: { scroll?: boolean } = {}) {
+  const items = collectionItems();
   return (
     <section aria-label="The collections" className="bg-ink">
       <CollectionTiles items={items} scroll={scroll} />
@@ -169,50 +175,64 @@ const FRONTS: { file: string; house: string; colorway: string }[] = (CATALOGUE["
 
 export function HomeFronts() {
   return (
-    /* No heading: the frames are the heading. DITA's rail, on black: square
-       tiles, the frame cut out of its render, name and price inside. */
-    <section aria-label="The frames" className="on-ink bg-ink">
-      <ul className="grid grid-cols-2 gap-px bg-paper/10 lg:grid-cols-4">
-        {FRONTS.map((f) => {
-          const house = allHouses.find((h) => h.slug === f.house);
-          const entry = CATALOGUE[f.house]?.find((e) => e.colorway === f.colorway);
-          if (!house) return null;
-          return (
-            <li key={f.file} className="rise bg-black">
-              <Link
-                href={`${shopPath(house)}?colourway=${encodeURIComponent(f.colorway)}`}
-                className="group relative block aspect-square w-full"
-              >
-                <Image
-                  src={`/images/fronts-cut/${f.file}.webp`}
-                  alt={`${house.name}, ${f.colorway}, from the front`}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, 50vw"
-                  className="object-contain p-[8%] pb-[34%] sm:pb-[22%] transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-0 group-focus-visible:opacity-0"
-                />
-                {/* On hover, the quarter view: turntable frame 014. */}
-                <Image
-                  src={`/images/fronts-cut/${f.file}-quarter.webp`}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 25vw, 50vw"
-                  className="object-contain p-[8%] pb-[34%] sm:pb-[22%] opacity-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 group-focus-visible:opacity-100"
-                />
-                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 px-3 pb-4 text-center sm:px-4 sm:pb-8">
-                  <p className="font-display text-lg leading-tight text-paper sm:text-2xl">
-                    {house.name}{" "}
-                    {/* Own line on a phone, so a long colourway never wraps into the frame. */}
-                    <span className="block italic sm:inline">{f.colorway}</span>
-                  </p>
-                  {entry ? (
-                    <p className="t-caption tabular-nums text-paper/70">{formatPrice(entry.cents)}</p>
-                  ) : null}
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    /* No heading: the frames are the heading. DITA's rail on a white
+       section: the shop's light grey tiles, the frame cut out of its
+       render, name and price inside. */
+    <section aria-label="The frames" className="bg-white">
+      <FrontTiles house="arca-ii" colorways={FRONTS.map((f) => f.colorway)} />
     </section>
+  );
+}
+
+/** One light grey tile per colourway: the cut-out front, the quarter view
+ *  on hover, name and price inside. Shared by the home page's frames and
+ *  the product page's run. Colourways with no render are left out. */
+export function FrontTiles({ house: slug, colorways }: { house: string; colorways: readonly string[] }) {
+  const house = allHouses.find((h) => h.slug === slug);
+  if (!house) return null;
+  const tiles = colorways.flatMap((colorway) => {
+    const file = turntableStem(slug, colorway);
+    return file ? [{ colorway, file }] : [];
+  });
+  return (
+    <ul className="grid grid-cols-2 gap-px bg-white lg:grid-cols-4">
+      {tiles.map((f) => {
+        const entry = CATALOGUE[slug]?.find((e) => e.colorway === f.colorway);
+        return (
+          <li key={f.file} className="rise shop-tile">
+            <Link
+              href={`${shopPath(house)}?colourway=${encodeURIComponent(f.colorway)}`}
+              className="group relative block aspect-square w-full"
+            >
+              <Image
+                src={`/images/fronts-cut/${f.file}.webp`}
+                alt={`${house.name}, ${f.colorway}, from the front`}
+                fill
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="object-contain p-[8%] pb-[34%] max-sm:scale-[1.3] max-sm:-translate-y-[2%] sm:pb-[22%] transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-0 group-focus-visible:opacity-0"
+              />
+              {/* On hover, the quarter view: turntable frame 014. */}
+              <Image
+                src={`/images/fronts-cut/${f.file}-quarter.webp`}
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="object-contain p-[8%] pb-[34%] max-sm:scale-[1.3] max-sm:-translate-y-[2%] sm:pb-[22%] opacity-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 group-focus-visible:opacity-100"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 px-3 pb-4 text-center sm:px-4 sm:pb-8">
+                <p className="font-display text-lg leading-tight text-ink sm:text-2xl">
+                  {house.name}{" "}
+                  {/* Own line on a phone, so a long colourway never wraps into the frame. */}
+                  <span className="block italic sm:inline">{f.colorway}</span>
+                </p>
+                {entry ? (
+                  <p className="t-caption tabular-nums text-ink/65">{formatPrice(entry.cents)}</p>
+                ) : null}
+              </div>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

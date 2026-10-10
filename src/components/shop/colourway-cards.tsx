@@ -1,7 +1,6 @@
-import { ProductCard } from "@/components/product-card";
+import { FrontTiles } from "@/components/home/home-sections";
 import type { House } from "@/lib/navigation";
 import { COLOURWAY_CARD_ART, colourwayKey } from "@/lib/colourway-cards.generated";
-import { colourwayCard } from "@/lib/product-cards";
 import { stockFor } from "@/lib/shop";
 
 /**
@@ -71,25 +70,22 @@ export function ColourwayCards({ house }: { house: House }) {
   if (!shown.length) return null;
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
-        <h2 className="t-display-md">The run</h2>
-        <p className="t-caption">
-          {house.material} · one cut, {shown.length} colourways
-        </p>
+    <>
+      <div className="mx-auto max-w-7xl">
+        <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
+          <h2 className="t-display-md">The run</h2>
+          <p className="t-caption">
+            {house.material} · one cut, {shown.length} colourways
+          </p>
+        </div>
       </div>
 
-      <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-        {shown.map(({ colorway }) => (
-          <li key={colorway} className="flex">
-            {/* What each acetate's card says — its own name, its own price,
-                its own photograph — is `colourwayCard` in
-                lib/product-cards, beside every other product's. No hover
-                swap here: the wall zooms. */}
-            <ProductCard {...colourwayCard(house, colorway)} />
-          </li>
-        ))}
-      </ul>
-    </div>
+      {/* The home page's frame tiles: the cut-out render on light grey,
+          the quarter view on hover. Full bleed, as on the home page: the
+          section's gutters are given back so they reach both edges. */}
+      <div className="mt-10 -mx-[var(--gutter)] sm:-mx-[var(--gutter-wide)]">
+        <FrontTiles house={house.slug} colorways={stockFor(house).map((e) => e.colorway)} />
+      </div>
+    </>
   );
 }

@@ -10,9 +10,16 @@
  * Needs no JavaScript: this is what Next renders while the real route is
  * still arriving.
  */
-export function LoadingScreen({ label = "Loading" }: { label?: string }) {
+export function LoadingScreen({
+  label = "Loading",
+  tone,
+}: {
+  label?: string;
+  /** "light" for a route that opens on white (the product page). */
+  tone?: "light";
+}) {
   return (
-    <div className="site-loading" role="status" aria-live="polite">
+    <div className="site-loading" data-tone={tone} role="status" aria-live="polite">
       <span className="sr-only">{label}</span>
     </div>
   );

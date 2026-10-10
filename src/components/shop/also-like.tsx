@@ -1,7 +1,7 @@
 import { CtaLink } from "@/components/cta-link";
-import { ProductCard } from "@/components/product-card";
-import { houses, type House } from "@/lib/navigation";
-import { houseCard } from "@/lib/product-cards";
+import { CollectionTiles } from "@/components/home/collection-tiles";
+import { collectionItems } from "@/components/home/home-sections";
+import type { House } from "@/lib/navigation";
 
 /**
  * The rest of the catalogue, one card each, second photograph on hover.
@@ -27,24 +27,22 @@ import { houseCard } from "@/lib/product-cards";
  * still one link away from each of them.
  */
 export function AlsoLike({ current }: { current: House }) {
-  const others = houses.filter((h) => h.slug !== current.slug);
-
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
-        <h2 className="t-display-md">The Collection</h2>
-        <CtaLink href="/eyewear" kind="secondary">
-          Shop all
-        </CtaLink>
+    <>
+      <div className="mx-auto max-w-7xl">
+        <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
+          <h2 className="t-display-md">The Collection</h2>
+          <CtaLink href="/eyewear" kind="secondary">
+            Shop all
+          </CtaLink>
+        </div>
       </div>
 
-      <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
-        {others.map((other) => (
-          <li key={other.slug} className="flex">
-            <ProductCard {...houseCard(other, "cross-sell")} />
-          </li>
-        ))}
-      </ul>
-    </div>
+      {/* The home page's collection tiles, less the house on this page, on
+          the run's grid: full bleed, the section's gutters given back. */}
+      <div className="mt-10 -mx-[var(--gutter)] sm:-mx-[var(--gutter-wide)]">
+        <CollectionTiles items={collectionItems(current.slug)} single />
+      </div>
+    </>
   );
 }
