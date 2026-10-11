@@ -118,7 +118,7 @@ export function RouteWipe() {
   useEffect(() => {
     const warm = () => void loadEmber();
     if ("requestIdleCallback" in window) window.requestIdleCallback(warm);
-    else window.setTimeout(warm, 1500);
+    else setTimeout(warm, 1500);
   }, []);
 
   useLayoutEffect(() => {
