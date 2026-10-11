@@ -27,10 +27,10 @@ What is checked on every page:
 | `/arca-i` | DONE | film pause control added |
 | `/arca-ii` | DONE | restored 6 deleted plates; colourway names on phones |
 | `/shop/[slug]` (checked `arca-i`) | DONE | breadcrumb, buy-section spacing, till pinned on phones |
-| `/lookbook/ss26` | TODO | |
-| `/house/about` | TODO | uses the restored `plate-12/13/17` images: confirm they render |
-| `/contact` | TODO | hero uses restored `plate-13-studio-shadow.webp` |
-| `/bag` | TODO | also walk `/checkout` since the bag leads there |
+| `/lookbook/ss26` | N/A | route removed from the site (`lib/pages.ts`); AGENTS.md still lists it |
+| `/house/about` | DONE | now uses MONARCA campaign plates, all render; clean at 375px |
+| `/contact` | DONE | intake choice now `aria-pressed` (was `aria-current="page"`) |
+| `/bag` | DONE | drawer is a named modal dialog, takes focus; add-to-bag and `/checkout` walked at desktop and 375px |
 
 Other shop slugs (`arca-ii`, `ahava`, `matriarca`, `patriarca`,
 `monarca`) share the buy page component; spot-check one with 8
@@ -58,6 +58,11 @@ ARCA I / ARCA II
 - restored `public/images/plate-00/05/12/13/16/17-*.webp` from
   `20b4735^` (deleted by that commit, still referenced by `lib/pages.ts`)
 
+Contact
+- `CtaButton` takes `pressed` (`aria-pressed`, same gold as `current`
+  via `.cta-secondary[aria-pressed="true"]`); `contact-intake.tsx` uses
+  it for the subject choice
+
 Buy page
 - breadcrumb on phones: current crumb first, trail swipeable under a
   right fade (`.crumb-eyebrow`, flex `order`)
@@ -68,6 +73,13 @@ Buy page
 - phones: the buy row is pinned to the foot from first load
 
 ## Flagged, not changed
+
+- Console: React "unique key" warning from `OuterLayoutRouter` on every
+  route. Comes from Next's router around the `ViewTransition` in
+  `app/template.tsx`, not from site code. Dev-only.
+- `/checkout` heading order: the order summary's `H3` (card name) comes
+  before its `H2` "Your order"; the four step headers are buttons, not
+  headings.
 
 - The three films are 3.7 to 4.7 MB each with `preload="auto"`; the
   home loader is designed to wait on them. The real fix is a smaller
