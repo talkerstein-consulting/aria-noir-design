@@ -550,7 +550,9 @@ export function ShopAll() {
                       ) : null}
                       <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
                       <figcaption className="absolute inset-x-0 bottom-0 flex justify-center p-6 sm:p-10">
-                        <h2 className="t-display-md text-paper">{tile.name}</h2>
+                        {/* White over the photograph: the paper section's heading colour
+                            was winning over text-paper and setting it black. */}
+                        <h2 className="t-display-md" style={{ color: "#fff" }}>{tile.name}</h2>
                       </figcaption>
                     </div>
                   </Link>
