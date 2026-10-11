@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant, Figtree, IBM_Plex_Mono } from "next/font/google";
 import { AriaWordmark } from "@/components/aria-wordmark";
+import { SITE_URL } from "@/lib/site";
 import { HouseNotices } from "@/components/house-notices";
 import "./globals.css";
 
@@ -47,12 +48,14 @@ const plexMono = IBM_Plex_Mono({
 /* `cover` lets the black run under the iPhone's home indicator and
    toolbar instead of stopping short of them; anything pinned to the bottom
    pads itself with env(safe-area-inset-bottom). */
+
 export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: "#000000",
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Aria Noir",
   description: "Eyewear, carved not assembled.",
 };

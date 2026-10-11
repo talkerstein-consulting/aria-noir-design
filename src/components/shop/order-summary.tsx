@@ -118,6 +118,7 @@ export function OrderSummary({
           </span>
           <div className="flex items-end gap-6">
             <input
+              aria-label="Promo code"
               value={draft}
               autoComplete="off"
               autoCapitalize="characters"
@@ -137,6 +138,9 @@ export function OrderSummary({
               role={promoNote.tone === "bad" ? "alert" : "status"}
             >
               {promoNote.text}
+              {/* The quote that prices the code waits on the address, so
+                  until then "applied" needs to say where the money went. */}
+              {promoNote.tone === "ok" && !discount ? " It comes off the total once the address is in." : null}
             </em>
           ) : null}
         </label>

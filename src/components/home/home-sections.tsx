@@ -123,7 +123,9 @@ export function collectionItems(exclude?: string): CollectionTile[] {
         href: house.href ?? shopPath(house),
         image: house.plate ?? `/images/home/collections/${slug}-closeup.webp`,
         cover: house.heroColorway,
-        colourways: (CATALOGUE[slug] ?? []).map((entry) => ({
+        /* Sold-out acetates are left off, as the shop grid does: a swatch
+           the buy page cannot select is a promise it will not keep. */
+        colourways: (CATALOGUE[slug] ?? []).filter((entry) => entry.available).map((entry) => ({
           name: entry.colorway,
           swatch: swatchFor(entry.colorway),
           image: pieces.find((p) => p.id === `${slug}/${entry.colorway}`)?.card.image ?? null,

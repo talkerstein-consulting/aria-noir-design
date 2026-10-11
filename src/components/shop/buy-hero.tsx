@@ -3,6 +3,7 @@
 import Image from "next/image";
 import {
   Suspense,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -21,6 +22,7 @@ import {
   swatchFor,
 } from "@/lib/shop";
 import { useBag } from "@/lib/cart";
+import { CATALOGUE } from "@/lib/catalogue";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import { RevealPlate } from "@/components/reveal";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
@@ -122,6 +124,34 @@ export function BuyHero({ house }: { house: House }) {
      colourway the house does not carry — or has sold out of — falls back
      to the hero acetate rather than showing an empty picker. */
   const chosen = picked ?? (defaultColorway(house, asked) || null);
+  /* A link that named an acetate the house carries but has sold out of
+     lands on the fallback; say why, rather than silently swap it. */
+  const askedSoldOut =
+    asked &&
+    chosen === defaultColorway(house, asked) &&
+    /* The full catalogue, not stockFor: a withdrawn acetate is the most
+       likely thing an old link still names. */
+    (CATALOGUE[house.slug] ?? []).some((e) => e.colorway === asked && (!e.available || !stockFor(house).includes(e)))
+      ? asked
+      : null;
+  /* The address follows the pick, so a copied link opens the acetate on
+     screen. replaceState, not the router: no re-render, no history entry
+     per swatch. */
+  const choose = useCallback(
+    (colorway: string) => {
+      setPicked(colorway);
+      const url = new URL(window.location.href);
+      const named = url.searchParams.get("colourway") ?? url.searchParams.get("colorway");
+      /* The picker also announces its opening position, which is whatever
+         the address already resolves to; only a different acetate rewrites
+         it, so a link that named a sold-out one is left as it came. */
+      if (colorway === defaultColorway(house, named)) return;
+      url.searchParams.delete("colorway");
+      url.searchParams.set("colourway", colorway);
+      window.history.replaceState(window.history.state, "", url);
+    },
+    [house],
+  );
 
   const [qty, setQty] = useState(1);
 
@@ -432,9 +462,15 @@ export function BuyHero({ house }: { house: House }) {
               place beside the control that spends it. */}
           <div className="mt-6">
             <Suspense fallback={null}>
-              <ColourwayPicker house={house} onChoose={setPicked} />
+              <ColourwayPicker house={house} onChoose={choose} />
             </Suspense>
           </div>
+
+          {askedSoldOut ? (
+            <p className="t-caption mt-4" role="status">
+              {askedSoldOut} is out of the workshop for now. Showing {chosen}.
+            </p>
+          ) : null}
 
           <p className="t-body mt-6 text-[var(--fg-tertiary)]">{house.note}</p>
 

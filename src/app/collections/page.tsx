@@ -5,6 +5,7 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { CollectionsIndex } from "@/components/shop/collections-index";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/collections" },
   title: "Collections | Aria Noir",
   description:
     "Every collection the house has cut, indexed: six houses of block acetate eyewear and one garment knitted in Peru.",

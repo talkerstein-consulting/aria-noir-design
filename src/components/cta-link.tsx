@@ -72,6 +72,10 @@ type CtaButtonProps = CtaCommon & {
   "aria-expanded"?: boolean;
   "aria-controls"?: string;
   disabled?: boolean;
+  /** One of a set of choices, picked. Says "selected" to assistive tech
+   *  (`aria-pressed`) and wears the same gold as `current`, which would
+   *  otherwise announce the button as "current page". */
+  pressed?: boolean;
 };
 
 /**
@@ -220,6 +224,9 @@ export function CtaLink({
     style,
     className: classes({ children, style, alt, current, icon, trailing, ...rest }),
     "aria-current": currentProp(current),
+    /* The label is split into one span per glyph; named whole so a screen
+       reader hears "Add to bag", not letters. */
+    "aria-label": children,
   };
 
   /* An off-origin destination is a plain anchor: next/link's prefetching
@@ -372,6 +379,7 @@ export function CtaButton({
   swapped = false,
   disabled,
   current,
+  pressed,
   icon,
   trailing,
   "aria-expanded": expanded,
@@ -443,12 +451,14 @@ export function CtaButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-label={settled}
       aria-expanded={expanded}
       aria-controls={controls}
       /* Same signal the link has carried all along, and now the button
          does too: a tabbed rail is a set of buttons where one of them IS
          the page you are looking at, and it had no way to say so. */
       aria-current={currentProp(current)}
+      aria-pressed={pressed}
       style={style}
       className={`${classes({ children, style, alt, current, icon, trailing, ...rest })} ${flip}`.trim()}
     >

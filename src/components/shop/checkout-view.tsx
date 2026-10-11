@@ -33,7 +33,6 @@ import {
   type CheckoutItem,
   type Config,
   type Quote,
-  type Session,
   type SavedAddress,
 } from "@/lib/house-api";
 import { formatPrice } from "@/lib/shop";
@@ -87,57 +86,12 @@ type StepId = "who" | "where" | "pay" | "review";
 
 const CONFIRM_KEY = "aria-noir:last-order";
 
-/* ════════════════════════════════════════════════════════════════════
-   FURNISHING MODE — temporary, and meant to be deleted.
-
-   The house API is not reachable from the deployed build yet, so every
-   visit to this page fell straight through to "the studio's checkout is
-   not answering" and the four steps could not be looked at, let alone
-   worked on. With this on, the page assumes a signed-in reader and
-   renders the sequence so it can be furnished.
-
-   What it does NOT do is fake a sale. `house.quote` and `house.order`
-   are untouched: nothing is priced, authorised or charged, the pay step
-   still renders without its card field while `config` is absent, and the
-   Square SDK is never reached. This only gets the steps on screen.
-
-   Turn it off — and take the stub below with it — the moment the API
-   answers, or the live site is telling every visitor it knows who they
-   are when it does not.
-   ════════════════════════════════════════════════════════════════════ */
-const FURNISHING = true;
-
-/** The reader the page assumes while FURNISHING. Obviously not real, on
- *  purpose: if this ever shows up in front of an actual customer, it
- *  should be unmistakable that it is scaffolding rather than their
- *  account. */
-const FURNISHING_SESSION: Session = {
-  user: {
-    id: "furnishing",
-    firstName: "Aria",
-    lastName: "Noir",
-    email: "furnishing@example.invalid",
-    phone: "",
-  },
-  profile: null,
-  houseAccount: null,
-};
-
 const GUEST_KEY = "aria-noir:checkout-guest";
 
 export function CheckoutView() {
   const router = useRouter();
   const { resolved, ready: bagReady, clear } = useBag();
-  const {
-    session: liveSession,
-    loading: liveSessionLoading,
-    error: liveSessionError,
-  } = useHouseSession();
-  /* One place where the pretence is applied, so the rest of the component
-     reads exactly as it will once FURNISHING is gone. */
-  const session = FURNISHING ? FURNISHING_SESSION : liveSession;
-  const sessionLoading = FURNISHING ? false : liveSessionLoading;
-  const sessionError = FURNISHING ? "" : liveSessionError;
+  const { session, loading: sessionLoading, error: sessionError } = useHouseSession();
   const [error, setError] = useState("");
 
   /* The pinned total stands in for the real one while the real one is
@@ -709,7 +663,7 @@ export function CheckoutView() {
      down; the sale now lives entirely in the build, so a failure is a
      failure and the honest thing is to say so and keep the bag safe rather
      than send the reader somewhere this build cannot follow them. */
-  if (!FURNISHING && (configError || sessionError)) {
+  if (configError || sessionError) {
     return (
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">The studio&rsquo;s checkout is not answering.</p>
@@ -962,7 +916,9 @@ export function CheckoutView() {
                     no reason reads as broken. Say why, until it lands. */}
                 {!quote && !quoteError ? (
                   <p className="t-caption mt-4" role="status">
-                    Calculating your total — Apple Pay and Google Pay open once it is in.
+                    {whereComplete
+                      ? "Calculating your total — Apple Pay and Google Pay open once it is in."
+                      : "Apple Pay and Google Pay open once the address is in. A card works now."}
                   </p>
                 ) : null}
                 </div>
@@ -1003,11 +959,13 @@ export function CheckoutView() {
                     `wallets.google` a promise nothing could keep. */}
                 <div id="google-pay" hidden />
 
-                {/* Mounted only while the reader is on this step or the
-                    review after it. The fold hides bodies with CSS, and a
-                    card field that mounted behind a closed step would
-                    answer "ready" to a question nobody had reached. */}
-                {(open === "pay" || open === "review") && method === "card" ? (
+                {/* Mounted once the reader picks Card, and kept mounted
+                    while the fold hides this step: unmounting destroys
+                    Square's iframe, so leaving for 02 and 03 used to bring
+                    the reader back to an empty field at 04 and tokenize a
+                    blank card. It cannot mount behind a closed step,
+                    because Card is only chosen from inside this one. */}
+                {method === "card" ? (
                   <div className="step-group mt-8 max-w-md">
                     <CardField
                       config={config}
@@ -1098,6 +1056,7 @@ export function CheckoutView() {
                     />
                     <input
                       type="tel"
+                      aria-label="Phone number"
                       inputMode="tel"
                       autoComplete="tel-national"
                       value={phone}
@@ -1115,7 +1074,7 @@ export function CheckoutView() {
                     disabled={!isValidPhone(phone)}
                     onClick={() => setOpen("where")}
                   >
-                    Submit
+                    Continue
                   </CtaButton>
                   {/* The sign-out that used to sit here is gone: this
                       is a checkout, and a control that empties the
@@ -1172,6 +1131,7 @@ export function CheckoutView() {
                     />
                       <input
                         type="tel"
+                        aria-label="Phone number"
                         inputMode="tel"
                         autoComplete="tel-national"
                         value={guest.phone}
@@ -1280,11 +1240,12 @@ export function CheckoutView() {
           >
             <span className="t-eyebrow">
               <span className="step-index">04</span>
-              {sendable.length === 1 ? "Your Order" : "Your Orders"}
+              Review
             </span>
           </button>
           <p className="step-summary t-caption">
-            {sendable.length} {sendable.length === 1 ? "piece" : "pieces"} · {formatPrice(subtotal)}
+            {sendable.reduce((t, r) => t + r.line.qty, 0)}{" "}
+            {sendable.reduce((t, r) => t + r.line.qty, 0) === 1 ? "piece" : "pieces"} · {formatPrice(subtotal)}
           </p>
           <div className="step-body">
             <div className="step-body-inner">
@@ -1316,7 +1277,7 @@ export function CheckoutView() {
                 <dd className="t-body t-body--tight">
                   {method === "saved_card" && cardOnFile
                     ? `${(cardOnFile.brand || "Card").toUpperCase()} ending ${cardOnFile.last4}`
-                    : "The card above"}
+                    : "The card entered at 01"}
                 </dd>
               </div>
             </dl>
@@ -1378,7 +1339,11 @@ export function CheckoutView() {
             is the way to the lines the number is counting, which on a
             phone are a long way down the page. */}
         <a href="#your-order" className="link-quiet link-quiet--micro">
-          {sendable.length === 1 ? "One frame" : `${sendable.length} frames`}
+          {(() => {
+            /* Pieces, not lines: two of one frame is two frames. */
+            const n = sendable.reduce((t, r) => t + r.line.qty, 0);
+            return n === 1 ? "One frame" : `${n} frames`;
+          })()}
         </a>
       </div>
 

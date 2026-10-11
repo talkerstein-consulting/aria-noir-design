@@ -8,6 +8,7 @@ import { ShopSkeleton } from "@/components/shop/shop-skeleton";
 import { HomeCollections } from "@/components/home/home-sections";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/shop" },
   title: "Shop all | Aria Noir",
   description:
     "Every piece the house makes, priced. Six houses of eyewear cut from block acetate, and one garment knitted in Peru.",

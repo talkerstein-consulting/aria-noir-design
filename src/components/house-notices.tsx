@@ -44,7 +44,7 @@ if (typeof window !== "undefined") {
 }
 
 /** Rooms where an interruption costs more than it earns. */
-const QUIET_ROUTES = ["/checkout", "/sitemap", "/poster"];
+const QUIET_ROUTES = ["/checkout", "/shop/", "/bag", "/access", "/desk", "/sitemap", "/poster"];
 
 function read(key: string) {
   try {
@@ -70,14 +70,27 @@ export function HouseNotices() {
 
   useEffect(() => setConsent(read(CONSENT_KEY)), []);
 
-  /* The gift waits for the cookie answer, then five seconds. */
+  /* The gift waits for the cookie answer, then five seconds of the reader
+     doing nothing. Any press or key restarts the wait: it used to open on
+     a fixed timer and land on top of a colourway pick or an Add to bag,
+     swallowing the press. Product pages and the bag are quiet routes. */
   useEffect(() => {
     if (quiet || consent === undefined || consent === null) return;
     const g = read(GIFT_KEY);
     if (g === "joined") return;
     if (g && Date.now() - Number(g) < GIFT_QUIET_DAYS * 864e5) return;
-    const t = window.setTimeout(() => setGift(true), GIFT_DELAY_MS);
-    return () => window.clearTimeout(t);
+    let t = window.setTimeout(() => setGift(true), GIFT_DELAY_MS);
+    const restart = () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => setGift(true), GIFT_DELAY_MS);
+    };
+    window.addEventListener("pointerdown", restart, { passive: true });
+    window.addEventListener("keydown", restart);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("pointerdown", restart);
+      window.removeEventListener("keydown", restart);
+    };
   }, [consent, quiet]);
 
   const answer = (v: "all" | "necessary") => {

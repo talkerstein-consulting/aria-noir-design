@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
@@ -21,6 +22,10 @@ import { HomeIntake } from "@/components/home/home-gallery";
  * The scroll-driven film that lived here (`components/experience.tsx`) is
  * no longer mounted; it is kept until the new page is signed off.
  */
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default function Home() {
   return (
     <>

@@ -35,7 +35,8 @@ export function addressComplete(a: Address) {
     Boolean(a.locality.trim()) &&
     Boolean(a.country) &&
     !postalError(a.postalCode, a.country) &&
-    Boolean(a.postalCode.trim())
+    Boolean(a.postalCode.trim()) &&
+    regionOk(a)
   );
 }
 
@@ -61,6 +62,34 @@ export function addressLine(a: Partial<Address>) {
     .filter(Boolean)
     .join(", ");
 }
+
+/* Where the region decides tax (every Canadian province differs) and the
+   courier needs the code, it is a fixed list rather than free text. */
+const REGIONS: Record<string, [string, string][]> = {
+  CA: [
+    ["AB", "Alberta"], ["BC", "British Columbia"], ["MB", "Manitoba"], ["NB", "New Brunswick"],
+    ["NL", "Newfoundland and Labrador"], ["NS", "Nova Scotia"], ["NT", "Northwest Territories"],
+    ["NU", "Nunavut"], ["ON", "Ontario"], ["PE", "Prince Edward Island"], ["QC", "Quebec"],
+    ["SK", "Saskatchewan"], ["YT", "Yukon"],
+  ],
+  US: [
+    ["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"],
+    ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"], ["DC", "District of Columbia"],
+    ["FL", "Florida"], ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"],
+    ["IN", "Indiana"], ["IA", "Iowa"], ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"],
+    ["ME", "Maine"], ["MD", "Maryland"], ["MA", "Massachusetts"], ["MI", "Michigan"],
+    ["MN", "Minnesota"], ["MS", "Mississippi"], ["MO", "Missouri"], ["MT", "Montana"],
+    ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"], ["NJ", "New Jersey"],
+    ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"],
+    ["OH", "Ohio"], ["OK", "Oklahoma"], ["OR", "Oregon"], ["PA", "Pennsylvania"],
+    ["PR", "Puerto Rico"], ["RI", "Rhode Island"], ["SC", "South Carolina"], ["SD", "South Dakota"],
+    ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"], ["VT", "Vermont"], ["VA", "Virginia"],
+    ["WA", "Washington"], ["WV", "West Virginia"], ["WI", "Wisconsin"], ["WY", "Wyoming"],
+  ],
+};
+
+const regionOk = (a: Address) =>
+  !REGIONS[a.country] || REGIONS[a.country].some(([code]) => code === a.administrativeDistrictLevel1);
 
 const regionLabel = (country: string) =>
   country === "US"
@@ -156,13 +185,32 @@ export function AddressFields({
         </label>
         <label className="field">
           <span>{regionLabel(value.country)}</span>
-          <input
-            id={`${idPrefix}-region`}
-            autoComplete="address-level1"
-            value={value.administrativeDistrictLevel1}
-            disabled={disabled}
-            onChange={(e) => set("administrativeDistrictLevel1", e.target.value)}
-          />
+          {REGIONS[value.country] ? (
+            <select
+              id={`${idPrefix}-region`}
+              autoComplete="address-level1"
+              value={regionOk(value) ? value.administrativeDistrictLevel1 : ""}
+              disabled={disabled}
+              onChange={(e) => set("administrativeDistrictLevel1", e.target.value)}
+            >
+              <option value="" disabled>
+                Choose
+              </option>
+              {REGIONS[value.country].map(([code, name]) => (
+                <option key={code} value={code}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              id={`${idPrefix}-region`}
+              autoComplete="address-level1"
+              value={value.administrativeDistrictLevel1}
+              disabled={disabled}
+              onChange={(e) => set("administrativeDistrictLevel1", e.target.value)}
+            />
+          )}
         </label>
       </div>
 

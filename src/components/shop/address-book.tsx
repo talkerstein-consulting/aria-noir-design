@@ -121,6 +121,7 @@ export function AddressBook({
         { ...draft, label: label.trim() || TYPES.find((t) => t.value === type)!.label, addressType: type, isDefault },
         id,
       );
+      if (!saved?.id) throw new Error("The address could not be saved. Please try again.");
       const others = addresses
         .filter((a) => a.id !== saved.id)
         .map((a) => (saved.isDefault ? { ...a, isDefault: false } : a));

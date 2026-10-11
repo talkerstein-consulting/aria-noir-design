@@ -146,7 +146,8 @@
    weight, so it is still the object's own vocabulary and not a third
    style. It is not merely hover-coloured: hover is a state that leaves,
    and this one is where you ARE. */
-.cta-secondary[aria-current="page"] {
+.cta-secondary[aria-current="page"],
+.cta-secondary[aria-pressed="true"] {
   border-color: var(--fg-accent);
   color: var(--fg-accent);
 }

@@ -79,17 +79,19 @@ export function ConfirmedView() {
     );
   }
 
-  const ref = order.id.slice(-8).toUpperCase();
+  const ref = order.id.toUpperCase();
 
   return (
     <>
       <div className="stack stack--sm mb-16">
-        <p className="t-eyebrow">Confirmed · No. {ref}</p>
         <h1 className="t-display-lg">On the bench, {order.contact.firstName}.</h1>
         <p className="t-body t-body--lede mt-2 max-w-xl">
           The workshop has it. A receipt is on its way to {order.contact.email}, and a second
           note follows with the tracking number the day it ships.
         </p>
+        {/* Below the lede, not as an eyebrow: house.css hides any eyebrow
+            that opens a heading stack, and the number went with it. */}
+        <p className="t-caption mt-2">Order {ref}</p>
       </div>
 
       <div className="confirmed">
@@ -141,7 +143,7 @@ export function ConfirmedView() {
               <dd className="tabular-nums">{formatPrice(order.total)}</dd>
             </div>
           </dl>
-          <p className="t-caption mt-3">{order.payment}.</p>
+          <p className="t-caption mt-3">Paid with: {order.payment}</p>
         </div>
 
         <dl className="review-facts">

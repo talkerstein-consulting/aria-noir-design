@@ -31,6 +31,7 @@ export async function generateMetadata({
   return {
     title: `${policy.title} | Aria Noir`,
     description: `${policy.title}. Last updated ${policy.updated}.`,
+    alternates: { canonical: `/policies/${slug}` },
   };
 }
 

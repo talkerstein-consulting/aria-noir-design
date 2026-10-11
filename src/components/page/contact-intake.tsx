@@ -17,7 +17,7 @@ import { contact } from "@/lib/pages";
  * Every row is `field-row` / `field`, the site's one input treatment.
  * Everything pressable is the site's CTA object, and only that: the
  * choices on the first step are secondary (outlined), the chosen one
- * holds `aria-current` and goes gold the way the desk's rooms do; the way
+ * holds `aria-pressed` and goes gold the way the desk's rooms do; the way
  * on is the one main CTA on the screen, and Back is secondary beside it.
  * No third style, no arrows. The step that is not on screen is not in
  * the DOM at all, so Tab never lands in a hidden field and a screen
@@ -101,7 +101,7 @@ export function ContactIntake() {
               <CtaButton
                 key={s.label}
                 kind="secondary"
-                current={i === subject}
+                pressed={i === subject}
                 onClick={() => setSubject(i)}
               >
                 {s.label}

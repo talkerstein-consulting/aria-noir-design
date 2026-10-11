@@ -395,23 +395,21 @@ html.lenis {
    page has moved, the band takes the ink it is already lettered for and
    blocks what passes behind it. At rest it stays transparent: the top of
    the page is the title, and there is nothing to block yet. */
-/* 900, with the rest of the checkout's own rules — see the note over
-   `.checkout` in commerce.css. */
-@media (max-width: 899px) {
-  .site-nav[data-route="checkout"] {
-    transition:
-      color var(--dur-fast) var(--ease-out),
-      opacity 0.7s var(--ease-out),
-      background-color var(--dur-fast) var(--ease-out);
-  }
-  .site-nav[data-route="checkout"][data-scrolled="true"] {
-    background: var(--ink);
-  }
-  /* The solid lid IS the contrast there; the wash under it would only
-     put a soft edge below a hard one. */
-  .site-nav[data-route="checkout"][data-scrolled="true"]::before {
-    opacity: 0;
-  }
+/* Every width: on desktop the order summary and the steps scrolled under a
+   transparent band too. */
+.site-nav[data-route="checkout"] {
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    opacity 0.7s var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.site-nav[data-route="checkout"][data-scrolled="true"] {
+  background: var(--ink);
+}
+/* The solid lid IS the contrast there; the wash under it would only
+   put a soft edge below a hard one. */
+.site-nav[data-route="checkout"][data-scrolled="true"]::before {
+  opacity: 0;
 }
 
 /* The wordmark is an inline SVG painted with `currentColor`, so it follows

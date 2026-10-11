@@ -3,6 +3,7 @@ import { StoryPage } from "@/components/product/story-page";
 import * as arca from "@/lib/arca-i";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/arca-i" },
   title: "ARCA I | Aria Noir",
   description:
     "An architectural frame defined by hard lines, deep structure, and a quiet gold detail.",

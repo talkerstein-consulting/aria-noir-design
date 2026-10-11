@@ -122,11 +122,14 @@ export async function generateMetadata({
     return {
       title: `${garment.name} | Aria Noir`,
       description: `${garment.note} ${garment.colourways.length} colourways, ${garment.sizes.length} sizes.`,
+      alternates: { canonical: `/shop/${slug}` },
     };
   }
   return {
     title: `${house.name} | Aria Noir`,
     description: `${house.note} ${colorwayCount(house)} colourways, from ${priceOf(house)}.`,
+    /* One URL per house: the ?colourway= variants are the same page. */
+    alternates: { canonical: `/shop/${slug}` },
   };
 }
 
