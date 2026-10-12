@@ -13,6 +13,7 @@
  */
 
 import type { Approach } from "@/components/product/product-approach";
+import type { Lookbook } from "@/components/product/product-lookbook";
 import type {
   AriaNoir,
   Close,
@@ -231,4 +232,42 @@ export const close: Close = {
     `${C}/wide-great-ballroom.webp`,
     `${V}/tutti-frutti-sill.webp`,
   ],
+};
+
+/* ---- The lookbook ----
+   The page runs the lookbook's layout (see components/product/
+   product-lookbook.tsx). Plates lifted from
+   Lookbooks/MONARCA - Lookbook - Sep 18 2026.pdf, the cover left out for
+   the hero film. Where the shoot's own export survives (All Assets First
+   Run, in 224 Aria Noir - Complete) it replaces the PDF's re-encode.
+   Ordered establishing shots (the canal bridge, the lane, the ballroom,
+   the gallery), the people, then the detail (bridge, the frame on stone,
+   marble and the canal wall); uprights travel in pairs. */
+const L = "/images/monarca/lookbook";
+
+export const lookbook: Lookbook = {
+  intro: [
+    "In praise of shadow rather than light.",
+    "The shadow does more of the talking than the gold ever could.",
+  ],
+  rows: [
+    { src: `${L}/22.webp`, alt: "A canal bridge in the fog", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/23.webp`, alt: "Aria and Noir in a wet lane at night", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/04.webp`, alt: "Aria and Noir in the great ballroom", kind: "full", width: 2400, height: 1331 },
+    { src: `${L}/10.webp`, alt: "Aria and Noir in the vaulted gallery", kind: "full", width: 2400, height: 1331 },
+    { pair: [{ src: `${L}/03.webp`, alt: "Aria in silhouette at the blinds", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/05.webp`, alt: "Aria on the grand staircase", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/14.webp`, alt: "Aria and Noir along the canal", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/07.webp`, alt: "Noir on the grand staircase", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/08.webp`, alt: "Noir under a lit arch", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/16.webp`, alt: "Aria and Noir reflected in black water", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/11.webp`, alt: "Aria at the end of the corridor", kind: "portrait", width: 768, height: 1376 }, { src: `${L}/12.webp`, alt: "Noir by candlelight in the passage", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/15.webp`, alt: "Aria and Noir in the lamplit salon", kind: "inset", width: 1854, height: 1042 },
+    { pair: [{ src: `${L}/17.webp`, alt: "Noir in a lamplit alley", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/20.webp`, alt: "Noir in a lit doorway", kind: "portrait", width: 1340, height: 2400 }] },
+    { pair: [{ src: `${L}/21.webp`, alt: "Aria in the lane", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/24.webp`, alt: "Noir, close, at a tilt", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/13.webp`, alt: "Noir in the mirror", kind: "portrait", width: 1856, height: 2304 },
+    { src: `${L}/09.webp`, alt: "The bridge, close, by lantern light", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/02.webp`, alt: "MONARCA on wet stone by a lantern", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/06.webp`, alt: "MONARCA on marble, by candlelight", kind: "full", width: 2400, height: 1340 },
+    { pair: [{ src: `${L}/18.webp`, alt: "MONARCA on the canal wall", kind: "full", width: 2400, height: 1350 }, { src: `${L}/19.webp`, alt: "MONARCA in red on the canal wall", kind: "inset", width: 2048, height: 1152 }] },
+  ],
+  closing: "Ninety-seven percent shadow. The rest was never the point.",
 };
