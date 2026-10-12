@@ -39,9 +39,7 @@ export default function ShopAllPage() {
               under them share one left and right edge. The home page keeps
               its full-bleed tiles; this wrapper is Shop all's alone. */}
           <div className="section section--flush">
-            {/* Same phone overhang as the product grid (`-mx-[17px]` in
-                ShopAll), so the swipe row and the cards share an edge. */}
-            <div className="-mx-[17px] sm:mx-auto sm:max-w-7xl">
+            <div className="mx-auto max-w-7xl">
               <HomeCollections scroll />
             </div>
           </div>

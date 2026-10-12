@@ -34,7 +34,12 @@ export default function Home() {
       <main id="main" tabIndex={-1} className="relative bg-ink">
         <HomeHero />
         <HomeStatement />
-        <HomeCollections />
+        {/* In the site's column with gutters, as on Shop all. */}
+        <div className="section section--flush">
+          <div className="mx-auto max-w-7xl">
+            <HomeCollections />
+          </div>
+        </div>
         <HomeFeatured />
         <HomeFronts />
         <HomeTeaser />

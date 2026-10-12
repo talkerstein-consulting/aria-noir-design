@@ -523,7 +523,7 @@ export function ShopAll() {
           ref={gridRef}
           /* DITA's grid: four across, narrow gaps, light grey tiles; the
              highlight image takes the first 2x2. */
-          className="shop-grid -mx-[17px] mt-4 flex flex-wrap justify-center gap-1.5 sm:mx-0 sm:mt-8"
+          className="shop-grid mt-4 flex flex-wrap justify-center gap-1.5 sm:mt-8"
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {tiles.map((tile, i) =>

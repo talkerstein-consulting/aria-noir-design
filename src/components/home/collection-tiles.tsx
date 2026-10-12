@@ -43,10 +43,10 @@ export function CollectionTiles({
     <ul
       className={
         scroll
-          ? "tiles-scroll flex snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
+          ? "tiles-scroll flex gap-1.5 snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
           : single
             ? "grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-4"
-            : "grid grid-cols-2 lg:grid-cols-3"
+            : "grid grid-cols-2 gap-1.5 lg:grid-cols-3"
       }
     >
       {items.map((item) => (
