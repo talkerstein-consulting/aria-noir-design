@@ -35,14 +35,9 @@ export default function ShopAllPage() {
         <h1 className="sr-only">Shop all</h1>
         {/* Clear the fixed navbar. */}
         <div className="pt-16 sm:pt-[5.5rem]">
-          {/* Inside the catalogue's column, so the houses and the pieces
-              under them share one left and right edge. The home page keeps
-              its full-bleed tiles; this wrapper is Shop all's alone. */}
-          <div className="section section--flush">
-            <div className="mx-auto max-w-7xl">
-              <HomeCollections scroll />
-            </div>
-          </div>
+          {/* Full span, the same grid as the home page: one set of
+              collection tiles across the site. */}
+          <HomeCollections />
         </div>
         {/* Not a black rectangle. The boundary suspends on every cold
             entry, and what it hands over is the page's own shape; see
