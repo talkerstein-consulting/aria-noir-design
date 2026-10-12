@@ -22,6 +22,7 @@
  */
 
 import type { Approach } from "@/components/product/product-approach";
+import type { Lookbook } from "@/components/product/product-lookbook";
 import type {
   AriaNoir,
   Close,
@@ -249,4 +250,37 @@ export const close: Close = {
     `${C}/vibe-open-book-pressed-flower.webp`,
     `${V}/tutti-frutti-tall.webp`,
   ],
+};
+
+/* ---- The lookbook ----
+   The page runs the lookbook's layout (see components/product/
+   product-lookbook.tsx). Plates lifted from
+   Lookbooks/AHAVA - Lookbook - Sep 18 2026.pdf, the cover left out for the
+   hero film. Ordered establishing shots (the street, the window, the book, the corridor), the people, then the detail (bridge, temple, the frames on the table and sill); uprights travel in pairs. */
+const L = "/images/ahava/lookbook";
+
+export const lookbook: Lookbook = {
+  intro: [
+    "A room instead of a monument. Morning light, and the glasses doing the only loud thing in the frame.",
+  ],
+  rows: [
+    { src: `${L}/24.webp`, alt: "A Paris street in the morning", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/04.webp`, alt: "A curtain lifting at an open window", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/09.webp`, alt: "An open book on the sill", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/15.webp`, alt: "Aria and Noir at the end of the corridor", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/03.webp`, alt: "Noir in a doorway", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/05.webp`, alt: "Aria in a chair by the window", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/22.webp`, alt: "Aria in the empty room", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/07.webp`, alt: "Noir seated by the window", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/11.webp`, alt: "Aria by the window", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/14.webp`, alt: "Aria and Noir at the window", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/08.webp`, alt: "Noir, through the lens", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/13.webp`, alt: "Noir in the mirror", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/16.webp`, alt: "Aria on the rug, from above", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/12.webp`, alt: "Aria in the long gown", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/17.webp`, alt: "Noir in the mirror, full length", kind: "portrait", width: 1340, height: 2400 }] },
+    { pair: [{ src: `${L}/20.webp`, alt: "Noir in the apartment", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/21.webp`, alt: "Noir on the balcony", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/23.webp`, alt: "Aria by candlelight", kind: "portrait", width: 1340, height: 2400 },
+    { src: `${L}/02.webp`, alt: "The bridge, close, in morning light", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/10.webp`, alt: "The temple, close, at the hinge", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/06.webp`, alt: "AHAVA on a round table", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/18.webp`, alt: "AHAVA in rose on the table", kind: "full", width: 2400, height: 1350 }, { src: `${L}/19.webp`, alt: "AHAVA in black on the sill", kind: "full", width: 2400, height: 1350 }] },
+  ],
+  closing: "Still the quietest of the five. That was the point.",
 };

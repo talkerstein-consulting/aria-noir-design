@@ -144,6 +144,10 @@ body {
     font-size: var(--text-body-lg);
   }
 }
+/* Body size and measure, in the display serif: the lookbook's narrative. */
+.t-body--serif {
+  font-family: var(--font-display-stack);
+}
 .t-body--tight {
   max-width: var(--measure-tight);
 }

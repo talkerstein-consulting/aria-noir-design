@@ -530,3 +530,25 @@ html:has(.route-burn) .site-nav .nav-mark svg { visibility: hidden; }
   ::view-transition-old(.page),
   ::view-transition-new(.page) { animation: none; }
 }
+
+/* ── Pinhole (lookbook stories) ──
+   No pin: the sheet of ink lies over the counter's first screen and
+   scrolls with it, its hole opening by --hole (0..1, see InvertFade) out
+   past the corners as the counter reaches the top. */
+.pinhole {
+  position: relative;
+}
+.pinhole__sheet {
+  --hole: 0;
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  height: 100svh;
+  background: var(--ink);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent calc(var(--hole) * 75vmax), #000 calc(var(--hole) * 75vmax + 1px));
+  mask-image: radial-gradient(circle at 50% 50%, transparent calc(var(--hole) * 75vmax), #000 calc(var(--hole) * 75vmax + 1px));
+}
+.pinhole__sheet[data-open="true"] {
+  visibility: hidden;
+  pointer-events: none;
+}

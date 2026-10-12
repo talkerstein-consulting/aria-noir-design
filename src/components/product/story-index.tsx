@@ -29,8 +29,13 @@ export function StoryIndex({
 
   useEffect(() => {
     const first = chapters.map((c) => document.getElementById(c.id)).find((el): el is HTMLElement => !!el);
-    const onScroll = () =>
-      setShown(!!first && first.getBoundingClientRect().bottom < window.innerHeight * 0.5);
+    /* Out again once the counter is up: the pill would be a second "buy"
+       laid over the one the reader is looking at. */
+    const onScroll = () => {
+      const acquire = document.getElementById("acquire");
+      const atCounter = !!acquire && acquire.getBoundingClientRect().top < window.innerHeight * 0.6;
+      setShown(!!first && first.getBoundingClientRect().bottom < window.innerHeight * 0.5 && !atCounter);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

@@ -16,6 +16,7 @@
  */
 
 import type { Approach } from "@/components/product/product-approach";
+import type { Lookbook } from "@/components/product/product-lookbook";
 import type {
   AriaNoir,
   Close,
@@ -226,4 +227,38 @@ export const close: Close = {
     `${C}/wide-temple-ruins-golden-hour.webp`,
     `${V}/midnight-noir-03.webp`,
   ],
+};
+
+/* ---- The lookbook ----
+   The page runs the lookbook's layout (see components/product/
+   product-lookbook.tsx). Plates lifted from
+   Lookbooks/MATRIARCA - Lookbook - Sep 18 2026.pdf, the cover left out for the
+   hero film. Ordered establishing shots (the pyramids, the temple, the hall), the people, then the detail (bridge, hinge, the frame on stone); uprights travel in pairs. */
+const L = "/images/matriarca/lookbook";
+
+export const lookbook: Lookbook = {
+  intro: [
+    "Matriarca started with a shape, not a place. The bridge already looked like a temple gateway before anyone built a campaign around it.",
+  ],
+  rows: [
+    { src: `${L}/24.webp`, alt: "A lone figure before the pyramids", kind: "full", width: 2389, height: 1344 },
+    { src: `${L}/21.webp`, alt: "Temple ruins at golden hour", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/20.webp`, alt: "The hypostyle hall", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/04.webp`, alt: "A fallen head half buried in sand", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/10.webp`, alt: "Light through a window into a stone room", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/03.webp`, alt: "Aria, close, in MATRIARCA", kind: "inset", width: 2400, height: 1601 },
+    { pair: [{ src: `${L}/05.webp`, alt: "Aria in a temple doorway", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/07.webp`, alt: "Noir before the carved figures", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/14.webp`, alt: "Aria and Noir before the Sphinx", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/08.webp`, alt: "Noir at the temple wall", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/12.webp`, alt: "Noir in a carved doorway", kind: "portrait", width: 1340, height: 2400 }] },
+    { src: `${L}/11.webp`, alt: "Aria before the pyramids", kind: "inset", width: 2400, height: 1340 },
+    { pair: [{ src: `${L}/13.webp`, alt: "Aria under the obelisk at dusk", kind: "portrait", width: 928, height: 1152 }, { src: `${L}/16.webp`, alt: "Noir by candlelight", kind: "portrait", width: 928, height: 1152 }] },
+    { src: `${L}/15.webp`, alt: "Noir alone before the pyramid", kind: "inset", width: 1365, height: 768 },
+    { pair: [{ src: `${L}/19.webp`, alt: "Aria among the columns, through the lens", kind: "inset", width: 1376, height: 768 }, { src: `${L}/22.webp`, alt: "Noir among the columns, through the lens", kind: "inset", width: 1376, height: 768 }] },
+    { src: `${L}/02.webp`, alt: "The bridge, close, against the desert", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/09.webp`, alt: "The temple, close, at the hinge", kind: "full", width: 2400, height: 1350 },
+    { pair: [{ src: `${L}/17.webp`, alt: "MATRIARCA on warm rock", kind: "full", width: 2400, height: 1350 }, { src: `${L}/18.webp`, alt: "MATRIARCA on warm rock, front on", kind: "full", width: 2400, height: 1350 }] },
+    { src: `${L}/06.webp`, alt: "MATRIARCA on a stone block", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/23.webp`, alt: "MATRIARCA on cracked earth", kind: "full", width: 2400, height: 1350 },
+  ],
+  closing: "The object was always the monument.",
 };

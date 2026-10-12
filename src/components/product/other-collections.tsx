@@ -15,9 +15,16 @@ import type { House } from "@/lib/navigation";
  * A tile opens the other house's STORY where it has one, which is the rule
  * for meeting a house: the argument comes before the price.
  */
-export function OtherCollections({ current }: { current: House }) {
+export function OtherCollections({
+  current,
+  tone = "ink",
+}: {
+  current: House;
+  /** "paper" lays no ground and takes the InvertFade's white. */
+  tone?: "ink" | "paper";
+}) {
   return (
-    <section id="other-collections" className="on-ink section relative bg-ink">
+    <section id="other-collections" className={`section relative ${tone === "ink" ? "on-ink bg-ink" : "on-paper"}`}>
       <div className="mx-auto max-w-7xl">
         <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
           <h2 className="t-display-lg">Other Collections</h2>

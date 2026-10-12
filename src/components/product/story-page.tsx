@@ -32,6 +32,11 @@ import type {
 } from "@/lib/product";
 import { houseBySlug, priceOf } from "@/lib/shop";
 import { StoryIndex } from "@/components/product/story-index";
+import { InvertFade } from "@/components/product/invert-fade";
+import {
+  ProductLookbook,
+  type Lookbook,
+} from "@/components/product/product-lookbook";
 
 /**
  * The story page, as a page.
@@ -85,6 +90,12 @@ export type Story = {
   spec: Spec;
   worn: Worn;
   close: Close;
+  /**
+   * Set, and the page runs the lookbook's simple layout instead of the
+   * full story: hero film, the lookbook's words and plates, then the
+   * counter. See ProductLookbook.
+   */
+  lookbook?: Lookbook;
 };
 
 export function StoryPage({
@@ -145,6 +156,10 @@ export function StoryPage({
       />
       <main id="main" tabIndex={-1} className="relative">
         <ProductHero hero={story.hero} />
+        {story.lookbook ? (
+          <ProductLookbook lookbook={story.lookbook} />
+        ) : (
+          <>
         <ProductOpening structure={story.structure} buyHref={buyHref} buyLabel={house?.name} />
         {/* The acetate band that used to sit here is gone, with the
             turntable's swatches. A story page argues for the cut; the
@@ -184,6 +199,8 @@ export function StoryPage({
             restraint, never as a footnote. The names still inform the
             pictures. They just do not sign them. */}
         <ProductWorn worn={story.worn} buyHref={buyHref} />
+          </>
+        )}
         {/* The page ends at a counter rather than at a fourth link to
             one. See ProductBuy for what it is and is not.
 
@@ -194,6 +211,17 @@ export function StoryPage({
             and hands the reader to the storefront. That is the honest
             shape of "you cannot buy this here", and it is one branch
             rather than a second template. */}
+        {story.lookbook && house ? (
+          /* The lookbook stories end on paper: the counter, the other
+             houses and the footer share one ground that fades up from ink
+             as it rises, so the inversion fills the screen. The counter is
+             centred on the house's turntable. */
+          <InvertFade reveal={<ProductBuy close={story.close} house={house} centered />}>
+            <OtherCollections current={house} tone="paper" />
+            <SiteFooter tone="paper" />
+          </InvertFade>
+        ) : (
+          <>
         {house ? (
           <ProductBuy close={story.close} house={house} />
         ) : (
@@ -204,11 +232,12 @@ export function StoryPage({
             wants, and putting it before would be interrupting the offer
             to name five alternatives to it. See OtherCollections. */}
         {house ? <OtherCollections current={house} /> : null}
+          </>
+        )}
       </main>
-      {/* The counter is laid on ink, so the footer carries on in ink
-          rather than dropping the page back to paper under it. The closing
-          block turns the page to paper, so the footer follows it there. */}
-      <SiteFooter tone={house ? "ink" : "paper"} />
+      {story.lookbook && house ? null : (
+        <SiteFooter tone={house ? "ink" : "paper"} />
+      )}
     </>
   );
 }

@@ -20,6 +20,9 @@ import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { BagAdded } from "@/components/shop/bag-added";
 import { HoldToggle } from "@/components/shop/hold-toggle";
 import { RevealText } from "@/components/reveal";
+import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
+import { RotateHint } from "@/components/shop/rotate-hint";
+import { turntableStem } from "@/lib/turntable";
 
 /**
  * The page closes on the thing it has been arguing about, and the reader
@@ -54,9 +57,17 @@ import { RevealText } from "@/components/reveal";
 export function ProductBuy({
   close,
   house,
+  centered = false,
 }: {
   close: Close;
   house: House;
+  /**
+   * The lookbook stories' counter: one column, centred, the 72-frame
+   * turntable of the chosen acetate in place of the two photographs (the
+   * reader has just come down a lookbook of them), and no ground of its
+   * own, so it sits on the InvertFade's paper.
+   */
+  centered?: boolean;
 }) {
   /* Seeded with the same rule the picker seeds itself with, so the first
      photograph shown and the first swatch marked agree on the first
@@ -115,6 +126,9 @@ export function ProductBuy({
   );
   const acetate = swatchFor(chosen ?? house.colorwayNames[0]);
 
+  const stem = turntableStem(house.slug, chosen);
+  const spin = !!stem && SPIN.has(stem);
+
   const addToBag = () => {
     if (!chosen) return;
     add(house.slug, chosen, qty);
@@ -124,7 +138,7 @@ export function ProductBuy({
   return (
     <section
       id="acquire"
-      className="on-ink section relative bg-ink px-6 sm:px-10"
+      className={`relative px-6 sm:px-10 ${centered ? "pb-24 sm:pb-32" : "section on-ink bg-ink"}`}
     >
       <div className="mx-auto max-w-7xl">
         {/* The close, still the close. */}
@@ -148,6 +162,69 @@ export function ProductBuy({
         </div>
 
         {/* ---- the counter ---- */}
+        {centered ? (
+          <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+            {/* One screen: the frame, its name, the acetate, the bag.
+                The pinhole opens on this screen, so all of it is what the
+                hole uncovers. */}
+            <div className="flex h-svh w-full flex-col items-center justify-center pt-16">
+            <div className="relative aspect-square w-full max-w-[min(560px,46svh)]">
+              {stem ? (
+                <Image
+                  key={stem}
+                  src={`/images/fronts-cut/${stem}.webp`}
+                  alt=""
+                  aria-hidden
+                  fill
+                  sizes="560px"
+                  className="object-contain p-[8%] mix-blend-multiply"
+                  style={{ opacity: spin ? 0 : 1 }}
+                />
+              ) : null}
+              {spin && stem ? (
+                <SpinPlate key={stem} stem={stem} alt={`${house.name} in ${chosen}, turn to view`} />
+              ) : null}
+              {spin ? (
+                <div className="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-ink/25">
+                  <RotateHint className="w-8" />
+                  <span aria-hidden className="font-ui text-[11px] font-semibold leading-none tracking-[0.12em]">3D</span>
+                </div>
+              ) : null}
+            </div>
+
+            <h3 className="t-display-lg mt-4">{house.name}</h3>
+            <p className="buy-colourway mt-1">{chosen}</p>
+            <p className="buy-price mt-3 tabular-nums" aria-live="polite" aria-atomic="true">
+              {priceOf(house, chosen ?? undefined)}
+            </p>
+
+            <div className="mt-5 flex w-full max-w-md flex-col items-center">
+              <Suspense fallback={null}>
+                <ColourwayPicker house={house} onChoose={setChosen} />
+              </Suspense>
+              <div className="buy-row mt-6 w-full">
+                {available ? (
+                  <CtaButton className="flex-1" alt="Add again" swapped={inBag} onClick={addToBag}>
+                    Add to bag
+                  </CtaButton>
+                ) : (
+                  <button type="button" className="cta-main flex-1" disabled>
+                    Out of the workshop
+                  </button>
+                )}
+              </div>
+              <p className="t-caption mx-auto mt-4">
+                {available
+                  ? "Ships in 3–5 days. Free worldwide standard shipping."
+                  : "Made in runs. This colourway returns with the next one."}
+              </p>
+              {available ? null : (
+                <HoldToggle slug={house.slug} colorway={chosen} className="mt-6" />
+              )}
+            </div>
+            </div>
+          </div>
+        ) : (
         <div className="mt-20 grid grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-20">
           {/* the slots, re-shot by the picker */}
           <div className="flex flex-col gap-4 sm:gap-6">
@@ -234,6 +311,7 @@ export function ProductBuy({
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {added ? (
