@@ -256,7 +256,9 @@ export const close: Close = {
    The page runs the lookbook's layout (see components/product/
    product-lookbook.tsx). Plates lifted from
    Lookbooks/AHAVA - Lookbook - Sep 18 2026.pdf, the cover left out for the
-   hero film. Ordered establishing shots (the street, the window, the book, the corridor), the people, then the detail (bridge, temple, the frames on the table and sill); uprights travel in pairs. */
+   hero film. Where the shoot's own export survives (All Assets First
+   Run, in 224 Aria Noir - Complete) it replaces the PDF's re-encode.
+   Ordered establishing shots (the street, the window, the book, the corridor), the people, then the detail (bridge, temple, the frames on the table and sill); uprights travel in pairs. */
 const L = "/images/ahava/lookbook";
 
 export const lookbook: Lookbook = {
@@ -265,8 +267,8 @@ export const lookbook: Lookbook = {
   ],
   rows: [
     { src: `${L}/24.webp`, alt: "A Paris street in the morning", kind: "full", width: 2400, height: 1350 },
-    { src: `${L}/04.webp`, alt: "A curtain lifting at an open window", kind: "full", width: 2400, height: 1350 },
-    { src: `${L}/09.webp`, alt: "An open book on the sill", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/04.webp`, alt: "A curtain lifting at an open window", kind: "full", width: 2400, height: 1340 },
+    { src: `${L}/09.webp`, alt: "An open book on the sill", kind: "full", width: 2400, height: 1340 },
     { src: `${L}/15.webp`, alt: "Aria and Noir at the end of the corridor", kind: "full", width: 2400, height: 1350 },
     { pair: [{ src: `${L}/03.webp`, alt: "Noir in a doorway", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/05.webp`, alt: "Aria in a chair by the window", kind: "portrait", width: 1340, height: 2400 }] },
     { src: `${L}/22.webp`, alt: "Aria in the empty room", kind: "full", width: 2400, height: 1350 },
@@ -279,7 +281,7 @@ export const lookbook: Lookbook = {
     { src: `${L}/23.webp`, alt: "Aria by candlelight", kind: "portrait", width: 1340, height: 2400 },
     { src: `${L}/02.webp`, alt: "The bridge, close, in morning light", kind: "full", width: 2400, height: 1350 },
     { src: `${L}/10.webp`, alt: "The temple, close, at the hinge", kind: "full", width: 2400, height: 1350 },
-    { src: `${L}/06.webp`, alt: "AHAVA on a round table", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/06.webp`, alt: "AHAVA on a round table", kind: "full", width: 2400, height: 1340 },
     { pair: [{ src: `${L}/18.webp`, alt: "AHAVA in rose on the table", kind: "full", width: 2400, height: 1350 }, { src: `${L}/19.webp`, alt: "AHAVA in black on the sill", kind: "full", width: 2400, height: 1350 }] },
   ],
   closing: "Still the quietest of the five. That was the point.",
