@@ -219,7 +219,9 @@ export const close: Close = {
    The page runs the lookbook's layout (see components/product/
    product-lookbook.tsx): the PDF's words, its plates in its order and at
    its placements, its closing line. Plates were lifted from
-   Lookbooks/PATRIARCA - Lookbook - Sep 18 2026.pdf; the cover is left out
+   Lookbooks/PATRIARCA - Lookbook - Sep 18 2026.pdf, or from the shoot's own
+   export where it survives (All Assets First Run, in 224 Aria Noir -
+   Complete); the cover is left out
    because the hero film stands in for it. */
 const L = "/images/patriarca/lookbook";
 
@@ -236,18 +238,18 @@ export const lookbook: Lookbook = {
      shots, carries the people through the middle, and saves the detail
      (hinge, engraving, the two acetates on stone) for last. */
   rows: [
-    { src: `${L}/24.webp`, alt: "Ruins at golden hour", kind: "full", width: 2400, height: 1350 },
-    { src: `${L}/21.webp`, alt: "The basilica interior", kind: "full", width: 2400, height: 1350 },
-    { src: `${L}/04.webp`, alt: "A fallen statue among the ruins", kind: "full", width: 2400, height: 1350 },
-    { src: `${L}/10.webp`, alt: "Lattice shadows across a stone floor", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/24.webp`, alt: "Ruins at golden hour", kind: "full", width: 2400, height: 1340 },
+    { src: `${L}/21.webp`, alt: "The basilica interior", kind: "full", width: 2400, height: 1340 },
+    { src: `${L}/04.webp`, alt: "A fallen statue among the ruins", kind: "full", width: 2400, height: 1309 },
+    { src: `${L}/10.webp`, alt: "Lattice shadows across a stone floor", kind: "full", width: 2400, height: 1309 },
     { src: `${L}/03.webp`, alt: "Aria on the temple steps", kind: "inset", width: 2400, height: 1348 },
     { pair: [{ src: `${L}/05.webp`, alt: "Aria in a stone doorway", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/07.webp`, alt: "Noir on the stairs", kind: "portrait", width: 1340, height: 2400 }] },
-    { src: `${L}/06.webp`, alt: "Aria before the Colosseum", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/06.webp`, alt: "Aria before the Colosseum", kind: "full", width: 2400, height: 1340 },
     { pair: [{ src: `${L}/08.webp`, alt: "Noir before the Colosseum", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/12.webp`, alt: "Noir under an arch", kind: "portrait", width: 1340, height: 2400 }] },
     { src: `${L}/11.webp`, alt: "Noir in the colonnade", kind: "inset", width: 2400, height: 1340 },
-    { src: `${L}/13.webp`, alt: "Aria and Noir on the Roman steps", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/13.webp`, alt: "Aria and Noir on the Roman steps", kind: "full", width: 2400, height: 1340 },
     { pair: [{ src: `${L}/16.webp`, alt: "Aria, through the curve of the lens", kind: "portrait", width: 1340, height: 2400 }, { src: `${L}/20.webp`, alt: "Aria and Noir in the mirror", kind: "portrait", width: 928, height: 1152 }] },
-    { src: `${L}/14.webp`, alt: "Aria and Noir in a stone archway", kind: "full", width: 2400, height: 1350 },
+    { src: `${L}/14.webp`, alt: "Aria and Noir in a stone archway", kind: "full", width: 2400, height: 1348 },
     { src: `${L}/15.webp`, alt: "Aria in the amphitheatre", kind: "full", width: 2400, height: 1350 },
     { src: `${L}/19.webp`, alt: "Aria among the columns", kind: "inset", width: 1264, height: 843 },
     { src: `${L}/22.webp`, alt: "Noir among the columns", kind: "full", width: 2400, height: 1350 },
