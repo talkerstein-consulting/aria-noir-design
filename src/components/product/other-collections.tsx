@@ -10,8 +10,8 @@ import type { House } from "@/lib/navigation";
  * the edge onward, the same one the buy page has in `AlsoLike`.
  *
  * The same collection tiles as the home page and the buy page's The
- * Collection, on the same grid: full bleed, one column on a phone, four
- * across on a wide screen, each tile marking the colourway its cover shows.
+ * Collection, full bleed: a slider on a phone and tablet, all of them on
+ * one row on a wide screen, each tile marking the colourway its cover shows.
  * A tile opens the other house's STORY where it has one, which is the rule
  * for meeting a house: the argument comes before the price.
  */
@@ -33,7 +33,7 @@ export function OtherCollections({
 
       {/* Full bleed: the section's gutters given back. */}
       <div className="mt-10 -mx-[var(--gutter)] sm:-mx-[var(--gutter-wide)]">
-        <CollectionTiles items={collectionItems(current.slug)} single />
+        <CollectionTiles items={collectionItems(current.slug)} row />
       </div>
     </section>
   );

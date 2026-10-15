@@ -30,15 +30,19 @@ export type CollectionTile = {
  *  the two-column grid. From sm up it is the grid either way. */
 /** `single`: the product page's grid: one column on a phone, and the
  *  run's four across with hairline gaps on a wide screen. */
+/** `row`: the story pages' Other Collections: a side-scrolling slider
+ *  below lg, every tile on one row from lg up, however many there are. */
 export function CollectionTiles({
   items,
   scroll = false,
   single = false,
+  row = false,
   anchors = false,
 }: {
   items: CollectionTile[];
   scroll?: boolean;
   single?: boolean;
+  row?: boolean;
   /** Shop all: a tile scrolls to its own run further down the page
    *  (`#run-<slug>`, ShopAll's breaker) instead of leaving for the house. */
   anchors?: boolean;
@@ -46,7 +50,9 @@ export function CollectionTiles({
   return (
     <ul
       className={
-        scroll
+        row
+          ? "tiles-scroll flex gap-px snap-x snap-mandatory overflow-x-auto lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-visible"
+          : scroll
           ? "tiles-scroll flex gap-1.5 snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
           : single
             ? "grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-4"
@@ -54,7 +60,7 @@ export function CollectionTiles({
       }
     >
       {items.map((item) => (
-        <Tile key={item.slug} item={item} scroll={scroll} anchors={anchors} />
+        <Tile key={item.slug} item={item} scroll={scroll} row={row} anchors={anchors} />
       ))}
     </ul>
   );
@@ -63,10 +69,12 @@ export function CollectionTiles({
 function Tile({
   item,
   scroll = false,
+  row = false,
   anchors = false,
 }: {
   item: CollectionTile;
   scroll?: boolean;
+  row?: boolean;
   anchors?: boolean;
 }) {
   const [chosen, setChosen] = useState<string | null>(null);
@@ -117,7 +125,7 @@ function Tile({
        the hover. Static: the name. Hover: the name, the photograph zooms,
        the colour dots appear. */
     <li
-      className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""}`}
+      className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""} ${row ? "w-[78vw] shrink-0 snap-start sm:w-[42vw] lg:w-auto" : ""}`}
       onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
       <Link href={href} onClick={toRun} className="relative isolate block aspect-[5/4] w-full overflow-hidden">
         {/* The zoom lives on this wrapper so it never fights the
