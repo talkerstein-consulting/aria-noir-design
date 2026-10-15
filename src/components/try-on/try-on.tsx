@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { X } from "lucide-react";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import type { TryOnHouse } from "@/lib/try-on";
@@ -32,28 +32,42 @@ const ERRORS: Record<string, string> = {
 };
 const ERROR_FALLBACK = "The mirror did not open. Try again.";
 
-export function TryOn({
-  houses,
-  initialHouse,
-  initialColour,
-  fitCheck = false,
-}: {
-  houses: TryOnHouse[];
-  initialHouse?: string;
-  initialColour?: string;
-  /** Development only: no camera, the frame on the tracker's reference
-   *  head. See TryOnEngine.startFitCheck. */
-  fitCheck?: boolean;
-}) {
-  const startHouse = houses.find((h) => h.slug === initialHouse) ?? houses[0];
-  const startColour =
-    startHouse.colours.find((c) => c.name === initialColour) ?? startHouse.colours[0];
+/** Read in the browser, not on the server: a page that reads its query
+ *  string on the server is a function on Vercel, and this site is static
+ *  (see DEPLOY.md). Server render gets the defaults. */
+function param(name: string) {
+  return typeof window === "undefined"
+    ? null
+    : new URLSearchParams(window.location.search).get(name);
+}
+const noSubscribe = () => () => {};
+
+export function TryOn({ houses }: { houses: TryOnHouse[] }) {
+  /* `?fit=1`, development only: no camera, the frame on the tracker's
+     reference head. See TryOnEngine.startFitCheck. Read through
+     useSyncExternalStore so hydration sees the server's `false` first. */
+  const fitCheck = useSyncExternalStore(
+    noSubscribe,
+    () => process.env.NODE_ENV !== "production" && param("fit") === "1",
+    () => false,
+  );
+
+  /* `?house=<slug>&colour=<name>` opens on that frame. Nothing the idle
+     screen draws depends on it, so the server's default and the client's
+     choice render the same markup. */
+  const [houseSlug, setHouseSlug] = useState(() => {
+    const slug = param("house");
+    return (houses.find((h) => h.slug === slug) ?? houses[0]).slug;
+  });
+  const startHouse = houses.find((h) => h.slug === houseSlug) ?? houses[0];
+  const [colourName, setColourName] = useState(() => {
+    const name = param("colour");
+    return (startHouse.colours.find((c) => c.name === name) ?? startHouse.colours[0]).name;
+  });
 
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<TryOnStatus>("searching");
-  const [houseSlug, setHouseSlug] = useState(startHouse.slug);
-  const [colourName, setColourName] = useState(startColour.name);
   const [loadingFrame, setLoadingFrame] = useState(false);
   const [shot, setShot] = useState<string | null>(null);
 
@@ -62,7 +76,7 @@ export function TryOn({
   const threeRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<TryOnEngine | null>(null);
 
-  const house = houses.find((h) => h.slug === houseSlug) ?? startHouse;
+  const house = startHouse;
   const colour = house.colours.find((c) => c.name === colourName) ?? house.colours[0];
 
   /* ---- put the chosen frame on, whenever the choice changes ---- */

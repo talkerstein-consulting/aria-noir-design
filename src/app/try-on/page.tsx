@@ -14,26 +14,15 @@ export const metadata: Metadata = {
  *
  * `?house=<slug>&colour=<name>` opens on that frame, so a buy page can
  * link straight to its own colourway. The page writes the same params back
- * as the reader changes frames. See docs/TRY-ON.md for how it works.
+ * as the reader changes frames. Both are read in the browser, so the page
+ * prerenders as static. See docs/TRY-ON.md for how it works.
  */
-export default async function TryOnPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ house?: string; colour?: string; fit?: string }>;
-}) {
-  const { house, colour, fit } = await searchParams;
-  /* `?fit=1` swaps the camera for the reference head; see TryOn. */
-  const fitCheck = process.env.NODE_ENV !== "production" && fit === "1";
+export default function TryOnPage() {
   return (
     <>
       <SiteNav />
       <main id="main" tabIndex={-1} className="relative">
-        <TryOn
-          houses={tryOnHouses()}
-          initialHouse={house}
-          initialColour={colour}
-          fitCheck={fitCheck}
-        />
+        <TryOn houses={tryOnHouses()} />
       </main>
     </>
   );
