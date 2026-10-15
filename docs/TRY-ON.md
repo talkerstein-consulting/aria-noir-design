@@ -63,6 +63,11 @@ On load, each frame is:
   150mm wide. The houses are different widths and the mirror should show it.
 - **placed:** centred on X, front of the frame at the tracker's Z, and the
   pupil line set 42% up the height of the front.
+- **arms opened:** the models are unworn, arms parallel. Left that way the
+  back of every arm sat inside the occluder head and vanished as the head
+  turned. Behind the hinge, the arms are pushed out to an interior half-width
+  of 1.04 frame units (`splayArms`), the width at which no house's arm is
+  inside the head between hinge and ear. The front keeps its true size.
 - **re-dressed:**
   - lenses (mesh or material named `lens`; PATRIARCA's lens mesh is called
     `Acetate_frame.004`) keep their authored tint but lose transmission:

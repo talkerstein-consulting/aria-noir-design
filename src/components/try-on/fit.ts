@@ -255,6 +255,9 @@ export function fitFrame(source: THREE.Object3D, fit: TryOnFit = {}) {
     mesh.geometry.translate(-centreX, -pupilY, -box.max.z);
     mesh.geometry.scale(scale, scale, scale);
     mesh.geometry.translate(0, nudgeY, FRONT_Z + nudgeZ);
+  }
+  splayArms(meshes);
+  for (const mesh of meshes) {
     mesh.geometry.computeBoundingSphere();
     mesh.geometry.computeBoundingBox();
     mesh.frustumCulled = false;
@@ -262,6 +265,60 @@ export function fitFrame(source: THREE.Object3D, fit: TryOnFit = {}) {
   }
   group.userData.widthMm = inMetres ? width * 1000 : null;
   return group;
+}
+
+/**
+ * Open the arms to the width of a head.
+ *
+ * The house glbs are modelled unworn: arms parallel, about 116-122mm apart
+ * inside. On a face they flex outward over the temples. Left parallel, the
+ * back half of each arm sat INSIDE the occluder head (measured: every rear
+ * arm vertex, every house), so the occluder hid it and the arms came and
+ * went as the head turned.
+ *
+ * Upstream's convention is an interior width of 2 frame units, which puts
+ * the arms just outside the mean head. So the arms, and only the arms, are
+ * pushed out to that, ramped in behind the hinge so the front keeps its
+ * true size and the hinge does not tear.
+ */
+/* Measured against the occluder, arm by arm, house by house: at 1.04 no
+   part of any arm between the hinge and the ear is inside the head. At
+   1.0, 18% of MATRIARCA's still was; at 0.97, 30%. The cost is a little
+   flare seen face-on, which on a real face reads as arms over the head. */
+const ARM_INTERIOR_HALF = 1.04;
+/** Where the arms are measured: well behind the hinge blocks. */
+const ARM_MEASURE_Z = -0.6;
+/** The ramp: untouched in front of RAMP_START, fully open behind RAMP_END. */
+const RAMP_START = -0.06;
+const RAMP_END = -0.45;
+
+function splayArms(meshes: THREE.Mesh[]) {
+  /* The inside face of the arms: a low percentile of |x| back there, so a
+     stray vertex on a screw or an emblem does not decide it. */
+  const xs: number[] = [];
+  for (const mesh of meshes) {
+    const p = mesh.geometry.getAttribute("position");
+    for (let i = 0; i < p.count; i++) {
+      if (p.getZ(i) < ARM_MEASURE_Z && Math.abs(p.getX(i)) > 0.2) xs.push(Math.abs(p.getX(i)));
+    }
+  }
+  if (xs.length < 20) return;
+  xs.sort((a, b) => a - b);
+  const inner = xs[Math.floor(xs.length * 0.05)];
+  const spread = ARM_INTERIOR_HALF - inner;
+  if (spread <= 0) return;
+
+  for (const mesh of meshes) {
+    const p = mesh.geometry.getAttribute("position");
+    for (let i = 0; i < p.count; i++) {
+      const z = p.getZ(i);
+      if (z >= RAMP_START) continue;
+      const t = THREE.MathUtils.smoothstep(-z, -RAMP_START, -RAMP_END);
+      const x = p.getX(i);
+      p.setX(i, x + Math.sign(x) * spread * t);
+    }
+    p.needsUpdate = true;
+  }
 }
 
 /**
