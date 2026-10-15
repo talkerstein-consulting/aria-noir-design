@@ -44,7 +44,7 @@ if (typeof window !== "undefined") {
 }
 
 /** Rooms where an interruption costs more than it earns. */
-const QUIET_ROUTES = ["/checkout", "/shop/", "/bag", "/access", "/desk", "/sitemap", "/poster"];
+const QUIET_ROUTES = ["/checkout", "/shop/", "/bag", "/access", "/desk", "/sitemap", "/poster", "/try-on"];
 
 function read(key: string) {
   try {

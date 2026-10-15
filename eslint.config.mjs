@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored as-is from WebAR.rocks.face; see src/vendor/webar-rocks-face.
+    "src/vendor/**",
   ]),
 ]);
 
