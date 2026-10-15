@@ -2,10 +2,18 @@
 
 `/try-on` puts any house frame on the reader's face through their camera, in
 real time. Face tracking is [WebAR.rocks.face](https://github.com/WebAR-rocks/WebAR.rocks.face)
-(MIT), vendored in `src/vendor/webar-rocks-face`. The frames are the same
-glbs the turntables load (`public/models/houses`), exported from the Blender
-set in *Prior Models* by `scripts/export-models.mjs`. No new 3D assets were
-needed.
+(MIT), vendored in `src/vendor/webar-rocks-face`.
+
+The frames are the second-generation models from the showcase
+(`arianoir-showcase.pages.dev/models/gen2/`, plus `/models/ARCAI*.glb` for
+ARCA I), one per colourway, 29 in all. The originals are 9-17MB Blender
+exports; `scripts/build-try-on-models.mjs` compresses them into
+`public/models/try-on` at 0.6-1.2MB each (Draco, WebP textures, no
+simplification, names kept). `AHAVA-Black` is skipped: not a colourway the
+store sells. The four ARCA I files are numbered, and are mapped by their
+acetate colour: `ARCAI` K Black, `_2` Z White, `_3` Proceso Brown, `_4` 309
+Blue. Any colourway without a try-on model falls back to its turntable model
+in `public/models/houses`. The turntables themselves are unchanged.
 
 ## The pieces
 
@@ -56,9 +64,12 @@ On load, each frame is:
 - **placed:** centred on X, front of the frame at the tracker's Z, and the
   pupil line set 42% up the height of the front.
 - **re-dressed:**
-  - lenses (meshes named `lens`) keep their authored tint and alpha but lose
-    transmission: there is nothing behind them for the renderer to refract,
-    so a transmissive lens would draw as a dark disc over the eye.
+  - lenses (mesh or material named `lens`; PATRIARCA's lens mesh is called
+    `Acetate_frame.004`) keep their authored tint but lose transmission:
+    there is nothing behind them for the renderer to refract, so a
+    transmissive lens would draw as a dark disc over the eye. Their opacity
+    is `1 - transmission`, so the gen2 lenses (0.85) read nearly clear, as
+    in the photographs.
   - transmissive acetate is made solid, for the same reason.
   - the baked ARCA II patterns carry a flat grey emission that washes the
     pattern out on a face. It is replaced by the pattern itself, at 40%.

@@ -83,11 +83,11 @@ function flipWinding(geometry: THREE.BufferGeometry) {
   }
 }
 
-/** By the mesh's name. Every house names its lenses "Lens" or "lens";
- *  transmission is no guide, because the patterned acetates are
- *  authored transmissive too. */
-function isLens(mesh: THREE.Mesh) {
-  return /lens/i.test(mesh.name);
+/** By name, the mesh's or the material's: PATRIARCA's lens mesh is called
+ *  "Acetate_frame.004" and only its material says "Lens". Transmission is
+ *  no guide, because the patterned acetates are authored transmissive too. */
+function isLens(mesh: THREE.Mesh, material: THREE.Material) {
+  return /lens/i.test(mesh.name) || /lens/i.test(material.name);
 }
 
 /**
@@ -100,15 +100,23 @@ function isLens(mesh: THREE.Mesh) {
  * without asking the renderer for a background it does not have.
  */
 function lensMaterial(source: THREE.Material) {
-  const tint = (source as THREE.MeshStandardMaterial).color ?? new THREE.Color(0xffffff);
+  const physical = source as THREE.MeshPhysicalMaterial;
+  const tint = physical.color ?? new THREE.Color(0xffffff);
+  /* The second-generation lenses are authored opaque and carry their
+     see-through in transmission (0.85), so their alpha says nothing: what
+     the lens lets through is the transmission, and what it tints is the
+     rest. The photographs agree, the lenses read nearly clear on a face. */
+  const opacity = physical.transmission
+    ? THREE.MathUtils.clamp(1 - physical.transmission, 0.08, 0.6)
+    : Math.min(source.opacity ?? 0.5, 0.6);
   return new THREE.MeshPhysicalMaterial({
     color: tint,
     metalness: 0,
     roughness: 0.04,
     transparent: true,
-    opacity: Math.min(source.opacity ?? 0.5, 0.6),
+    opacity,
     depthWrite: false,
-    envMapIntensity: 1.4,
+    envMapIntensity: 0.8,
   });
 }
 
@@ -155,7 +163,7 @@ function withBranches(material: THREE.Material) {
 }
 
 function dress(mesh: THREE.Mesh, source: THREE.Material) {
-  if (isLens(mesh)) return withBranches(lensMaterial(source));
+  if (isLens(mesh, source)) return withBranches(lensMaterial(source));
   const material = source.clone();
   const physical = material as THREE.MeshPhysicalMaterial;
   physical.fog = false;
