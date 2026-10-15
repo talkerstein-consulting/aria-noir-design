@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CtaButton } from "@/components/cta-link";
 import { RevealPlate } from "@/components/reveal";
@@ -94,6 +94,18 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
       return;
     }
     add(line.slug, chosen.name, qty, size);
+  };
+
+  /* The same line into the same bag, then straight to the checkout. Same
+     size rule as the bag: no size, no line. */
+  const router = useRouter();
+  const buyNow = () => {
+    if (!size) {
+      setAsking(true);
+      return;
+    }
+    add(line.slug, chosen.name, qty, size);
+    router.push("/checkout");
   };
 
   /* ---- The run, and only the run ----
@@ -216,6 +228,11 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
                 </p>
               )}
             </div>
+            {chosen.available ? (
+              <CtaButton kind="secondary" className="mt-3 w-full" onClick={buyNow}>
+                Buy now
+              </CtaButton>
+            ) : null}
             {inBag ? (
               <p className="t-caption mt-3">
                 <Link href="/bag" className="link-quiet link-quiet--micro">

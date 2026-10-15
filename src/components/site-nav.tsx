@@ -167,6 +167,15 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
         return;
       }
 
+      /* The buy page opens on paper, and its band opens as paper too: a
+         white lid lettered in ink until the page has moved. From the first
+         scroll on, the probe below answers as it does everywhere. */
+      if (header.dataset.route === "buy" && window.scrollY <= 8) {
+        header.dataset.tone = "light";
+        header.dataset.scrolled = "false";
+        return;
+      }
+
       let light = document.documentElement.classList.contains("light-scroll");
 
       if (!light) {
@@ -230,10 +239,18 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
     <>
       <header
         ref={ref}
-        data-tone="dark"
-        /* The ground the band takes once scrolled is a per-page decision,
-           and the checkout is the page that needs it. */
-        data-route={pathname.startsWith("/checkout") ? "checkout" : undefined}
+        /* Light from the first paint on the buy page, so the band does not
+           flash white type before the probe has run. */
+        data-tone={/^\/shop\/[^/]+/.test(pathname) ? "light" : "dark"}
+        /* The ground the band takes is a per-page decision: the checkout
+           once scrolled, the buy page at rest. */
+        data-route={
+          pathname.startsWith("/checkout")
+            ? "checkout"
+            : /^\/shop\/[^/]+/.test(pathname)
+              ? "buy"
+              : undefined
+        }
         /* Read by the tone probe above, and the reason the header can sit
            OVER the overlay rather than under it. */
         data-menu={menuOpen ? "open" : "closed"}

@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { House } from "@/lib/navigation";
 import {
   COLLECTION_LABEL,
@@ -227,6 +227,15 @@ export function BuyHero({ house }: { house: House }) {
     if (!chosen) return;
     add(house.slug, chosen, qty);
     setAdded({ colorway: chosen, qty });
+  };
+
+  /* The same line into the same bag, then straight to the checkout. No
+     confirmation sheet: the reader has said what they want done next. */
+  const router = useRouter();
+  const buyNow = () => {
+    if (!chosen) return;
+    add(house.slug, chosen, qty);
+    router.push("/checkout");
   };
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -511,6 +520,12 @@ export function BuyHero({ house }: { house: House }) {
               )}
               </div>
             </div>
+
+            {available ? (
+              <CtaButton kind="secondary" className="mt-3 w-full" onClick={buyNow}>
+                Buy now
+              </CtaButton>
+            ) : null}
 
             <p className="t-caption mt-6">
               {available
