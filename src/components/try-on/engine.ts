@@ -4,8 +4,8 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import WEBARROCKSFACE from "@/vendor/webar-rocks-face/WebARRocksFace.module.js";
 import faceHelper from "@/vendor/webar-rocks-face/helpers/WebARRocksFaceThreeHelper.js";
-import type { TryOnFit } from "@/lib/try-on";
-import { disposeFrame, fitFrame, poseHolder } from "./fit";
+import type { TryOnFit, TryOnNudge } from "@/lib/try-on";
+import { disposeFrame, fitFrame, POSE_SCALE, poseHolder } from "./fit";
 
 /**
  * The live mirror. Browser only: the vendored helper reads `window` at
@@ -27,11 +27,13 @@ import { disposeFrame, fitFrame, poseHolder } from "./fit";
  *   faceParent      matrix written by the tracker every frame (head pose)
  *     faceFollower  offset written by the tracker (landmark centroid)
  *       holder      fixed: where a bridge sits on the mean face (fit.ts)
- *         frame     the house glb, baked into frame units (fit.ts)
+ *         nudge     the reader's own correction (setNudge), kept across frames
+ *           frame   the house glb, baked into frame units (fit.ts)
  *       occluder    depth-only head, so the frame goes behind it
  */
 
 export type TryOnStatus = "searching" | "tracking";
+
 
 /** WebAR.rocks error codes, plus our own load failure. */
 export type TryOnError =
@@ -67,6 +69,7 @@ export class TryOnEngine {
   private faceParent = new THREE.Object3D();
   private faceFollower = new THREE.Object3D();
   private holder = poseHolder();
+  private nudge = new THREE.Group();
   private loader: GLTFLoader;
   private draco: DRACOLoader;
   private frames = new Map<string, Promise<THREE.Group>>();
@@ -88,6 +91,7 @@ export class TryOnEngine {
       (window as unknown as { __tryOn?: TryOnEngine }).__tryOn = this;
     }
 
+    this.holder.add(this.nudge);
     this.faceFollower.add(this.holder);
     this.faceParent.add(this.faceFollower);
     this.scene.add(this.faceParent);
@@ -205,8 +209,19 @@ export class TryOnEngine {
       throw error;
     }
     if (this.destroyed || this.current !== url) return;
-    this.holder.clear();
-    this.holder.add(frame);
+    this.nudge.clear();
+    this.nudge.add(frame);
+  }
+
+  /**
+   * Move the frame on the face: the reader's own fit. Applied inside the
+   * holder, so "up" is up the face and "closer" is off the nose, whichever
+   * way the head is turned, and it carries over when the frame changes.
+   * Scale is about the bridge, where the frame sits.
+   */
+  setNudge({ y, z, scale }: TryOnNudge) {
+    this.nudge.position.set(0, y / POSE_SCALE, z / POSE_SCALE);
+    this.nudge.scale.setScalar(scale);
   }
 
   /** Call when the stage changes size or the phone turns. */

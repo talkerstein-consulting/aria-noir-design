@@ -45,9 +45,15 @@ in `public/models/houses`. The turntables themselves are unchanged.
    flipped with CSS so it reads as a mirror.
 5. **The occluder head** is drawn into the depth buffer only, so when you turn
    your head the far arm is hidden behind it, like a real one.
-6. **The arms bend in a few degrees and fade out near the ears** (a vertex and
-   fragment shader patch from upstream), so the tips never float in front of
-   an ear the occluder missed.
+6. **The arms bend a few degrees** (a vertex shader patch from upstream).
+   Upstream also fades them out near the ears; that is removed, because on a
+   face it read as the arms missing. The occluder hides what is behind the
+   head and ears.
+7. **The reader can nudge the fit.** "Fit" in the mirror opens height, depth
+   and size controls (about 1.5mm or 2% a press, within limits). They move a
+   `nudge` group inside the fixed placement, so they apply live, follow the
+   head, carry across frame changes, and are kept on the device
+   (`an:tryon-fit`) for the next visit. Reset clears them.
 
 ## Fitting the house glbs (`fit.ts`)
 

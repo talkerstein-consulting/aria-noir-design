@@ -21,6 +21,18 @@ export type TryOnFit = {
   scale?: number;
 };
 
+/**
+ * The reader's own fit, from the nudge controls in the mirror. y and z in
+ * face units (about a millimetre each): up the face, and off the nose
+ * toward the camera. scale multiplies the true size. One correction for
+ * the reader, not per house: what it corrects is their face, not a frame.
+ */
+export type TryOnNudge = { y: number; z: number; scale: number };
+export const NO_NUDGE: TryOnNudge = { y: 0, z: 0, scale: 1 };
+/** One press, and how far the presses may go. */
+export const NUDGE_STEP = { y: 1.5, z: 1.5, scale: 0.02 } as const;
+export const NUDGE_LIMIT = { y: 15, z: 15, scale: 0.15 } as const;
+
 export type TryOnColour = {
   name: string;
   swatch: string;

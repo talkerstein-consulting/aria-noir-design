@@ -3,9 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Camera, X } from "lucide-react";
+import { Camera, ChevronDown, ChevronUp, Minus, Plus, SlidersHorizontal, X } from "lucide-react";
 import { CtaButton, CtaLink } from "@/components/cta-link";
-import { TRY_ON_PREVIEW, type TryOnHouse } from "@/lib/try-on";
+import {
+  NO_NUDGE,
+  NUDGE_LIMIT,
+  NUDGE_STEP,
+  TRY_ON_PREVIEW,
+  type TryOnHouse,
+  type TryOnNudge,
+} from "@/lib/try-on";
 import { AppPreview } from "./app-preview";
 import type { TryOnEngine, TryOnError, TryOnStatus } from "./engine";
 
@@ -33,6 +40,28 @@ const ERRORS: Record<string, string> = {
   MODEL_FAILED: "The frame did not load. Choose it again.",
 };
 const ERROR_FALLBACK = "The mirror did not open. Try again.";
+
+/** The reader's fit, kept on this device for the next visit. */
+const NUDGE_KEY = "an:tryon-fit";
+function readNudge(): TryOnNudge {
+  if (typeof window === "undefined") return NO_NUDGE;
+  try {
+    const v = JSON.parse(window.localStorage.getItem(NUDGE_KEY) ?? "null");
+    if (v && [v.y, v.z, v.scale].every((n) => typeof n === "number")) return v;
+  } catch {
+    /* private mode, or something else wrote there */
+  }
+  return NO_NUDGE;
+}
+function writeNudge(n: TryOnNudge) {
+  try {
+    window.localStorage.setItem(NUDGE_KEY, JSON.stringify(n));
+  } catch {
+    /* the fit lasts the visit */
+  }
+}
+const clamp = (v: number, limit: number, around = 0) =>
+  Math.min(around + limit, Math.max(around - limit, v));
 
 /** Read in the browser, not on the server: a page that reads its query
  *  string on the server is a function on Vercel, and this site is static
@@ -78,6 +107,8 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
   const threeRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<TryOnEngine | null>(null);
   const finePrintRef = useRef<HTMLDialogElement>(null);
+  const [nudge, setNudge] = useState<TryOnNudge>(readNudge);
+  const [fitOpen, setFitOpen] = useState(false);
 
   const house = startHouse;
   const colour = house.colours.find((c) => c.name === colourName) ?? house.colours[0];
@@ -100,6 +131,22 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
       stale = true;
     };
   }, [phase, colour.model, house.fit]);
+
+  /* ---- the reader's fit: applied live, kept for next time ---- */
+  useEffect(() => {
+    if (phase !== "live") return;
+    engineRef.current?.setNudge(nudge);
+    writeNudge(nudge);
+  }, [phase, nudge]);
+
+  const move = (axis: keyof TryOnNudge, dir: 1 | -1) =>
+    setNudge((n) => ({
+      ...n,
+      [axis]:
+        axis === "scale"
+          ? Number(clamp(n.scale + dir * NUDGE_STEP.scale, NUDGE_LIMIT.scale, 1).toFixed(2))
+          : clamp(n[axis] + dir * NUDGE_STEP[axis], NUDGE_LIMIT[axis]),
+    }));
 
   /* ---- keep the URL on the frame being worn, so it can be sent ---- */
   useEffect(() => {
@@ -284,6 +331,57 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
             )}
           </div>
 
+          {/* ---- the fit ----
+              The tracker places every frame on a mean face; a real face is
+              not one. Three corrections, each a millimetre or two a press:
+              height on the nose, distance from the face, size. */}
+          <button
+            type="button"
+            onClick={() => setFitOpen((o) => !o)}
+            aria-expanded={fitOpen}
+            aria-controls="try-on-fit"
+            className={`absolute left-4 top-24 flex h-11 items-center gap-2 px-4 text-[var(--fg-primary)] backdrop-blur transition-colors sm:left-8 ${
+              fitOpen ? "bg-white/20" : "bg-black/50 hover:bg-black/80"
+            }`}
+          >
+            <SlidersHorizontal size={16} strokeWidth={1.5} aria-hidden />
+            <span className="t-label text-[var(--fg-primary)]">Fit</span>
+          </button>
+          {fitOpen && (
+            <div
+              id="try-on-fit"
+              /* A row across the top on a phone, where a column would sit
+                 over the face; a column down the left on anything wider. */
+              className="absolute inset-x-4 top-[8.25rem] flex items-end justify-between gap-2 bg-black/70 px-3 py-3 backdrop-blur sm:inset-x-auto sm:left-8 sm:w-44 sm:flex-col sm:items-stretch sm:gap-3 sm:p-4"
+              role="group"
+              aria-label="Fit"
+            >
+              <FitRow
+                label="Height"
+                less={{ label: "Lower", icon: <ChevronDown size={16} strokeWidth={1.5} />, on: () => move("y", -1), off: nudge.y <= -NUDGE_LIMIT.y }}
+                more={{ label: "Higher", icon: <ChevronUp size={16} strokeWidth={1.5} />, on: () => move("y", 1), off: nudge.y >= NUDGE_LIMIT.y }}
+              />
+              <FitRow
+                label="Depth"
+                less={{ label: "Closer to the face", icon: <Minus size={16} strokeWidth={1.5} />, on: () => move("z", -1), off: nudge.z <= -NUDGE_LIMIT.z }}
+                more={{ label: "Further from the face", icon: <Plus size={16} strokeWidth={1.5} />, on: () => move("z", 1), off: nudge.z >= NUDGE_LIMIT.z }}
+              />
+              <FitRow
+                label="Size"
+                less={{ label: "Smaller", icon: <Minus size={16} strokeWidth={1.5} />, on: () => move("scale", -1), off: nudge.scale <= 1 - NUDGE_LIMIT.scale }}
+                more={{ label: "Larger", icon: <Plus size={16} strokeWidth={1.5} />, on: () => move("scale", 1), off: nudge.scale >= 1 + NUDGE_LIMIT.scale }}
+              />
+              <button
+                type="button"
+                onClick={() => setNudge(NO_NUDGE)}
+                disabled={nudge.y === 0 && nudge.z === 0 && nudge.scale === 1}
+                className="t-label pb-2 text-[var(--fg-secondary)] underline underline-offset-2 hover:text-[var(--fg-primary)] disabled:no-underline disabled:opacity-40 sm:w-full sm:pb-0 sm:pt-1 sm:text-left"
+              >
+                Reset
+              </button>
+            </div>
+          )}
+
           <button
             type="button"
             onClick={close}
@@ -454,5 +552,31 @@ function FinePrint({ ref }: { ref: React.Ref<HTMLDialogElement> }) {
         </div>
       </div>
     </dialog>
+  );
+}
+
+type FitStep = { label: string; icon: React.ReactNode; on: () => void; off: boolean };
+
+/** One correction: its name, and a press each way. */
+function FitRow({ label, less, more }: { label: string; less: FitStep; more: FitStep }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:justify-between sm:gap-3">
+      <span className="t-label text-[var(--fg-secondary)]">{label}</span>
+      <div className="flex gap-1">
+        {[less, more].map((step) => (
+          <button
+            key={step.label}
+            type="button"
+            onClick={step.on}
+            disabled={step.off}
+            aria-label={step.label}
+            title={step.label}
+            className="grid size-9 place-items-center border border-white/25 text-[var(--fg-primary)] transition-colors hover:border-white/70 disabled:opacity-30"
+          >
+            {step.icon}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

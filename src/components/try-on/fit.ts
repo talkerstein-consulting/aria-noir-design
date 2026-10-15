@@ -25,7 +25,7 @@ import type { TryOnFit } from "@/lib/try-on";
  *
  * Rather than re-export thirty files to a second convention, the
  * conversion happens here, on load, and it is BAKED into the geometry: the
- * arm bending and ear fade below are vertex-shader effects that read the
+ * arm bend below is a vertex-shader effect that reads the
  * raw `position` attribute, so the frame's own vertices have to be in the
  * tracker's space, not just its node transform.
  */
@@ -45,10 +45,8 @@ const FRONT_Z = 0.18;
  *  deeper at the brow, so a touch higher. */
 const PUPIL_FRACTION = 0.42;
 
-/** Arm bending and ear fading, upstream's defaults, in frame units. */
+/** Arm bending, upstream's default, in frame units. */
 const BRANCH = {
-  fadingZ: -0.9,
-  fadingTransition: 0.6,
   bendingAngle: (5 * Math.PI) / 180,
   bendingZ: 0,
 };
@@ -121,42 +119,32 @@ function lensMaterial(source: THREE.Material) {
 }
 
 /**
- * Upstream's arm treatment (WebARRocksMirror.tweak_material), ported:
- * behind `bendingZ` the arms bend in toward the head by a few degrees, and
- * past `fadingZ` they fade out, so the tip never shows floating in front
- * of an ear the occluder did not quite cover.
+ * Upstream's arm bend (WebARRocksMirror.tweak_material), ported: behind
+ * `bendingZ` the arms bend a few degrees, as they do over a head.
+ *
+ * Upstream also FADES the arms out past the ear. That is gone: on a face
+ * it read as the arms missing, and it is not needed. With the arms opened
+ * to clear the head (splayArms), the occluder already hides what is behind
+ * the head and the ears, and everything in front of them is meant to show.
  *
  * Upstream applies it to materials named "frame". The house's materials
  * are named whatever Blender called them, so here it goes on everything:
- * the front of the frame is in front of Z = 0, where both effects are zero.
+ * the front of the frame is in front of Z = 0, where the bend is zero.
  */
 function withBranches(material: THREE.Material) {
   material.onBeforeCompile = (shader) => {
-    shader.uniforms.uBranchFading = {
-      value: new THREE.Vector2(BRANCH.fadingZ, BRANCH.fadingTransition),
-    };
     shader.uniforms.uBranchBendingAngle = { value: BRANCH.bendingAngle };
     shader.uniforms.uBranchBendingZ = { value: BRANCH.bendingZ };
 
     shader.vertexShader =
-      "uniform float uBranchBendingAngle, uBranchBendingZ;\nvarying float vPosZ;\n" +
-      shader.vertexShader
-        .replace(
-          "#include <begin_vertex>",
-          `#include <begin_vertex>
-          float zBranch = max(0.0, uBranchBendingZ - position.z);
-          float bendBranchDx = tan(uBranchBendingAngle) * zBranch;
-          transformed.x += sign(transformed.x) * bendBranchDx;
-          transformed.z *= (1.0 - bendBranchDx);`,
-        )
-        .replace("#include <fog_vertex>", "#include <fog_vertex>\nvPosZ = position.z;");
-
-    shader.fragmentShader =
-      "uniform vec2 uBranchFading;\nvarying float vPosZ;\n" +
-      shader.fragmentShader.replace(
-        "#include <dithering_fragment>",
-        `#include <dithering_fragment>
-        gl_FragColor *= smoothstep(uBranchFading.x - uBranchFading.y * 0.5, uBranchFading.x + uBranchFading.y * 0.5, vPosZ);`,
+      "uniform float uBranchBendingAngle, uBranchBendingZ;\n" +
+      shader.vertexShader.replace(
+        "#include <begin_vertex>",
+        `#include <begin_vertex>
+        float zBranch = max(0.0, uBranchBendingZ - position.z);
+        float bendBranchDx = tan(uBranchBendingAngle) * zBranch;
+        transformed.x += sign(transformed.x) * bendBranchDx;
+        transformed.z *= (1.0 - bendBranchDx);`,
       );
   };
   return material;
