@@ -26,6 +26,17 @@ const nextConfig: NextConfig = {
   },
   /* `/eyewear` was the frames index; it is gone, and the collections page
      is where every link to it now points. Old bookmarks follow. */
+  /* The camera, for this origin only: the try-on at /try-on is the one
+     thing that asks for it, and no embedded third party ever may. A
+     response header is routing, not a function, so the site stays static. */
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "Permissions-Policy", value: "camera=(self)" }],
+      },
+    ];
+  },
   async redirects() {
     return [{ source: "/eyewear", destination: "/collections", permanent: true }];
   },

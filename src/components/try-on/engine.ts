@@ -4,8 +4,10 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import WEBARROCKSFACE from "@/vendor/webar-rocks-face/WebARRocksFace.module.js";
 import faceHelper from "@/vendor/webar-rocks-face/helpers/WebARRocksFaceThreeHelper.js";
+import { FACE_POINTS } from "@/vendor/webar-rocks-face/face-points";
 import type { TryOnFit, TryOnNudge } from "@/lib/try-on";
 import { disposeFrame, fitFrame, POSE_SCALE, poseHolder } from "./fit";
+import { headProfile, hugArms, type HeadProfile } from "./hug";
 
 /**
  * The live mirror. Browser only: the vendored helper reads `window` at
@@ -70,6 +72,8 @@ export class TryOnEngine {
   private faceFollower = new THREE.Object3D();
   private holder = poseHolder();
   private nudge = new THREE.Group();
+  /** The occluder's shape, for laying the arms against it (hug.ts). */
+  private head: HeadProfile | null = null;
   private loader: GLTFLoader;
   private draco: DRACOLoader;
   private frames = new Map<string, Promise<THREE.Group>>();
@@ -111,6 +115,8 @@ export class TryOnEngine {
           maxFacesDetected: 1,
           scanSettings: { threshold: 0.8 },
           solvePnPImgPointsLabels: PNP_LABELS,
+          /* Upstream's recalibrated mean face; see face-points.ts. */
+          solvePnPObjPointsPositions: FACE_POINTS,
           callbackReady: (err) => (err ? reject(err) : resolve()),
           callbackTrack: (state) => this.track(state.isDetected),
         },
@@ -127,7 +133,7 @@ export class TryOnEngine {
     if (this.destroyed) return;
 
     const occluder = await this.loader.loadAsync("/try-on/occluder.glb");
-    this.faceFollower.add(faceHelper.create_occluderMesh(occluder.scene, false));
+    this.addHead(faceHelper.create_occluderMesh(occluder.scene, false));
     faceHelper.set_faceFollower(this.faceParent, this.faceFollower, 0);
 
     this.loop();
@@ -145,7 +151,7 @@ export class TryOnEngine {
     const occluder = await this.loader.loadAsync("/try-on/occluder.glb");
     /* Opaque on purpose: a see-through head is drawn after the frame and
        washes over it, which reads as a colour problem that is not there. */
-    this.faceFollower.add(faceHelper.create_occluderMesh(occluder.scene, true));
+    this.addHead(faceHelper.create_occluderMesh(occluder.scene, true));
     this.camera.position.set(0, 20, 520);
     this.camera.lookAt(0, 20, 0);
     this.status = "tracking";
@@ -211,6 +217,22 @@ export class TryOnEngine {
     if (this.destroyed || this.current !== url) return;
     this.nudge.clear();
     this.nudge.add(frame);
+    this.hug();
+  }
+
+  private addHead(occluder: THREE.Mesh) {
+    this.faceFollower.add(occluder);
+    this.head = headProfile(occluder.geometry);
+    this.hug();
+  }
+
+  /** Lay the worn frame's arms on the head, for where it sits right now. */
+  private hug() {
+    const frame = this.nudge.children[0];
+    if (!frame || !this.head) return;
+    this.holder.updateMatrix();
+    this.nudge.updateMatrix();
+    hugArms(frame, this.holder.matrix.clone().multiply(this.nudge.matrix), this.head);
   }
 
   /**
@@ -220,6 +242,8 @@ export class TryOnEngine {
    */
   setNudge({ y, z }: TryOnNudge) {
     this.nudge.position.set(0, y / POSE_SCALE, z / POSE_SCALE);
+    /* A frame moved up or off the face meets the head somewhere else. */
+    this.hug();
   }
 
   /** Call when the stage changes size or the phone turns. */
@@ -252,6 +276,15 @@ export class TryOnEngine {
   async destroy() {
     this.destroyed = true;
     cancelAnimationFrame(this.raf);
+    /* Stop the camera ourselves, track by track, before the library tears
+       down: its destroy() pauses the stream, and the light by the lens
+       should go out the moment the mirror closes, whatever it does. */
+    try {
+      const stream = faceHelper.get_videoElement()?.srcObject;
+      if (stream instanceof MediaStream) stream.getTracks().forEach((t) => t.stop());
+    } catch {
+      /* never opened, or already gone */
+    }
     try {
       await WEBARROCKSFACE.destroy();
     } catch {

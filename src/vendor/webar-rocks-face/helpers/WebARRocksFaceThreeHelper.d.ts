@@ -9,6 +9,7 @@ type InitSpec = {
   maxFacesDetected?: number;
   scanSettings?: { threshold?: number };
   solvePnPImgPointsLabels?: string[];
+  solvePnPObjPointsPositions?: Record<string, [number, number, number]>;
   isKeepRunningOnWinFocusLost?: boolean;
   videoSettings?: Record<string, unknown>;
   callbackReady?: (err: string | false | null, spec: unknown) => void;
@@ -32,5 +33,6 @@ declare const WebARRocksFaceThreeHelper: {
   ): void;
   resize(): void;
   reset_landmarksStabilizers(): void;
+  get_videoElement(): HTMLVideoElement | null;
 };
 export default WebARRocksFaceThreeHelper;

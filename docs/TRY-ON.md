@@ -45,10 +45,9 @@ in `public/models/houses`. The turntables themselves are unchanged.
    flipped with CSS so it reads as a mirror.
 5. **The occluder head** is drawn into the depth buffer only, so when you turn
    your head the far arm is hidden behind it, like a real one.
-6. **The arms bend a few degrees** (a vertex shader patch from upstream).
-   Upstream also fades them out near the ears; that is removed, because on a
-   face it read as the arms missing. The occluder hides what is behind the
-   head and ears.
+6. **The arms stay straight.** Upstream bends them 5 degrees and fades them
+   past the ear; both are removed (the bend stood them off the head, the
+   fade read as missing arms). They are turned at the hinge instead (below).
 7. **The reader can nudge the fit.** "Fit" in the mirror opens height and
    depth controls (about 1.5mm a press, within 15mm). There is no size
    control: frames are true to size. They move a
@@ -70,11 +69,12 @@ On load, each frame is:
   150mm wide. The houses are different widths and the mirror should show it.
 - **placed:** centred on X, front of the frame at the tracker's Z, and the
   pupil line set 42% up the height of the front.
-- **arms opened:** the models are unworn, arms parallel. Left that way the
-  back of every arm sat inside the occluder head and vanished as the head
-  turned. Behind the hinge, the arms are pushed out to an interior half-width
-  of 1.04 frame units (`splayArms`), the width at which no house's arm is
-  inside the head between hinge and ear. The front keeps its true size.
+- **arms turned to the head** (`hug.ts`, in the engine, re-run on every
+  frame change and nudge): the models are unworn, arms parallel, and a
+  temple is a straight bar. Each arm is turned rigidly about its hinge by
+  the smallest angle that keeps it 1.5 units off the occluder head in front
+  of the ear, so it rests on the head at one point and stays straight. No
+  bend, no fade.
 - **re-dressed:**
   - lenses (mesh or material named `lens`; PATRIARCA's lens mesh is called
     `Acetate_frame.004`) keep their authored tint but lose transmission:
@@ -114,6 +114,30 @@ the top of `fit.ts`.
   WebGL. Older phones run it, at a lower frame rate.
 - The video never leaves the device. Nothing is uploaded; capture makes a
   JPEG in the browser and saves it locally.
+
+## Upstream, and what was taken from it
+
+WebAR.rocks.face at commit `819cdba` (its latest), v1.13.1. Only the ES
+module build, the one glasses network (`NN_GLASSES_9`), the two helpers the
+glasses path imports, the head occluder and the LICENSE. Nothing from
+`/libs`. Where upstream's main helpers differ from the React demo's copies
+we vendored, the newer data is ported, not the files (they need a global
+three.js r136): the recalibrated mean-face points (`face-points.ts`) and the
+glasses placement (`poseHolder`: scale 78, bridge at y 40, tilt -0.3).
+
+## Camera, privacy, headers
+
+- The camera is requested only on "Open the camera", never on load.
+- Nothing leaves the device: no frame, canvas or landmark is sent anywhere;
+  the only requests are the page's own static files.
+- On close, and whenever the page is hidden (another tab, app switch, lock),
+  the mirror closes and every camera track is stopped (`track.stop()`).
+- No WebGL, no camera, or permission refused: a one-line reason, and the
+  photographic preview stays as the fallback.
+- `Permissions-Policy: camera=(self)` on every route (`next.config.ts`). The
+  site has no CSP; if one is added, the try-on needs `'self'` for scripts and
+  connect, and `blob:` / `data:` for images. No `'unsafe-eval'`.
+- The AR code is a dynamic import, client-only, fetched on the click.
 
 ## Fine print and legal
 

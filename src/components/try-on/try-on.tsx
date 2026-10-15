@@ -41,6 +41,15 @@ const ERRORS: Record<string, string> = {
 };
 const ERROR_FALLBACK = "The mirror did not open. Try again.";
 
+function hasWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 /** The reader's fit, kept on this device for the next visit. */
 const NUDGE_KEY = "an:tryon-fit";
 function readNudge(): TryOnNudge {
@@ -174,6 +183,13 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
       setPhase("failed");
       return;
     }
+    /* No WebGL, no mirror: say so before the browser asks for a camera
+       the page could not use. */
+    if (!hasWebGL()) {
+      setError(ERRORS.GL_INCOMPATIBLE);
+      setPhase("failed");
+      return;
+    }
     setError(null);
     setPhase("opening");
     try {
@@ -202,6 +218,22 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
     setStatus("searching");
     setPhase("idle");
   }, []);
+
+  /* ---- the camera goes off when the page is hidden ----
+     Another tab, the app switcher, a locked phone: the stream is stopped,
+     not paused, and the reader opens it again on return. */
+  useEffect(() => {
+    if (phase !== "live" && phase !== "opening") return;
+    const onHide = () => {
+      if (document.visibilityState === "hidden") void close();
+    };
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", onHide);
+    return () => {
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", onHide);
+    };
+  }, [phase, close]);
 
   const capture = useCallback(() => {
     const engine = engineRef.current;

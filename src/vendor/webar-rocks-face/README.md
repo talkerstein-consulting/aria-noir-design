@@ -17,6 +17,14 @@ commit `819cdbad4e87a43635d5f9724e30f277a7e7964d`, from the ES-module build in
 The `.d.ts` files beside them are ours, and only type what
 `components/try-on/engine.ts` calls.
 
+`face-points.ts` is ported, not copied: the mean-face landmark table from the
+MAIN `helpers/WebARRocksFaceThreeHelper.js`, which upstream recalibrated
+after the React demo's copy was made. The main helpers themselves can't be
+used here: they create their own renderer from a global three.js r136. The
+glasses placement from the main `helpers/WebARRocksMirror.js` (scale 78,
+bridge at y 40, tilt -0.3) is likewise ported, into `poseHolder` in
+`components/try-on/fit.ts`.
+
 Upstream's `WebARRocksMirror.js` is NOT vendored. It loads an HDR through
 `RGBELoader`, which three r185 has replaced, and it assumes every arm
 material is named `frame`. The few lines of it the try-on needs are ported

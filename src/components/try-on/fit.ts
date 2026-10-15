@@ -24,17 +24,20 @@ import type { TryOnFit } from "@/lib/try-on";
  * differs is scale, the pupil line, and the node rotations.
  *
  * Rather than re-export thirty files to a second convention, the
- * conversion happens here, on load, and it is BAKED into the geometry: the
- * arm bend below is a vertex-shader effect that reads the
- * raw `position` attribute, so the frame's own vertices have to be in the
- * tracker's space, not just its node transform.
+ * conversion happens here, on load, and it is BAKED into the geometry:
+ * hug.ts moves the arms vertex by vertex, so the frame's own vertices have
+ * to be in the tracker's space, not just its node transform.
  */
 
-/** dev/face.obj is 154 units between the ear landmarks. An adult head is
- *  about 145mm there, so one face unit is a little under a millimetre. */
-const FACE_UNITS_PER_MM = 154 / 145;
-/** The fixed scale upstream's demo hangs every frame at. */
-export const POSE_SCALE = 82;
+/** dev/face.obj puts the eye centres 67.4 units apart; the adult mean
+ *  interpupillary distance is about 63mm, so one face unit is a little
+ *  under a millimetre. Measured at the eyes rather than the ears: upstream
+ *  moved its ear landmarks (+-77 to +-70) when it recalibrated, the eyes
+ *  are where a frame is judged, and an IPD is a figure people know. */
+const FACE_UNITS_PER_MM = 67.4 / 63;
+/** The fixed scale upstream's main glasses helper hangs every frame at
+ *  (helpers/WebARRocksMirror.js; the React demo's older copy said 82). */
+export const POSE_SCALE = 78;
 /** Metres to the frame's own units, so that a 140mm frame is 140mm on a
  *  face. True to size is the point: the six houses are not one width. */
 const UNITS_PER_METRE = (1000 * FACE_UNITS_PER_MM) / POSE_SCALE;
@@ -44,12 +47,6 @@ const FRONT_Z = 0.18;
  *  edge. Upstream's reference frame puts it at 37%; the house's fronts are
  *  deeper at the brow, so a touch higher. */
 const PUPIL_FRACTION = 0.42;
-
-/** Arm bending, upstream's default, in frame units. */
-const BRANCH = {
-  bendingAngle: (5 * Math.PI) / 180,
-  bendingZ: 0,
-};
 
 /** Flip triangle winding after baking a mirrored (det < 0) transform in,
  *  or the mesh renders inside out. Several house nodes are scale(-1). */
@@ -118,40 +115,13 @@ function lensMaterial(source: THREE.Material) {
   });
 }
 
-/**
- * Upstream's arm bend (WebARRocksMirror.tweak_material), ported: behind
- * `bendingZ` the arms bend a few degrees, as they do over a head.
- *
- * Upstream also FADES the arms out past the ear. That is gone: on a face
- * it read as the arms missing, and it is not needed. With the arms opened
- * to clear the head (splayArms), the occluder already hides what is behind
- * the head and the ears, and everything in front of them is meant to show.
- *
- * Upstream applies it to materials named "frame". The house's materials
- * are named whatever Blender called them, so here it goes on everything:
- * the front of the frame is in front of Z = 0, where the bend is zero.
- */
-function withBranches(material: THREE.Material) {
-  material.onBeforeCompile = (shader) => {
-    shader.uniforms.uBranchBendingAngle = { value: BRANCH.bendingAngle };
-    shader.uniforms.uBranchBendingZ = { value: BRANCH.bendingZ };
-
-    shader.vertexShader =
-      "uniform float uBranchBendingAngle, uBranchBendingZ;\n" +
-      shader.vertexShader.replace(
-        "#include <begin_vertex>",
-        `#include <begin_vertex>
-        float zBranch = max(0.0, uBranchBendingZ - position.z);
-        float bendBranchDx = tan(uBranchBendingAngle) * zBranch;
-        transformed.x += sign(transformed.x) * bendBranchDx;
-        transformed.z *= (1.0 - bendBranchDx);`,
-      );
-  };
-  return material;
-}
+/* Upstream bends the arms out 5 degrees and fades them past the ear
+   (WebARRocksMirror.tweak_material). Neither is used: the bend stood the
+   arms off the sides of the head, the fade read as the arms missing, and
+   hug.ts now lays the arms on the head itself. */
 
 function dress(mesh: THREE.Mesh, source: THREE.Material) {
-  if (isLens(mesh, source)) return withBranches(lensMaterial(source));
+  if (isLens(mesh, source)) return lensMaterial(source);
   const material = source.clone();
   const physical = material as THREE.MeshPhysicalMaterial;
   physical.fog = false;
@@ -175,7 +145,7 @@ function dress(mesh: THREE.Mesh, source: THREE.Material) {
     physical.emissiveMap = physical.map;
     physical.emissive.multiplyScalar(0.4);
   }
-  return withBranches(material);
+  return material;
 }
 
 /**
@@ -244,7 +214,6 @@ export function fitFrame(source: THREE.Object3D, fit: TryOnFit = {}) {
     mesh.geometry.scale(scale, scale, scale);
     mesh.geometry.translate(0, nudgeY, FRONT_Z + nudgeZ);
   }
-  splayArms(meshes);
   for (const mesh of meshes) {
     mesh.geometry.computeBoundingSphere();
     mesh.geometry.computeBoundingBox();
@@ -256,70 +225,19 @@ export function fitFrame(source: THREE.Object3D, fit: TryOnFit = {}) {
 }
 
 /**
- * Open the arms to the width of a head.
- *
- * The house glbs are modelled unworn: arms parallel, about 116-122mm apart
- * inside. On a face they flex outward over the temples. Left parallel, the
- * back half of each arm sat INSIDE the occluder head (measured: every rear
- * arm vertex, every house), so the occluder hid it and the arms came and
- * went as the head turned.
- *
- * Upstream's convention is an interior width of 2 frame units, which puts
- * the arms just outside the mean head. So the arms, and only the arms, are
- * pushed out to that, ramped in behind the hinge so the front keeps its
- * true size and the hinge does not tear.
- */
-/* Measured against the occluder, arm by arm, house by house: at 1.04 no
-   part of any arm between the hinge and the ear is inside the head. At
-   1.0, 18% of MATRIARCA's still was; at 0.97, 30%. The cost is a little
-   flare seen face-on, which on a real face reads as arms over the head. */
-const ARM_INTERIOR_HALF = 1.04;
-/** Where the arms are measured: well behind the hinge blocks. */
-const ARM_MEASURE_Z = -0.6;
-/** The ramp: untouched in front of RAMP_START, fully open behind RAMP_END. */
-const RAMP_START = -0.06;
-const RAMP_END = -0.45;
-
-function splayArms(meshes: THREE.Mesh[]) {
-  /* The inside face of the arms: a low percentile of |x| back there, so a
-     stray vertex on a screw or an emblem does not decide it. */
-  const xs: number[] = [];
-  for (const mesh of meshes) {
-    const p = mesh.geometry.getAttribute("position");
-    for (let i = 0; i < p.count; i++) {
-      if (p.getZ(i) < ARM_MEASURE_Z && Math.abs(p.getX(i)) > 0.2) xs.push(Math.abs(p.getX(i)));
-    }
-  }
-  if (xs.length < 20) return;
-  xs.sort((a, b) => a - b);
-  const inner = xs[Math.floor(xs.length * 0.05)];
-  const spread = ARM_INTERIOR_HALF - inner;
-  if (spread <= 0) return;
-
-  for (const mesh of meshes) {
-    const p = mesh.geometry.getAttribute("position");
-    for (let i = 0; i < p.count; i++) {
-      const z = p.getZ(i);
-      if (z >= RAMP_START) continue;
-      const t = THREE.MathUtils.smoothstep(-z, -RAMP_START, -RAMP_END);
-      const x = p.getX(i);
-      p.setX(i, x + Math.sign(x) * spread * t);
-    }
-    p.needsUpdate = true;
-  }
-}
-
-/**
- * The fixed placement on the mean face, from upstream's
- * WebARRocksMirror.set_glassesPose: the bridge sits on the nose at
- * (0, 47, 53) in dev/face.obj, lifted 2 units, and tipped back to match the
- * face model's upward gaze.
+ * The fixed placement on the mean face, from upstream's main glasses
+ * helper (helpers/WebARRocksMirror.js, tweak_faceAccessory): the bridge on
+ * the nose at (0, 40, 53) in dev/face.obj, tipped back 0.3 rad to match the
+ * face model's upward gaze. The React demo's older copy used (0, 49, 53)
+ * and 0.38; the main values go with the recalibrated face points
+ * (vendor/webar-rocks-face/face-points.ts), and with them the pupil line
+ * lands on the face model's eye centres (y 37.9) instead of above them.
  */
 export function poseHolder() {
   const holder = new THREE.Group();
   holder.scale.setScalar(POSE_SCALE);
-  holder.position.set(0, 47 + 2, 53);
-  holder.rotation.set(-0.38, 0, 0);
+  holder.position.set(0, 40, 53);
+  holder.rotation.set(-0.3, 0, 0);
   return holder;
 }
 
