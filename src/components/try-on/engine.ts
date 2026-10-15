@@ -217,11 +217,9 @@ export class TryOnEngine {
    * Move the frame on the face: the reader's own fit. Applied inside the
    * holder, so "up" is up the face and "closer" is off the nose, whichever
    * way the head is turned, and it carries over when the frame changes.
-   * Scale is about the bridge, where the frame sits.
    */
-  setNudge({ y, z, scale }: TryOnNudge) {
+  setNudge({ y, z }: TryOnNudge) {
     this.nudge.position.set(0, y / POSE_SCALE, z / POSE_SCALE);
-    this.nudge.scale.setScalar(scale);
   }
 
   /** Call when the stage changes size or the phone turns. */

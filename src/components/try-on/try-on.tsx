@@ -47,7 +47,8 @@ function readNudge(): TryOnNudge {
   if (typeof window === "undefined") return NO_NUDGE;
   try {
     const v = JSON.parse(window.localStorage.getItem(NUDGE_KEY) ?? "null");
-    if (v && [v.y, v.z, v.scale].every((n) => typeof n === "number")) return v;
+    /* Only y and z: earlier builds also stored a size, which is gone. */
+    if (v && typeof v.y === "number" && typeof v.z === "number") return { y: v.y, z: v.z };
   } catch {
     /* private mode, or something else wrote there */
   }
@@ -60,8 +61,7 @@ function writeNudge(n: TryOnNudge) {
     /* the fit lasts the visit */
   }
 }
-const clamp = (v: number, limit: number, around = 0) =>
-  Math.min(around + limit, Math.max(around - limit, v));
+const clamp = (v: number, limit: number) => Math.min(limit, Math.max(-limit, v));
 
 /** Read in the browser, not on the server: a page that reads its query
  *  string on the server is a function on Vercel, and this site is static
@@ -140,13 +140,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
   }, [phase, nudge]);
 
   const move = (axis: keyof TryOnNudge, dir: 1 | -1) =>
-    setNudge((n) => ({
-      ...n,
-      [axis]:
-        axis === "scale"
-          ? Number(clamp(n.scale + dir * NUDGE_STEP.scale, NUDGE_LIMIT.scale, 1).toFixed(2))
-          : clamp(n[axis] + dir * NUDGE_STEP[axis], NUDGE_LIMIT[axis]),
-    }));
+    setNudge((n) => ({ ...n, [axis]: clamp(n[axis] + dir * NUDGE_STEP[axis], NUDGE_LIMIT[axis]) }));
 
   /* ---- keep the URL on the frame being worn, so it can be sent ---- */
   useEffect(() => {
@@ -333,8 +327,8 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
 
           {/* ---- the fit ----
               The tracker places every frame on a mean face; a real face is
-              not one. Three corrections, each a millimetre or two a press:
-              height on the nose, distance from the face, size. */}
+              not one. Two corrections, about a millimetre and a half a
+              press: height on the nose, and distance from the face. */}
           <button
             type="button"
             onClick={() => setFitOpen((o) => !o)}
@@ -366,15 +360,10 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
                 less={{ label: "Closer to the face", icon: <Minus size={16} strokeWidth={1.5} />, on: () => move("z", -1), off: nudge.z <= -NUDGE_LIMIT.z }}
                 more={{ label: "Further from the face", icon: <Plus size={16} strokeWidth={1.5} />, on: () => move("z", 1), off: nudge.z >= NUDGE_LIMIT.z }}
               />
-              <FitRow
-                label="Size"
-                less={{ label: "Smaller", icon: <Minus size={16} strokeWidth={1.5} />, on: () => move("scale", -1), off: nudge.scale <= 1 - NUDGE_LIMIT.scale }}
-                more={{ label: "Larger", icon: <Plus size={16} strokeWidth={1.5} />, on: () => move("scale", 1), off: nudge.scale >= 1 + NUDGE_LIMIT.scale }}
-              />
               <button
                 type="button"
                 onClick={() => setNudge(NO_NUDGE)}
-                disabled={nudge.y === 0 && nudge.z === 0 && nudge.scale === 1}
+                disabled={nudge.y === 0 && nudge.z === 0}
                 className="t-label pb-2 text-[var(--fg-secondary)] underline underline-offset-2 hover:text-[var(--fg-primary)] disabled:no-underline disabled:opacity-40 sm:w-full sm:pb-0 sm:pt-1 sm:text-left"
               >
                 Reset

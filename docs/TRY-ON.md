@@ -49,8 +49,9 @@ in `public/models/houses`. The turntables themselves are unchanged.
    Upstream also fades them out near the ears; that is removed, because on a
    face it read as the arms missing. The occluder hides what is behind the
    head and ears.
-7. **The reader can nudge the fit.** "Fit" in the mirror opens height, depth
-   and size controls (about 1.5mm or 2% a press, within limits). They move a
+7. **The reader can nudge the fit.** "Fit" in the mirror opens height and
+   depth controls (about 1.5mm a press, within 15mm). There is no size
+   control: frames are true to size. They move a
    `nudge` group inside the fixed placement, so they apply live, follow the
    head, carry across frame changes, and are kept on the device
    (`an:tryon-fit`) for the next visit. Reset clears them.
