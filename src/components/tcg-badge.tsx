@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useRef, useState, type MouseEvent } from "react";
 import "./tcg-badge.css";
 
-const HREF = "https://talkerstein.ca";
+const HREF = "https://talkerstein.com";
 
 /** Long enough for the coin to fade in and turn once before a tap on a
  *  touch screen, which has no hover, follows the link. */
