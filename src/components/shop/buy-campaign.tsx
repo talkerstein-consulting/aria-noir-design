@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { House } from "@/lib/navigation";
-import { RevealPlate, RevealText } from "@/components/reveal";
+import { RevealPlate } from "@/components/reveal";
 
 /**
  * The house's own world, on the page where it is sold.
@@ -20,8 +20,8 @@ import { RevealPlate, RevealText } from "@/components/reveal";
  *
  * ---- Three beats, and no more ----
  *
- * The world, wide. The frame worn, twice, and the object close. Then one
- * line. A buy page that turns into a lookbook is a buy page a reader
+ * The world, wide. The frame worn, twice, and the object close. The
+ * campaign's closing line is not shown here. A buy page that turns into a lookbook is a buy page a reader
  * scrolls past to get back to the price, so the set is curated in the
  * catalogue rather than rendered from the whole shoot.
  *
@@ -83,13 +83,6 @@ export function BuyCampaign({ house }: { house: House }) {
           </RevealPlate>
         ))}
       </div>
-
-      {/* ---- the line ---- */}
-      <RevealText
-        as="p"
-        text={campaign.line}
-        className="t-display-xs mt-16 max-w-[26ch] text-balance text-[var(--fg-primary)]"
-      />
     </div>
   );
 }

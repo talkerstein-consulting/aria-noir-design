@@ -7,6 +7,8 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { BuyHero } from "@/components/shop/buy-hero";
 import { BuyDetail, type DetailTab } from "@/components/shop/buy-detail";
 import { BuyCampaign } from "@/components/shop/buy-campaign";
+import { BuyWorn } from "@/components/shop/buy-worn";
+import { WORN } from "@/lib/worn.generated";
 import {
   ColourwayCards,
   hasColourwayCards,
@@ -253,6 +255,14 @@ export default async function ShopHousePage({
         {house.campaign ? (
           <section className="on-paper section bg-paper">
             <BuyCampaign house={house} />
+          </section>
+        ) : null}
+
+        {/* ---- this frame, worn: only the model photographs the showcase
+            files under this house. A house with none renders nothing. ---- */}
+        {WORN[house.slug]?.length ? (
+          <section className="on-paper section bg-paper">
+            <BuyWorn house={house} />
           </section>
         ) : null}
 
