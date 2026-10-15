@@ -250,11 +250,29 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
     };
   }, [phase, close]);
 
+  /* A short flash on capture, so the photograph is felt being taken.
+     Hidden under reduced motion. */
+  const [flash, setFlash] = useState(false);
   const capture = useCallback(() => {
     const engine = engineRef.current;
     if (!engine) return;
+    setFlash(true);
+    window.setTimeout(() => setFlash(false), 180);
     setShot(engine.capture().toDataURL("image/jpeg", 0.92));
   }, []);
+
+  /* Escape puts the capture down, as every other dialog here does, and
+     focus moves into it so the keyboard is not left on the mirror. */
+  const shotRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!shot) return;
+    shotRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShot(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [shot]);
 
   const fileName = `aria-noir-${house.slug}-${colour.name.toLowerCase().replace(/\s+/g, "-")}.jpg`;
 
@@ -470,7 +488,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
                     role="tab"
                     aria-selected={on}
                     onClick={() => chooseHouse(h.slug)}
-                    className={`t-label shrink-0 border-b py-2 transition-colors ${
+                    className={`t-label shrink-0 border-b py-3.5 transition-colors ${
                       on
                         ? "border-[var(--fg-primary)] text-[var(--fg-primary)]"
                         : "border-transparent hover:text-[var(--fg-secondary)]"
@@ -499,7 +517,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
                     aria-label={c.name}
                     title={c.name}
                     onClick={() => setColourName(c.name)}
-                    className={`size-8 shrink-0 border transition-[box-shadow] ${
+                    className={`relative size-8 shrink-0 border transition-[box-shadow] before:absolute before:-inset-1.5 before:content-[''] ${
                       on
                         ? "border-white/80 shadow-[0_0_0_3px_#000,0_0_0_4px_rgba(255,255,255,0.8)]"
                         : "border-white/25 hover:border-white/60"
@@ -520,19 +538,29 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <CtaButton kind="secondary" onClick={capture}>
+                <CtaButton onClick={capture} icon={<Camera size={16} strokeWidth={1.5} />}>
                   Capture
                 </CtaButton>
-                <CtaLink href={colour.href}>View the frame</CtaLink>
+                {/* A new tab, so the camera stays open behind it. */}
+                <CtaLink href={colour.href} kind="secondary" external>
+                  View the frame
+                </CtaLink>
               </div>
             </div>
           </div>
 
+          {flash && (
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-20 bg-white/80 motion-reduce:hidden" />
+          )}
+
           {/* ---- the capture ---- */}
           {shot && (
             <div
-              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 bg-black/90 p-6"
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 bg-black/90 p-6 outline-none"
+              ref={shotRef}
+              tabIndex={-1}
               role="dialog"
+              aria-modal="true"
               aria-label="Capture"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- a data URL, nothing to optimise */}
@@ -639,7 +667,7 @@ function FitRow({ label, less, more }: { label: string; less: FitStep; more: Fit
             disabled={step.off}
             aria-label={step.label}
             title={step.label}
-            className="grid size-9 place-items-center border border-white/25 text-[var(--fg-primary)] transition-colors hover:border-white/70 disabled:opacity-30"
+            className="grid size-11 place-items-center border border-white/25 text-[var(--fg-primary)] transition-colors hover:border-white/70 disabled:opacity-30"
           >
             {step.icon}
           </button>
