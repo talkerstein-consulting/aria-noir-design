@@ -65,6 +65,44 @@ function write(key: string, value: string) {
   }
 }
 
+/* The gift's "already shown" mark, kept three ways: localStorage, a
+   first-party cookie and sessionStorage. Browsers that refuse or purge one
+   (Safari private mode, in-app browsers, storage cleared by tracking
+   prevention) used to lose the mark, and the in-memory flag alone does not
+   survive a reload, so the sheet came back on every page load. Any one of
+   the three is enough to keep it down. */
+const GIFT_COOKIE = "an_gift";
+
+function giftSeen() {
+  if (giftShownThisVisit || read(GIFT_KEY)) return true;
+  try {
+    if (document.cookie.split("; ").some((c) => c.startsWith(`${GIFT_COOKIE}=`))) return true;
+  } catch {
+    /* cookies refused */
+  }
+  try {
+    if (window.sessionStorage.getItem(GIFT_KEY)) return true;
+  } catch {
+    /* session storage refused */
+  }
+  return false;
+}
+
+function markGift(value: string) {
+  giftShownThisVisit = true;
+  write(GIFT_KEY, value);
+  try {
+    document.cookie = `${GIFT_COOKIE}=${value}; max-age=31536000; path=/; SameSite=Lax`;
+  } catch {
+    /* cookies refused */
+  }
+  try {
+    window.sessionStorage.setItem(GIFT_KEY, value);
+  } catch {
+    /* session storage refused */
+  }
+}
+
 export function HouseNotices() {
   const pathname = usePathname();
   const quiet = QUIET_ROUTES.some((r) => pathname.startsWith(r));
@@ -82,10 +120,11 @@ export function HouseNotices() {
     if (quiet || consent === undefined || consent === null) return;
     /* Any value at all means it has been shown: "joined", "seen", or the
        close timestamp earlier builds wrote. */
-    if (giftShownThisVisit || read(GIFT_KEY)) return;
+    if (giftSeen()) return;
     const show = () => {
-      giftShownThisVisit = true;
-      write(GIFT_KEY, "seen");
+      /* Checked again at the last moment: another tab may have shown it. */
+      if (giftSeen()) return;
+      markGift("seen");
       setGift(true);
     };
     let t = window.setTimeout(show, GIFT_DELAY_MS);
@@ -113,7 +152,7 @@ export function HouseNotices() {
       <GiftSheet
         open={gift}
         onClose={(joined) => {
-          if (joined) write(GIFT_KEY, "joined");
+          markGift(joined ? "joined" : "seen");
           setGift(false);
         }}
       />
