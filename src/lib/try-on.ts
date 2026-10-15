@@ -92,7 +92,7 @@ export const TRY_ON_PREVIEW: readonly TryOnPreviewSlide[] = [
   { house: "arca-ii", image: "/images/arca-ii/worn-noir-edge.webp", box: [30, 33, 45, 11] },
   { house: "ahava", image: "/images/ahava/lookbook/23.webp", box: [41, 49, 55, 12] },
   { house: "matriarca", image: "/images/matriarca/lookbook/16.webp", box: [24, 27, 49, 13] },
-  { house: "patriarca", image: "/images/patriarca/campaign/worn-aria-among-columns.webp", box: [37, 28, 37, 11] },
+  { house: "patriarca", image: "/images/patriarca/lookbook/06.webp", box: [44, 24, 31, 9] },
   { house: "monarca", image: "/images/monarca/campaign/worn-noir-bust-portrait.webp", box: [22, 25, 44, 12] },
 ];
 

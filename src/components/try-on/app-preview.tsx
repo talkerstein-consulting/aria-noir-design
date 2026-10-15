@@ -64,6 +64,9 @@ export function AppPreview({
           alt={i === index ? `${name}, worn` : ""}
           fill
           sizes="(min-width: 1024px) 24rem, 90vw"
+          /* 90, the site's other allowed quality (next.config): faces at
+             this size show 75's smoothing. */
+          quality={90}
           priority={i === 0}
           className={`try-preview__plate object-cover ${i === index ? "is-on" : ""}`}
         />
