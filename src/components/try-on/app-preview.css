@@ -1,0 +1,60 @@
+/* The try-on preview (app-preview.tsx). One slide is: the plate fades in
+   and drifts, a scan line drops to the frame, the crosshair closes on it
+   and squares it off, the name rises. */
+
+.try-preview__plate {
+  opacity: 0;
+  transform: scale(1.06);
+  transition:
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 5200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.try-preview__plate.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* The scan: a hairline of light travelling from the top of the screen to
+   the middle of the frame, where it fades. */
+.try-preview__scan {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 -24px 32px 0 rgba(255, 255, 255, 0.08);
+  animation: try-scan 900ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both;
+}
+@keyframes try-scan {
+  0% { top: 0; opacity: 0; }
+  15% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { top: var(--to); opacity: 0; }
+}
+
+/* The crosshair: wide and faint, then closing on the frame and holding. */
+.try-preview__lock {
+  animation: try-lock 700ms cubic-bezier(0.22, 1, 0.36, 1) 850ms both;
+}
+@keyframes try-lock {
+  0% { opacity: 0; transform: scale(1.3); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); }
+}
+.try-preview__corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-width: 0;
+  border-color: var(--gold, #c6a664);
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.7));
+}
+.try-preview__corner.border-t { border-top-width: 1.5px; }
+.try-preview__corner.border-b { border-bottom-width: 1.5px; }
+.try-preview__corner.border-l { border-left-width: 1.5px; }
+.try-preview__corner.border-r { border-right-width: 1.5px; }
+
+.try-preview__name { animation: rise-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 1100ms both; }
+
+/* Reduced motion: one photograph, the marks already in place. */
+.try-preview[data-still] .try-preview__plate { transition: opacity 300ms linear; transform: none; }
+.try-preview[data-still] .try-preview__scan { display: none; }
+.try-preview[data-still] .try-preview__lock,
+.try-preview[data-still] .try-preview__name { animation: none; }

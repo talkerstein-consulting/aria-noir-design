@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { X } from "lucide-react";
+import { Camera, X } from "lucide-react";
 import { CtaButton, CtaLink } from "@/components/cta-link";
-import type { TryOnHouse } from "@/lib/try-on";
+import { TRY_ON_PREVIEW, type TryOnHouse } from "@/lib/try-on";
+import { AppPreview } from "./app-preview";
 import type { TryOnEngine, TryOnError, TryOnStatus } from "./engine";
 
 /**
@@ -75,6 +77,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
   const faceRef = useRef<HTMLCanvasElement>(null);
   const threeRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<TryOnEngine | null>(null);
+  const finePrintRef = useRef<HTMLDialogElement>(null);
 
   const house = startHouse;
   const colour = house.colours.find((c) => c.name === colourName) ?? house.colours[0];
@@ -141,6 +144,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
       });
       engineRef.current = engine;
       await (fitCheck ? engine.startFitCheck() : engine.start());
+      window.scrollTo(0, 0);
       setPhase("live");
     } catch (code) {
       await engineRef.current?.destroy();
@@ -188,11 +192,17 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
 
   return (
     <section
-      className="on-ink relative h-[100svh] min-h-[560px] overflow-hidden bg-ink"
+      className={`on-ink relative bg-ink ${live ? "h-[100svh] min-h-[560px] overflow-hidden" : ""}`}
       aria-label="Live try-on"
     >
-      {/* ---- the mirror ---- */}
-      <div ref={stageRef} className="absolute inset-0" aria-hidden={!live}>
+      {/* ---- the mirror ----
+          Fixed to the viewport and laid out even while hidden, so the
+          engine measures the screen it will draw on, not the landing. */}
+      <div
+        ref={stageRef}
+        className={`fixed inset-0 bg-ink ${live ? "" : "invisible"}`}
+        aria-hidden={!live}
+      >
         <canvas
           ref={faceRef}
           className="absolute inset-0 h-full w-full -scale-x-100"
@@ -205,34 +215,56 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
 
       {/* ---- before the camera ---- */}
       {!live && (
-        <div className="absolute inset-0 flex items-end sm:items-center">
+        <div className="relative isolate overflow-hidden">
           <Image
-            src="/images/arca-ii/worn-noir-front.webp"
+            src="/images/arca-ii/ground-hall.webp"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-40"
+            className="-z-10 scale-110 object-cover opacity-30 blur-md"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
-          <div className="section relative w-full pb-[max(3rem,env(safe-area-inset-bottom))]">
-            <div className="mx-auto max-w-6xl">
-              <h1 className="t-display-lg">The mirror.</h1>
-              <p className="t-body t-body--lede mt-6 max-w-md">
-                Every frame in the house, worn live. Turn your head. It follows.
-              </p>
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/85 to-black" />
 
-              <div className="mt-10 flex flex-wrap items-center gap-6">
-                <CtaButton onClick={open} disabled={phase === "opening"}>
+          <div className="section mx-auto grid min-h-[100svh] max-w-6xl content-center items-center gap-x-20 gap-y-12 pt-28 lg:grid-cols-[1fr_minmax(0,24rem)] lg:pt-32">
+            <div>
+              <h1 className="t-display-xl rise-now">The mirror.</h1>
+              <p className="t-body t-body--lede rise-now mt-6 max-w-md">
+                Every frame in the house, on your face, live.
+              </p>
+              <div className="mt-10">
+                <CtaButton
+                  onClick={open}
+                  disabled={phase === "opening"}
+                  icon={<Camera size={16} strokeWidth={1.5} />}
+                >
                   {phase === "opening" ? "Opening the camera" : phase === "failed" ? "Try again" : fitCheck ? "Fit check" : "Open the camera"}
                 </CtaButton>
               </div>
+              {phase === "failed" && error && (
+                <p className="t-caption mt-6" role="alert">
+                  {error}
+                </p>
+              )}
 
-              <p className="t-caption mt-6" role={phase === "failed" ? "alert" : undefined}>
-                {phase === "failed" && error
-                  ? error
-                  : "The camera stays on this device. Nothing is recorded or sent."}
+              {/* ---- the fine print ----
+                  One line where the camera is asked for; the whole of it a
+                  press away. See FinePrint below and docs/TRY-ON.md. */}
+              <p className="t-micro mt-5 normal-case tracking-normal">
+                Nothing leaves this device.{" "}
+                <button
+                  type="button"
+                  onClick={() => finePrintRef.current?.showModal()}
+                  className="underline underline-offset-2 hover:text-[var(--fg-primary)]"
+                >
+                  Details
+                </button>
               </p>
+              <FinePrint ref={finePrintRef} />
+            </div>
+
+            <div>
+              <AppPreview houses={houses} slides={TRY_ON_PREVIEW} />
             </div>
           </div>
         </div>
@@ -359,5 +391,68 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
         </>
       )}
     </section>
+  );
+}
+
+/**
+ * The fine print, in a native <dialog>: modal, Escape closes it, focus is
+ * trapped and returned by the browser. Said where the camera is asked
+ * for, not only in a policy: what the camera is for, that nothing leaves
+ * the device, that opening it is the agreement, and that a likeness is
+ * not a fitting. Reviewed wording belongs to counsel; see docs/TRY-ON.md.
+ */
+function FinePrint({ ref }: { ref: React.Ref<HTMLDialogElement> }) {
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby="try-on-fine-print"
+      className="on-ink m-auto w-[min(32rem,calc(100vw-2rem))] border border-[var(--fg-rule)] bg-ink p-0 text-[var(--fg-secondary)] backdrop:bg-black/70"
+      onClick={(e) => {
+        /* A press on the backdrop lands on the dialog itself. */
+        if (e.target === e.currentTarget) e.currentTarget.close();
+      }}
+    >
+      <div className="p-6 sm:p-8">
+        <div className="flex items-start justify-between gap-6">
+          <h2 id="try-on-fine-print" className="t-display-xs">
+            The camera
+          </h2>
+          <form method="dialog">
+            <button
+              type="submit"
+              className="-m-2 grid size-9 place-items-center text-[var(--fg-primary)]"
+              aria-label="Close"
+            >
+              <X size={16} strokeWidth={1.5} />
+            </button>
+          </form>
+        </div>
+        <div className="t-body t-body--tight mt-5 space-y-4">
+          <p>
+            The camera is used only to place the frame on your face. Tracking runs on this
+            device. No image, video or facial data is recorded, stored or sent. Opening the
+            camera means you agree to this.
+          </p>
+          <p>
+            A capture is made in the browser and saved only where you save it.
+          </p>
+          <p>
+            The try-on is a likeness, not a fitting. Colour, size and fit can differ from the
+            frame in hand. It is not a prescription or pupillary distance measurement.
+          </p>
+          <p>The preview on this page uses campaign photography.</p>
+          <p className="t-caption">
+            Face tracking by WebAR.rocks, under the MIT licence.{" "}
+            <Link href="/policies/privacy" className="underline underline-offset-2">
+              Privacy
+            </Link>{" "}
+            ·{" "}
+            <Link href="/policies/terms" className="underline underline-offset-2">
+              Terms
+            </Link>
+          </p>
+        </div>
+      </div>
+    </dialog>
   );
 }

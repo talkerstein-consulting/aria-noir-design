@@ -72,6 +72,30 @@ function modelFor(slug: string, colour: string, fallback?: string) {
   return TRY_ON_MODELS.has(key) ? `/models/try-on/${key}.glb` : fallback;
 }
 
+/**
+ * The landing's preview: one worn photograph per house, chosen so the
+ * whole frame sits inside the preview's 9:16 crop with room around it.
+ * `box` is where the frame is in that crop, as percentages of the
+ * preview: [left, top, width, height]. The crosshair closes on it.
+ *
+ * Photographs, not renders. The preview shows what the house looks like
+ * worn; the mirror is what shows it on you.
+ */
+export type TryOnPreviewSlide = {
+  house: string;
+  image: string;
+  box: readonly [left: number, top: number, width: number, height: number];
+};
+
+export const TRY_ON_PREVIEW: readonly TryOnPreviewSlide[] = [
+  { house: "arca-i", image: "/images/arca-i/worn-close.webp", box: [13, 26, 75, 17] },
+  { house: "arca-ii", image: "/images/arca-ii/worn-noir-edge.webp", box: [30, 33, 45, 11] },
+  { house: "ahava", image: "/images/ahava/lookbook/21.webp", box: [22, 27, 47, 12] },
+  { house: "matriarca", image: "/images/matriarca/lookbook/16.webp", box: [24, 27, 49, 13] },
+  { house: "patriarca", image: "/images/patriarca/campaign/creative-aria-creative-02-archway.webp", box: [15, 36, 71, 18] },
+  { house: "monarca", image: "/images/monarca/campaign/worn-noir-bust-portrait.webp", box: [22, 25, 44, 12] },
+];
+
 export function tryOnHouses(): TryOnHouse[] {
   return houses
     .map((house) => ({

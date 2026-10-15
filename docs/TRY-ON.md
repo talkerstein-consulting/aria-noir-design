@@ -103,6 +103,30 @@ the top of `fit.ts`.
 - The video never leaves the device. Nothing is uploaded; capture makes a
   JPEG in the browser and saves it locally.
 
+## Fine print and legal
+
+The landing carries a short notice where the camera is asked for. It is a
+reasonable baseline, **not legal advice**; have counsel review it for the
+places the store sells into.
+
+- **Face data.** The tracker maps facial geometry. Laws such as Illinois's
+  BIPA, Texas's CUBI, Washington's biometric law and Quebec's Law 25 regulate
+  that, and virtual try-ons have drawn BIPA class actions. The defence here is
+  that nothing leaves the device: no image, video or landmark is stored or
+  sent. The notice says so, and pressing "Open the camera" is the
+  acknowledgement. If counsel wants explicit consent (a checkbox) before the
+  camera opens, it goes beside the button in `try-on.tsx`.
+- **Privacy policy.** `/policies/privacy` does not mention the camera yet. It
+  should gain a paragraph saying the same thing as the notice.
+- **Likeness, not a fitting.** The render is an approximation; colour, size
+  and fit can differ. It is not a prescription or pupillary-distance fitting.
+- **Captures** are made in the browser and saved only where the reader saves
+  them.
+- **Preview.** The animated preview uses campaign photography, not renders,
+  and says so under it.
+- **Licence.** WebAR.rocks is MIT; its notice ships in
+  `src/vendor/webar-rocks-face/LICENSE` and is credited on the page.
+
 ## Status
 
 - Built and checked in the fit-check mode: all six houses and their
