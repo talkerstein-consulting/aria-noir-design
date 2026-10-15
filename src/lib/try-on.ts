@@ -90,9 +90,9 @@ export type TryOnPreviewSlide = {
 export const TRY_ON_PREVIEW: readonly TryOnPreviewSlide[] = [
   { house: "arca-i", image: "/images/arca-i/worn-close.webp", box: [13, 26, 75, 17] },
   { house: "arca-ii", image: "/images/arca-ii/worn-noir-edge.webp", box: [30, 33, 45, 11] },
-  { house: "ahava", image: "/images/ahava/lookbook/21.webp", box: [22, 27, 47, 12] },
+  { house: "ahava", image: "/images/ahava/lookbook/23.webp", box: [41, 49, 55, 12] },
   { house: "matriarca", image: "/images/matriarca/lookbook/16.webp", box: [24, 27, 49, 13] },
-  { house: "patriarca", image: "/images/patriarca/campaign/creative-aria-creative-02-archway.webp", box: [15, 36, 71, 18] },
+  { house: "patriarca", image: "/images/patriarca/campaign/worn-aria-among-columns.webp", box: [37, 28, 37, 11] },
   { house: "monarca", image: "/images/monarca/campaign/worn-noir-bust-portrait.webp", box: [22, 25, 44, 12] },
 ];
 
