@@ -17,8 +17,11 @@ import { house } from "@/lib/house-api";
  *      leave an address, receive a code for a complimentary gift with the
  *      next frame. Adapted from DITA's roll-case offer.
  *
- * Both answers live in this browser only. The gift does not ask again for
- * GIFT_QUIET_DAYS once closed, and never again once an address is given.
+ * Both answers live in this browser only. The gift is shown ONCE: it is
+ * marked seen the moment it opens, not when it is closed, because a reader
+ * can leave it any number of ways that never reach onClose (the Privacy
+ * link inside it, a reload, the back button), and each of those used to
+ * bring it back on the next page.
  */
 
 /* The burn-in. Lazy: three.js only loads when the gift is about to show. */
@@ -30,7 +33,8 @@ const EmberReveal = dynamic(() => import("@/components/ember-reveal"), {
 const CONSENT_KEY = "an:consent";
 const GIFT_KEY = "an:gift";
 const GIFT_DELAY_MS = 5000;
-const GIFT_QUIET_DAYS = 14;
+/** Private mode can refuse localStorage; then this keeps it to once a visit. */
+let giftShownThisVisit = false;
 /** Where the reader last clicked or tapped: the gift's burn starts there. */
 let lastTap: { x: number; y: number } | null = null;
 if (typeof window !== "undefined") {
@@ -76,13 +80,18 @@ export function HouseNotices() {
      swallowing the press. Product pages and the bag are quiet routes. */
   useEffect(() => {
     if (quiet || consent === undefined || consent === null) return;
-    const g = read(GIFT_KEY);
-    if (g === "joined") return;
-    if (g && Date.now() - Number(g) < GIFT_QUIET_DAYS * 864e5) return;
-    let t = window.setTimeout(() => setGift(true), GIFT_DELAY_MS);
+    /* Any value at all means it has been shown: "joined", "seen", or the
+       close timestamp earlier builds wrote. */
+    if (giftShownThisVisit || read(GIFT_KEY)) return;
+    const show = () => {
+      giftShownThisVisit = true;
+      write(GIFT_KEY, "seen");
+      setGift(true);
+    };
+    let t = window.setTimeout(show, GIFT_DELAY_MS);
     const restart = () => {
       window.clearTimeout(t);
-      t = window.setTimeout(() => setGift(true), GIFT_DELAY_MS);
+      t = window.setTimeout(show, GIFT_DELAY_MS);
     };
     window.addEventListener("pointerdown", restart, { passive: true });
     window.addEventListener("keydown", restart);
@@ -104,7 +113,7 @@ export function HouseNotices() {
       <GiftSheet
         open={gift}
         onClose={(joined) => {
-          write(GIFT_KEY, joined ? "joined" : String(Date.now()));
+          if (joined) write(GIFT_KEY, "joined");
           setGift(false);
         }}
       />
