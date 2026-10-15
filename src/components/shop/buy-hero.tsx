@@ -27,6 +27,7 @@ import { CtaButton, CtaLink } from "@/components/cta-link";
 import { RevealPlate } from "@/components/reveal";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
+import { tryOnHref } from "@/lib/try-on";
 import { BagAdded } from "@/components/shop/bag-added";
 import { turntableStem } from "@/lib/turntable";
 import { ProductModel, posterFor } from "@/components/product/product-model";
@@ -232,6 +233,8 @@ export function BuyHero({ house }: { house: House }) {
   /* The same line into the same bag, then straight to the checkout. No
      confirmation sheet: the reader has said what they want done next. */
   const router = useRouter();
+  const tryOn = tryOnHref(house.slug, chosen);
+
   const buyNow = () => {
     if (!chosen) return;
     add(house.slug, chosen, qty);
@@ -522,9 +525,14 @@ export function BuyHero({ house }: { house: House }) {
             </div>
 
             {available ? (
-              <CtaButton kind="secondary" className="mt-3 w-full" onClick={buyNow}>
+              <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
                 Buy now
               </CtaButton>
+            ) : null}
+            {tryOn ? (
+              <CtaLink href={tryOn} kind="secondary" className="mt-3 w-full">
+                Try these on
+              </CtaLink>
             ) : null}
 
             <p className="t-caption mt-6">

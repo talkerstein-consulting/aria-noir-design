@@ -37,7 +37,7 @@ export default function ShopAllPage() {
         <div className="pt-16 sm:pt-[5.5rem]">
           {/* Full span, the same grid as the home page: one set of
               collection tiles across the site. */}
-          <HomeCollections />
+          <HomeCollections anchors />
         </div>
         {/* Not a black rectangle. The boundary suspends on every cold
             entry, and what it hands over is the page's own shape; see

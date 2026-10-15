@@ -105,6 +105,21 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
     return (startHouse.colours.find((c) => c.name === name) ?? startHouse.colours[0]).name;
   });
 
+  /* Read the query again once mounted. Arriving by an in-site link (the
+     PDP's "Try these on"), the router renders this page before it has
+     moved the address bar, so the initialisers above saw the previous
+     page's URL. Must stay above the effect that writes the URL back. */
+  useEffect(() => {
+    const next = houses.find((h) => h.slug === param("house"));
+    if (!next) return;
+    const name = param("colour");
+    /* One-off sync from the URL, not a cascade: it runs once, on arrival. */
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHouseSlug(next.slug);
+    setColourName((next.colours.find((c) => c.name === name) ?? next.colours[0]).name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on arrival
+  }, []);
+
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<TryOnStatus>("searching");
@@ -249,6 +264,33 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
     a.href = shot;
     a.download = fileName;
     a.click();
+  };
+
+  /* Share through the device's own sheet. The capture goes only where the
+     reader sends it; nothing passes through the house (see the fine
+     print). Browsers that cannot share a file get Save alone. */
+  const shareFile = () => {
+    if (!shot) return null;
+    const [head, body] = shot.split(",");
+    const bytes = Uint8Array.from(atob(body), (ch) => ch.charCodeAt(0));
+    const type = head.match(/:(.*?);/)?.[1] ?? "image/jpeg";
+    return new File([bytes], fileName, { type });
+  };
+  const canShare = useSyncExternalStore(
+    noSubscribe,
+    () =>
+      typeof navigator.canShare === "function" &&
+      navigator.canShare({ files: [new File([""], "a.jpg", { type: "image/jpeg" })] }),
+    () => false,
+  );
+  const share = async () => {
+    const file = shareFile();
+    if (!file) return;
+    try {
+      await navigator.share({ files: [file], title: `${house.name} in ${colour.name}` });
+    } catch {
+      /* Dismissed, or refused: the capture is still on screen to save. */
+    }
   };
 
   const chooseHouse = (slug: string) => {
@@ -501,6 +543,11 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
               />
               <div className="flex gap-3">
                 <CtaButton onClick={save}>Save</CtaButton>
+                {canShare ? (
+                  <CtaButton kind="secondary" onClick={share}>
+                    Share
+                  </CtaButton>
+                ) : null}
                 <CtaButton kind="secondary" onClick={() => setShot(null)}>
                   Back to the mirror
                 </CtaButton>
@@ -553,7 +600,7 @@ function FinePrint({ ref }: { ref: React.Ref<HTMLDialogElement> }) {
             camera means you agree to this.
           </p>
           <p>
-            A capture is made in the browser and saved only where you save it.
+            A capture is made in the browser and goes only where you save or share it.
           </p>
           <p>
             The try-on is a likeness, not a fitting. Colour, size and fit can differ from the

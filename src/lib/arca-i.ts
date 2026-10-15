@@ -14,6 +14,7 @@
  */
 
 import type { Approach } from "@/components/product/product-approach";
+import type { Lookbook } from "@/components/product/product-lookbook";
 import type {
   Close,
   Detail,
@@ -276,4 +277,35 @@ export const close: Close = {
     `${P}/worn-13.webp`,
     `${P}/worn-04.webp`,
   ],
+};
+
+/* ---- The lookbook ----
+   The page runs the lookbook's layout, the same one AHAVA runs (see
+   components/product/product-lookbook.tsx). There is no Sep 18 lookbook
+   PDF for ARCA I, so the plates are the house's own campaign photography,
+   already in this folder. Ordered establishing shots, the people, then
+   the detail; uprights travel in pairs. */
+const L = "/images/arca-i";
+
+export const lookbook: Lookbook = {
+  intro: [
+    "ARCA I strips eyewear back to its essential forms. Precise lines, considered proportions, and a sculptural silhouette create a frame that feels as deliberate as the architecture around it.",
+  ],
+  rows: [
+    { src: `${L}/ground-corridor.webp`, alt: "The corridor, empty", kind: "full", width: 2752, height: 1536 },
+    { src: `${L}/worn-01.webp`, alt: "The building, with Aria", kind: "full", width: 2400, height: 1340 },
+    { pair: [{ src: `${L}/worn-02.webp`, alt: "Standing at the concrete door", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/structure-negative-space.webp`, alt: "Against dark negative space", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/worn-05.webp`, alt: "Noir looking down, in the building", kind: "full", width: 2400, height: 1340 },
+    { pair: [{ src: `${L}/worn-03.webp`, alt: "Aria and Noir wearing ARCA I", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/worn-04.webp`, alt: "A layered portrait", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/worn-06.webp`, alt: "Aria and Noir wearing ARCA I", kind: "full", width: 2400, height: 1610 },
+    { pair: [{ src: `${L}/worn-09.webp`, alt: "From below", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/worn-11.webp`, alt: "On the stairway", kind: "portrait", width: 1856, height: 2304 }] },
+    { pair: [{ src: `${L}/worn-10.webp`, alt: "In the mirror", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/worn-14.webp`, alt: "Black sleeveless, in the mirror", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/worn-13.webp`, alt: "Noir looking down", kind: "full", width: 2400, height: 1340 },
+    { pair: [{ src: `${L}/worn-07.webp`, alt: "Turtleneck, close", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/worn-12.webp`, alt: "Face, close, bokeh", kind: "portrait", width: 1856, height: 2304 }] },
+    { src: `${L}/lifestyle/pair-rooftop.webp`, alt: "Aria and Noir on the roof", kind: "full", width: 1920, height: 1072 },
+    { src: `${L}/spec-macro-bridge.webp`, alt: "The bridge, close", kind: "full", width: 2200, height: 1467 },
+    { src: `${L}/spec-macro-inner-right.webp`, alt: "The hinge and the house mark", kind: "full", width: 2400, height: 1599 },
+    { src: `${L}/offering-front.webp`, alt: "ARCA I, front on", kind: "full", width: 2400, height: 1600 },
+  ],
+  closing: "Geometry, reduced.",
 };

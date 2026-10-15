@@ -135,11 +135,14 @@ export function collectionItems(exclude?: string): CollectionTile[] {
   });
 }
 
-export function HomeCollections({ scroll = false }: { scroll?: boolean } = {}) {
+export function HomeCollections({
+  scroll = false,
+  anchors = false,
+}: { scroll?: boolean; anchors?: boolean } = {}) {
   const items = collectionItems();
   return (
     <section aria-label="The collections" className="bg-ink">
-      <CollectionTiles items={items} scroll={scroll} />
+      <CollectionTiles items={items} scroll={scroll} anchors={anchors} />
     </section>
   );
 }

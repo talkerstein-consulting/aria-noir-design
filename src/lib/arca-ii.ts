@@ -17,6 +17,7 @@
  */
 
 import type { Approach } from "@/components/product/product-approach";
+import type { Lookbook } from "@/components/product/product-lookbook";
 import type {
   AriaNoir,
   Close,
@@ -297,4 +298,37 @@ export const close: Close = {
     `${P}/worn-pair-corridor.webp`,
     `${P}/worn-noir-profile.webp`,
   ],
+};
+
+/* ---- The lookbook ----
+   The page runs the lookbook's layout, the same one AHAVA runs (see
+   components/product/product-lookbook.tsx). There is no Sep 18 lookbook
+   PDF for ARCA II, so the plates are the house's own campaign photography,
+   already in this folder. Ordered establishing shots, the people, then
+   the detail; uprights travel in pairs. */
+const L = "/images/arca-ii";
+
+export const lookbook: Lookbook = {
+  intro: [
+    "We built the room before the frame that stands in it.",
+  ],
+  rows: [
+    { src: `${L}/ground-hall.webp`, alt: "The hall, empty", kind: "full", width: 2752, height: 1536 },
+    { src: `${L}/structure-stair.webp`, alt: "The stair", kind: "full", width: 2000, height: 1116 },
+    { src: `${L}/structure-door.webp`, alt: "The door", kind: "full", width: 2000, height: 1116 },
+    { pair: [{ src: `${L}/worn-aria-doorway.webp`, alt: "Aria in the doorway", kind: "portrait", width: 1611, height: 2000 }, { src: `${L}/worn-noir-front.webp`, alt: "Noir, front on", kind: "portrait", width: 1611, height: 2000 }] },
+    { src: `${L}/shoot-pair-door.webp`, alt: "Aria and Noir at the door", kind: "full", width: 2000, height: 1116 },
+    { pair: [{ src: `${L}/worn-aria-concrete.webp`, alt: "Aria against concrete", kind: "portrait", width: 1611, height: 2000 }, { src: `${L}/worn-noir-panel.webp`, alt: "Noir at the panel", kind: "portrait", width: 1611, height: 2000 }] },
+    { src: `${L}/worn-pair-corridor.webp`, alt: "Aria and Noir in the corridor", kind: "full", width: 2000, height: 1116 },
+    { pair: [{ src: `${L}/aria.webp`, alt: "Aria", kind: "portrait", width: 1116, height: 2000 }, { src: `${L}/noir.webp`, alt: "Noir", kind: "portrait", width: 1116, height: 2000 }] },
+    { pair: [{ src: `${L}/worn-aria-trench.webp`, alt: "Aria in the trench", kind: "portrait", width: 1611, height: 2000 }, { src: `${L}/meaning-aria-deco.webp`, alt: "Aria, art deco", kind: "portrait", width: 1611, height: 2000 }] },
+    { src: `${L}/shoot-pair-bands.webp`, alt: "Aria and Noir in bands of light", kind: "full", width: 2000, height: 1116 },
+    { pair: [{ src: `${L}/worn-aria-panel.webp`, alt: "Aria at the panel", kind: "portrait", width: 1116, height: 2000 }, { src: `${L}/worn-noir-profile.webp`, alt: "Noir in profile", kind: "portrait", width: 1116, height: 2000 }] },
+    { src: `${L}/lifestyle/pair-doorway.webp`, alt: "Aria and Noir in a doorway", kind: "full", width: 1920, height: 1072 },
+    { src: `${L}/detail-lightfall.webp`, alt: "Light falling on the frame", kind: "full", width: 2000, height: 1116 },
+    { src: `${L}/home/gold-plate-macro.webp`, alt: "The gold plaque, close", kind: "full", width: 1920, height: 1080 },
+    { src: `${L}/spec-macro-temple.webp`, alt: "The temple, close", kind: "full", width: 1920, height: 1080 },
+    { src: `${L}/object-front.webp`, alt: "ARCA II, front on", kind: "full", width: 2000, height: 1116 },
+  ],
+  closing: "Best seen in the last light of the room.",
 };

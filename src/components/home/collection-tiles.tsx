@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 
 /**
  * The collection tiles: one per house, a horizontal 5:4, with the house
@@ -34,10 +34,14 @@ export function CollectionTiles({
   items,
   scroll = false,
   single = false,
+  anchors = false,
 }: {
   items: CollectionTile[];
   scroll?: boolean;
   single?: boolean;
+  /** Shop all: a tile scrolls to its own run further down the page
+   *  (`#run-<slug>`, ShopAll's breaker) instead of leaving for the house. */
+  anchors?: boolean;
 }) {
   return (
     <ul
@@ -50,13 +54,21 @@ export function CollectionTiles({
       }
     >
       {items.map((item) => (
-        <Tile key={item.slug} item={item} scroll={scroll} />
+        <Tile key={item.slug} item={item} scroll={scroll} anchors={anchors} />
       ))}
     </ul>
   );
 }
 
-function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean }) {
+function Tile({
+  item,
+  scroll = false,
+  anchors = false,
+}: {
+  item: CollectionTile;
+  scroll?: boolean;
+  anchors?: boolean;
+}) {
   const [chosen, setChosen] = useState<string | null>(null);
   /* What is on screen. Lags `chosen` until the new photograph has loaded,
      so a switch never fades to an empty frame. */
@@ -72,7 +84,26 @@ function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean
   }, [target, loaded]);
 
   /* A chosen colourway opens its buy page; otherwise the house's page. */
-  const href = current ? `/shop/${item.slug}?colourway=${encodeURIComponent(current.name)}` : item.href;
+  const href = anchors
+    ? `#run-${item.slug}`
+    : current
+      ? `/shop/${item.slug}?colourway=${encodeURIComponent(current.name)}`
+      : item.href;
+
+  /* Under the sticky shop bar, through Lenis when it is running. */
+  const toRun = (e: MouseEvent) => {
+    const run = document.getElementById(`run-${item.slug}`);
+    if (!anchors || !run) return;
+    e.preventDefault();
+    const top = run.getBoundingClientRect().top + window.scrollY - 140;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.scrollTo({ top });
+    } else if (window.__lenis) {
+      window.__lenis.scrollTo(top);
+    } else {
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
 
   const layers = [
     { key: HOUSE, src: item.image },
@@ -88,7 +119,7 @@ function Tile({ item, scroll = false }: { item: CollectionTile; scroll?: boolean
     <li
       className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""}`}
       onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
-      <Link href={href} className="relative isolate block aspect-[5/4] w-full overflow-hidden">
+      <Link href={href} onClick={toRun} className="relative isolate block aspect-[5/4] w-full overflow-hidden">
         {/* The zoom lives on this wrapper so it never fights the
             crossfade's own scale on each picture. */}
         <div className="absolute inset-0 isolate transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">

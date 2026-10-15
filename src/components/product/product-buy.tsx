@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Suspense, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Close } from "@/lib/product";
 import type { House } from "@/lib/navigation";
 import {
@@ -15,10 +16,12 @@ import {
   swatchFor,
 } from "@/lib/shop";
 import { useBag } from "@/lib/cart";
-import { CtaButton } from "@/components/cta-link";
+import { CtaButton, CtaLink } from "@/components/cta-link";
+import { tryOnHref } from "@/lib/try-on";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { BagAdded } from "@/components/shop/bag-added";
 import { HoldToggle } from "@/components/shop/hold-toggle";
+import { QtyStepper } from "@/components/shop/qty-stepper";
 import { RevealText } from "@/components/reveal";
 import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
 import { RotateHint } from "@/components/shop/rotate-hint";
@@ -126,6 +129,8 @@ export function ProductBuy({
   );
   const acetate = swatchFor(chosen ?? house.colorwayNames[0]);
 
+  const tryOn = tryOnHref(house.slug, chosen);
+
   const stem = turntableStem(house.slug, chosen);
   const spin = !!stem && SPIN.has(stem);
 
@@ -133,6 +138,16 @@ export function ProductBuy({
     if (!chosen) return;
     add(house.slug, chosen, qty);
     setAdded({ colorway: chosen, qty });
+  };
+
+  /* The buy page's Buy now, here too: the counter is the end of the
+     story, and a reader who has decided should be able to check out from
+     it without a detour through /shop. Same bag, same route. */
+  const router = useRouter();
+  const buyNow = () => {
+    if (!chosen) return;
+    add(house.slug, chosen, qty);
+    router.push("/checkout");
   };
 
   return (
@@ -203,6 +218,7 @@ export function ProductBuy({
                 <ColourwayPicker house={house} onChoose={setChosen} />
               </Suspense>
               <div className="buy-row mt-6 w-full">
+                <QtyStepper value={qty} onChange={setQty} />
                 {available ? (
                   <CtaButton className="flex-1" alt="Add again" swapped={inBag} onClick={addToBag}>
                     Add to bag
@@ -213,6 +229,16 @@ export function ProductBuy({
                   </button>
                 )}
               </div>
+              {available ? (
+                <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
+                  Buy now
+                </CtaButton>
+              ) : null}
+              {tryOn ? (
+                <CtaLink href={tryOn} kind="secondary" className="mt-3 w-full">
+                  Try these on
+                </CtaLink>
+              ) : null}
               <p className="t-caption mx-auto mt-4">
                 {available
                   ? "Ships in 3–5 days. Free worldwide standard shipping."
@@ -270,6 +296,7 @@ export function ProductBuy({
               </Suspense>
 
               <div className="buy-row mt-10">
+                <QtyStepper value={qty} onChange={setQty} />
                 {available ? (
                   <CtaButton
                     className="flex-1"
@@ -286,6 +313,16 @@ export function ProductBuy({
                 )}
               </div>
 
+              {available ? (
+                <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
+                  Buy now
+                </CtaButton>
+              ) : null}
+              {tryOn ? (
+                <CtaLink href={tryOn} kind="secondary" className="mt-3 w-full">
+                  Try these on
+                </CtaLink>
+              ) : null}
               <p className="t-caption mt-6">
                 {available
                   ? "Ships in 3–5 days. Free worldwide standard shipping."

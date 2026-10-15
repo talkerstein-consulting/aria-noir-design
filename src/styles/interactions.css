@@ -152,6 +152,27 @@
   color: var(--fg-accent);
 }
 
+/* ── Buy now — the outline, filled in solid gold ─────────────────────
+   The one press that skips the bag. It keeps the secondary box (so Add
+   to bag stays the page's main action by position) and fills it with the
+   house gold, with ink for its label on either ground. */
+.cta-secondary.cta-buy-now {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
+.cta-secondary.cta-buy-now:hover,
+.cta-secondary.cta-buy-now:focus-visible {
+  background: color-mix(in srgb, var(--gold) 85%, white);
+  border-color: color-mix(in srgb, var(--gold) 85%, white);
+  color: var(--ink);
+}
+.cta-secondary.cta-buy-now:active {
+  background: var(--gold);
+  color: var(--ink);
+  opacity: 0.85;
+}
+
 /* ── The row layout — glyph, label, count ────────────────────────────
    A CTA is a centred label by default. Give it a glyph or a trailing word
    and it becomes a row instead: the glyph pinned left, the label taking

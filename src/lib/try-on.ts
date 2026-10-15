@@ -133,3 +133,16 @@ export function tryOnHouses(): TryOnHouse[] {
     }))
     .filter((house) => house.colours.length > 0);
 }
+
+/**
+ * The link into the mirror, opened on this frame in this acetate. Null when
+ * the house has no try-on model, so a button is never drawn for a frame the
+ * mirror cannot wear. An acetate without its own model opens on the house's
+ * first one rather than on nothing.
+ */
+export function tryOnHref(slug: string, colour?: string | null): string | null {
+  const house = tryOnHouses().find((h) => h.slug === slug);
+  if (!house) return null;
+  const c = house.colours.find((x) => x.name === colour) ?? house.colours[0];
+  return `/try-on?house=${encodeURIComponent(house.slug)}&colour=${encodeURIComponent(c.name)}`;
+}

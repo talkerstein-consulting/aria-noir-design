@@ -229,7 +229,7 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
               )}
             </div>
             {chosen.available ? (
-              <CtaButton kind="secondary" className="mt-3 w-full" onClick={buyNow}>
+              <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
                 Buy now
               </CtaButton>
             ) : null}
