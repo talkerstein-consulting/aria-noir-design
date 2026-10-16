@@ -199,8 +199,10 @@ a:hover :is(.zoom, .card-shot) img {
 @media (min-width: 768px) { .gift-sheet { bottom: 50%; transform: translateY(50%); } }
 
 /* ── Nav: words on the left (desktop), burger on the left (phone) ── */
-.nav-words { display: none; gap: 1.75rem; }
-@media (min-width: 1024px) {
+/* The words need ~495px on one line. Below 1280 they ran into the
+   wordmark (touching at ~1130), so the burger holds until there is room. */
+.nav-words { display: none; gap: 1.75rem; white-space: nowrap; }
+@media (min-width: 1280px) {
   .nav-words { display: flex; }
   .nav-burger { display: none !important; }
 }
