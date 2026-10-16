@@ -50,12 +50,12 @@ type Options = {
   onStatus: (status: TryOnStatus) => void;
 };
 
-/** The landmarks the pose is solved from. Upstream's glasses set: ears,
- *  nose and outer eye corners. The chin is left out because it moves when
+/** The landmarks the pose is solved from: nose and outer eye corners.
+ *  Upstream's glasses set also has the two ear bottoms; they are left out
+ *  because the network guesses them when hair covers the ear, and that
+ *  guess wobbled the frame. The chin is left out because it moves when
  *  you talk and the frame should not. */
 const PNP_LABELS = [
-  "leftEarBottom",
-  "rightEarBottom",
   "noseBottom",
   "noseLeft",
   "noseRight",
@@ -197,13 +197,24 @@ export class TryOnEngine {
     this.scene.add(key, new THREE.HemisphereLight(0xffffff, 0x222222, 0.5));
   }
 
-  /** Puts a frame on. Resolves when it is on; a newer call wins. */
-  async wear(url: string, fit: TryOnFit = {}) {
+  /** Puts a frame on. Resolves when it is on; a newer call wins.
+   *  `onProgress` gets 0..1 while the glb downloads, or null when the
+   *  server sends no length to measure against. A cached frame reports
+   *  nothing: it is already here. */
+  async wear(
+    url: string,
+    fit: TryOnFit = {},
+    onProgress?: (fraction: number | null) => void,
+  ) {
     this.current = url;
     const key = `${url}#${fit.y ?? 0},${fit.z ?? 0},${fit.scale ?? 1}`;
     let pending = this.frames.get(key);
     if (!pending) {
-      pending = this.loader.loadAsync(url).then((gltf) => fitFrame(gltf.scene, fit));
+      pending = this.loader
+        .loadAsync(url, (e) =>
+          onProgress?.(e.lengthComputable && e.total ? e.loaded / e.total : null),
+        )
+        .then((gltf) => fitFrame(gltf.scene, fit));
       this.frames.set(key, pending);
       pending.catch(() => this.frames.delete(key));
     }

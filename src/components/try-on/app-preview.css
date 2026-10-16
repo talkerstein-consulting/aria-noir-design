@@ -58,3 +58,13 @@
 .try-preview[data-still] .try-preview__scan { display: none; }
 .try-preview[data-still] .try-preview__lock,
 .try-preview[data-still] .try-preview__name { animation: none; }
+
+/* The frame's download bar, when the server gives no size to measure. */
+@keyframes try-on-progress-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(300%); }
+}
+.try-on-progress-indeterminate { animation: try-on-progress-sweep 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .try-on-progress-indeterminate { animation: none; width: 100%; opacity: 0.5; }
+}

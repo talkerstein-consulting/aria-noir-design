@@ -124,6 +124,8 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<TryOnStatus>("searching");
   const [loadingFrame, setLoadingFrame] = useState(false);
+  /* 0..1 while the frame downloads; null when its size is unknown. */
+  const [frameProgress, setFrameProgress] = useState<number | null>(null);
   const [shot, setShot] = useState<string | null>(null);
 
   const stageRef = useRef<HTMLDivElement>(null);
@@ -143,8 +145,11 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
     if (phase !== "live" || !engine) return;
     let stale = false;
     setLoadingFrame(true);
+    setFrameProgress(null);
     engine
-      .wear(colour.model, house.fit)
+      .wear(colour.model, house.fit, (p) => {
+        if (!stale) setFrameProgress(p);
+      })
       .catch((code: TryOnError) => {
         if (!stale) setError(ERRORS[code] ?? ERROR_FALLBACK);
       })
@@ -413,6 +418,31 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
                 role="status"
               >
                 {error ?? (loadingFrame ? "Bringing the frame" : "Face the camera")}
+                {loadingFrame && !error && (
+                  <span
+                    className="mt-2 block h-px w-full overflow-hidden bg-white/20"
+                    role="progressbar"
+                    aria-label="Loading the frame"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={
+                      frameProgress === null ? undefined : Math.round(frameProgress * 100)
+                    }
+                  >
+                    <span
+                      className={
+                        frameProgress === null
+                          ? "try-on-progress-indeterminate block h-full w-1/3 bg-[var(--fg-primary)]"
+                          : "block h-full bg-[var(--fg-primary)] transition-[width] duration-200"
+                      }
+                      style={
+                        frameProgress === null
+                          ? undefined
+                          : { width: `${frameProgress * 100}%` }
+                      }
+                    />
+                  </span>
+                )}
               </p>
             )}
           </div>
