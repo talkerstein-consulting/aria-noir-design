@@ -12,8 +12,9 @@ import { formatPrice } from "@/lib/shop";
  * Checkout. Styled by `.story-pin` so the two read as one control.
  *
  * Stands down on the checkout itself, while the bag drawer is open (the
- * drawer has its own Checkout), and on a story page, whose own pill owns
- * the foot of the screen.
+ * drawer has its own Checkout), on a story page, whose own pill owns
+ * the foot of the screen, and in the try-on mirror, whose capture button
+ * sits where the pin would.
  */
 export function BagPin({ hidden = false }: { hidden?: boolean }) {
   const { resolved, ready, count } = useBag();
@@ -25,7 +26,8 @@ export function BagPin({ hidden = false }: { hidden?: boolean }) {
   }, [pathname]);
 
   const shown =
-    ready && count > 0 && !hidden && !story && !pathname.startsWith("/checkout");
+    ready && count > 0 && !hidden && !story && !pathname.startsWith("/checkout") &&
+    !pathname.startsWith("/try-on");
 
   return (
     <div

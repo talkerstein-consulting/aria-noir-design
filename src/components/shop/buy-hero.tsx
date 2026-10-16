@@ -159,6 +159,9 @@ export function BuyHero({ house }: { house: House }) {
   /* The buy control, and the box that holds its place while it is pinned. */
   const buyRowRef = useRef<HTMLDivElement>(null);
   const buySlotRef = useRef<HTMLDivElement>(null);
+  /* Buy now through the stack's Add to bag: while it is on screen the
+     pinned pill would only repeat it. */
+  const buyStackRef = useRef<HTMLDivElement>(null);
   /* A SNAPSHOT of what went in, not a flag. The picker and the stepper
      behind the sheet stay live, so reading `chosen` and `qty` from inside
      it would let the confirmation change its mind about what it just
@@ -378,9 +381,18 @@ export function BuyHero({ house }: { house: House }) {
        blinking off. A pinned element leaving under its own edge is the one
        piece of motion here that describes something real — it is going
        back to where it came from, and it comes back up the same way. */
+    /* It also steps down while Buy now and the stack's Add to bag are on
+       screen: the page's own buttons are right there, and the pill over
+       them was a third copy of the same two words. It comes back up as
+       soon as they scroll away. */
+    const stackInView = () => {
+      const s = buyStackRef.current?.getBoundingClientRect();
+      return !!s && s.height > 0 && s.top < window.innerHeight && s.bottom > 0;
+    };
     const follow = () => {
       const f = film();
-      const next = pinned && !!f && f.getBoundingClientRect().bottom < 0;
+      const next =
+        pinned && ((!!f && f.getBoundingClientRect().bottom < 0) || stackInView());
       if (next === gone) return;
       gone = next;
       if (next) row.setAttribute("data-gone", "true");
@@ -524,16 +536,46 @@ export function BuyHero({ house }: { house: House }) {
               </div>
             </div>
 
+            <div ref={buyStackRef}>
             {available ? (
               <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
                 Buy now
               </CtaButton>
             ) : null}
-            {tryOn ? (
-              <CtaLink href={tryOn} kind="secondary" className="mt-3 w-full">
-                Try these on
-              </CtaLink>
+            {/* On a phone the Add to bag above is pinned off to the foot of
+                the screen and leaves once the film has gone by, so the
+                stack carries its own: Try these on on the left, Add to bag
+                on the right. From lg the row above stays in place and this
+                is Try these on alone. */}
+            {tryOn || available ? (
+              <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-1">
+                {tryOn ? (
+                  <CtaLink
+                    href={tryOn}
+                    kind="secondary"
+                    className={available ? "w-full" : "col-span-2 w-full lg:col-span-1"}
+                  >
+                    {/* Short on a phone, so it fits half the row. */}
+                    {wide ? "Try these on" : "Try on"}
+                  </CtaLink>
+                ) : null}
+                {/* Hidden on the wrapper: the button's own display wins
+                    over a utility on the button itself. */}
+                {available ? (
+                  <div className={tryOn ? "lg:hidden" : "col-span-2 lg:hidden"}>
+                    <CtaButton
+                      className="w-full"
+                      alt="Add again"
+                      swapped={inBag}
+                      onClick={addToBag}
+                    >
+                      Add to bag
+                    </CtaButton>
+                  </div>
+                ) : null}
+              </div>
             ) : null}
+            </div>
 
             <p className="t-caption mt-6">
               {available
