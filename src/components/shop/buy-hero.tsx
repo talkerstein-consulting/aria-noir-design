@@ -5,6 +5,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -27,7 +28,14 @@ import { CtaButton, CtaLink } from "@/components/cta-link";
 import { RevealPlate } from "@/components/reveal";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { QtyStepper } from "@/components/shop/qty-stepper";
-import { tryOnHref } from "@/lib/try-on";
+import { tryOnHouses } from "@/lib/try-on";
+import dynamic from "next/dynamic";
+
+/* The mirror, loaded on the first press: nothing of it is worth a byte to
+   a reader who never asks to try a frame on. */
+const TryOn = dynamic(() => import("@/components/try-on/try-on").then((m) => m.TryOn), {
+  ssr: false,
+});
 import { BagAdded } from "@/components/shop/bag-added";
 import { turntableStem } from "@/lib/turntable";
 import { ProductModel, posterFor } from "@/components/product/product-model";
@@ -236,7 +244,11 @@ export function BuyHero({ house }: { house: House }) {
   /* The same line into the same bag, then straight to the checkout. No
      confirmation sheet: the reader has said what they want done next. */
   const router = useRouter();
-  const tryOn = tryOnHref(house.slug, chosen);
+  /* The try-on opens over this page, on this frame in this acetate, and
+     closes back to it. Null when the house has no try-on model. */
+  const tryOnSet = useMemo(() => tryOnHouses(), []);
+  const tryOn = tryOnSet.some((h) => h.slug === house.slug);
+  const [mirror, setMirror] = useState(false);
 
   const buyNow = () => {
     if (!chosen) return;
@@ -448,6 +460,14 @@ export function BuyHero({ house }: { house: House }) {
 
   return (
     <>
+      {mirror ? (
+        <TryOn
+          houses={tryOnSet}
+          embedded
+          start={{ house: house.slug, colour: chosen }}
+          onClose={() => setMirror(false)}
+        />
+      ) : null}
       {/* Three children, in the order a PHONE wants them: the frame, then
           the offer, then the photographs. On a wide screen the stylesheet
           puts the frame and the photographs back in one column with the
@@ -550,14 +570,14 @@ export function BuyHero({ house }: { house: House }) {
             {tryOn || available ? (
               <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-1">
                 {tryOn ? (
-                  <CtaLink
-                    href={tryOn}
+                  <CtaButton
                     kind="secondary"
                     className={available ? "w-full" : "col-span-2 w-full lg:col-span-1"}
+                    onClick={() => setMirror(true)}
                   >
                     {/* Short on a phone, so it fits half the row. */}
                     {wide ? "Try these on" : "Try on"}
-                  </CtaLink>
+                  </CtaButton>
                 ) : null}
                 {/* Hidden on the wrapper: the button's own display wins
                     over a utility on the button itself. */}

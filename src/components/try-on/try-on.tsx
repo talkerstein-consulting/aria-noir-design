@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useBag } from "@/lib/cart";
 import { Camera, ChevronDown, ChevronUp, Minus, Plus, SlidersHorizontal, X } from "lucide-react";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import {
@@ -82,7 +84,25 @@ function param(name: string) {
 }
 const noSubscribe = () => () => {};
 
-export function TryOn({ houses }: { houses: TryOnHouse[] }) {
+/**
+ * `embedded`: the buy page's mirror. The same screens in a full-screen
+ * layer over the page, opened on `start` rather than the query string, and
+ * closed back to the page by `onClose`. The URL is left alone: the reader
+ * never left the buy page.
+ */
+export function TryOn({
+  houses,
+  embedded = false,
+  start,
+  onClose,
+}: {
+  houses: TryOnHouse[];
+  embedded?: boolean;
+  start?: { house: string; colour?: string | null };
+  onClose?: () => void;
+}) {
+  const startParam = (name: "house" | "colour") =>
+    embedded ? (name === "house" ? start?.house ?? null : start?.colour ?? null) : param(name);
   /* `?fit=1`, development only: no camera, the frame on the tracker's
      reference head. See TryOnEngine.startFitCheck. Read through
      useSyncExternalStore so hydration sees the server's `false` first. */
@@ -96,12 +116,12 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
      screen draws depends on it, so the server's default and the client's
      choice render the same markup. */
   const [houseSlug, setHouseSlug] = useState(() => {
-    const slug = param("house");
+    const slug = startParam("house");
     return (houses.find((h) => h.slug === slug) ?? houses[0]).slug;
   });
   const startHouse = houses.find((h) => h.slug === houseSlug) ?? houses[0];
   const [colourName, setColourName] = useState(() => {
-    const name = param("colour");
+    const name = startParam("colour");
     return (startHouse.colours.find((c) => c.name === name) ?? startHouse.colours[0]).name;
   });
 
@@ -110,6 +130,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
      moved the address bar, so the initialisers above saw the previous
      page's URL. Must stay above the effect that writes the URL back. */
   useEffect(() => {
+    if (embedded) return;
     const next = houses.find((h) => h.slug === param("house"));
     if (!next) return;
     const name = param("colour");
@@ -173,11 +194,40 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
 
   /* ---- keep the URL on the frame being worn, so it can be sent ---- */
   useEffect(() => {
+    if (embedded) return;
     const url = new URL(window.location.href);
     url.searchParams.set("house", house.slug);
     url.searchParams.set("colour", colour.name);
     window.history.replaceState(null, "", url);
-  }, [house.slug, colour.name]);
+  }, [embedded, house.slug, colour.name]);
+
+  /* ---- embedded: the page under the layer holds still ---- */
+  useEffect(() => {
+    if (!embedded) return;
+    const lenis = (window as unknown as { __lenis?: { stop?: () => void; start?: () => void } }).__lenis;
+    const root = document.documentElement;
+    const was = root.style.overflow;
+    root.style.overflow = "hidden";
+    lenis?.stop?.();
+    return () => {
+      root.style.overflow = was;
+      lenis?.start?.();
+    };
+  }, [embedded]);
+
+  /* ---- checkout from the mirror ---- */
+  const { add } = useBag();
+  const router = useRouter();
+  const [added, setAdded] = useState<string | null>(null);
+  const addToBag = () => {
+    add(house.slug, colour.name, 1);
+    setAdded(`${house.slug}/${colour.name}`);
+  };
+  const buyNow = () => {
+    add(house.slug, colour.name, 1);
+    router.push("/checkout");
+  };
+  const inBag = added === `${house.slug}/${colour.name}`;
 
   /* ---- resize, and close the camera on the way out ---- */
   useEffect(() => {
@@ -221,7 +271,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
       });
       engineRef.current = engine;
       await (fitCheck ? engine.startFitCheck() : engine.start());
-      window.scrollTo(0, 0);
+      if (!embedded) window.scrollTo(0, 0);
       setPhase("live");
     } catch (code) {
       await engineRef.current?.destroy();
@@ -229,7 +279,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
       setError(ERRORS[String(code)] ?? ERROR_FALLBACK);
       setPhase("failed");
     }
-  }, [fitCheck]);
+  }, [fitCheck, embedded]);
 
   const close = useCallback(async () => {
     await engineRef.current?.destroy();
@@ -238,6 +288,21 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
     setStatus("searching");
     setPhase("idle");
   }, []);
+
+  /* Embedded: the camera off and the layer gone, back on the buy page. */
+  const leave = useCallback(async () => {
+    await close();
+    onClose?.();
+  }, [close, onClose]);
+  useEffect(() => {
+    if (!embedded) return;
+    const onKey = (e: KeyboardEvent) => {
+      /* The capture and the fine print take Escape first. */
+      if (e.key === "Escape" && !shot && !finePrintRef.current?.open) void leave();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [embedded, leave, shot]);
 
   /* ---- the camera goes off when the page is hidden ----
      Another tab, the app switcher, a locked phone: the stream is stopped,
@@ -330,9 +395,24 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
 
   return (
     <section
-      className={`on-ink relative bg-ink ${live ? "h-[100svh] min-h-[560px] overflow-hidden" : ""}`}
+      className={
+        embedded
+          ? `on-ink fixed inset-0 z-[200] bg-ink ${live ? "overflow-hidden" : "overflow-y-auto overscroll-contain"}`
+          : `on-ink relative bg-ink ${live ? "h-[100svh] min-h-[560px] overflow-hidden" : ""}`
+      }
       aria-label="Live try-on"
+      {...(embedded ? { role: "dialog", "aria-modal": true } : {})}
     >
+      {embedded && !live && (
+        <button
+          type="button"
+          onClick={leave}
+          className="fixed right-4 top-6 z-10 grid size-11 place-items-center bg-black/50 text-[var(--fg-primary)] backdrop-blur transition-colors hover:bg-black/80 sm:right-8"
+          aria-label="Close the try-on"
+        >
+          <X size={18} strokeWidth={1.5} />
+        </button>
+      )}
       {/* ---- the mirror ----
           Fixed to the viewport and laid out even while hidden, so the
           engine measures the screen it will draw on, not the landing. */}
@@ -495,7 +575,7 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
 
           <button
             type="button"
-            onClick={close}
+            onClick={embedded ? leave : close}
             className="absolute right-4 top-24 grid size-11 place-items-center bg-black/50 text-[var(--fg-primary)] backdrop-blur transition-colors hover:bg-black/80 sm:right-8"
             aria-label="Close the camera"
           >
@@ -567,14 +647,30 @@ export function TryOn({ houses }: { houses: TryOnHouse[] }) {
                   {!colour.available && " · Out of the workshop"}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <CtaButton onClick={capture} icon={<Camera size={16} strokeWidth={1.5} />}>
                   Capture
                 </CtaButton>
-                {/* A new tab, so the camera stays open behind it. */}
-                <CtaLink href={colour.href} kind="secondary" external>
-                  View the frame
-                </CtaLink>
+                {/* The frame on the face can be bought from the mirror:
+                    into the bag without leaving it, or straight to the
+                    checkout. */}
+                {colour.available ? (
+                  <>
+                    <CtaButton kind="secondary" alt="Add again" swapped={inBag} onClick={addToBag}>
+                      Add to bag
+                    </CtaButton>
+                    <CtaButton kind="secondary" className="cta-buy-now" onClick={buyNow}>
+                      Buy now
+                    </CtaButton>
+                  </>
+                ) : null}
+                {/* A new tab, so the camera stays open behind it. Embedded,
+                    the buy page is already under the layer. */}
+                {embedded ? null : (
+                  <CtaLink href={colour.href} kind="secondary" external>
+                    View the frame
+                  </CtaLink>
+                )}
               </div>
             </div>
           </div>

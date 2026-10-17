@@ -39,9 +39,10 @@ export function AlsoLike({ current }: { current: House }) {
       </div>
 
       {/* The home page's collection tiles, less the house on this page, on
-          the run's grid: full bleed, the section's gutters given back. */}
+          one row like the story's Other Collections (a slider below lg):
+          full bleed, the section's gutters given back. */}
       <div className="mt-10 -mx-[var(--gutter)] sm:-mx-[var(--gutter-wide)]">
-        <CollectionTiles items={collectionItems(current.slug)} single />
+        <CollectionTiles items={collectionItems(current.slug)} row />
       </div>
     </>
   );
