@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { House } from "@/lib/navigation";
+import { BoxFilm } from "@/components/shop/box-film";
 
 /**
  * The making, and what the frame arrives in (Nov 2026 review).
@@ -44,6 +45,11 @@ const PACKAGING = [
   },
 ] as const;
 
+const BOX_FILMS = [
+  { src: "/video/box/box-07.mp4", poster: "/video/box/box-07.jpg", label: "The black box opening on its frame" },
+  { src: "/video/box/box-06.mp4", poster: "/video/box/box-06.jpg", label: "The lacquer case, open, lined in red" },
+] as const;
+
 export function BuyCraft({ house }: { house: House }) {
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-16 lg:gap-24">
@@ -73,6 +79,14 @@ export function BuyCraft({ house }: { house: House }) {
           <p className="t-eyebrow">The case</p>
           <h2 className="t-display-md">What it arrives in.</h2>
         </div>
+        {/* The box films first (Jai's showcase, Film), the photographs under. */}
+        <ul className="grid grid-cols-2 gap-3 sm:gap-6">
+          {BOX_FILMS.map((f) => (
+            <li key={f.src} className="relative overflow-hidden bg-[var(--fg-rule)]" style={{ aspectRatio: "16 / 9" }}>
+              <BoxFilm src={f.src} poster={f.poster} label={f.label} />
+            </li>
+          ))}
+        </ul>
         {/* Two across at every width: a single column of four photographs of
             boxes would be the longest thing on a phone's buy page. */}
         <ul className="grid grid-cols-2 gap-3 sm:gap-6">

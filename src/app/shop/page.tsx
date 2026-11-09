@@ -34,10 +34,12 @@ export default function ShopAllPage() {
             stays for screen readers and the outline. */}
         <h1 className="sr-only">Shop all</h1>
         {/* Clear the fixed navbar. */}
-        <div className="pt-16 sm:pt-[5.5rem]">
+        {/* Black all the way down to the filter bar (Rems, 9 Nov): ink
+            gutters between the tiles, and the room under them is ink too. */}
+        <div className="pt-16 pb-10 sm:pt-[5.5rem] sm:pb-14">
           {/* Full span, the same grid as the home page: one set of
               collection tiles across the site. */}
-          <HomeCollections anchors />
+          <HomeCollections anchors gutter="ink" />
         </div>
         {/* Not a black rectangle. The boundary suspends on every cold
             entry, and what it hands over is the page's own shape; see

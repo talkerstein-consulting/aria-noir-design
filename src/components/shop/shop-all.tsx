@@ -365,7 +365,12 @@ export function ShopAll() {
   const suggestions = useMemo(() => fallback(), []);
 
   return (
-    <section className="on-paper section relative bg-paper !pt-10 sm:!pt-14" aria-labelledby="shop-heading">
+    <section
+      /* The room above the bar is ink, in app/shop/page.tsx; only a named
+         collection's heading needs paper above the bar. */
+      className={`on-paper section relative bg-paper ${current ? "!pt-10 sm:!pt-14" : "!pt-0"}`}
+      aria-labelledby="shop-heading"
+    >
       {/* The page's heading lives in app/shop/page.tsx, above the
           collection tiles. When a collection is chosen its name is said
           here, so the grid below is never anonymous. */}
