@@ -7,6 +7,7 @@ import { formatPrice, swatchFor } from "@/lib/shop";
 import { pieces } from "@/lib/shop-all";
 import { CollectionTiles, type CollectionTile } from "@/components/home/collection-tiles";
 import { turntableStem } from "@/lib/turntable";
+import { HomeHeroFilm } from "@/components/home/home-hero-film";
 
 /**
  * The home page, October v2. Rhythm after DITA: a full-screen picture, then
@@ -31,6 +32,7 @@ function Stage({
   phoneAspect,
   alt,
   priority = false,
+  media,
   children,
 }: {
   desktop: string;
@@ -38,22 +40,26 @@ function Stage({
   phoneAspect: string;
   alt: string;
   priority?: boolean;
+  /** In place of the still: the hero's film loop. */
+  media?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section className="relative w-full bg-ink lg:h-[100svh] lg:min-h-[560px] lg:overflow-hidden">
       <div className={`relative w-full ${phoneAspect} lg:absolute lg:inset-0 lg:aspect-auto`}>
-        <picture>
-          <source media="(max-width: 1023px)" srcSet={phone} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={desktop}
-            alt={alt}
-            loading={priority ? "eager" : "lazy"}
-            fetchPriority={priority ? "high" : undefined}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        </picture>
+        {media ?? (
+          <picture>
+            <source media="(max-width: 1023px)" srcSet={phone} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={desktop}
+              alt={alt}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : undefined}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </picture>
+        )}
         {/* The black the words stand on (desktop), the fade into them (phone). */}
         <div
           aria-hidden
@@ -77,6 +83,7 @@ export function HomeHero() {
       phoneAspect="aspect-[4/5]"
       alt="Aria and Noir, together, in ARCA I"
       priority
+      media={<HomeHeroFilm alt="ARCA I, the house film" />}
     >
       <h1 className="t-display-xl max-w-3xl text-paper rise-now">Frame your mind.</h1>
       <CtaLink href="/collections" className="rise-now">
@@ -138,11 +145,12 @@ export function collectionItems(exclude?: string): CollectionTile[] {
 export function HomeCollections({
   scroll = false,
   anchors = false,
-}: { scroll?: boolean; anchors?: boolean } = {}) {
+  gutter,
+}: { scroll?: boolean; anchors?: boolean; gutter?: "paper" | "ink" } = {}) {
   const items = collectionItems();
   return (
     <section aria-label="The collections" className="bg-ink">
-      <CollectionTiles items={items} scroll={scroll} anchors={anchors} />
+      <CollectionTiles items={items} scroll={scroll} anchors={anchors} gutter={gutter} />
     </section>
   );
 }
@@ -232,7 +240,7 @@ export function FrontTiles({ house: slug, colorways }: { house: string; colorway
                   <span className="block italic sm:inline">{f.colorway}</span>
                 </p>
                 {entry ? (
-                  <p className="t-caption tabular-nums text-ink/65">{formatPrice(entry.cents)}</p>
+                  <p className="price t-caption tabular-nums text-ink/65">{formatPrice(entry.cents)}</p>
                 ) : null}
               </div>
             </Link>

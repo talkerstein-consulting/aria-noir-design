@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import DepthRibbon from "@/components/depth-ribbon";
+import { CtaLink } from "@/components/cta-link";
 import type { GalleryRoom } from "@/lib/pages";
 
 /** Every room's plates on one ribbon, captioned with their house.
@@ -29,10 +30,22 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
     };
   }, [open]);
 
+  /* The photograph in front, and the frame in it to buy (call, 5 Nov:
+     gallery images link to the product; a hover overlay was too heavy,
+     and a phone has no hover). Tapping a plate brings it forward; the
+     link appears under it, quiet, and goes when the plate is let go. */
+  const [front, setFront] = useState<number>(-1);
   const shown = house ? rooms.filter((r) => r.eyebrow === house) : rooms;
   const items = shown.flatMap((room) =>
-    room.plates.map((p) => ({ src: p.src, alt: p.alt, title: room.eyebrow, subtitle: room.heading })),
+    room.plates.map((p) => ({
+      src: p.src,
+      alt: p.alt,
+      title: room.eyebrow,
+      subtitle: p.colorway ?? room.heading,
+      shop: shopFor(room.href, room.eyebrow, p.colorway),
+    })),
   );
+  const shop = front >= 0 ? items[front]?.shop : undefined;
   const choices: (string | null)[] = [null, ...rooms.map((r) => r.eyebrow)];
 
   return (
@@ -45,7 +58,16 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
         speed={1}
         ariaLabel={house ? `Aria Noir gallery, ${house}` : "Aria Noir gallery"}
         className="h-full w-full"
+        onFocusChange={(_, i) => setFront(i)}
       />
+
+      {shop ? (
+        <div className="absolute inset-x-0 bottom-[14%] z-20 flex justify-center px-4">
+          <CtaLink key={shop.href} href={shop.href} kind="secondary">
+            {shop.label}
+          </CtaLink>
+        </div>
+      ) : null}
 
       <div ref={menuRef} className="absolute left-6 top-24 z-20 sm:left-10">
         <button
@@ -87,6 +109,7 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
                     house === c ? "text-[var(--gold)]" : "text-paper"
                   }`}
                   onClick={() => {
+                    setFront(-1);
                     setHouse(c);
                     setOpen(false);
                   }}
@@ -100,4 +123,14 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
       </div>
     </section>
   );
+}
+
+/** The buy page for a room's house, at the acetate when the plate names one.
+ *  Rooms link to the story page (/arca-i) or the buy page (/shop/patriarca);
+ *  either way the house's slug is the last segment. */
+function shopFor(roomHref: string, house: string, colorway?: string) {
+  const slug = roomHref.split("/").pop();
+  if (!slug) return undefined;
+  const q = colorway ? `?colourway=${encodeURIComponent(colorway)}` : "";
+  return { href: `/shop/${slug}${q}`, label: colorway ? `Shop ${house} in ${colorway}` : `Shop ${house}` };
 }

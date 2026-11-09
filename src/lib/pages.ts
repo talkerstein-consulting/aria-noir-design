@@ -2,12 +2,11 @@
  * Copy and plate assignments for the section pages.
  *
  * Where a line came off arianoir.com it is kept as the house wrote it —
- * the brand/company/vision triptych, the care instructions, the shipping
+ * the brand/company/vision triptych, the shipping
  * windows. Where the live store had no page at all (the process) the copy is
  * written to the same voice, so it reads as the house and can be replaced
  * without hunting for it — but never where the copy would make a claim
- * about the product itself, which is why the fit guide that used to sit on
- * /care is gone rather than rewritten.
+ * about the product itself.
  *
  * Same bargain as lib/content.ts and lib/arca-i.ts: swap the strings, the
  * layout never needs touching.
@@ -20,8 +19,10 @@ const P = "/images/arca-i";
 
 export const about = {
   hero: {
-    eyebrow: "The House",
-    title: "Eyewear by designers, for visionaries.",
+    eyebrow: "Maison",
+    /* The house motto, restored (Jai's review, 5 Nov): "By designers, for
+       designers." Not "for visionaries". */
+    title: "Eyewear by designers, for designers.",
     line: [
       { text: "Symmetry, style,", italic: true },
       { text: "AND SOUL.", italic: false },
@@ -87,10 +88,10 @@ export const about = {
    * two pictures three times before the reader reached the quote.
    */
   study: {
-    preheader: "The House",
+    preheader: "Maison",
     heading: [
       { text: "By designers,", italic: true },
-      { text: "FOR VISIONARIES.", italic: false },
+      { text: "FOR DESIGNERS.", italic: false },
     ],
     stickyImage: "/images/matriarca/campaign/worn-aria-obelisk-courtyard.webp",
     stickyAlt: "MATRIARCA in the obelisk courtyard",
@@ -130,108 +131,6 @@ export const about = {
 
 /* ── Client · Care ───────────────────────────────────────────────── */
 
-/**
- * Every line on this page is arianoir.com's own.
- *
- * This section used to open with a five-point fit guide — bridge, nose,
- * temples, keyhole, brow line. The live store has no fit page and no fit
- * copy anywhere: not on the warranty page, not in the policies, not in a
- * single one of the thirty-six product descriptions. That guide was
- * written to the house's voice rather than taken from it, and one of its
- * rows made a claim about the product (an integrated cut nose rather than
- * wire pads) that nothing on the live site supports. Voice can be
- * imitated; a specification cannot.
- *
- * So the page is now what the house actually publishes: the warranty
- * page's CARE & RESPONSIBLE OWNERSHIP recommendations, each one paired
- * with the exclusion from the same document that explains why it matters,
- * and the brand commitment statement to close. If a fit guide is wanted,
- * the copy has to come from the bench, not from here.
- */
-
-export const care = {
-  hero: {
-    eyebrow: "Care",
-    title: "Designed with intention. Made to endure.",
-    line: [
-      { text: "Designed for longevity,", italic: true },
-      { text: "NOT INDESTRUCTIBILITY.", italic: false },
-    ],
-    plate: `${P}/object-shadow.webp`,
-    alt: "The object, raking shadow",
-  },
-  /**
-   * The four live care recommendations, plus the service route. Each
-   * `detail` is the matching line from the warranty's own exclusions —
-   * the recommendation says what to do, the exclusion says what happens
-   * if you don't.
-   */
-  keeping: {
-    preheader: "Care Recommendations",
-    heading: "To preserve the integrity and appearance of your Aria Noir eyewear.",
-    rows: [
-      {
-        term: "The case",
-        summary: "Store frames in their protective case when not in use.",
-        detail:
-          "Damage caused by impact, accident, misuse, or improper handling is not covered by the warranty. Aria Noir eyewear is designed for longevity, not indestructibility.",
-      },
-      {
-        term: "The lenses",
-        summary: "Clean lenses only with a microfiber cloth and approved solutions.",
-        detail:
-          "Scratches or surface wear to lenses are excluded from the warranty, as is damage from chemicals and solvents.",
-      },
-      {
-        term: "Lens-down",
-        summary: "Avoid placing frames lens-down on hard surfaces.",
-        detail:
-          "Normal wear, aging, or patina resulting from use is excluded from the warranty.",
-      },
-      {
-        term: "Heat and light",
-        summary:
-          "Do not expose eyewear to excessive heat or prolonged sunlight in enclosed spaces.",
-        detail:
-          "Exposure to extreme heat, chemicals, solvents, saltwater, or corrosive environments is excluded from the warranty.",
-      },
-      {
-        term: "Repairs",
-        summary:
-          "All evaluations are conducted by Aria Noir or its authorized service partners.",
-        detail:
-          "Unauthorized repairs, adjustments, or modifications are excluded from the warranty. Contact support@arianoir.com with proof of purchase and clear images of the issue, and our team will review and advise on next steps.",
-      },
-    ],
-    plates: [
-      { src: `${P}/spec-macro-nose.webp`, alt: "Macro: the nose" },
-      { src: `${P}/spec-macro-keyhole-wear.webp`, alt: "Macro: the keyhole, worn" },
-      { src: `${P}/spec-macro-inner-left-2.webp`, alt: "Macro: inner left temple, second study" },
-      { src: `${P}/spec-macro-inner-right.webp`, alt: "Macro: inner right temple" },
-      { src: `${P}/spec-macro-inner-right-2.webp`, alt: "Macro: inner right temple, second study" },
-    ],
-  },
-  /** Verbatim: the warranty page's brand commitment statement. */
-  ownership: {
-    preheader: "Responsible Ownership",
-    heading: "Proper care ensures longevity and preserves the architectural balance of the frame.",
-    body: [
-      "Aria Noir does not produce disposable objects. Each frame is made with the expectation of years — not seasons.",
-      "This warranty exists not as a promise of replacement, but as confidence in what we build.",
-    ],
-    images: [
-      { src: `${P}/object-front.webp`, alt: "The object, front elevation" },
-      { src: `${P}/object-rain.webp`, alt: "The object in rain" },
-    ],
-  },
-  close: {
-    heading: "Two-year international limited warranty.",
-    body: "Aria Noir eyewear is covered by a Two-Year International Limited Warranty against manufacturing defects, valid on authentic products purchased through authorized channels.",
-    cta: "Contact the studio",
-    href: "/contact",
-  },
-} as const;
-
 /* The `process` and `lookbook` page data used to sit here — two full
    page objects, heroes, bands and grids, for /house/process and
    /lookbook/ss26. Both routes have been removed from the site, so the
@@ -252,6 +151,8 @@ export type GalleryPlate = {
   src: string;
   alt: string;
   shape: "wide" | "half" | "tall";
+  /** The acetate worn in it, when known; the gallery links to it. */
+  colorway?: string;
 };
 
 export type GalleryRoom = {

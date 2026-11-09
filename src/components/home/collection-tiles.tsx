@@ -38,8 +38,12 @@ export function CollectionTiles({
   single = false,
   row = false,
   anchors = false,
+  gutter = "paper",
 }: {
   items: CollectionTile[];
+  /** The colour of the gaps between tiles: white everywhere, black on the
+   *  home page (Rems, 8-9 Nov). */
+  gutter?: "paper" | "ink";
   scroll?: boolean;
   single?: boolean;
   row?: boolean;
@@ -48,15 +52,17 @@ export function CollectionTiles({
   anchors?: boolean;
 }) {
   return (
+    /* The gaps between tiles show this list's own ground. */
     <ul
       className={
-        row
+        (gutter === "ink" ? "bg-ink " : "bg-paper ") +
+        (row
           ? "tiles-scroll flex gap-px snap-x snap-mandatory overflow-x-auto lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-visible"
           : scroll
           ? "tiles-scroll flex gap-1.5 snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
           : single
             ? "grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-4"
-            : "grid grid-cols-2 gap-1.5 lg:grid-cols-3"
+            : "grid grid-cols-2 gap-1.5 lg:grid-cols-3")
       }
     >
       {items.map((item) => (

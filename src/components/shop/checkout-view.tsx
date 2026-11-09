@@ -1287,7 +1287,7 @@ export function CheckoutView() {
             <div className="hairline mt-10 pt-8">
               <p className="t-eyebrow">Total</p>
               <p
-                className="t-display-xs mt-2 tabular-nums"
+                className="price t-display-xs mt-2 tabular-nums"
                 aria-live="polite"
                 aria-busy={!quote && !quoteError}
               >
@@ -1327,7 +1327,7 @@ export function CheckoutView() {
       <div className="checkout-foot" hidden={!totalBelow}>
         <dl className="checkout-foot-sum">
           <dt className="t-eyebrow">Total</dt>
-          <dd className="tabular-nums">
+          <dd className="price tabular-nums">
             {quote?.order
               ? formatPrice(quote.order.total)
               : whereComplete && !quoteError

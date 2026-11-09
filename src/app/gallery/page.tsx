@@ -17,6 +17,7 @@ const rooms = gallery.rooms.map((room) => {
         src: w.src,
         alt: `${room.eyebrow} in ${w.colorway}, worn`,
         shape: "tall" as const,
+        colorway: w.colorway,
       })),
     ],
   };

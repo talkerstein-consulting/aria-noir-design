@@ -149,12 +149,12 @@ export function OrderSummary({
       <dl className="summary-money hairline mt-8 pt-8">
         <div>
           <dt>Subtotal</dt>
-          <dd className="tabular-nums">{formatPrice(subtotal)}</dd>
+          <dd className="price tabular-nums">{formatPrice(subtotal)}</dd>
         </div>
         {discount ? (
           <div>
             <dt>Code</dt>
-            <dd className="tabular-nums">−{formatPrice(discount)}</dd>
+            <dd className="price tabular-nums">−{formatPrice(discount)}</dd>
           </div>
         ) : null}
         <div>
@@ -166,13 +166,13 @@ export function OrderSummary({
         </div>
         <div>
           <dt>Tax</dt>
-          <dd className="tabular-nums">
+          <dd className="price tabular-nums">
             {o ? formatPrice(tax) : pending ? "…" : <span className="t-caption">At the address</span>}
           </dd>
         </div>
         <div className="summary-total">
           <dt>Total</dt>
-          <dd className="tabular-nums">{o ? formatPrice(o.total) : pending ? "…" : formatPrice(subtotal)}</dd>
+          <dd className="price tabular-nums">{o ? formatPrice(o.total) : pending ? "…" : formatPrice(subtotal)}</dd>
         </div>
       </dl>
       {quoteError ? (

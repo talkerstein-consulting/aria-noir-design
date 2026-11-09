@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { kickPlay } from "@/lib/autoplay";
 import { useState } from "react";
-import { CtaLink } from "@/components/cta-link";
+import { SizeGuide, type GuideStep, type FrameFront } from "@/components/shop/size-guide";
 
 /**
  * What a buyer checks before spending money, as an FAQ beside the film.
@@ -39,6 +39,15 @@ export type DetailTab = {
   id: string;
   label: string;
   paragraphs: readonly string[];
+  /** The sizing guide (diagram + how to measure), between the paragraphs
+   *  and the table. Fit row only. */
+  guide?: readonly GuideStep[];
+  /** The frame's own front, measured, drawn above the guide. Fit row only. */
+  frame?: FrameFront;
+  /** A measured table under the paragraphs (the Fit row). Term, then value. */
+  rows?: readonly { term: string; value: string }[];
+  /** A closing line under the table, set apart from the paragraphs. */
+  note?: string;
 };
 
 export function BuyDetail({
@@ -106,6 +115,23 @@ export function BuyDetail({
                           {line}
                         </p>
                       ))}
+                      {tab.guide?.length ? <SizeGuide steps={tab.guide} frame={tab.frame} /> : null}
+                      {tab.rows?.length ? (
+                        <dl className="max-w-[var(--measure)] border-t border-[var(--fg-rule)]">
+                          {tab.rows.map((row) => (
+                            <div
+                              key={row.term}
+                              className="flex items-baseline justify-between gap-6 border-b border-[var(--fg-rule)] py-3"
+                            >
+                              <dt className="t-label">{row.term}</dt>
+                              <dd className="t-body text-[var(--fg-primary)]">{row.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      ) : null}
+                      {tab.note ? (
+                        <p className="t-body italic text-[var(--fg-secondary)]">{tab.note}</p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -114,12 +140,6 @@ export function BuyDetail({
           })}
         </ul>
 
-        {/* The errand that belongs to the questions rather than to the
-            offer: fit is the one thing the rows above cannot settle, and a
-            reader asks it INSTEAD of opening another row. */}
-        <div className="mt-12">
-          <CtaLink href="/care" kind="secondary">Read the care guide</CtaLink>
-        </div>
       </div>
 
       {/* ---- right: the film ---- */}

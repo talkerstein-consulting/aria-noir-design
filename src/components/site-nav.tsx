@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { rememberBrowsing, OPEN_BAG_PARAM } from "@/lib/last-browsed";
-import { Search, ShoppingBag, UserRound, X } from "lucide-react";
+
 import { nav } from "@/lib/content";
 import { AriaWordmark } from "@/components/aria-wordmark";
 import { SiteMenu } from "@/components/site-menu";
@@ -355,7 +355,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             type="button"
             /* On a phone, search and the account live in the menu; the
                bag is the one errand kept in the bar. */
-            className="nav-icon nav-icon--morph nav-icon--wide"
+            className="nav-icon nav-icon--word nav-icon--morph nav-icon--wide"
             onClick={() => {
               const next = !inlineSearch;
               only("search", false);
@@ -364,8 +364,8 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             aria-expanded={inlineSearch}
             aria-label={inlineSearch ? "Close search" : "Search"}
           >
-            <Search className="morph-in" aria-hidden />
-            <X className="morph-out" aria-hidden />
+            <span className="morph-in" aria-hidden>Search</span>
+            <span className="morph-out" aria-hidden>Close</span>
           </button>
           {/* Opens the desk drawer rather than leaving for /desk. It was
               the one control in this band that navigated, and beside two
@@ -374,14 +374,13 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
               page still exists and the drawer links to it. */}
           <button
             type="button"
-            className="nav-icon nav-icon--morph nav-icon--wide"
+            className="nav-icon nav-icon--word nav-icon--morph nav-icon--wide"
             onClick={() => only("desk", !deskOpen)}
             aria-expanded={deskOpen}
             aria-label={deskOpen ? "Close your account" : "Your account"}
-            title="Your account"
           >
-            <UserRound className="morph-in" aria-hidden />
-            <X className="morph-out" aria-hidden />
+            <span className="morph-in" aria-hidden>Account</span>
+            <span className="morph-out" aria-hidden>Close</span>
           </button>
 
           {/* Opens the drawer rather than going to /bag. The page still
@@ -390,7 +389,7 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
               were reading. */}
           <button
             type="button"
-            className="nav-icon nav-icon--morph"
+            className="nav-icon nav-icon--word nav-icon--morph"
             onClick={() => only("bag", !bagOpen)}
             aria-expanded={bagOpen}
             aria-label={
@@ -400,15 +399,12 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
                   ? `${nav.bag}, ${count} ${count === 1 ? "piece" : "pieces"}`
                   : nav.bag
             }
-            title={nav.bag}
           >
-            <ShoppingBag className="morph-in" aria-hidden />
-            <X className="morph-out" aria-hidden />
-            {ready && count && !bagOpen ? (
-              <span className="nav-icon-count" aria-hidden>
-                {count}
-              </span>
-            ) : null}
+            <span className="morph-in" aria-hidden>
+              {nav.bag}
+              {ready && count ? <span className="nav-icon-count">{count}</span> : null}
+            </span>
+            <span className="morph-out" aria-hidden>Close</span>
           </button>
         </div>
 

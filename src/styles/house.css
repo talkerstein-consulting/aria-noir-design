@@ -348,6 +348,9 @@ html:has(.route-cover) .site-nav .nav-mark svg { visibility: hidden; }
    paints behind the header stays ink, so the white navbar stays legible. */
 .shop-bar.on-paper { background: var(--paper); color: var(--ink); }
 .shop-bar.on-paper .shop-tool { color: var(--ink); }
+/* Inverted (Shop All, Nov 2026): ink strip, paper type. */
+.shop-bar.on-ink { background: var(--ink); color: var(--paper); }
+.shop-bar.on-ink .shop-tool { color: var(--paper); }
 
 /* Centred grid: four across on desktop, two on phones, and a short
    collection sits in the middle of the row rather than at its left. */
@@ -554,3 +557,73 @@ html:has(.route-burn) .site-nav .nav-mark svg { visibility: hidden; }
   visibility: hidden;
   pointer-events: none;
 }
+
+/* ── The footer emblem ──
+   Jai's review (5 Nov): the giant wordmark goes; a small monogram sits
+   above the legal row. The breaker's emblem, once, at 2x its size, and at
+   the type's colour so it reads as the mark rather than a rule. */
+.footer-emblem {
+  display: block;
+  width: 48px;
+  height: 30px;
+  background-color: currentColor;
+  opacity: 0.85;
+  -webkit-mask: var(--breaker-emblem) center / contain no-repeat;
+  mask: var(--breaker-emblem) center / contain no-repeat;
+}
+
+/* ── Header errands as words (Raviv, 5 Nov: "instead of icons I would just
+   put the text") ──
+   Same type as the nav words on the left, so the bar reads as one line of
+   words. The open state still says what it has become: the word fades to
+   CLOSE in the same cell. Fade only; a rotating word reads as a glitch. */
+.nav-icon.nav-icon--word {
+  width: auto;
+  min-width: 2.75rem;
+  padding-inline: 0.25rem;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nav-icon--word.nav-icon--morph .morph-out,
+.nav-icon--word.nav-icon--morph[aria-expanded="true"] .morph-in,
+.nav-icon--word.nav-icon--morph[aria-expanded="true"] .morph-out {
+  transform: none;
+}
+.nav-icon--word .nav-icon-count {
+  position: static;
+  margin-left: 0.35em;
+  font-size: inherit;
+}
+
+/* ── About tabs ──
+   Sized as the navbar's words (Rems, 9 Nov): same type, same 1.75rem gap,
+   same 0.85 resting opacity. The row is 44px tall, the touch minimum. The
+   current tab carries a rule under it. */
+.about-tabs { gap: 1.75rem; scrollbar-width: none; }
+.about-tabs::-webkit-scrollbar { display: none; }
+.about-tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.85;
+  border-bottom: 1px solid transparent;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.about-tab:hover,
+.about-tab:focus-visible { opacity: 1; }
+.about-tab[aria-current="page"] { opacity: 1; border-bottom-color: currentColor; }
+@media (prefers-reduced-motion: reduce) { .about-tab { transition: none; } }
+
+/* Home: the Instagram strip (home-social.tsx). Equal squares edge to
+   edge: two across on a phone, four on a tablet, six on a desktop. */
+.social-card { --cols: 2; }
+@media (min-width: 768px) { .social-card { --cols: 4; } }
+@media (min-width: 1200px) { .social-card { --cols: 6; } }

@@ -69,12 +69,17 @@ export const menu = {
      inventory sat at the top of About us instead. It has its own room
      now (/shop), About us is about the house again, and the Gallery is
      the six campaigns walked as six rooms. */
+  /* ---- Nov 2026 naming (Jai's review, "What we call things") ----
+     "Collections" is "The Collection". About opens on a tab bar of the
+     house's rooms: About, Heritage, Craftsmanship (Raviv, 5 Nov;
+     tabs rather than a dropdown, and labelled About: Rems, 8 Nov). The
+     tabs live on the pages, see components/page/about-tabs. */
   primary: [
     { label: "Home", href: "/" },
-    { label: "Collections", href: "/collections" },
+    { label: "The Collection", href: "/collections" },
     { label: "Shop All", href: "/shop" },
     { label: "Gallery", href: "/gallery" },
-    { label: "About us", href: "/house/about" },
+    { label: "Maison", href: "/house/about" },
     { label: "Contact", href: "/contact" },
     /* Typed, not `satisfies`: nothing in the stack leaves the site any
        more, and the menu still reads `external` off every entry. */
@@ -86,7 +91,6 @@ export const menu = {
      rather than picking one. "All pages" is this build's own addition and
      the way to every room the storefront has no equivalent for. */
   secondary: [
-    { label: "Care", href: "/care" },
     { label: "Shipping", href: "/policies/shipping" },
     { label: "Returns", href: "/policies/returns" },
     { label: "Warranty", href: "/policies/warranty" },
@@ -680,7 +684,8 @@ export const allHouses: readonly House[] = [
     colorwaySills: {
       "Dark Tortoise": "/images/ahava/variants/dark-tortoise-sill.webp",
       "Caramel Stripe": "/images/ahava/variants/caramel-stripe-sill.webp",
-      "Rose": "/images/ahava/variants/rose-sill.webp",
+      /* 2nd Rerun (Nov 2026): the Rose acetate front-on, on the salon table. */
+      "Rose": "/images/ahava/rerun/variation/rose/hero-front.webp",
       "Noir": "/images/ahava/variants/noir-sill.webp",
       "Root Beer Float": "/images/ahava/variants/root-beer-float-sill.webp",
       "Tutti Frutti": "/images/ahava/variants/tutti-frutti-sill.webp",
@@ -710,12 +715,18 @@ export const allHouses: readonly House[] = [
     campaign: {
       place: "Paris. A sixth floor, before the street is awake.",
       line: "Nothing in the room competes with it.",
-      world: "/images/ahava/campaign/wide-grand-salon-full-depth.webp",
+      /* ---- 2nd Rerun (Nov 2026 review) ----
+         Jai: "mood shots with no product in them" stop, and every frame
+         shows the real thing. The world was the salon with nobody in it;
+         it is now both of them at the window, wearing it. The macro is
+         the bridge emblem rather than a lens over a coffee cup. Source:
+         public/images/ahava/rerun (scripts/import-rerun-photography.mjs). */
+      world: "/images/ahava/rerun/duo/window-light-together.webp",
       worn: [
-        "/images/ahava/campaign/worn-aria-reading-chair.webp",
-        "/images/ahava/campaign/worn-noir-enfilade-door.webp",
+        "/images/ahava/rerun/medium/reading-chair-aria.webp",
+        "/images/ahava/rerun/medium/enfilade-threshold-noir.webp",
       ],
-      macro: "/images/ahava/campaign/macro-lens-coffee-cup.webp",
+      macro: "/images/ahava/rerun/detail/bridge-main-symbol.webp",
     },
     note: "The house's most considered frame, and the one it prices highest.",
   },
@@ -757,8 +768,9 @@ export const allHouses: readonly House[] = [
     /* The same setup in landscape, held across the whole run: the picker
        moves and only the colour of the frame changes. */
     colorwaySills: {
-      "Brown": "/images/matriarca/variants/brown-sill.webp",
-      "Midnight Noir": "/images/matriarca/variants/midnight-noir-sill.webp",
+      /* 2nd Rerun (Nov 2026): each acetate front-on, on the same sandstone. */
+      "Brown": "/images/matriarca/rerun/variation/brown/hero-front.webp",
+      "Midnight Noir": "/images/matriarca/rerun/variation/midnightnoir/hero-front.webp",
     },
     /* The polished black is the frame the house leads with, and the only one of the three with a full set. */
     heroColorway: "Midnight Noir",
@@ -778,12 +790,15 @@ export const allHouses: readonly House[] = [
     campaign: {
       place: "Karnak. Abu Simbel. Giza.",
       line: "The monuments are enormous. The object is not.",
-      world: "/images/matriarca/campaign/wide-aria-solo-wide-02-giza-dune-panoramic.webp",
+      /* 2nd Rerun (Nov 2026 review): the dune with Noir in it rather than
+         the dune alone, two faces close enough to read the frame, and the
+         bridge emblem. See AHAVA. */
+      world: "/images/matriarca/rerun/medium/giza-dune-deep-focus-noir.webp",
       worn: [
-        "/images/matriarca/campaign/worn-aria-closeup-02-profile-golden.webp",
-        "/images/matriarca/campaign/worn-noir-closeup-01-stone-archway.webp",
+        "/images/matriarca/rerun/face-fill/aria-soft-falloff.webp",
+        "/images/matriarca/rerun/face-fill/noir-soft-falloff.webp",
       ],
-      macro: "/images/matriarca/campaign/macro-macro-01-bridge-relief.webp",
+      macro: "/images/matriarca/rerun/detail/bridge-main-symbol.webp",
     },
     note: "Midnight Noir, Black Wood, Brown. The Black Wood is currently out of the workshop.",
   },
@@ -820,8 +835,10 @@ export const allHouses: readonly House[] = [
        one model for the whole house, which is the other reason the
        photograph has to carry the colour here.) */
     colorwaySills: {
-      "Black": "/images/patriarca/variants/black-sill.webp",
-      "Brown": "/images/patriarca/variants/brown-sill.webp",
+      /* 2nd Rerun (Nov 2026): Black and Brown front-on, on the marble.
+         The rerun has no Midnight Noir variation, so it keeps the first run's. */
+      "Black": "/images/patriarca/rerun/variation/black/hero-front.webp",
+      "Brown": "/images/patriarca/rerun/variation/brown/hero-front.webp",
       "Midnight Noir": "/images/patriarca/variants/midnight-noir-sill.webp",
     },
     /* Same rule as MATRIARCA: the polished black leads, and it carries the longest set. */
@@ -842,12 +859,15 @@ export const allHouses: readonly House[] = [
     campaign: {
       place: "Rome. Marble, and the last hour of the light.",
       line: "Worn like something issued rather than bought.",
-      world: "/images/patriarca/campaign/wide-basilica-interior.webp",
+      /* 2nd Rerun (Nov 2026 review): Aria among the columns and her
+         reflection, in place of the empty basilica; Noir close, Aria at the
+         threshold; the bridge emblem on stone. See AHAVA. */
+      world: "/images/patriarca/rerun/loose/aria-creative-03-reflection.webp",
       worn: [
-        "/images/patriarca/campaign/worn-aria-among-columns.webp",
-        "/images/patriarca/campaign/worn-noir-marble-staircase.webp",
+        "/images/patriarca/rerun/face-fill/noir-soft-falloff.webp",
+        "/images/patriarca/rerun/medium/basilica-threshold-aria.webp",
       ],
-      macro: "/images/patriarca/campaign/macro-macro-02-hinge-column.webp",
+      macro: "/images/patriarca/rerun/loose/macro-01-bridge-stone.webp",
     },
     note: "The widest frame the house cuts, in three finishes and no more.",
   },
@@ -898,13 +918,16 @@ export const allHouses: readonly House[] = [
        one model for the whole house, which is the other reason the
        photograph has to carry the colour here.) */
     colorwaySills: {
-      "Caramel Stripe": "/images/monarca/variants/caramel-stripe-sill.webp",
-      "Dark Tortoise": "/images/monarca/variants/dark-tortoise-sill.webp",
-      "Dreamy Rose": "/images/monarca/variants/dreamy-rose-sill.webp",
-      "Noir": "/images/monarca/variants/noir-sill.webp",
-      "Pixie Dust": "/images/monarca/variants/pixie-dust-sill.webp",
-      "Tutti Frutti": "/images/monarca/variants/tutti-frutti-sill.webp",
-      "Velvet Rose": "/images/monarca/variants/velvet-rose-sill.webp",
+      /* 2nd Rerun (Nov 2026): the canal ledge, one composition for all
+         seven. Noir is the rerun's "v2-realphoto" pass, built on a real
+         photograph of the frame. */
+      "Caramel Stripe": "/images/monarca/rerun/colorway/caramel-stripe-16x9.webp",
+      "Dark Tortoise": "/images/monarca/rerun/colorway/dark-tortoise-16x9.webp",
+      "Dreamy Rose": "/images/monarca/rerun/colorway/dreamy-rose-16x9.webp",
+      "Noir": "/images/monarca/rerun/colorway/noir-16x9-v2-realphoto.webp",
+      "Pixie Dust": "/images/monarca/rerun/colorway/pixie-dust-16x9.webp",
+      "Tutti Frutti": "/images/monarca/rerun/colorway/tutti-frutti-16x9.webp",
+      "Velvet Rose": "/images/monarca/rerun/colorway/velvet-rose-16x9.webp",
     },
     /* The house had no photograph at all until this run; Noir is where its own listing starts. */
     heroColorway: "Noir",
@@ -931,12 +954,16 @@ export const allHouses: readonly House[] = [
     campaign: {
       place: "A palazzo out of season. Canals, lantern light, rain.",
       line: "Nobody says what happened in the room before.",
-      world: "/images/monarca/campaign/wide-vaulted-gallery-hall.webp",
+      /* 2nd Rerun (Nov 2026 review): the frame on a wet ledge by the
+         canal in place of the empty gallery hall; the two of them by
+         lantern and doorway; the gold emblem, front on. Not the Noir sill,
+         which opens the buy page and must not appear twice. See AHAVA. */
+      world: "/images/monarca/rerun/macro/lens-bevel-water-reflection.webp",
       worn: [
-        "/images/monarca/campaign/worn-aria-mirror-reflection.webp",
-        "/images/monarca/campaign/worn-noir-water-reflection.webp",
+        "/images/monarca/rerun/model-4x5/aria-lantern-bridge.webp",
+        "/images/monarca/rerun/model-4x5/noir-alley-doorway.webp",
       ],
-      macro: "/images/monarca/campaign/macro-lens-bevel-water-reflection.webp",
+      macro: "/images/monarca/rerun/macro/center-front-gold-emblem.webp",
     },
     note: "Seven colourways, including the Velvet Rose the house prices as a premium acetate.",
   },
@@ -1012,16 +1039,21 @@ export const sitemap: readonly SitemapGroup[] = [
     ],
   },
   {
-    title: "The House",
+    /* About's rooms, then Press (a low-key footer link) and Careers, which
+       belongs in the footer (call, 5 Nov). */
+    title: "Maison",
     links: [
       { label: "About", href: "/house/about" },
+      { label: "Heritage", href: "/house/heritage" },
+      { label: "Craftsmanship", href: "/house/craftsmanship" },
+      { label: "Press", href: "/house/press" },
+      { label: "Careers", href: "/house/careers" },
       { label: "Contact", href: "/contact" },
     ],
   },
   {
     title: "Client",
     links: [
-      { label: "Care", href: "/care" },
       { label: "Shipping", href: "/policies/shipping" },
       { label: "Returns", href: "/policies/returns" },
       { label: "Warranty", href: "/policies/warranty" },
@@ -1213,12 +1245,6 @@ export const architecture: readonly RouteGroup[] = [
     title: "The small print",
     note: "The pages people go looking for rather than browse into.",
     routes: [
-      {
-        label: "Care",
-        href: "/care",
-        note: "Adjustable at five points. The answer to most of what a return would be.",
-        kind: "built",
-      },
       /* From the policies themselves, so one added there appears here
          without an edit. `policies.ts` imports nothing from this file at
          runtime — its one import is a type — so there is no cycle. */

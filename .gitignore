@@ -88,3 +88,8 @@ scripts/colourway-wiring.generated.txt
 /mobile color photos/
 
 covers-out/
+
+# Before/after screenshots for the Nov 2026 revision PDF (about 70 MB of JPEGs).
+# The PDF built from them stays tracked; re-capture with the scratch scripts if needed.
+/docs/feedback/review/before/
+/docs/feedback/review/after/

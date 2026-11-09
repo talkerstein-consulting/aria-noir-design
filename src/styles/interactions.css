@@ -858,12 +858,10 @@
    control that is a picture and a control that is a word still read as
    the same family of object. */
 
-/* The price is set in the BODY face, not the display serif, and one step
-   above the description it sits under. The two are one statement — this
-   is the thing, this is what it costs — and a serif price would make it a
-   second headline arguing with the first. */
+/* The price is set in the display serif (Jai, review deck p.21: "bring it
+   into the serif"; the family rule lives in typography.css with every
+   other price), one step above the description it sits under. */
 .buy-price {
-  font-family: var(--font-ui-stack);
   font-size: var(--text-body-lg);
   line-height: var(--leading-body);
   color: var(--fg-primary);

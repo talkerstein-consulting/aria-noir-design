@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SiteNav } from "@/components/site-nav";
 import { TryOn } from "@/components/try-on/try-on";
-import { tryOnHouses } from "@/lib/try-on";
+import { mirrorHouses } from "@/lib/try-on";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/try-on" },
@@ -22,7 +22,7 @@ export default function TryOnPage() {
     <>
       <SiteNav />
       <main id="main" tabIndex={-1} className="relative">
-        <TryOn houses={tryOnHouses()} />
+        <TryOn houses={mirrorHouses()} />
       </main>
     </>
   );

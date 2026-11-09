@@ -182,8 +182,19 @@ export function ProductBuy({
             {/* One screen: the frame, its name, the acetate, the bag.
                 The pinhole opens on this screen, so all of it is what the
                 hole uncovers. */}
-            <div className="flex h-svh w-full flex-col items-center justify-center pt-16">
-            <div className="relative aspect-square w-full max-w-[min(560px,46svh)]">
+            {/* `min-h-svh`, not `h-svh`: on a phone in landscape the stack is
+                taller than the screen, and a fixed-height centred column
+                pushed the turntable up out of its own box and under the
+                pinhole sheet - the "disappears in landscape" bug. On a short
+                screen the turntable takes most of the height instead of 46%.
+
+                `z-[3]` lifts the turntable over the pinhole's ink sheet (z 2),
+                which takes pointer hits until the hole is fully open; the
+                frame was undraggable until the counter reached the top of
+                the screen. Multiplied onto ink it stays invisible until the
+                hole uncovers it, so nothing shows early. */}
+            <div className="flex min-h-svh w-full flex-col items-center justify-center pt-16">
+            <div className="relative z-[3] aspect-square w-full max-w-[min(560px,46svh)] [@media(orientation:landscape)_and_(max-height:540px)]:max-w-[min(560px,78svh)]">
               {stem ? (
                 <Image
                   key={stem}

@@ -168,7 +168,7 @@ function ShopTile({ piece }: { piece: Piece }) {
           {piece.collectionName}{" "}
           <span className="block italic sm:inline">{piece.name}</span>
         </p>
-        <p className="t-caption tabular-nums text-ink/65">{formatPrice(piece.cents)}</p>
+        <p className="price t-caption tabular-nums text-ink/65">{formatPrice(piece.cents)}</p>
         {!piece.available ? <p className="t-caption text-ink/45">Sold out</p> : null}
       </div>
     </Link>
@@ -387,7 +387,8 @@ export function ShopAll() {
       <div ref={sentinel} aria-hidden="true" />
       <div
         ref={barRef}
-        className="shop-bar on-paper"
+        /* Inverted: black strip, paper type (Rems, 9 Nov). */
+        className="shop-bar on-ink"
         data-stuck={stuck || undefined}
         data-filters={filtersOpen || undefined}
       >

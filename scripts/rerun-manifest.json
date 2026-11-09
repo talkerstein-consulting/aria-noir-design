@@ -1,0 +1,1349 @@
+{
+  "ahava": [
+    {
+      "src": "/images/ahava/rerun/creative/birdseye-herringbone-spiral-aria.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/birdseye-herringbone-spiral-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/dutch-angle-corridor-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/dutch-angle-corridor-noir.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/extreme-bokeh-candlelight-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/extreme-bokeh-candlelight-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/frozen-motion-coat-flare-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/frozen-motion-coat-flare-noir.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/gilt-mirror-duality-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/gilt-mirror-duality-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/one-point-corridor-duo.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/one-point-corridor-duo.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/rain-on-glass-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/rain-on-glass-noir.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/silhouette-doorway-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/silhouette-doorway-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/creative/worms-eye-windowframe-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/Ahava Creative Tier - Sep 18 2026/09-creative/worms-eye-windowframe-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/detail/bridge-main-symbol.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/02-detail/bridge-main-symbol.png"
+    },
+    {
+      "src": "/images/ahava/rerun/detail/inner-temple.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/02-detail/inner-temple.png"
+    },
+    {
+      "src": "/images/ahava/rerun/detail/side-symbol-temple.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/02-detail/side-symbol-temple.png"
+    },
+    {
+      "src": "/images/ahava/rerun/detail/the-hinge.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/02-detail/the-hinge.png"
+    },
+    {
+      "src": "/images/ahava/rerun/duo/window-light-together.webp",
+      "role": "duo",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/07-duo/window-light-together.png"
+    },
+    {
+      "src": "/images/ahava/rerun/environment/the-facade.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/05-environment/the-facade.png"
+    },
+    {
+      "src": "/images/ahava/rerun/environment/the-french-window.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/05-environment/the-french-window.png"
+    },
+    {
+      "src": "/images/ahava/rerun/face-fill/aria-fisheye-distortion.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/01-face-fill/aria-fisheye-distortion.png"
+    },
+    {
+      "src": "/images/ahava/rerun/face-fill/noir-fisheye-distortion.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/01-face-fill/noir-fisheye-distortion.png"
+    },
+    {
+      "src": "/images/ahava/rerun/face-fill/noir-shallow-isolation.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/01-face-fill/noir-shallow-isolation.png"
+    },
+    {
+      "src": "/images/ahava/rerun/loose/aria-fisheye-closeup.webp",
+      "role": "loose",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/aria-fisheye-closeup.jpeg"
+    },
+    {
+      "src": "/images/ahava/rerun/loose/hero-noir-16x9.webp",
+      "role": "loose",
+      "width": 1376,
+      "height": 768,
+      "from": "Ahava Fresh Batch - Sep 18 2026/hero-noir-16x9.jpeg"
+    },
+    {
+      "src": "/images/ahava/rerun/medium/enfilade-threshold-aria.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/03-medium/enfilade-threshold-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/medium/enfilade-threshold-noir.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/03-medium/enfilade-threshold-noir.png"
+    },
+    {
+      "src": "/images/ahava/rerun/medium/long-salon-full-depth-aria.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/03-medium/long-salon-full-depth-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/medium/long-salon-soft-falloff-noir.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/03-medium/long-salon-soft-falloff-noir.png"
+    },
+    {
+      "src": "/images/ahava/rerun/medium/reading-chair-aria.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/03-medium/reading-chair-aria.png"
+    },
+    {
+      "src": "/images/ahava/rerun/medium/reading-chair-noir.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Ahava Fresh Batch - Sep 18 2026/03-medium/reading-chair-noir.png"
+    },
+    {
+      "src": "/images/ahava/rerun/variation/black/profile.webp",
+      "role": "variation/black",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/08-variation/Black/profile.png"
+    },
+    {
+      "src": "/images/ahava/rerun/variation/rose/environmental-wide.webp",
+      "role": "variation/rose",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/08-variation/Rose/environmental-wide.png"
+    },
+    {
+      "src": "/images/ahava/rerun/variation/rose/hero-front.webp",
+      "role": "variation/rose",
+      "width": 2400,
+      "height": 1340,
+      "from": "Ahava Fresh Batch - Sep 18 2026/08-variation/Rose/hero-front.png"
+    }
+  ],
+  "alpaca-sweater": [
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/birdseye-parquet-star-duo.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/birdseye-parquet-star-duo.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/dutch-angle-staircase-aria.webp",
+      "role": "creative",
+      "width": 768,
+      "height": 1376,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/dutch-angle-staircase-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/extreme-bokeh-gallery-lights-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/extreme-bokeh-gallery-lights-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/fisheye-gallery-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/fisheye-gallery-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/frozen-motion-turn-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/frozen-motion-turn-noir.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/one-point-long-gallery-duo.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/one-point-long-gallery-duo.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/silhouette-gallery-doorway-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/silhouette-gallery-doorway-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/through-glass-pyramid-reflection-duo.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/through-glass-pyramid-reflection-duo.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/through-velvet-rope-bokeh-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/through-velvet-rope-bokeh-noir.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/creative/worms-eye-winged-victory-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/Alpaca Sweater Creative Tier - Sep 18 2026/09-creative/worms-eye-winged-victory-noir.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/detail/the-cuff.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/02-detail/the-cuff.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/detail/the-hem.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/02-detail/the-hem.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/detail/the-seam.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/02-detail/the-seam.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/detail/the-weave.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/02-detail/the-weave.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/duo/grand-staircase-together.webp",
+      "role": "duo",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/07-duo/grand-staircase-together.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/duo/sculpture-hall-distant.webp",
+      "role": "duo",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/07-duo/sculpture-hall-distant.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/environment/the-glass-pyramid-blue-hour.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/05-environment/the-glass-pyramid-blue-hour.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/environment/the-painting-gallery.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/05-environment/the-painting-gallery.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/face-fill/aria-fisheye.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/01-face-fill/aria-fisheye.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/face-fill/aria-soft-focus.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/01-face-fill/aria-soft-focus.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/face-fill/noir-fisheye.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/01-face-fill/noir-fisheye.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/face-fill/noir-soft-focus.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/01-face-fill/noir-soft-focus.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/garment-only/draped-over-gallery-chair.webp",
+      "role": "garment-only",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/06-garment-only/draped-over-gallery-chair.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/garment-only/folded-on-marble-bench.webp",
+      "role": "garment-only",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/06-garment-only/folded-on-marble-bench.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/medium/daru-staircase-aria.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/03-medium/daru-staircase-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/medium/daru-staircase-noir.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/03-medium/daru-staircase-noir.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/medium/gallery-stand-noir.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/03-medium/gallery-stand-noir.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/medium/gallery-walk-aria.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/03-medium/gallery-walk-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/medium/sculpture-hall-deep-focus-aria.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/03-medium/sculpture-hall-deep-focus-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/medium/sculpture-hall-soft-falloff-noir.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/03-medium/sculpture-hall-soft-falloff-noir.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pastel/back-view.webp",
+      "role": "variation/pastel",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pastel/back-view.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pastel/detail-lean.webp",
+      "role": "variation/pastel",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pastel/detail-lean.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pastel/environmental-wide.webp",
+      "role": "variation/pastel",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pastel/environmental-wide.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pastel/hero-front.webp",
+      "role": "variation/pastel",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pastel/hero-front.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/perdiz/back-view.webp",
+      "role": "variation/perdiz",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Perdiz/back-view.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/perdiz/detail-lean.webp",
+      "role": "variation/perdiz",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Perdiz/detail-lean.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/perdiz/environmental-wide.webp",
+      "role": "variation/perdiz",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Perdiz/environmental-wide.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/perdiz/hero-front.webp",
+      "role": "variation/perdiz",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Perdiz/hero-front.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pink/back-view.webp",
+      "role": "variation/pink",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pink/back-view.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pink/detail-lean.webp",
+      "role": "variation/pink",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pink/detail-lean.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pink/environmental-wide.webp",
+      "role": "variation/pink",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pink/environmental-wide.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/pink/hero-front.webp",
+      "role": "variation/pink",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/Pink/hero-front.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/tweed/back-view.webp",
+      "role": "variation/tweed",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/TWEED/back-view.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/tweed/detail-lean.webp",
+      "role": "variation/tweed",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/TWEED/detail-lean.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/tweed/environmental-wide.webp",
+      "role": "variation/tweed",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/TWEED/environmental-wide.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/tweed/hero-front.webp",
+      "role": "variation/tweed",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/TWEED/hero-front.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/x/back-view.webp",
+      "role": "variation/x",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/X/back-view.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/x/detail-lean.webp",
+      "role": "variation/x",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/X/detail-lean.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/x/environmental-wide.webp",
+      "role": "variation/x",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/X/environmental-wide.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/variation/x/hero-front.webp",
+      "role": "variation/x",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/08-variation/X/hero-front.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/wide/the-pyramid-at-blue-hour-aria.webp",
+      "role": "wide",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/04-wide/the-pyramid-at-blue-hour-aria.png"
+    },
+    {
+      "src": "/images/alpaca-sweater/rerun/wide/the-staircase-ascent-noir.webp",
+      "role": "wide",
+      "width": 2400,
+      "height": 1340,
+      "from": "Alpaca Sweater Fresh Batch - Sep 18 2026/04-wide/the-staircase-ascent-noir.png"
+    }
+  ],
+  "matriarca": [
+    {
+      "src": "/images/matriarca/rerun/creative/dutch-angle-pylon-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/Matriarca Creative Tier - Sep 18 2026/09-creative/dutch-angle-pylon-noir.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/creative/worms-eye-colossus-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/Matriarca Creative Tier - Sep 18 2026/09-creative/worms-eye-colossus-noir.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/detail/bridge-main-symbol.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/02-detail/bridge-main-symbol.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/detail/inner-temple.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/02-detail/inner-temple.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/detail/side-symbol-temple.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/02-detail/side-symbol-temple.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/detail/the-hinge.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/02-detail/the-hinge.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/environment/giza-plateau-wide.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/05-environment/giza-plateau-wide.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/environment/karnak-hypostyle-hall.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/05-environment/karnak-hypostyle-hall.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/eyewear-only/the-ledge.webp",
+      "role": "eyewear-only",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/06-eyewear-only/the-ledge.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/face-fill/aria-soft-falloff.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/01-face-fill/aria-soft-falloff.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/face-fill/noir-fisheye.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/01-face-fill/noir-fisheye.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/face-fill/noir-soft-falloff.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/01-face-fill/noir-soft-falloff.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/loose/aria-creative-01-fisheye-hall.webp",
+      "role": "loose",
+      "width": 1376,
+      "height": 768,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/aria-creative-01-fisheye-hall.jpeg"
+    },
+    {
+      "src": "/images/matriarca/rerun/loose/aria-creative-04-wormseye-obelisk.webp",
+      "role": "loose",
+      "width": 928,
+      "height": 1152,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/aria-creative-04-wormseye-obelisk.jpeg"
+    },
+    {
+      "src": "/images/matriarca/rerun/loose/noir-creative-01-fisheye-hall.webp",
+      "role": "loose",
+      "width": 1376,
+      "height": 768,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/noir-creative-01-fisheye-hall.jpeg"
+    },
+    {
+      "src": "/images/matriarca/rerun/loose/noir-creative-02-bokeh-lamps.webp",
+      "role": "loose",
+      "width": 928,
+      "height": 1152,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/noir-creative-02-bokeh-lamps.jpeg"
+    },
+    {
+      "src": "/images/matriarca/rerun/loose/noir-creative-04-wormseye-abusimbel.webp",
+      "role": "loose",
+      "width": 928,
+      "height": 1152,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/noir-creative-04-wormseye-abusimbel.jpeg"
+    },
+    {
+      "src": "/images/matriarca/rerun/medium/abu-simbel-threshold-noir.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/03-medium/abu-simbel-threshold-noir.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/medium/giza-dune-deep-focus-noir.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/03-medium/giza-dune-deep-focus-noir.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/medium/giza-dune-soft-falloff-aria.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/03-medium/giza-dune-soft-falloff-aria.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/medium/pylon-doorway-aria.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/03-medium/pylon-doorway-aria.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/brown/detail-lean.webp",
+      "role": "variation/brown",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/Brown/detail-lean.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/brown/environmental-wide.webp",
+      "role": "variation/brown",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/Brown/environmental-wide.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/brown/hero-front.webp",
+      "role": "variation/brown",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/Brown/hero-front.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/brown/profile.webp",
+      "role": "variation/brown",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/Brown/profile.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/midnightnoir/environmental-wide.webp",
+      "role": "variation/midnightnoir",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/MidnightNoir/environmental-wide.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/midnightnoir/hero-front.webp",
+      "role": "variation/midnightnoir",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/MidnightNoir/hero-front.png"
+    },
+    {
+      "src": "/images/matriarca/rerun/variation/midnightnoir/profile.webp",
+      "role": "variation/midnightnoir",
+      "width": 2400,
+      "height": 1340,
+      "from": "Matriarca Fresh Batch - Sep 18 2026/08-variation/MidnightNoir/profile.png"
+    }
+  ],
+  "monarca": [
+    {
+      "src": "/images/monarca/rerun/banner-16x9/duo-opposite-ends-canal.webp",
+      "role": "banner-16x9",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/03-banner-16x9/duo-opposite-ends-canal.png"
+    },
+    {
+      "src": "/images/monarca/rerun/banner-16x9/noir-long-alley-rain.webp",
+      "role": "banner-16x9",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/03-banner-16x9/noir-long-alley-rain.png"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/caramel-stripe.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/caramel-stripe.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/dark-tortoise.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/dark-tortoise.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/dreamy-rose.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/dreamy-rose.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/noir.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/noir.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/pixie-dust.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/pixie-dust.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/tutti-frutti.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/tutti-frutti.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway-2/velvet-rose.webp",
+      "role": "colorway-2",
+      "width": 2048,
+      "height": 2048,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway 2/velvet-rose.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/caramel-stripe-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/caramel-stripe-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/dark-tortoise-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/dark-tortoise-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/dark-tortoise-9x16.webp",
+      "role": "colorway",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/dark-tortoise-9x16.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/dreamy-rose-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/dreamy-rose-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/dreamy-rose-9x16.webp",
+      "role": "colorway",
+      "width": 572,
+      "height": 1024,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/dreamy-rose-9x16.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/noir-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/noir-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/noir-16x9-v2-realphoto.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/noir-16x9-v2-realphoto.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/noir-9x16.webp",
+      "role": "colorway",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/noir-9x16.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/pixie-dust-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/pixie-dust-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/pixie-dust-9x16.webp",
+      "role": "colorway",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/pixie-dust-9x16.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/tutti-frutti-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/tutti-frutti-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/tutti-frutti-9x16.webp",
+      "role": "colorway",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/tutti-frutti-9x16.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/velvet-rose-16x9.webp",
+      "role": "colorway",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/velvet-rose-16x9.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/colorway/velvet-rose-9x16.webp",
+      "role": "colorway",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/05-colorway/velvet-rose-9x16.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/birdseye-canal-duo.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/birdseye-canal-duo.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/dutch-angle-narrow-alley-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/dutch-angle-narrow-alley-noir.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/extreme-bokeh-lanterns-canal-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/extreme-bokeh-lanterns-canal-noir.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/fisheye-alley-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/fisheye-alley-noir.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/mirror-duality-still-water-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/mirror-duality-still-water-aria.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/one-point-long-alley-duo.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/one-point-long-alley-duo.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/silhouette-doorway-rain-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/silhouette-doorway-rain-noir.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/through-rain-streaked-glass-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/through-rain-streaked-glass-aria.png"
+    },
+    {
+      "src": "/images/monarca/rerun/creative/worms-eye-bridge-arch-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/Monarca Creative Tier - Sep 18 2026/09-creative/worms-eye-bridge-arch-aria.png"
+    },
+    {
+      "src": "/images/monarca/rerun/environment/arched-footbridge.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/06-environment/arched-footbridge.png"
+    },
+    {
+      "src": "/images/monarca/rerun/environment/canal-still-water.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/06-environment/canal-still-water.png"
+    },
+    {
+      "src": "/images/monarca/rerun/environment/long-alley-rain.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/06-environment/long-alley-rain.png"
+    },
+    {
+      "src": "/images/monarca/rerun/environment/stairs-into-water.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/06-environment/stairs-into-water.png"
+    },
+    {
+      "src": "/images/monarca/rerun/exterior/quay-empty.webp",
+      "role": "exterior",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/07-exterior/quay-empty.png"
+    },
+    {
+      "src": "/images/monarca/rerun/exterior/rooftops-silhouette.webp",
+      "role": "exterior",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/07-exterior/rooftops-silhouette.png"
+    },
+    {
+      "src": "/images/monarca/rerun/loose/center-front-gold-emblem.webp",
+      "role": "loose",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/center-front-gold-emblem.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/loose/hinge-lantern-lit.webp",
+      "role": "loose",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/hinge-lantern-lit.jpeg"
+    },
+    {
+      "src": "/images/monarca/rerun/macro/center-front-gold-emblem.webp",
+      "role": "macro",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/04-macro/center-front-gold-emblem.png"
+    },
+    {
+      "src": "/images/monarca/rerun/macro/hinge-lantern-lit.webp",
+      "role": "macro",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/04-macro/hinge-lantern-lit.png"
+    },
+    {
+      "src": "/images/monarca/rerun/macro/lens-bevel-water-reflection.webp",
+      "role": "macro",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/04-macro/lens-bevel-water-reflection.png"
+    },
+    {
+      "src": "/images/monarca/rerun/macro/temple-symbol-close.webp",
+      "role": "macro",
+      "width": 2400,
+      "height": 1340,
+      "from": "Monarca Fresh Batch - Sep 18 2026/04-macro/temple-symbol-close.png"
+    },
+    {
+      "src": "/images/monarca/rerun/model-4x5/aria-alley-doorway.webp",
+      "role": "model-4x5",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/02-model-4x5/aria-alley-doorway.png"
+    },
+    {
+      "src": "/images/monarca/rerun/model-4x5/aria-lantern-bridge.webp",
+      "role": "model-4x5",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/02-model-4x5/aria-lantern-bridge.png"
+    },
+    {
+      "src": "/images/monarca/rerun/model-4x5/aria-water-reflection.webp",
+      "role": "model-4x5",
+      "width": 768,
+      "height": 1376,
+      "from": "Monarca Fresh Batch - Sep 18 2026/02-model-4x5/aria-water-reflection.png"
+    },
+    {
+      "src": "/images/monarca/rerun/model-4x5/noir-alley-doorway.webp",
+      "role": "model-4x5",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/02-model-4x5/noir-alley-doorway.png"
+    },
+    {
+      "src": "/images/monarca/rerun/model-4x5/noir-lantern-bridge.webp",
+      "role": "model-4x5",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/02-model-4x5/noir-lantern-bridge.png"
+    },
+    {
+      "src": "/images/monarca/rerun/model-4x5/noir-water-reflection.webp",
+      "role": "model-4x5",
+      "width": 1340,
+      "height": 2400,
+      "from": "Monarca Fresh Batch - Sep 18 2026/02-model-4x5/noir-water-reflection.png"
+    }
+  ],
+  "patriarca": [
+    {
+      "src": "/images/patriarca/rerun/creative/birdseye-amphitheater-steps-aria.webp",
+      "role": "creative",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/Patriarca Creative Tier - Sep 18 2026/09-creative/birdseye-amphitheater-steps-aria.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/creative/dutch-angle-archway-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/Patriarca Creative Tier - Sep 18 2026/09-creative/dutch-angle-archway-noir.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/creative/fisheye-colonnade-aria.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/Patriarca Creative Tier - Sep 18 2026/09-creative/fisheye-colonnade-aria.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/creative/worms-eye-colosseum-arches-noir.webp",
+      "role": "creative",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/Patriarca Creative Tier - Sep 18 2026/09-creative/worms-eye-colosseum-arches-noir.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/detail/bridge-main-symbol.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/02-detail/bridge-main-symbol.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/detail/inner-temple.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/02-detail/inner-temple.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/detail/side-symbol-temple.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/02-detail/side-symbol-temple.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/detail/the-hinge.webp",
+      "role": "detail",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/02-detail/the-hinge.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/environment/colosseum-wide.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/05-environment/colosseum-wide.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/environment/marble-basilica-interior.webp",
+      "role": "environment",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/05-environment/marble-basilica-interior.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/eyewear-only/beside-fallen-column-fragment.webp",
+      "role": "eyewear-only",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/06-eyewear-only/beside-fallen-column-fragment.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/eyewear-only/the-ledge.webp",
+      "role": "eyewear-only",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/06-eyewear-only/the-ledge.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/face-fill/aria-fisheye.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/01-face-fill/aria-fisheye.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/face-fill/noir-fisheye.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/01-face-fill/noir-fisheye.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/face-fill/noir-soft-falloff.webp",
+      "role": "face-fill",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/01-face-fill/noir-soft-falloff.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/loose/aria-creative-03-reflection.webp",
+      "role": "loose",
+      "width": 2400,
+      "height": 1601,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/aria-creative-03-reflection.jpeg"
+    },
+    {
+      "src": "/images/patriarca/rerun/loose/aria-creative-04-doorway-silhouette.webp",
+      "role": "loose",
+      "width": 1264,
+      "height": 843,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/aria-creative-04-doorway-silhouette.jpeg"
+    },
+    {
+      "src": "/images/patriarca/rerun/loose/macro-01-bridge-stone.webp",
+      "role": "loose",
+      "width": 1376,
+      "height": 768,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/macro-01-bridge-stone.jpeg"
+    },
+    {
+      "src": "/images/patriarca/rerun/loose/noir-creative-03-reflection.webp",
+      "role": "loose",
+      "width": 928,
+      "height": 1152,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/noir-creative-03-reflection.jpeg"
+    },
+    {
+      "src": "/images/patriarca/rerun/loose/noir-creative-05-throne.webp",
+      "role": "loose",
+      "width": 928,
+      "height": 1152,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/noir-creative-05-throne.jpeg"
+    },
+    {
+      "src": "/images/patriarca/rerun/loose/noir-magazine-cover-pantheon.webp",
+      "role": "loose",
+      "width": 928,
+      "height": 1152,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/noir-magazine-cover-pantheon.jpeg"
+    },
+    {
+      "src": "/images/patriarca/rerun/medium/amphitheater-steps-deep-focus-noir.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/03-medium/amphitheater-steps-deep-focus-noir.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/medium/basilica-threshold-aria.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/03-medium/basilica-threshold-aria.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/medium/basilica-threshold-noir.webp",
+      "role": "medium",
+      "width": 1340,
+      "height": 2400,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/03-medium/basilica-threshold-noir.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/medium/colonnade-noir.webp",
+      "role": "medium",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/03-medium/colonnade-noir.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/variation/black/detail-lean.webp",
+      "role": "variation/black",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/08-variation/Black/detail-lean.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/variation/black/environmental-wide.webp",
+      "role": "variation/black",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/08-variation/Black/environmental-wide.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/variation/black/hero-front.webp",
+      "role": "variation/black",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/08-variation/Black/hero-front.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/variation/brown/environmental-wide.webp",
+      "role": "variation/brown",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/08-variation/Brown/environmental-wide.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/variation/brown/hero-front.webp",
+      "role": "variation/brown",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/08-variation/Brown/hero-front.png"
+    },
+    {
+      "src": "/images/patriarca/rerun/wide/the-ascendant-noir.webp",
+      "role": "wide",
+      "width": 2400,
+      "height": 1340,
+      "from": "Patriarca Fresh Batch - Sep 18 2026/04-wide/the-ascendant-noir.png"
+    }
+  ]
+}

@@ -40,21 +40,11 @@ export type ApparelColourway = {
   hover?: string;
   swatch: string;
   /**
-   * Whether this colourway is being SOLD yet.
-   *
-   * The data carries all five yarns the collection was designed in, and
-   * the storefront has a handle and a variant id for each — but only the
-   * Tweed is in the first run. The shop was listing five El Patróns,
-   * which told a reader that four things they cannot have are in stock.
-   *
-   * Unlisted is not the same as `available: false`. Out of stock means
-   * the workshop has run out of something it makes; this means the run
-   * has not been cut. So it is not a sold-out badge — the colourway
-   * simply is not offered, on the wall or in the picker.
-   *
-   * An old bag line still resolves against the full list (see `resolve`
-   * in lib/cart), because a reader who bought one before it was pulled
-   * must still see what they bought.
+   * Whether this colourway is offered. All five are (Nov 2026, matching the
+   * house's own boutique on its showcase, which sells every yarn). Kept as a
+   * switch so a yarn can be withdrawn without deleting its record: an old
+   * bag line still resolves against the full list (see `resolve` in
+   * lib/cart).
    */
   listed?: boolean;
 };
@@ -137,6 +127,7 @@ export const apparel: readonly ApparelCollection[] = [
     sizes: ["Small", "Medium", "Large"],
     colourways: [
       {
+        listed: true,
         name: "Pastel",
         handle: "baby-alpaca-sweater-pastel",
         variantId: 45585335451842,
@@ -148,6 +139,7 @@ export const apparel: readonly ApparelCollection[] = [
         swatch: "#d8cfc2",
       },
       {
+        listed: true,
         name: "Perdiz",
         handle: "baby-alpaca-sweater-perdiz",
         variantId: 45585334993090,
@@ -159,6 +151,7 @@ export const apparel: readonly ApparelCollection[] = [
         swatch: "#7d6a56",
       },
       {
+        listed: true,
         name: "Pink",
         handle: "alpaca-sweater-pink",
         variantId: 45585315496130,
@@ -170,7 +163,6 @@ export const apparel: readonly ApparelCollection[] = [
         swatch: "#c79aa2",
       },
       {
-        /* The first run, and for now the only one. See `listed`. */
         listed: true,
         name: "Tweed",
         handle: "alpaca-sweater-tweed",
@@ -183,6 +175,7 @@ export const apparel: readonly ApparelCollection[] = [
         swatch: "#6f6f6a",
       },
       {
+        listed: true,
         name: "X",
         handle: "alpaca-sweater-x",
         variantId: 45585333715138,
@@ -246,3 +239,83 @@ export function runHover(line: ApparelCollection, colourway?: string) {
 export function listedColourways(line: ApparelCollection) {
   return line.colourways.filter((c) => c.listed);
 }
+
+/* ── The collection page, /el-patron ──────────────────────────────────
+
+   Its own page, as the eyewear houses have, per the team call (5 Nov
+   2026): "I want the sweater to have its own collection." Built from the
+   second shoot (2nd Rerun, Sep 2026), imported into
+   public/images/alpaca-sweater/rerun by scripts/import-rerun-photography
+   .mjs. Every worn frame in that shoot is the Tweed; the five colourways
+   were shot as garments only, one set each, and are shown as such.
+
+   No picture appears twice on the page (the hero is not in the run), and
+   no claim is made that the shoot does not carry: the material line is
+   the one the collection already states. */
+
+const RR = "/images/alpaca-sweater/rerun";
+
+export const elPatronPage = {
+  hero: {
+    eyebrow: "El Patrón",
+    name: "Worn in the long rooms.",
+    line: "Baby alpaca, knitted in Peru.",
+    image: `${RR}/wide/the-staircase-ascent-noir.webp`,
+    imagePortrait: `${RR}/medium/daru-staircase-noir.webp`,
+    alt: "El Patrón in Tweed under a long coat, at the foot of a stone staircase",
+  },
+  lookbook: {
+    intro: ["One garment. A gallery after hours, and the knit doing the only loud thing in it."],
+    rows: [
+      { src: `${RR}/environment/the-glass-pyramid-blue-hour.webp`, alt: "A glass pyramid at blue hour", kind: "full", width: 2400, height: 1340 },
+      {
+        pair: [
+          { src: `${RR}/medium/gallery-walk-aria.webp`, alt: "Aria walking the painting gallery in El Patrón", kind: "portrait", width: 1340, height: 2400 },
+          { src: `${RR}/medium/gallery-stand-noir.webp`, alt: "Noir standing in the gallery in El Patrón", kind: "portrait", width: 1340, height: 2400 },
+        ],
+      },
+      { src: `${RR}/duo/grand-staircase-together.webp`, alt: "Aria and Noir together on the grand staircase", kind: "full", width: 2400, height: 1340 },
+      {
+        pair: [
+          { src: `${RR}/face-fill/aria-soft-focus.webp`, alt: "Aria, close, the gallery soft behind her", kind: "portrait", width: 1340, height: 2400 },
+          { src: `${RR}/face-fill/noir-soft-focus.webp`, alt: "Noir, close, the gallery soft behind him", kind: "portrait", width: 1340, height: 2400 },
+        ],
+      },
+      { src: `${RR}/medium/sculpture-hall-deep-focus-aria.webp`, alt: "Aria in the sculpture hall", kind: "full", width: 2400, height: 1340 },
+      { src: `${RR}/detail/the-weave.webp`, alt: "The knit, close", kind: "full", width: 2400, height: 1340 },
+      {
+        pair: [
+          { src: `${RR}/detail/the-cuff.webp`, alt: "The cuff, folded on marble", kind: "inset", width: 2400, height: 1340 },
+          { src: `${RR}/detail/the-seam.webp`, alt: "The seam, close", kind: "inset", width: 2400, height: 1340 },
+        ],
+      },
+      {
+        pair: [
+          { src: `${RR}/creative/through-velvet-rope-bokeh-noir.webp`, alt: "Noir behind a velvet rope", kind: "portrait", width: 1340, height: 2400 },
+          { src: `${RR}/creative/silhouette-gallery-doorway-aria.webp`, alt: "Aria in silhouette in a gallery doorway", kind: "portrait", width: 1340, height: 2400 },
+        ],
+      },
+      { src: `${RR}/creative/one-point-long-gallery-duo.webp`, alt: "Aria and Noir at the end of the long gallery", kind: "full", width: 2400, height: 1340 },
+      { src: `${RR}/garment-only/draped-over-gallery-chair.webp`, alt: "El Patrón draped over a gallery chair", kind: "full", width: 2400, height: 1340 },
+      { src: `${RR}/wide/the-pyramid-at-blue-hour-aria.webp`, alt: "Aria before the glass pyramid at blue hour", kind: "full", width: 2400, height: 1340 },
+    ],
+    closing: "The room is very old. The knit is not.",
+  },
+  colourways: {
+    heading: "Five yarns.",
+    body: "Pastel, Perdiz, Pink, Tweed and X.",
+    /* hero-front from each colourway's garment-only set, in apparel order. */
+    shots: [
+      { name: "Pastel", src: `${RR}/variation/pastel/hero-front.webp` },
+      { name: "Perdiz", src: `${RR}/variation/perdiz/hero-front.webp` },
+      { name: "Pink", src: `${RR}/variation/pink/hero-front.webp` },
+      { name: "Tweed", src: `${RR}/variation/tweed/hero-front.webp` },
+      { name: "X", src: `${RR}/variation/x/hero-front.webp` },
+    ],
+  },
+  close: {
+    heading: "El Patrón",
+    body: "100% baby alpaca, knitted in Peru. Small, Medium, Large.",
+    cta: "Buy El Patrón",
+  },
+} as const;

@@ -125,7 +125,7 @@ export function ConfirmedView() {
             {order.quote?.discount ? (
               <div>
                 <dt>Code</dt>
-                <dd className="tabular-nums">−{formatPrice(order.quote.discount)}</dd>
+                <dd className="price tabular-nums">−{formatPrice(order.quote.discount)}</dd>
               </div>
             ) : null}
             <div>
@@ -135,12 +135,12 @@ export function ConfirmedView() {
             {typeof order.quote?.tax === "number" ? (
               <div>
                 <dt>Tax</dt>
-                <dd className="tabular-nums">{formatPrice(order.quote.tax)}</dd>
+                <dd className="price tabular-nums">{formatPrice(order.quote.tax)}</dd>
               </div>
             ) : null}
             <div className="summary-total">
               <dt>Charged</dt>
-              <dd className="tabular-nums">{formatPrice(order.total)}</dd>
+              <dd className="price tabular-nums">{formatPrice(order.total)}</dd>
             </div>
           </dl>
           <p className="t-caption mt-3">Paid with: {order.payment}</p>

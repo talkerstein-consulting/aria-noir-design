@@ -1,0 +1,352 @@
+{
+ "date": "9 November 2026",
+ "before_date": "8 November 2026",
+ "after_date": "9 November 2026",
+ "principles": [
+  {
+   "t": "Do more with less",
+   "q": "When a page gets busy it stops being a symphony and becomes noise. One frame, given space, beats six crowded together."
+  },
+  {
+   "t": "Show exactly what they'll get",
+   "q": "Every image and film must show our real frames, true to shape and colourway. Off-brand or inaccurate imagery is the single biggest risk to the business."
+  },
+  {
+   "t": "Real people behind the maison",
+   "q": "No purely AI presentation. Human models, real faces on About, real packaging, real craft."
+  }
+ ],
+ "call_quotes": [
+  "Quantum leap.",
+  "Night and day.",
+  "I wasn't expecting to be satisfied today.",
+  "Like a Bond film.",
+  "I haven't seen a brand go this hard.",
+  "Absolutely incredible.",
+  "Say a lot with silence."
+ ],
+ "pages": [
+  {
+   "key": "home",
+   "name": "Homepage",
+   "route": "/",
+   "items": [
+    {
+     "jai": "TEST · Hero: still, or test a muted film loop.",
+     "src": "Review deck p.7",
+     "change": "Hero is a muted film loop: a 25-second montage of the six frames' clips (ARCA I, ARCA II, AHAVA, MONARCA, MATRIARCA, PATRIARCA). The old still is the poster; reduced motion keeps the still. Montage approach: Rems, 8 Nov.",
+     "status": "done"
+    },
+    {
+     "jai": "ISSUE · Six-tile grid: crowded, off-brand images. NEW · Auto carousel: one frame at a time, blur.",
+     "src": "Review deck p.7-8",
+     "change": "Carousel built, then removed on Rems's call (8 Nov). The six-tile grid stays; its gutters are black on the homepage and white elsewhere (Rems, 9 Nov). The frame clips live in the hero montage instead.",
+     "status": "partial"
+    },
+    {
+     "jai": "Spacing: tiles are too close. Jai wants white space like Meshki, moving between negative space and full space.",
+     "src": "Call notes, 5 Nov",
+     "change": "Breathing room between every home section; white gutters between collection tiles.",
+     "status": "done"
+    },
+    {
+     "jai": "House Letter: the pop-up with the burning flame is too much animation. The busy animated treatment only looks good for me in the gallery.",
+     "src": "Call notes, 5 Nov",
+     "change": "The pop-up now appears plainly, no burning flame (Rems, 8 Nov). The house letter section sits on one still photograph instead of the spiralling WebGL sheet.",
+     "status": "done"
+    },
+    {
+     "jai": "KEEP · ARCA II feature + lightbox on white. \"Before it exists\" image and its hover highlight.",
+     "src": "Review deck p.5, p.7",
+     "change": "Kept as is.",
+     "status": "kept"
+    },
+    {
+     "jai": "EXPANDED · \"Before it exists\": Eternal 8 + pre-order. NEW · Further frame features, one per section. NEW · Journal + Instagram feed.",
+     "src": "Review deck p.7",
+     "change": "Not built: needs the Eternal 8 renders, the pre-order offer, journal articles and the Instagram feed source.",
+     "status": "next"
+    }
+   ]
+  },
+  {
+   "key": "footer",
+   "name": "Footer (every page)",
+   "route": "/",
+   "shot": "home",
+   "items": [
+    {
+     "jai": "An oversized ARIA NOIR wordmark fills the bottom of every page. It's out of step with high-fashion sites, and the logo is already at the top. Proposed: a small logo variation, such as the monogram, just above Privacy · Terms · Privacy preferences. Subtle wins.",
+     "src": "Review deck p.9",
+     "change": "Giant wordmark removed. The house emblem, small, sits once above the legal row.",
+     "status": "done"
+    },
+    {
+     "jai": "A \"Something new is taking shape\" sign-up sits after the footer. Remove the block after the footer.",
+     "src": "Review deck p.9",
+     "change": "Kept as a pop-up with a plain appear, on Rems's call (8 Nov), instead of removed.",
+     "status": "partial"
+    },
+    {
+     "jai": "Careers goes in the footer. Press: a low-key footer link.",
+     "src": "Call notes; Review deck p.19",
+     "change": "Footer About group: About, Heritage, Craftsmanship, Press, Careers, Contact.",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "key": "nav",
+   "name": "Navigation and naming",
+   "route": "/",
+   "shot": "home",
+   "items": [
+    {
+     "jai": "Nav: \"Collections\" becomes \"Frames\" or \"The Collection\"; \"The House\" becomes \"The Maison\".",
+     "src": "Review deck p.15",
+     "change": "Menu reads The Collection. The section is labelled About everywhere (Rems, 8 Nov), not Maison.",
+     "status": "partial"
+    },
+    {
+     "jai": "Instead of putting about in the header please put MAISON and you can put under it About, Heritage, Craftmanship, the book. Also instead of Icons I would just put the text.",
+     "src": "Raviv, #aria-noir, 5 Nov",
+     "change": "Header word is About (Rems, 8 Nov). Opened, the About pages carry tabs: About, Heritage, Craftsmanship, sized as the navbar's words (The Book tab removed, Rems, 9 Nov). Search, Account and Bag are words, each turning to Close.",
+     "status": "done"
+    },
+    {
+     "jai": "Motto: \"By designers, for designers.\" Not \"for visionaries\".",
+     "src": "Review deck p.15",
+     "change": "Motto restored on the About page and its metadata.",
+     "status": "done"
+    },
+    {
+     "jai": "(Rems, 9 Nov) Pressing search should not change the layout of the navbar.",
+     "src": "Rems, 9 Nov",
+     "change": "The search field now opens over the bar to the left of the words; the bar's height and the words' positions no longer move.",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "key": "shop-patriarca",
+   "name": "Buy pages (all frames)",
+   "route": "/shop/[frame]",
+   "items": [
+    {
+     "jai": "AR try-on comes out. The free AR looked glitchy and \"kills the whole vibe\". Replace with images on three head sizes showing the 145 mm width, plus an elegant disclaimer that the frames fit large.",
+     "src": "Call notes, 5 Nov",
+     "change": "Try on buttons removed from every buy page (the /try-on route still exists, unlinked). The Fit row now has a sizing guide with a face diagram (face width, pupil distance, lens depth, in the wording of Jai's /fit/ page), then the frame's measurements including Frame PD, and a note that the frames fit large. Three-head-size images not made yet.",
+     "status": "partial"
+    },
+    {
+     "jai": "Size: Desktop PATRIARCA: at least 25% bigger. Quality: Highest resolution possible. Use the new renders for every frame. Motion: No play button (it reads as cheap). It turns slowly on its own when in view, stops when grabbed, and stays still for \"reduce motion\" users.",
+     "src": "Review deck p.12",
+     "change": "Turntables now use Jai's new Blender renders (180 frames, 1600px) for 30 colourways. No play button; turns at 18°/s in view, stops when grabbed, still under reduced motion. PATRIARCA ×1.25 on desktop.",
+     "status": "done"
+    },
+    {
+     "jai": "Quality and packaging section: at the bottom of each product page, modelled on Jacques Marie Mage.",
+     "src": "Call notes, 5 Nov",
+     "change": "Craft and packaging section on every eyewear buy page: the making copy from the review deck p.18 and four real packaging photos from Jai's photo bank. Copy needs Jai's sign-off (his checklist: \"once facts are confirmed\").",
+     "status": "partial"
+    },
+    {
+     "jai": "Price font looks like Courier: bring it into the serif and sans-serif system.",
+     "src": "Review deck p.21",
+     "change": "Prices use proportional figures in the house sans; the slab-footed tabular 1 is gone.",
+     "status": "done"
+    },
+    {
+     "jai": "Stop: Off-brand AI try-on and mockup images. Old, incorrect 3D models with bad lighting. AI images with shifted colour. Mood shots with no product in them.",
+     "src": "Review deck p.13",
+     "change": "2nd Rerun photography wired into AHAVA, MATRIARCA, MONARCA, PATRIARCA campaign and colourway sills (chosen for the product being visible). Every image still needs checking against the physical frame.",
+     "status": "partial"
+    },
+    {
+     "jai": "(Rems, 9 Nov) Remove the care guide and all mentions of it.",
+     "src": "Rems, 9 Nov",
+     "change": "The /care page and every link to it (menu, footer, All pages, search, sitemap, the buy page's care button) removed.",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "key": "arca-i",
+   "name": "ARCA I",
+   "route": "/arca-i",
+   "items": [
+    {
+     "jai": "Two 3D pieces mid-page: old models, bad lighting, off brand. Remove both. The turntable only responds after scrolling past a certain point. After the dark-to-light transition, snap to the store section. The turntable is hard to see: About 15% bigger. In landscape the turntable disappears: Make it work in both orientations.",
+     "src": "Review deck p.22",
+     "change": "Both old 3D renders removed. The turntable takes a drag immediately (no dead zone), is 15% bigger on phones, and stays on screen in landscape.",
+     "status": "done"
+    },
+    {
+     "jai": "One film scene doesn't fit the mobile frame. Re-crop it.",
+     "src": "Review deck p.22",
+     "change": "Not done: needs the film re-cropped.",
+     "status": "next"
+    }
+   ]
+  },
+  {
+   "key": "ahava",
+   "name": "AHAVA",
+   "route": "/ahava",
+   "items": [
+    {
+     "jai": "Lovely Parisian mood, but the frames barely appear. Lead with product; show frames throughout.",
+     "src": "Review deck p.11",
+     "change": "Campaign frames replaced with 2nd Rerun shots that show the frame. The film still needs a new cut (Franky).",
+     "status": "partial"
+    }
+   ]
+  },
+  {
+   "key": "patriarca",
+   "name": "PATRIARCA",
+   "route": "/patriarca",
+   "items": [
+    {
+     "jai": "Opening film shows off-brand frames. Replace with real frames; turntable at least 25% bigger.",
+     "src": "Review deck p.11",
+     "change": "Turntable bigger and on the new renders. Opening film unchanged: needs a reshoot or rebuild (Franky).",
+     "status": "partial"
+    }
+   ]
+  },
+  {
+   "key": "shop-arca-ii",
+   "name": "ARCA II, buy page",
+   "route": "/shop/arca-ii",
+   "items": [
+    {
+     "jai": "Caramel Stripe renders at a different size. Swap in the new turntable renders.",
+     "src": "Review deck p.11",
+     "change": "All ARCA II colourways now use the same new render set.",
+     "status": "done"
+    },
+    {
+     "jai": "Mobile ARCA II turntable size: perfect as is.",
+     "src": "Review deck p.5",
+     "change": "Unchanged size.",
+     "status": "kept"
+    }
+   ]
+  },
+  {
+   "key": "about",
+   "name": "About",
+   "route": "/house/about",
+   "items": [
+    {
+     "jai": "About: Real people, not an AI presentation. Human models across the site.",
+     "src": "Review deck p.19",
+     "change": "Not changed yet: needs real photography of the people behind the brand.",
+     "status": "next"
+    }
+   ]
+  },
+  {
+   "key": "shop",
+   "name": "Shop All",
+   "route": "/shop",
+   "items": [
+    {
+     "jai": "(Rems, 9 Nov) On Shop All, make the strip with filters and sort inverted black.",
+     "src": "Rems, 9 Nov",
+     "change": "The filter and sort strip is black with white type, including the band behind the header when it sticks.",
+     "status": "done"
+    },
+    {
+     "jai": "El Patrón sweaters: Colourways out of date. All five colourways, a film for each.",
+     "src": "Review deck p.10",
+     "change": "All five yarns (Pastel, Perdiz, Pink, Tweed, X) are now offered, as on Jai's showcase. Price still $100 here vs $180 on the showcase: to confirm. Films not made.",
+     "status": "partial"
+    }
+   ]
+  }
+ ],
+ "new_pages": [
+  {
+   "key": "craftsmanship",
+   "name": "Craftsmanship (new)",
+   "route": "/house/craftsmanship"
+  },
+  {
+   "key": "heritage",
+   "name": "Heritage (new)",
+   "route": "/house/heritage"
+  },
+  {
+   "key": "press",
+   "name": "Press (new)",
+   "route": "/house/press"
+  },
+  {
+   "key": "careers",
+   "name": "Careers (new)",
+   "route": "/house/careers"
+  },
+  {
+   "key": "registration",
+   "name": "Registration (new)",
+   "route": "/house/registration"
+  },
+  {
+   "key": "el-patron",
+   "name": "El Patrón (new)",
+   "route": "/el-patron"
+  }
+ ],
+ "new_page_items": {
+  "craftsmanship": [
+   {
+    "jai": "The making: Milled acetate, gold-plated emblems, hand finishing. Made with G-Force Optical in Wenzhou and a US partner (name to confirm).",
+    "src": "Review deck p.17-18",
+    "change": "New page with a cover still from the factory film (hands polishing a frame): the black-and-white film, the making copy, the 888. Needs Jai's sign-off on facts.",
+    "status": "partial"
+   }
+  ],
+  "press": [
+   {
+    "jai": "Press: A low-key footer link. Prominent \"As seen in\" only for genuine editorial.",
+    "src": "Review deck p.19",
+    "change": "New page: dated list of coverage, each row with the outlet's own logo (Rems, 9 Nov) and a link; Bloomberg shown as carried via the wire release; enquiry form. Linked from the footer and from Heritage. Press email to confirm (press@ vs admin@).",
+    "status": "done"
+   }
+  ],
+  "careers": [
+   {
+    "jai": "Careers: A careers section.",
+    "src": "Review deck p.19",
+    "change": "New page: no roles invented; invites applications.",
+    "status": "done"
+   }
+  ],
+  "registration": [
+   {
+    "jai": "Register: Each pre-ordered frame gets a numbered digital certificate of authenticity. Copy note: say \"digital certificate\" or \"registered edition\". Keep the word \"NFT\" out of customer-facing copy.",
+    "src": "Review deck p.16",
+    "change": "New page: register your frame for warranty; the digital certificate described as coming. No NFT wording.",
+    "status": "partial"
+   }
+  ],
+  "heritage": [
+   {
+    "jai": "(Raviv) put under it About, Heritage, Craftmanship, the book.",
+    "src": "Raviv, #aria-noir, 5 Nov",
+    "change": "Built from what Jai has published (Rems, 9 Nov): a cover from the Kyiv shoot in his photo bank, the showcase's About lines, three real photographs from his Book I and II, and dated milestones from the press, each with the outlet's logo and a link. NFT-led articles left out.",
+    "status": "done"
+   }
+  ],
+  "el-patron": [
+   {
+    "jai": "El Patrón sweaters: Colourways out of date. All five colourways, a film for each.",
+    "src": "Review deck p.10",
+    "change": "New collection page built from the new sweater photography; all five yarns now offered. Price to confirm ($100 here vs $180 on the showcase). Films not made.",
+    "status": "partial"
+   }
+  ]
+ }
+}

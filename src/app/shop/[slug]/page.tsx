@@ -19,6 +19,8 @@ import { ApparelBuy } from "@/components/shop/apparel-buy";
 import { colorwayCount, houses, type House } from "@/lib/navigation";
 import { houseBySlug, priceOf } from "@/lib/shop";
 import { shipping } from "@/lib/policies";
+import { FRAME_FIT } from "@/lib/product";
+import { BuyCraft } from "@/components/shop/buy-craft";
 
 /**
  * ============================================================
@@ -145,6 +147,61 @@ export async function generateMetadata({
  * forwards: it already specifies what a frame arrives in, by specifying
  * what it has to go back in.
  */
+/**
+ * Fit, measured (Nov 2026 review). Replaces the AR try-on: Jai's worry was
+ * people not knowing the frame's size, so the size is stated. The figures
+ * are the house's own, from its 3D geometry (see FRAME_FIT). A house with
+ * no measured row gets no Fit row rather than a guess.
+ */
+function fitTab(house: House): DetailTab[] {
+  const fit = FRAME_FIT[house.slug];
+  if (!fit) return [];
+  const mm = (n: number) => `${n} mm`;
+  return [
+    {
+      id: "fit",
+      label: "Fit",
+      paragraphs: [
+        "Eyewear is not sized S, M, L. It is sized in millimetres, and three of them decide whether a frame will sit on your face or slide off it.",
+      ],
+      /* How to choose your size, with a diagram (call, 5 Nov; Rems, 9 Nov).
+         Wording from the house's Fit & Sizing page. */
+      frame: { slug: house.slug, name: house.name, ...fit },
+      guide: [
+        {
+          n: "01",
+          title: "Face width",
+          body: "Temple to temple, across the widest part of your face. This is the one that decides everything. A front should be about as wide as your face, a couple of millimetres proud on each side.",
+          range: "Most adults: 128 to 150 mm",
+        },
+        {
+          n: "02",
+          title: "Pupil distance",
+          body: "Centre of one pupil to the centre of the other, usually written PD. Every frame has one too: its lens width plus its bridge. When yours is close to the frame's, your eyes sit in the middle of the lenses.",
+          range: "Most adults: 54 to 74 mm, average 63",
+        },
+        {
+          n: "03",
+          title: "Lens depth",
+          body: "How much vertical room there is between your pupil and the top of your cheek. A lens taller than that room rests on the cheek and lifts every time you smile.",
+          range: "Measured from the pupil to the base of the nose",
+        },
+      ],
+      rows: [
+        { term: "Front width", value: mm(fit.front) },
+        { term: "Lens width", value: mm(fit.eye) },
+        { term: "Bridge", value: mm(fit.bridge) },
+        /* The frame's own PD, by the guide's definition: lens width plus bridge. */
+        { term: "Frame PD", value: mm(Math.round((fit.eye + fit.bridge) * 10) / 10) },
+        { term: "Lens height", value: mm(fit.lensHeight) },
+        { term: "Temple length", value: mm(fit.temple) },
+        { term: "Suits a face of", value: `${fit.suits[0]} to ${fit.suits[1]} mm` },
+      ],
+      note: "Our frames are cut generously and fit large. If your face measures under 130 mm across, start with the narrowest front in the house.",
+    },
+  ];
+}
+
 function tabsFor(house: House): readonly DetailTab[] {
   return [
     {
@@ -166,11 +223,12 @@ function tabsFor(house: House): readonly DetailTab[] {
         "Fit is decided at the bridge and the brow, and adjustable at five points. A frame that sits wrong is usually minutes at a bench rather than a return.",
       ],
     },
+    ...fitTab(house),
     {
       id: "packaging",
       label: "Packaging",
       paragraphs: [
-        "Each piece is handcrafted and packed with intention: the frame in its protective case, with a pouch, and the accessories and tags alongside it.",
+        "Each piece is packed with intention: the frame in its protective case, with a pouch, and the accessories and tags alongside it.",
         "Keep the case and the pouch. A return has to come back in them, and the case is also the answer to the most common warranty claim. Frames stored loose are frames that come back with a hinge complaint.",
         "Clean the lenses with the microfiber cloth only, and with approved solutions.",
       ],
@@ -275,6 +333,13 @@ export default async function ShopHousePage({
             image={house.ground ?? house.plate}
             alt={`${house.name}, ${house.material}`}
           />
+        </section>
+
+        {/* ---- how it is made, and what it arrives in ----
+            Jacques Marie Mage closes every product page on the craft; Jai
+            asked for the same, and for real packaging rather than renders. */}
+        <section className="on-paper section bg-paper">
+          <BuyCraft house={house} />
         </section>
 
         {/* ---- the run, one card per acetate ----

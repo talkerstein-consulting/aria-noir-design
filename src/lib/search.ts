@@ -76,7 +76,6 @@ const PAGES: readonly MenuLink[] = [
 
 function pageNote(href: string) {
   if (href.startsWith("/policies/")) return "Policy";
-  if (href === "/care") return "Guide";
   if (href.startsWith("/arca") || href === "/house/about") return "Story";
   return "Page";
 }
@@ -199,9 +198,8 @@ export function query(raw: string): readonly Hit[] {
     .map((s) => s.hit);
 }
 
-/** The three things the sheet offers when it has nothing. */
+/** What the sheet offers when it has nothing. */
 export const NO_RESULT_ROUTES: readonly MenuLink[] = [
   { label: "All frames", href: "/collections" },
-  { label: "Care", href: "/care" },
   { label: "Ask the studio", href: "/contact" },
 ];

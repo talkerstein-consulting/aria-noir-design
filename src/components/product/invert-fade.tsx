@@ -17,6 +17,12 @@ import { useEffect, useRef, type ReactNode } from "react";
  * the nav's tone probe reads ink through the whole opening and turns the
  * bar white only once the screen is filled. Progress is written straight
  * to `--hole`; scrolling never renders.
+ *
+ * Once a reader heading down stops part-way through the opening, the page
+ * settles the rest of the way, so the counter sits at the top with its
+ * turntable ready (Jai, review PDF: snap to the store section after the
+ * dark-to-light transition). Only on the way down, only from past a third
+ * open, and never while the reader is still scrolling.
  */
 export function InvertFade({
   reveal,
@@ -41,11 +47,34 @@ export function InvertFade({
       sh.style.setProperty("--hole", p.toFixed(4));
       sh.dataset.open = p > 0.99 ? "true" : "false";
     };
+    let lastY = window.scrollY;
+    let down = false;
+    let idle = 0;
+    const settle = () => {
+      if (!down) return;
+      const vh = window.innerHeight;
+      const top = el.getBoundingClientRect().top;
+      const p = 1 - top / (vh * 0.85);
+      if (p < 0.33 || p > 0.99) return;
+      const target = window.scrollY + top;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (window.__lenis) window.__lenis.scrollTo(target, { duration: 0.9, immediate: reduce });
+      else window.scrollTo({ top: target, behavior: reduce ? "auto" : "smooth" });
+    };
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y !== lastY) down = y > lastY;
+      lastY = y;
+      update();
+      window.clearTimeout(idle);
+      idle = window.setTimeout(settle, 160);
+    };
     update();
-    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", update);
+      window.clearTimeout(idle);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", update);
     };
   }, []);

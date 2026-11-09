@@ -78,7 +78,12 @@ function TurntablePlate({
   }, [model]);
   const poster = stem ? `/images/fronts-cut/${stem}.webp` : model ? posterFor(model) : null;
   return (
-    <div className={`shop-tile relative aspect-square w-full overflow-hidden ${className}`}>
+    /* Phone landscape: a full-width square is taller than the screen, so
+       the frame sat mostly below the fold (Jai's review: "must work in
+       landscape on mobile"). Capped to the screen's height there, centred. */
+    <div
+      className={`shop-tile relative aspect-square w-full overflow-hidden [@media(orientation:landscape)_and_(max-height:540px)]:mx-auto [@media(orientation:landscape)_and_(max-height:540px)]:max-w-[78svh] ${className}`}
+    >
       {poster ? (
         <Image
           src={poster}

@@ -309,7 +309,7 @@ export function ProductCard({
             {meta ? <p className="t-label">{meta}</p> : <span />}
             {price ? (
               <p
-                className={`t-caption tabular-nums ${
+                className={`price t-caption tabular-nums ${
                   soldOut ? "text-[var(--fg-quiet)] line-through" : ""
                 }`}
               >

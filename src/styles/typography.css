@@ -181,9 +181,38 @@ body {
    jitter as it changes. */
 .t-figure {
   font-family: var(--font-ui-stack);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums proportional-nums;
   font-size: var(--display-md);
   color: var(--fg-primary);
+}
+
+/* ── Figures: one rule for every price (Nov 2026 review) ──────────────
+   Jai: the price "looks like Courier". It is Figtree, but Figtree's
+   TABULAR figures swap in a slab-footed 1 and a typewriter rhythm, and
+   every price on the site asks for them through Tailwind's `tabular-nums`
+   (the buy price, the card prices, the bag, the checkout sums). This puts
+   all of them back on the face's own lining figures, so a price reads in
+   the house sans like the words around it. Unlayered, so it outranks the
+   utility; one place, not eighteen call sites. A column that genuinely
+   needs fixed-width digits should set `font-feature-settings: "tnum"` on
+   that element, on purpose. */
+.tabular-nums {
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+/* ── Prices, in the brand serif (Rems, 9 Nov) ─────────────────────────
+   Every price the customer reads: buy pages, the pinned buy bar, cards,
+   the bag, checkout, the order and the account. One rule; the call sites
+   only carry `price`. Case and tracking reset, so a price set inside an
+   eyebrow or label still reads as a figure, not small caps. */
+.price,
+.buy-price,
+.buy-row-price,
+.story-pin__price {
+  font-family: var(--font-display-stack);
+  font-variant-numeric: lining-nums proportional-nums;
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 
 /* ── Section shell ───────────────────────────────────────────────────

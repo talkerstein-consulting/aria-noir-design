@@ -273,7 +273,7 @@ function Orders({ session }: { session: Session }) {
                   <span className="t-label block text-[var(--fg-primary)]">{status}</span>
                   <span className="t-caption block">{o.paymentStatus || "Paid"}</span>
                 </span>
-                <span className="t-label tabular-nums text-[var(--fg-primary)]">{formatPrice(o.total)}</span>
+                <span className="price t-label tabular-nums text-[var(--fg-primary)]">{formatPrice(o.total)}</span>
               </button>
 
               {open ? (
@@ -287,7 +287,7 @@ function Orders({ session }: { session: Session }) {
                             <span className="text-[var(--fg-quiet)]"> · {l.quantity}</span>
                           ) : null}
                         </span>
-                        <span className="t-body tabular-nums">
+                        <span className="price t-body tabular-nums">
                           {l.total_money ? formatPrice(l.total_money.amount) : ""}
                         </span>
                       </li>

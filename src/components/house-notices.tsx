@@ -33,6 +33,14 @@ const EmberReveal = dynamic(() => import("@/components/ember-reveal"), {
 const CONSENT_KEY = "an:consent";
 const GIFT_KEY = "an:gift";
 const GIFT_DELAY_MS = 5000;
+/** The gift pop-up runs. */
+const GIFT_ENABLED = true;
+/**
+ * The burning-flame entrance is off: the call (5 Nov) found it "too much
+ * animation". The card now simply appears (Rems, 8 Nov: "just a rough
+ * appear"), the same path reduced motion always took.
+ */
+const BURN_IN = false;
 /** Private mode can refuse localStorage; then this keeps it to once a visit. */
 let giftShownThisVisit = false;
 /** Where the reader last clicked or tapped: the gift's burn starts there. */
@@ -117,7 +125,7 @@ export function HouseNotices() {
      a fixed timer and land on top of a colourway pick or an Add to bag,
      swallowing the press. Product pages and the bag are quiet routes. */
   useEffect(() => {
-    if (quiet || consent === undefined || consent === null) return;
+    if (!GIFT_ENABLED || quiet || consent === undefined || consent === null) return;
     /* Any value at all means it has been shown: "joined", "seen", or the
        close timestamp earlier builds wrote. */
     if (giftSeen()) return;
@@ -239,7 +247,7 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
       setPhase("idle");
       return;
     }
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (!BURN_IN || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setPhase("shown");
       return;
     }

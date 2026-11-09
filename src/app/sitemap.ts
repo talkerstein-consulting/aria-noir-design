@@ -13,7 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/gallery",
     "/house/about",
     "/contact",
-    "/care",
     ...allHouses.map((h) => `/${h.slug}`),
     ...allHouses.map((h) => `/shop/${h.slug}`),
     ...apparel.map((a) => `/shop/${a.slug}`),

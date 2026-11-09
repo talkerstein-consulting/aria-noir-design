@@ -8,12 +8,13 @@ import { StickyFeature } from "@/components/page/sticky-feature";
 import { PlateBand } from "@/components/page/plate-band";
 import { PageClose } from "@/components/page/page-close";
 import { about } from "@/lib/pages";
+import { AboutTabs } from "@/components/page/about-tabs";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/house/about" },
-  title: "The House | Aria Noir",
+  title: "About | Aria Noir",
   description:
-    "Eyewear by designers, for visionaries. The brand, the company, and the vision behind six houses and nine frames.",
+    "Eyewear by designers, for designers. The brand, the company, and the vision behind six houses and nine frames.",
 };
 
 /**
@@ -37,6 +38,7 @@ export default function AboutPage() {
             wearing an essay's name. The founders open it; the close still
             sends the reader to the frames. */}
         <PageHero {...about.hero} />
+        <AboutTabs />
         <TextPair {...about.opening} />
         {/* The band is this page's one full-bleed beat, and it sits between
             the two arguments rather than after both — the vision section

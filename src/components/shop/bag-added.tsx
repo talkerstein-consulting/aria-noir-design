@@ -186,7 +186,7 @@ export function BagAdded({
               <dt className="t-label">
                 The bag{count > qty ? `, ${count} pieces` : ""}
               </dt>
-              <dd className="t-body tabular-nums">{formatPrice(total)}</dd>
+              <dd className="price t-body tabular-nums">{formatPrice(total)}</dd>
             </div>
           </dl>
 

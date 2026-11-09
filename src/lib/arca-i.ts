@@ -273,7 +273,6 @@ export const close: Close = {
     `${P}/worn-08.webp`,
     `${P}/detail-ribbon-dress.webp`,
     `${P}/worn-10.webp`,
-    `${P}/offering-front.webp`,
     `${P}/worn-13.webp`,
     `${P}/worn-04.webp`,
   ],
@@ -303,9 +302,11 @@ export const lookbook: Lookbook = {
     { src: `${L}/worn-13.webp`, alt: "Noir looking down", kind: "full", width: 2400, height: 1340 },
     { pair: [{ src: `${L}/worn-07.webp`, alt: "Turtleneck, close", kind: "portrait", width: 1856, height: 2304 }, { src: `${L}/worn-12.webp`, alt: "Face, close, bokeh", kind: "portrait", width: 1856, height: 2304 }] },
     { src: `${L}/lifestyle/pair-rooftop.webp`, alt: "Aria and Noir on the roof", kind: "full", width: 1920, height: 1072 },
-    { src: `${L}/spec-macro-bridge.webp`, alt: "The bridge, close", kind: "full", width: 2200, height: 1467 },
+    /* `spec-macro-bridge` and `offering-front` came out (Jai, 5 Nov 2026):
+       both were renders of the old 3D model under bad lighting, and the
+       review's rule is that nothing on the page may show a frame other
+       than the real one. The hinge macro is a photograph and stays. */
     { src: `${L}/spec-macro-inner-right.webp`, alt: "The hinge and the house mark", kind: "full", width: 2400, height: 1599 },
-    { src: `${L}/offering-front.webp`, alt: "ARCA I, front on", kind: "full", width: 2400, height: 1600 },
   ],
   closing: "Geometry, reduced.",
 };

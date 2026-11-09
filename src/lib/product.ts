@@ -251,3 +251,33 @@ export type Close = {
   /** Plates the pointer trail throws. */
   trail: readonly string[];
 };
+
+/* ── Fit: the frame's own measurements ────────────────────────────────
+
+   From the house's Fit & Sizing page (arianoir-showcase.pages.dev/fit/,
+   November 2026), where each figure is measured off the frame's own 3D
+   geometry rather than copied from a catalogue, which is why they carry a
+   decimal. Millimetres. Eye, bridge and lens height read the way an
+   optician writes them; "suits" is the face width the house recommends.
+
+   Replaces the AR try-on on the buy page. Jai's concern behind the try-on
+   was that people would not know the frame's size; these answer it.
+   A house missing from this table shows no measurements rather than a
+   neighbour's. */
+export type FrameFit = {
+  eye: number;
+  bridge: number;
+  lensHeight: number;
+  front: number;
+  temple: number;
+  suits: readonly [number, number];
+};
+
+export const FRAME_FIT: Readonly<Record<string, FrameFit>> = {
+  matriarca: { eye: 51.7, bridge: 24.9, lensHeight: 34.5, front: 142.5, temple: 139.8, suits: [134, 144] },
+  patriarca: { eye: 51.7, bridge: 24.9, lensHeight: 34.5, front: 142.6, temple: 143.4, suits: [134, 144] },
+  "arca-i": { eye: 54.6, bridge: 20.5, lensHeight: 39.6, front: 142.9, temple: 150.5, suits: [134, 144] },
+  monarca: { eye: 52.3, bridge: 19.2, lensHeight: 42.3, front: 145.3, temple: 142.2, suits: [137, 147] },
+  "arca-ii": { eye: 54.2, bridge: 20.3, lensHeight: 39.4, front: 151, temple: 147.1, suits: [143, 153] },
+  ahava: { eye: 51.6, bridge: 18.7, lensHeight: 38, front: 151.6, temple: 150, suits: [143, 153] },
+};

@@ -110,7 +110,26 @@ export const TRY_ON_PREVIEW: readonly TryOnPreviewSlide[] = [
   { house: "monarca", image: "/images/monarca/campaign/worn-noir-bust-portrait.webp", box: [22, 25, 44, 12] },
 ];
 
+/**
+ * ---- Off the product pages (Nov 2026 review) ----
+ *
+ * Jai: the AR try-on "looked glitchy" and "kills the whole vibe". It is
+ * taken off every buy page and story page; the Fit guide on the product
+ * page answers the question it was there for (will it fit?). The mirror
+ * itself still builds at /try-on, reached by nothing, so it can come back
+ * by flipping this one flag rather than by rebuilding it.
+ *
+ * `tryOnHouses()` is what the PAGES ask, so it answers empty while this is
+ * false and every Try on button disappears with it. The /try-on route asks
+ * `mirrorHouses()`, which always answers.
+ */
+export const TRY_ON_ON_PAGES = false;
+
 export function tryOnHouses(): TryOnHouse[] {
+  return TRY_ON_ON_PAGES ? mirrorHouses() : [];
+}
+
+export function mirrorHouses(): TryOnHouse[] {
   return houses
     .map((house) => ({
       slug: house.slug,
@@ -141,7 +160,8 @@ export function tryOnHouses(): TryOnHouse[] {
  * first one rather than on nothing.
  */
 export function tryOnHref(slug: string, colour?: string | null): string | null {
-  const house = tryOnHouses().find((h) => h.slug === slug);
+  if (!TRY_ON_ON_PAGES) return null;
+  const house = mirrorHouses().find((h) => h.slug === slug);
   if (!house) return null;
   const c = house.colours.find((x) => x.name === colour) ?? house.colours[0];
   return `/try-on?house=${encodeURIComponent(house.slug)}&colour=${encodeURIComponent(c.name)}`;

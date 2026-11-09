@@ -37,7 +37,13 @@ export function NavSearch({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <>
-      <div className="nav-search" data-open={open || undefined}>
+      {/* Out of flow: opening search must not change the navbar's size or
+          layout (Rems, 9 Nov). It opens left of the right-hand cluster,
+          centred on the bar's line. */}
+      <div
+        className="nav-search absolute top-1/2 right-full mr-3 -translate-y-1/2"
+        data-open={open || undefined}
+      >
         <input
           ref={field}
           type="search"

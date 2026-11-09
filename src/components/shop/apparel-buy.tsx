@@ -56,10 +56,9 @@ export function ApparelBuy({ line }: { line: ApparelCollection }) {
 function ApparelBuyInner({ line }: { line: ApparelCollection }) {
   const params = useSearchParams();
   const asked = params.get("colourway") ?? params.get("colorway");
-  /* Only what is being sold. The collection carries five yarns and one
-     run has been cut, so the picker offers the one — see `listed` in
-     lib/apparel. A `?colourway=` for an unlisted yarn falls through to
-     the listed one rather than opening a page that cannot be bought. */
+  /* Only what is being sold, see `listed` in lib/apparel. A `?colourway=`
+     for a withdrawn yarn falls through to an offered one rather than
+     opening a page that cannot be bought. */
   const offered = listedColourways(line);
   const first =
     offered.find((c) => c.name === asked && c.available) ??

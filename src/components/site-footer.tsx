@@ -1,7 +1,6 @@
 import { footer } from "@/lib/content";
 import { SitemapTabs } from "./sitemap-tabs";
 import { NewsletterField } from "./newsletter-field";
-import { FooterMark } from "./footer-mark";
 
 /**
  * Two grounds, one object.
@@ -29,12 +28,8 @@ export function SiteFooter({
     /* `sm:pb-0` is not a footer with no foot: from `sm` up the space
        under the mark is set INSIDE the column below, so both gaps in the
        lockup resolve against the same box. See the mark. */
-    <footer className={`${ground} relative z-[39] border-t border-[var(--fg-rule)] px-6 pt-24 pb-10 sm:px-10 sm:pb-0`}>
-      {/* The lockup's column, and the box every percentage in it
-          resolves against — the mark's own gaps and the
-          room under the last line. Carried here rather than as the
-          footer's padding so both read the same width. */}
-      <div className="mx-auto max-w-7xl sm:pb-[calc(6.49%_-_0.6rem)]">
+    <footer className={`${ground} relative z-[39] border-t border-[var(--fg-rule)] px-6 pt-24 pb-10 sm:px-10 sm:pb-12`}>
+      <div className="mx-auto max-w-7xl">
         {/* ---- newsletter, then the sitemap as tabs ----
             Two blocks rather than a four-column grid. The desk (field and
             socials) is the thing someone came down here to USE; the map is
@@ -95,9 +90,13 @@ export function SiteFooter({
 
             Under both, the ARIA NOIR mark closes the page; NOIR is
             the last thing on it. */}
-        {/* The line over the legal row is the house pattern: the monoline
-            emblem repeated across the column, rather than a plain rule. */}
-        <div aria-hidden className="breaker mt-16" />
+        {/* Jai's review (5 Nov): lose the giant wordmark; "a small logo
+            variation, such as the monogram, just above Privacy · Terms ·
+            Privacy preferences. Subtle wins." The house emblem, once, in
+            place of the repeated-emblem rule and the enlarged mark. */}
+        <div className="mt-16 flex justify-center">
+          <span role="img" aria-label="Aria Noir" className="footer-emblem" />
+        </div>
         <div className="flex flex-col items-center justify-between gap-4 pt-8 sm:flex-row">
           <ul className="flex flex-wrap justify-center gap-6">
             {footer.legalLinks.map((l) => (
@@ -117,9 +116,6 @@ export function SiteFooter({
             {footer.credit.label}
           </a>
         </div>
-
-        {/* enlarged ARIA mark — draws itself in when it scrolls into view */}
-        <FooterMark />
 
       </div>
     </footer>

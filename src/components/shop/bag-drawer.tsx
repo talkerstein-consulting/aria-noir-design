@@ -225,7 +225,7 @@ export function BagDrawer({
                       ) : (
                         <span className="t-caption">{line.slug}</span>
                       )}
-                      <span className="t-micro tabular-nums">
+                      <span className="price t-micro tabular-nums">
                         {entry ? formatPrice(entry.cents * line.qty) : ""}
                       </span>
                     </div>
@@ -328,7 +328,7 @@ export function BagDrawer({
           <div className="border-t border-[var(--fg-rule)] px-7 pt-5 pb-7">
             <div className="flex items-baseline justify-between">
               <span className="t-eyebrow">Subtotal</span>
-              <span className="t-caption tabular-nums">
+              <span className="price t-caption tabular-nums">
                 {formatPrice(total)}
               </span>
             </div>

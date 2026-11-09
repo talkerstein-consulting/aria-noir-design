@@ -1,29 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import { house } from "@/lib/house-api";
 
 /**
- * The intake: the house letter, set in the blank centre of React Bits'
- * Contact Sheet (`components/contact-sheet.tsx`), with the shoot's
- * photographs spiralling out around it. Square corners (radius 0).
- * WebGL, so lazy and in an explicitly sized box.
+ * The intake: the house letter over one still photograph, the PATRIARCA
+ * basilica, empty. Decorative, so no alt: the heading carries the section.
  */
-const ContactSheet = dynamic(() => import("@/components/contact-sheet"), { ssr: false });
-
-const ITEMS = [
-  "AHAVA, the gilt mirror",
-  "MATRIARCA, the hypostyle hall",
-  "MONARCA, rain on the window",
-  "PATRIARCA, the basilica",
-  "AHAVA, the curtain",
-  "MONARCA, from below",
-  "ARCA II, the corridor",
-  "PATRIARCA, among the columns",
-  "MATRIARCA, the fallen statue",
-  "AHAVA, the facade in the morning",
-].map((alt, i) => ({ src: `/images/home/gallery/${String(i + 1).padStart(2, "0")}.webp`, alt }));
+const STILL = { src: "/images/home/gallery/04.webp" };
 
 export function HomeIntake() {
   const [email, setEmail] = useState("");
@@ -47,18 +31,18 @@ export function HomeIntake() {
 
   return (
     <section aria-labelledby="intake-heading" className="on-ink relative h-[100svh] min-h-[620px] w-full overflow-hidden bg-ink">
-      <ContactSheet
-        items={ITEMS}
-        radius={0}
-        develop={0.3}
-        edgeFade={0.15}
-        shadow={0.3}
-        blankArea={0.34}
-        captions={false}
-        backgroundColor="#000000"
-        ariaLabel="Photographs from the house"
-        className="absolute inset-0 h-full w-full"
+      {/* Was the WebGL contact sheet, photographs spiralling around the form.
+          Jai's review (5 Nov): "too much movement"; "say a lot with silence".
+          One still room under a veil instead, so the letter is the only
+          thing asking for attention. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={STILL.src}
+        alt=""
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover"
       />
+      <div aria-hidden className="absolute inset-0 bg-ink/70" />
 
       {/* The centre the sheet leaves blank. Only the form takes the pointer. */}
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6">

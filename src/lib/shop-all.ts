@@ -118,8 +118,7 @@ function eyewearPieces(house: House): Piece[] {
  */
 export const pieces: readonly Piece[] = [
   ...houses.flatMap(eyewearPieces),
-  /* `listedColourways`, not every colourway the collection was designed
-     in: only the Tweed has been cut. See the note on `listed`. */
+  /* `listedColourways`: the yarns on offer. See the note on `listed`. */
   ...apparel.flatMap((line) =>
     listedColourways(line).map(
       (colourway): Piece => ({
