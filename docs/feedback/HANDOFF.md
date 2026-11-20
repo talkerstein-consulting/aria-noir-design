@@ -98,7 +98,7 @@ Rems asked for a dimensioned drawing like the "SUTRO" example: the frame's flat 
 - Rerun photography wired into the four campaign houses.
 
 **Turntables**
-- All 30 colourways use Jai's new renders, 180 frames at 1600px in `public/images/spin/` (`scripts/import-showcase-turntables.mjs`).
+- All 30 colourways use Jai's new renders, 360 AVIF frames at 1200px in `public/images/spin/` (`scripts/import-showcase-turntables.mjs`).
 - No play button; turns while in view; stops when grabbed.
 - PATRIARCA ×1.25 on desktop, ARCA I ×1.15 on mobile.
 - Landscape fixed.

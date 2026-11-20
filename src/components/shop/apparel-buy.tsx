@@ -8,7 +8,7 @@ import { CtaButton } from "@/components/cta-link";
 import { RevealPlate } from "@/components/reveal";
 import { HoldToggle } from "@/components/shop/hold-toggle";
 import { QtyStepper } from "@/components/shop/qty-stepper";
-import { useBag } from "@/lib/cart";
+import { useBag, openBag } from "@/lib/cart";
 import { formatPrice, plateRatio } from "@/lib/shop";
 import { listedColourways, type ApparelCollection, type ApparelColourway } from "@/lib/apparel";
 
@@ -93,6 +93,10 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
       return;
     }
     add(line.slug, chosen.name, qty, size);
+    /* The garment added the line and then said nothing at all, while the
+       frames raised a panel of their own. Both open the bag now — the
+       same module, on every buy control (Rems, 20 Nov). */
+    openBag();
   };
 
   /* The same line into the same bag, then straight to the checkout. Same
@@ -208,25 +212,45 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
               </p>
             ) : null}
 
-            <div className="mt-6 flex items-center gap-3">
+            {/* ---- The SAME buy row the frames have ----
+
+                "Why is this Add to bag and this Add to bag weird? Can we
+                not have it consistent and just be the same?" (Raviv,
+                20 Nov). The control was already the house's CtaButton on
+                both pages; what differed was everything around it — the
+                garment sat in an ad-hoc flex row with its own gap, so
+                the stepper and the button were a different size and a
+                different distance apart from the one on a frame's page,
+                and an unavailable colour dropped the button for a
+                sentence where a frame keeps the disabled control.
+
+                `.buy-row` is that row, defined once in interactions.css
+                and already used by both frame pages. The garment uses it
+                now, out-of-stock included; which colour is gone is said
+                under the row, where it belongs, rather than in place of
+                the thing you press. */}
+            <div className="buy-row mt-6 w-full">
+              <QtyStepper value={qty} onChange={setQty} />
               {chosen.available ? (
-                <>
-                  <QtyStepper value={qty} onChange={setQty} />
-                  <CtaButton
-                    className="flex-1"
-                    alt="Add again"
-                    swapped={inBag}
-                    onClick={addToBag}
-                  >
-                    Add to bag
-                  </CtaButton>
-                </>
+                <CtaButton
+                  className="flex-1"
+                  alt="Add again"
+                  swapped={inBag}
+                  onClick={addToBag}
+                >
+                  Add to bag
+                </CtaButton>
               ) : (
-                <p className="t-caption text-[var(--fg-quiet)]">
-                  Out of stock in {chosen.name}.
-                </p>
+                <button type="button" className="cta-main flex-1" disabled>
+                  Out of the workshop
+                </button>
               )}
             </div>
+            {!chosen.available ? (
+              <p className="t-caption mt-3 text-[var(--fg-quiet)]">
+                Out of stock in {chosen.name}.
+              </p>
+            ) : null}
             {chosen.available ? (
               <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
                 Buy now

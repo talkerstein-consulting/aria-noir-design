@@ -25,7 +25,7 @@ export const metadata: Metadata = {
  * ---- Why the route stayed ----
  *
  * Eight places point at `/bag`: the menu, search, the checkout's way back,
- * `/cart`'s redirect, the held list, the bag-added panel, and Shopify's
+ * `/cart`'s redirect, the held list, the bag drawer, and Shopify's
  * post-auth return at `/bag?welcome=1`. `/bag` is also what a shopper
  * types. Deleting the route would have turned all of that into 404s, so it
  * answers exactly as it always did and opens the bag — just the drawer

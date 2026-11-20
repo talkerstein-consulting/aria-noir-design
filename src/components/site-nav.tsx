@@ -14,7 +14,7 @@ import { BagDrawer } from "@/components/shop/bag-drawer";
 import { BagPin } from "@/components/shop/bag-pin";
 import { DeskDrawer } from "@/components/shop/desk-drawer";
 import { menu } from "@/lib/navigation";
-import { useBag } from "@/lib/cart";
+import { useBag, OPEN_BAG_EVENT } from "@/lib/cart";
 
 type SiteNavProps = {
   /**
@@ -35,6 +35,20 @@ type SiteNavProps = {
  *  the two controls and the mark can sit over different sections while a
  *  boundary is crossing the band. */
 const PROBE_X = [0.12, 0.5, 0.88];
+
+/**
+ * The header's two word lists.
+ *
+ * One stack of five words on the left against three glyph-words on the
+ * right read as a header that had been filled from one end (Raviv,
+ * 20 Nov). These are the same entries as `menu.primary`, dealt either
+ * side of the mark: the shop's rooms with the way in, the house's rooms
+ * with the errands. Home is dropped from both — the mark is the way back.
+ */
+const RIGHT_HREFS = ["/gallery", "/contact"];
+const navWords = menu.primary.filter((l) => l.href !== "/");
+const navLeft = navWords.filter((l) => !RIGHT_HREFS.includes(l.href));
+const navRight = navWords.filter((l) => RIGHT_HREFS.includes(l.href));
 
 /**
  * Fixed site header, shared by the home experience and every product page
@@ -143,6 +157,16 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
      * after unmount is a no-op. */
     window.requestAnimationFrame(() => setBagOpen(true));
   }, [pathname]);
+
+  /* Adding a piece opens the bag, wherever the buy control happens to be.
+     The drawer lives here because the nav outlives every route; the buy
+     pages raise an event rather than hold a reference to it, so a control
+     on any page reaches the same panel. See openBag() in lib/cart. */
+  useEffect(() => {
+    const open = () => setBagOpen(true);
+    window.addEventListener(OPEN_BAG_EVENT, open);
+    return () => window.removeEventListener(OPEN_BAG_EVENT, open);
+  }, []);
 
   useEffect(() => {
     const header = ref.current;
@@ -294,19 +318,23 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             <span aria-hidden />
             <span aria-hidden />
           </button>
-          {/* Desktop: the menu's first words, laid out in the bar. */}
+          {/* Desktop: the menu's first words, laid out in the bar.
+
+              Split either side of the mark rather than all stacked on the
+              left (Raviv, 20 Nov: "all these items up here, and only three
+              here"). The cut is by kind, not by character count: the words
+              that lead to things you buy sit with the way in, the words
+              that lead to the house sit with the errands. */}
           <nav aria-label="Primary" className="nav-words">
-            {menu.primary
-              .filter((l) => l.href !== "/")
-              .map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  aria-current={pathname === l.href ? "page" : undefined}
-                >
-                  {l.label}
-                </Link>
-              ))}
+            {navLeft.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={pathname === l.href ? "page" : undefined}
+              >
+                {l.label}
+              </Link>
+            ))}
           </nav>
 
         </div>
@@ -347,6 +375,19 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             mount the count is unknown, not zero, and a 0 that becomes a 2
             a frame later reads as the shop finding things it had lost. */}
         <div className="nav-cluster relative justify-self-end">
+          {/* The house's own words, ahead of the errands: this is the other
+              half of the split described on the left-hand nav. */}
+          <nav aria-label="The house" className="nav-words nav-words--right">
+            {navRight.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={pathname === l.href ? "page" : undefined}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <NavSearch open={inlineSearch} onClose={() => setInlineSearch(false)} />
           {/* Search sits with the errands, on the right, where most sites
               keep it. The same tap both ways: it opens the sheet and it closes it,

@@ -133,7 +133,23 @@ function Tile({
     <li
       className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""} ${row ? "w-[78vw] shrink-0 snap-start sm:w-[42vw] lg:w-auto" : ""}`}
       onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
-      <Link href={href} onClick={toRun} className="relative isolate block aspect-[5/4] w-full overflow-hidden">
+      {/* ---- Portrait cell, uncropped photograph ----
+
+          Raviv, 20 Nov: "something slightly taller, like the ratio of a
+          phone screen". Then, on seeing it: "make sure there is no
+          cropping on the photos, meaning ARCA I is not cropped out."
+
+          Those two pull against each other. The campaign plates are
+          landscape; a portrait cell filled with `object-cover` has to
+          throw away the sides, which is exactly what took the frame out
+          of the ARCA I tile.
+
+          So the CELL is portrait and the PICTURE is whole: `object-contain`,
+          held to the top of the cell, and the room that leaves underneath
+          is where the name and the colourway dots live. The tile is
+          taller, nothing is cut, and the space below the photograph is a
+          caption rather than a letterbox. */}
+      <Link href={href} onClick={toRun} className="relative isolate block aspect-[3/4] w-full overflow-hidden sm:aspect-[4/5]">
         {/* The zoom lives on this wrapper so it never fights the
             crossfade's own scale on each picture. */}
         <div className="absolute inset-0 isolate transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
@@ -148,26 +164,26 @@ function Tile({
               sizes="(min-width: 1024px) 33vw, 50vw"
               /* A slow crossfade, and the incoming picture settles from a
                  touch larger, so the change reads as one movement. */
-              className="object-cover transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+              /* contain, not cover: the whole plate, never a crop of it. */
+              className="object-contain object-top transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={{ opacity: on ? 1 : 0, transform: on ? "scale(1)" : "scale(1.02)", zIndex: on ? 1 : 0 }}
               onLoad={() => setLoaded((s) => (s.has(layer.key) ? s : new Set(s).add(layer.key)))}
             />
           );
         })}
         </div>
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-ink/85 to-transparent sm:block"
-        />
       </Link>
 
       {/* Outside the link: the dots are buttons, and a button inside an
           anchor is invalid. Positioned over the tile's foot. */}
       {/* Phone: a caption under the photograph, so it never sits on the
           frame. Wider: over the foot of the tile, as before. */}
-      <div className="pointer-events-none relative z-10 flex flex-col items-center gap-1.5 px-2 pt-2.5 pb-4 text-center sm:absolute sm:inset-x-0 sm:bottom-0 sm:gap-3 sm:p-6">
+      {/* In flow, under the picture, at every width: with the plate
+          contained rather than cropped there is no dark corner left to
+          set a white name on. */}
+      <div className="pointer-events-none relative z-10 -mt-[22%] flex flex-col items-center gap-1.5 px-2 pb-4 text-center sm:-mt-[26%] sm:gap-3 sm:px-6 sm:pb-6">
         {/* Same size as the product names in the frames grid. */}
-        <h3 className="font-display text-base leading-tight text-[var(--fg-primary)] sm:text-2xl sm:text-paper">
+        <h3 className="font-display text-base leading-tight text-[var(--fg-primary)] sm:text-2xl">
           {item.name}
           {current ? <span className="italic"> {current.name}</span> : null}
         </h3>

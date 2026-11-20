@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CtaLink, CtaButton } from "@/components/cta-link";
 import { ProductCard } from "@/components/product-card";
 import { useHeld } from "@/lib/held";
-import { lineHref, lineImage, lineName, useBag } from "@/lib/cart";
+import { lineHref, lineImage, lineName, useBag, openBag } from "@/lib/cart";
 import { formatPrice, shopHref, swatchFor } from "@/lib/shop";
 import { cardImageFor } from "@/lib/product-cards";
 import { shopPath } from "@/lib/navigation";
@@ -80,9 +80,11 @@ export function HeldView() {
         </p>
         {addable.length > 0 ? (
           <CtaButton
-            onClick={() =>
-              addable.forEach((r) => add(r.line.slug, r.line.colorway, 1))
-            }
+            onClick={() => {
+              addable.forEach((r) => add(r.line.slug, r.line.colorway, 1));
+              /* The bag, as every other add on the site does. */
+              openBag();
+            }}
           >
             {addable.length === resolved.length
               ? "Add all to bag"
@@ -145,7 +147,12 @@ export function HeldView() {
                     Choose a size
                   </Link>
                 ) : !gone ? (
-                  <CtaButton onClick={() => add(line.slug, line.colorway, 1)}>
+                  <CtaButton
+                    onClick={() => {
+                      add(line.slug, line.colorway, 1);
+                      openBag();
+                    }}
+                  >
                     Add to bag
                   </CtaButton>
                 ) : null

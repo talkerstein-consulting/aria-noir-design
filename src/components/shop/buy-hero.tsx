@@ -22,7 +22,7 @@ import {
   stockFor,
   swatchFor,
 } from "@/lib/shop";
-import { useBag } from "@/lib/cart";
+import { useBag, openBag } from "@/lib/cart";
 import { CATALOGUE } from "@/lib/catalogue";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import { RevealPlate } from "@/components/reveal";
@@ -36,7 +36,6 @@ import dynamic from "next/dynamic";
 const TryOn = dynamic(() => import("@/components/try-on/try-on").then((m) => m.TryOn), {
   ssr: false,
 });
-import { BagAdded } from "@/components/shop/bag-added";
 import { turntableStem } from "@/lib/turntable";
 import { ProductModel, posterFor } from "@/components/product/product-model";
 import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
@@ -179,9 +178,6 @@ export function BuyHero({ house }: { house: House }) {
      behind the sheet stay live, so reading `chosen` and `qty` from inside
      it would let the confirmation change its mind about what it just
      confirmed. Null when the sheet is down. */
-  const [added, setAdded] = useState<{ colorway: string; qty: number } | null>(
-    null,
-  );
 
   const entry = stockFor(house).find((e) => e.colorway === chosen);
   const available = entry?.available === true;
@@ -243,7 +239,10 @@ export function BuyHero({ house }: { house: House }) {
   const addToBag = () => {
     if (!chosen) return;
     add(house.slug, chosen, qty);
-    setAdded({ colorway: chosen, qty });
+    /* The bag itself, not a panel of its own that says the bag changed.
+       Same module the nav's Bag opens, on every buy control on the site
+       (Rems, 20 Nov). */
+    openBag();
   };
 
   /* The same line into the same bag, then straight to the checkout. No
@@ -746,14 +745,6 @@ export function BuyHero({ house }: { house: House }) {
 
       </div>
 
-      {added ? (
-        <BagAdded
-          house={house}
-          colorway={added.colorway}
-          qty={added.qty}
-          onClose={() => setAdded(null)}
-        />
-      ) : null}
     </>
   );
 }

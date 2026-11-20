@@ -136,7 +136,16 @@ function ShopTile({ piece }: { piece: Piece }) {
   const stem = TURNTABLE[piece.id];
   const href = piece.card.href ?? `/shop/${piece.collection}`;
   return (
-    <Link href={href} className="shop-tile group relative block aspect-[7/8] w-full overflow-hidden sm:aspect-square">
+    /* The garment stands taller than a frame does. The square cell cut
+       El Patrón off at the hem — "this shirt can be made taller" (Raviv,
+       20 Nov) — so apparel takes a portrait cell and the frames keep the
+       square one they are shot for. */
+    <Link
+      href={href}
+      className={`shop-tile group relative block w-full overflow-hidden ${
+        piece.kind === "apparel" ? "aspect-[3/4]" : "aspect-[7/8] sm:aspect-square"
+      }`}
+    >
       {stem ? (
         <>
           <Image
@@ -160,7 +169,16 @@ function ShopTile({ piece }: { piece: Piece }) {
           alt={`${piece.collectionName}, ${piece.name}`}
           fill
           sizes="(min-width: 1024px) 25vw, 50vw"
-          className="object-contain px-[6%] pt-[2%] pb-[20%]"
+          /* The garment's photographs are rooms, not packshots, and in the
+             taller cell they ran under the name. More ground reserved
+             below the picture rather than a scrim over it: nothing of the
+             photograph is covered, and the label sits on the tile's own
+             grey like the frames' labels do. */
+          className={
+            piece.kind === "apparel"
+              ? "object-contain px-[6%] pt-[3%] pb-[30%]"
+              : "object-contain px-[6%] pt-[2%] pb-[20%]"
+          }
         />
       ) : null}
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 px-2 pb-4 text-center sm:px-3 sm:pb-7">

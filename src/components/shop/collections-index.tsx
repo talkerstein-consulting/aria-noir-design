@@ -36,8 +36,12 @@ const chapters = collections.map((c, i) => {
     number: String(i + 1).padStart(2, "0"),
     material: house?.material ?? line?.material ?? "",
     note: LINES[c.slug] ?? house?.note ?? line?.note ?? "",
-    href: house?.href ?? (house ? shopPath(house) : `/shop/${c.slug}`),
-    cta: house?.href ? "Discover the story" : `Shop ${c.name}`,
+    /* A collection's one way out is its story page where it has one, and
+       its counter where it does not. The garment has one now (Raviv,
+       20 Nov), so the test is "does this collection have a story", not
+       "is this collection a frame house". */
+    href: house?.href ?? line?.href ?? (house ? shopPath(house) : `/shop/${c.slug}`),
+    cta: house?.href ?? line?.href ? "Discover the story" : `Shop ${c.name}`,
     count: own.length,
     fromCents: own.length ? Math.min(...own.map((p) => p.cents)) : 0,
   };
@@ -101,7 +105,20 @@ export function CollectionsIndex() {
           }`}
           aria-live="polite"
         >
-          <div key={shown.slug} className="rise-now flex w-full max-w-md flex-col items-center gap-4 text-center md:w-1/2 md:max-w-none md:px-[6vw]">
+          {/* ---- The words are never absent ----
+
+              This block used to carry `.rise-now`, which starts at
+              opacity 0 after a 150ms delay and takes 0.9s to arrive. Keyed
+              on the slug, it remounted and replayed on every chapter, so
+              for about a second after each turn of the gallery one half of
+              the screen held a photograph and the other held nothing —
+              "there's this random gap over here" (Raviv, 20 Nov), and
+              "it should always be either photo or text at each scroll".
+
+              Same keying, so the swap still animates, but the animation
+              now starts part-visible and lands in under half a second.
+              There is no frame in which this half is empty. */}
+          <div key={shown.slug} className="chapter-words flex w-full max-w-md flex-col items-center gap-4 text-center md:w-1/2 md:max-w-none md:px-[6vw]">
             <h2 className="t-display-lg">{shown.name}</h2>
             {shown.note ? (
               <p className="t-body max-w-sm text-pretty text-paper/75">{shown.note}</p>

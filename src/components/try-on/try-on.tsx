@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { useBag } from "@/lib/cart";
+import { useBag, openBag } from "@/lib/cart";
 import { Camera, ChevronDown, ChevronUp, Minus, Plus, SlidersHorizontal, X } from "lucide-react";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import {
@@ -222,6 +222,7 @@ export function TryOn({
   const addToBag = () => {
     add(house.slug, colour.name, 1);
     setAdded(`${house.slug}/${colour.name}`);
+    openBag();
   };
   const buyNow = () => {
     add(house.slug, colour.name, 1);

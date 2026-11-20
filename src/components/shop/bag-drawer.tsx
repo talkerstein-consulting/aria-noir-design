@@ -214,17 +214,19 @@ export function BagDrawer({
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
-                      {house ? (
-                        <Link
-                          href={lineHref(r)}
-                          onClick={onClose}
-                          className="t-caption link-quiet"
-                        >
-                          {house.name}
-                        </Link>
-                      ) : (
-                        <span className="t-caption">{line.slug}</span>
-                      )}
+                      {/* `title` is lineName(r), which already knows how to
+                          name a frame AND a garment. This used to print
+                          `house.name` or fall back to the raw slug, so the
+                          sweater showed as "alpaca-sweater" in the one
+                          panel the whole site now opens on every add. Its
+                          own aria-label had it right all along. */}
+                      <Link
+                        href={lineHref(r)}
+                        onClick={onClose}
+                        className="t-caption link-quiet"
+                      >
+                        {title}
+                      </Link>
                       <span className="price t-micro tabular-nums">
                         {entry ? formatPrice(entry.cents * line.qty) : ""}
                       </span>

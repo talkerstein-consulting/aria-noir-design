@@ -198,10 +198,15 @@ a:hover :is(.zoom, .card-shot) img {
 .gift-sheet[data-phase="shown"] .gift-card { opacity: 1; }
 @media (min-width: 768px) { .gift-sheet { bottom: 50%; transform: translateY(50%); } }
 
-/* ── Nav: words on the left (desktop), burger on the left (phone) ── */
-/* The words need ~495px on one line. Below 1280 they ran into the
-   wordmark (touching at ~1130), so the burger holds until there is room. */
+/* ── Nav: words either side of the mark (desktop), burger (phone) ── */
+/* The words used to sit in one stack on the left, which left the header
+   heavy at one end (Raviv, 20 Nov). They are dealt either side of the
+   wordmark now — shop words left, house words right — so each flank
+   carries about the same width. Below 1280 both lists give way to the
+   burger, as before. */
 .nav-words { display: none; gap: 1.75rem; white-space: nowrap; }
+/* A clear step between the house's words and the errands beside them. */
+.nav-words--right { margin-right: 0.75rem; }
 @media (min-width: 1280px) {
   .nav-words { display: flex; }
   .nav-burger { display: none !important; }
@@ -627,3 +632,173 @@ html:has(.route-burn) .site-nav .nav-mark svg { visibility: hidden; }
 .social-card { --cols: 2; }
 @media (min-width: 768px) { .social-card { --cols: 4; } }
 @media (min-width: 1200px) { .social-card { --cols: 6; } }
+
+/* ── Home: the house letter, cut into the tablet ───────────────────────
+   Raviv, 20 Nov: the field and the picture "should be an extension of
+   each other … like a stone tablet, and the field is in the image".
+
+   There was a slab drawn here in CSS — gradients, a noise grain and a lit
+   bevel — standing in for the thing he described. It is gone: the tablet
+   is IN the photograph now (see home-gallery.tsx), so the only job left
+   for the stylesheet is the lettering, which has to read as cut into real
+   stone rather than printed on top of it. */
+
+/* Letters cut into the face: the lower edge of each stroke catches the
+   light coming from the top-left, the upper edge falls into shadow. */
+.engraved {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18),
+    0 -1px 1px rgba(0, 0, 0, 0.8),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* The field is a line chiselled across the slab, not a box resting on it. */
+.chisel {
+  position: relative;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+.chisel:focus-within { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.38); }
+.chisel-field {
+  /* The section's own input rule draws a hairline box on every field in
+     it; on the tablet there is no box to draw, only the chiselled line
+     the form carries. */
+  border: 0 !important;
+  background: transparent !important;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18),
+    0 -1px 1px rgba(0, 0, 0, 0.8);
+}
+.chisel-field::placeholder { text-shadow: none; }
+.chisel-submit {
+  flex: none;
+  background: none;
+  border: 0;
+  padding: 0.75rem 0.25rem;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.chisel-submit:hover:not(:disabled),
+.chisel-submit:focus-visible { opacity: 1; }
+.chisel-submit:disabled { opacity: 0.45; cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chisel, .chisel-submit { transition: none; }
+}
+
+/* ── Home: the house letter, cut into the tablet ───────────────────────
+   Raviv, 20 Nov: the field and the picture "should be an extension of
+   each other … like a stone tablet, and the field is in the image".
+
+   There was a slab drawn here in CSS — gradients, a noise grain and a lit
+   bevel — standing in for the thing he described. It is gone: the tablet
+   is IN the photograph now (see home-gallery.tsx), so the only job left
+   for the stylesheet is the lettering, which has to read as cut into real
+   stone rather than printed on top of it. */
+
+/* Letters cut into the face: the lower edge of each stroke catches the
+   light coming from the top-left, the upper edge falls into shadow. */
+.engraved {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18),
+    0 -1px 1px rgba(0, 0, 0, 0.8),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* The field is a line chiselled across the slab, not a box resting on it. */
+.chisel {
+  position: relative;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+.chisel:focus-within { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.38); }
+.chisel-field {
+  /* The section's own input rule draws a hairline box on every field in
+     it; on the tablet there is no box to draw, only the chiselled line
+     the form carries. */
+  border: 0 !important;
+  background: transparent !important;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18),
+    0 -1px 1px rgba(0, 0, 0, 0.8);
+}
+.chisel-field::placeholder { text-shadow: none; }
+.chisel-submit {
+  flex: none;
+  background: none;
+  border: 0;
+  padding: 0.75rem 0.25rem;
+  font-family: var(--font-ui-stack);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.chisel-submit:hover:not(:disabled),
+.chisel-submit:focus-visible { opacity: 1; }
+.chisel-submit:disabled { opacity: 0.45; cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chisel, .chisel-submit { transition: none; }
+}
+
+/* ── The collections rail (shop/collections-rail.tsx) ──────────────────
+   Raviv, 20 Nov: "add an arrow up here to navigate", and show two or
+   three wide cards rather than every collection at once.
+
+   The rail itself is an ordinary overflow container, so the trackpad and
+   a drag need no code. What it does NOT do is snap: settling onto a card
+   is the same jolt the old dolly gallery was asked to stop making. */
+.rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* A sideways flick must not walk the whole page back a view. */
+  overscroll-behavior-x: contain;
+}
+.rail::-webkit-scrollbar { display: none; }
+
+/* The chevrons. Not a third CTA: a quiet control in the section's own
+   two colours, square like everything else in this house. */
+.rail-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: var(--fg-primary);
+  border: 1px solid currentColor;
+  opacity: 0.55;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+.rail-step:hover:not(:disabled),
+.rail-step:focus-visible { opacity: 1; }
+.rail-step:disabled { opacity: 0.2; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .rail-step { transition: none; } }
+
+/* ── The collection index's chapter words ─────────────────────────────
+   Never starts from nothing. `.rise-now` fades in from zero after a
+   delay, which on a component that remounts per chapter left half the
+   screen blank for about a second every time the gallery turned. This
+   arrives from part-visible, with no delay, in well under half a second:
+   the words are always on screen, they just settle. */
+@keyframes chapter-swap {
+  from { opacity: 0.25; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.chapter-words { animation: chapter-swap 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .chapter-words { animation: none; }
+}

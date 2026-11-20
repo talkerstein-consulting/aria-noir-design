@@ -99,10 +99,22 @@ function write(lines: BagLine[]) {
 export function resolve(lines: readonly BagLine[]): ResolvedLine[] {
   return lines.map((line) => {
     const house = allHouses.find((h) => h.slug === line.slug);
+    /* Looked up BEFORE the early return, and carried through it.
+     *
+     * This used to be found only in the fallback below, and the fallback
+     * only ran when neither a house nor a catalogue entry matched. The
+     * catalogue does carry the sweater's colourways, so a garment line
+     * took the early return with `garment: undefined` — which left
+     * `lineName` with nothing to call it but its own slug. The bag drawer
+     * read "alpaca-sweater" where it should have read "El Patrón", and
+     * `lineImage` had no garment to take the run shot from.
+     *
+     * A frame finds nothing here, so this changes nothing for one. */
+    const line_garment = apparel.find((a) => a.slug === line.slug);
     const entry = (CATALOGUE[line.slug] ?? []).find(
       (e) => e.colorway === line.colorway,
     );
-    if (house || entry) return { line, house, entry, garment: undefined };
+    if (house || entry) return { line, house, entry, garment: line_garment };
 
     /* ---- The garment resolves too ----
      *
@@ -280,4 +292,27 @@ export function useBag() {
   const count = lines.reduce((n, l) => n + l.qty, 0);
 
   return { lines, resolved: resolve(lines), count, ready, add, setQty, remove, clear };
+}
+
+/**
+ * Open the bag drawer from anywhere on the page.
+ *
+ * Adding a piece used to say so in two different ways, and on the garment
+ * it said nothing at all: the two frame pages raised `BagAdded`, a panel
+ * that came down from the top of the screen, while the apparel page added
+ * the line and left the reader looking at the button they had just
+ * pressed. "When the product is added to bag, the bag will appear, not
+ * the top-down dropdown on top — same bag module" (Rems, 20 Nov).
+ *
+ * The drawer lives in the nav, which outlives every route, so this is an
+ * event rather than a prop: the nav subscribes once and any buy control on
+ * any page can raise it without the two being wired together. The bag
+ * page's own `?bag=1` route param still exists for arriving from
+ * elsewhere; this is the same destination reached from inside a page.
+ */
+export const OPEN_BAG_EVENT = "aria:open-bag";
+
+export function openBag() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(OPEN_BAG_EVENT));
 }

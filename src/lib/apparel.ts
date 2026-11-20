@@ -64,6 +64,19 @@ export type ApparelCollection = {
    * by the swatch; the photographs are the garment.
    */
   run: readonly { src: string; alt: string }[];
+  /**
+   * The line's own exhibition page, where it has one.
+   *
+   * The six frame houses carry `href` on their navigation row and the
+   * collection index reads it to decide whether a collection gets
+   * "Discover the story" or is sent straight to the counter. A garment
+   * had no equivalent field, so El Patrón was the one collection on the
+   * index that offered no story — "El Patrón does not have its own
+   * collection … we need to have a Discover the story page like this for
+   * the sweater as well" (Raviv, 20 Nov). The page existed; nothing
+   * pointed at it.
+   */
+  href?: string;
   /** What it is made of, in the voice the houses use for their material. */
   material: string;
   note: string;
@@ -79,6 +92,7 @@ export const apparel: readonly ApparelCollection[] = [
   {
     name: "El Patrón",
     slug: "alpaca-sweater",
+    href: "/el-patron",
     /* Imported from the shoot by scripts/import-alpaca-photography.mjs.
        The order is the shoot's own: hero, the model alone, the pair, the
        knit up close, the room. */

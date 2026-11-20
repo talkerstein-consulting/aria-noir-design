@@ -10,7 +10,7 @@ import { addressLine } from "@/components/shop/address-form";
 import { CardField } from "@/components/shop/card-field";
 import { HeldView } from "@/components/shop/held-view";
 import { ProfileForm, type Profile } from "@/components/shop/profile-form";
-import { useBag } from "@/lib/cart";
+import { useBag, openBag } from "@/lib/cart";
 import {
   announceSession,
   house,
@@ -203,6 +203,9 @@ function Orders({ session }: { session: Session }) {
         added += 1;
       } else skipped += 1;
     }
+    /* Anything that puts a line in the bag shows the bag. The note below
+       still says what could not be carried over. */
+    if (added) openBag();
     setNote(
       added
         ? `${added} ${added === 1 ? "line" : "lines"} back in the bag${skipped ? `; ${skipped} no longer carried.` : "."}`

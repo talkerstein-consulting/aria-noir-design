@@ -15,11 +15,10 @@ import {
   stockFor,
   swatchFor,
 } from "@/lib/shop";
-import { useBag } from "@/lib/cart";
+import { useBag, openBag } from "@/lib/cart";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import { tryOnHref } from "@/lib/try-on";
 import { ColourwayPicker } from "@/components/shop/colourway-picker";
-import { BagAdded } from "@/components/shop/bag-added";
 import { HoldToggle } from "@/components/shop/hold-toggle";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { RevealText } from "@/components/reveal";
@@ -83,9 +82,6 @@ export function ProductBuy({
      down. It is a SNAPSHOT rather than a read of `chosen` and `qty`: the
      picker behind the sheet stays live, and a confirmation that changed
      its mind about what it was confirming would be worse than none. */
-  const [added, setAdded] = useState<{ colorway: string; qty: number } | null>(
-    null,
-  );
   const { add, lines, ready } = useBag();
 
   /* The bag's own answer, not `added`, for the reasons written out at the
@@ -137,7 +133,10 @@ export function ProductBuy({
   const addToBag = () => {
     if (!chosen) return;
     add(house.slug, chosen, qty);
-    setAdded({ colorway: chosen, qty });
+    /* The bag itself, not a panel of its own that says the bag changed.
+       Same module the nav's Bag opens, on every buy control on the site
+       (Rems, 20 Nov). */
+    openBag();
   };
 
   /* The buy page's Buy now, here too: the counter is the end of the
@@ -362,14 +361,6 @@ export function ProductBuy({
         )}
       </div>
 
-      {added ? (
-        <BagAdded
-          house={house}
-          colorway={added.colorway}
-          qty={added.qty}
-          onClose={() => setAdded(null)}
-        />
-      ) : null}
     </section>
   );
 }
