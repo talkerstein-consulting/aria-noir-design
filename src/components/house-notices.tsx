@@ -177,18 +177,18 @@ function CookieNotice({ onAnswer }: { onAnswer: (v: "all" | "necessary") => void
       aria-label="Cookies"
       className="notice-in fixed inset-x-0 bottom-0 z-[90] bg-ink/45 text-paper backdrop-blur-xl backdrop-saturate-150"
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10">
-        <div className="max-w-2xl">
-          <p className="t-display-xs">Cookies</p>
-          <p className="t-caption mt-1 text-paper/70">
-            The house keeps what the site needs to work. With your yes, it also keeps a record of
-            what is looked at, to know which frames to show first.{" "}
-            <Link href="/policies/privacy" className="underline underline-offset-4 hover:text-paper">
-              Privacy
-            </Link>
-          </p>
-        </div>
-        <div className="flex shrink-0 gap-3">
+      {/* Slim (Rems, 23 Nov): one line on a desktop, two on a phone. The
+          "Cookies" heading is gone — the bar is already labelled for a
+          screen reader, and the sentence says what it is. */}
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-10 sm:py-2.5">
+        <p className="t-caption max-w-2xl text-paper/70">
+          The house keeps what the site needs to work. With your yes, also a record of what is
+          looked at.{" "}
+          <Link href="/policies/privacy" className="underline underline-offset-4 hover:text-paper">
+            Privacy
+          </Link>
+        </p>
+        <div className="flex shrink-0 gap-2">
           <button type="button" className="cta-secondary notice-btn" onClick={() => onAnswer("necessary")}>
             Necessary only
           </button>

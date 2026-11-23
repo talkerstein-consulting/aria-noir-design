@@ -16,6 +16,7 @@ import { ProductSpec } from "@/components/product/product-spec";
 import { ProductWorn } from "@/components/product/product-worn";
 import { ProductBuy } from "@/components/product/product-buy";
 import { OtherCollections } from "@/components/product/other-collections";
+import { StoryThreshold } from "@/components/product/story-threshold";
 import { ProductClose } from "@/components/product/product-close";
 import type {
   AriaNoir,
@@ -238,6 +239,11 @@ export function StoryPage({
       {story.lookbook && house ? null : (
         <SiteFooter tone={house ? "ink" : "paper"} />
       )}
+      {/* Past the last pixel of the page: keep scrolling and the counter
+          comes up. Only where there is a counter to come up — a story
+          about something this site does not sell has nowhere to go. See
+          StoryThreshold. */}
+      {house && !sellsAt ? <StoryThreshold house={house} /> : null}
     </>
   );
 }

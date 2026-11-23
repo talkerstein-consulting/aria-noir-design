@@ -72,11 +72,16 @@ export function ColourwayCards({ house }: { house: House }) {
   return (
     <>
       <div className="mx-auto max-w-7xl">
-        <div className="hairline flex flex-wrap items-end justify-between gap-6 pt-10">
-          <h2 className="t-display-lg">The Run</h2>
-          <p className="t-caption">
-            {house.material} · one cut, {shown.length} colourways
-          </p>
+        {/* Centred, and the heading alone.
+
+            The caption beside it read "<material> · one cut, N colourways".
+            The material is already stated in the panels above, the count is
+            the row itself, and "one cut" is the argument the story page
+            makes at length — so it was the page restating three things it
+            had said better elsewhere, in the corner, in small type. The
+            run is the evidence; it does not need a label. */}
+        <div className="hairline flex justify-center pt-10">
+          <h2 className="t-display-lg text-center">The Run</h2>
         </div>
       </div>
 
@@ -84,7 +89,7 @@ export function ColourwayCards({ house }: { house: House }) {
           the quarter view on hover. Full bleed, as on the home page: the
           section's gutters are given back so they reach both edges. */}
       <div className="mt-10 -mx-[var(--gutter)] sm:-mx-[var(--gutter-wide)]">
-        <FrontTiles house={house.slug} colorways={stockFor(house).map((e) => e.colorway)} />
+        <FrontTiles house={house.slug} colorways={stockFor(house).map((e) => e.colorway)} row />
       </div>
     </>
   );

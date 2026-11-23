@@ -182,7 +182,8 @@ a:hover :is(.zoom, .card-shot) img {
    over a tint that fades in with it, and both go back the way they came. */
 @keyframes notice-rise { from { transform: translateY(100%); } to { transform: none; } }
 .notice-in { animation: notice-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.notice-btn { padding: 0.75rem 1.25rem; }
+/* Slim cookie bar (Rems, 23 Nov). */
+.notice-btn { padding: 0.45rem 1rem; }
 
 .gift-root { pointer-events: none; }
 .gift-root[data-open] { pointer-events: auto; }
@@ -629,9 +630,21 @@ html:has(.route-burn) .site-nav .nav-mark svg { visibility: hidden; }
 
 /* Home: the Instagram strip (home-social.tsx). Equal squares edge to
    edge: two across on a phone, four on a tablet, six on a desktop. */
-.social-card { --cols: 2; }
-@media (min-width: 768px) { .social-card { --cols: 4; } }
-@media (min-width: 1200px) { .social-card { --cols: 6; } }
+/* Bigger, taller cards (Rems, 23 Nov). On a phone one and a bit across,
+   so the next card peeks and the row reads as swiped.
+
+   The row sits inside the page's own gutters and keeps a hairline gap
+   between cards. The width is a share of the ROW's content box, not of
+   the viewport, so it already has the gutters taken out of it and it
+   holds when the row is capped at the page's measure. */
+.social-card {
+  --cols: 1.35;
+  --social-gap: 0.375rem;
+  width: calc((100% - (var(--cols) - 1) * var(--social-gap)) / var(--cols));
+}
+@media (min-width: 640px) { .social-card { --cols: 2.2; } }
+@media (min-width: 768px) { .social-card { --cols: 3; } }
+@media (min-width: 1200px) { .social-card { --cols: 4; } }
 
 /* ── Home: the house letter, cut into the tablet ───────────────────────
    Raviv, 20 Nov: the field and the picture "should be an extension of

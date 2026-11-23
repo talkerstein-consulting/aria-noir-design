@@ -45,7 +45,9 @@ const PROBE_X = [0.12, 0.5, 0.88];
  * side of the mark: the shop's rooms with the way in, the house's rooms
  * with the errands. Home is dropped from both — the mark is the way back.
  */
-const RIGHT_HREFS = ["/gallery", "/contact"];
+/* Maison and Contact sit with the errands; Gallery moved across to the
+   way in (Rems, 23 Nov: "swap positions of maison and gallery"). */
+const RIGHT_HREFS = ["/house/about", "/contact"];
 const navWords = menu.primary.filter((l) => l.href !== "/");
 const navLeft = navWords.filter((l) => !RIGHT_HREFS.includes(l.href));
 const navRight = navWords.filter((l) => RIGHT_HREFS.includes(l.href));
@@ -375,23 +377,17 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             mount the count is unknown, not zero, and a 0 that becomes a 2
             a frame later reads as the shop finding things it had lost. */}
         <div className="nav-cluster relative justify-self-end">
-          {/* The house's own words, ahead of the errands: this is the other
-              half of the split described on the left-hand nav. */}
-          <nav aria-label="The house" className="nav-words nav-words--right">
-            {navRight.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={pathname === l.href ? "page" : undefined}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
+          {/* Search leads this group (Rems, 23 Nov): Search, Maison,
+              Contact, Account, Bag.
+
+              It belongs on this side and not with the way in: the field
+              grows out of the bar to the LEFT of its button, so in the
+              left group it opened off the edge of the screen. First on
+              this side, the field grows into the mark's own room, which
+              is empty, and covers none of the words after it. The same
+              tap both ways: it opens the sheet and it closes it, and the
+              word turns into the cross that says so. */}
           <NavSearch open={inlineSearch} onClose={() => setInlineSearch(false)} />
-          {/* Search sits with the errands, on the right, where most sites
-              keep it. The same tap both ways: it opens the sheet and it closes it,
-              and the glyph turns into the cross that says so. */}
           <button
             type="button"
             /* On a phone, search and the account live in the menu; the
@@ -408,6 +404,19 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             <span className="morph-in" aria-hidden>Search</span>
             <span className="morph-out" aria-hidden>Close</span>
           </button>
+          {/* The house's own words, after it: this is the other half of
+              the split described on the left-hand nav. */}
+          <nav aria-label="The house" className="nav-words nav-words--right">
+            {navRight.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={pathname === l.href ? "page" : undefined}
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           {/* Opens the desk drawer rather than leaving for /desk. It was
               the one control in this band that navigated, and beside two
               glyphs that open a panel and close it again with the same tap,

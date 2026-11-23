@@ -30,15 +30,12 @@ export default function ShopAllPage() {
       <SmoothScroll />
       <SiteNav />
       <main id="main" tabIndex={-1} className="relative bg-ink">
+        {/* The dolly gallery opened this page for three days and is gone
+            again (Rems, 23 Nov): Shop All opens on the collection tiles,
+            as it did before. The dolly is still /collections' own opener;
+            this page is the inventory, and it starts by showing it. */}
         {/* No visible heading: the page opens on the collections. The h1
-            stays for screen readers and the outline.
-
-            The dolly gallery opened this page for one day, so that /shop
-            and /collections would read as one room (Raviv, 20 Nov: "I
-            want to keep the page consistent"). It is pulled: reaching the
-            inventory meant turning through all seven chapters first.
-            Shop All opens on the grid again (Rems, 20 Nov). /collections
-            keeps the gallery; that is what it is for. */}
+            stays for screen readers and the outline. */}
         <h1 className="sr-only">Shop all</h1>
         {/* Clear the fixed navbar. */}
         {/* Black all the way down to the filter bar (Rems, 9 Nov): ink

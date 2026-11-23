@@ -11,9 +11,11 @@ import { menu } from "@/lib/navigation";
  * connected: the Instagram Graph API needs a token from the account's
  * owner, and none has been given. Each card links to the account.
  *
- * Equal squares edge to edge with no gaps, like Meshki's strip: six across
- * on a desktop, two on a phone, swiped sideways (D06's one allowed
- * horizontal scroll). The handle sits in each square's lower corner.
+ * Portrait cards edge to edge with no gaps, after Meshki's strip (Rems,
+ * 23 Nov: "more vertical, bigger tiles"): four across on a desktop, and
+ * on a phone one and a bit, so the next card shows and says the row is
+ * swiped sideways (D06's one allowed horizontal scroll). The handle sits
+ * in each card's lower corner.
  */
 const POSTS = [
   { src: "/images/worn/arca-i-k-black-1.webp", alt: "ARCA I in K Black, worn" },
@@ -35,7 +37,7 @@ export function HomeSocial() {
         <div className="flex flex-col gap-3">
           <p className="t-eyebrow text-paper/70">Instagram</p>
           <h2 id="social-heading" className="t-display-lg text-paper">
-            @arianoir_official
+            The World of Aria Noir
           </h2>
         </div>
         <CtaLink href={ig.href} external kind="secondary">
@@ -43,15 +45,20 @@ export function HomeSocial() {
         </CtaLink>
       </div>
 
+      {/* Swiped sideways at every width (Rems, 23 Nov). The row bleeds to
+          the edges of the screen like the site's other side-scrolling
+          rows, and takes the page gutter as padding so the first card
+          starts on that line and the last runs off the right. `scroll-px`
+          carries the same gutter into the snap, so a snapped card lands
+          on the gutter and not against the glass. */}
       <ul
-        className="mt-12 flex snap-x snap-mandatory overflow-x-auto"
+        className="tiles-scroll mt-12 flex snap-x snap-mandatory gap-1.5 overflow-x-auto scroll-px-6 px-6 sm:scroll-px-10 sm:px-10"
         style={{ scrollbarWidth: "none" }}
       >
         {POSTS.map((p) => (
           <li
             key={p.src}
             className="social-card relative shrink-0 snap-start"
-            style={{ width: "calc(100vw / var(--cols, 2))" }}
           >
             <a
               href={ig.href}
@@ -61,7 +68,7 @@ export function HomeSocial() {
               aria-label={`${p.alt}. Aria Noir on Instagram`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.src} alt={p.alt} loading="lazy" className="block w-full object-cover" style={{ aspectRatio: "1 / 1" }} />
+              <img src={p.src} alt={p.alt} loading="lazy" className="block w-full object-cover" style={{ aspectRatio: "4 / 5" }} />
               <span
                 className="t-caption absolute bottom-3 left-3 text-paper"
                 style={{ textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}

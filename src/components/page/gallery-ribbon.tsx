@@ -7,9 +7,21 @@ import type { GalleryRoom } from "@/lib/pages";
 
 /** Every room's plates on one ribbon, captioned with their house.
  *
- *  The filter in the top corner narrows the ribbon to one house. The
- *  ribbon is keyed on the choice, so it rebuilds from the new set rather
- *  than trying to swap cards already in flight. */
+ *  The filter in the top corner narrows the ribbon to one house.
+ *
+ *  ---- The journey is NOT reset by the filter ----
+ *
+ *  The ribbon used to be keyed on the choice (`key={house ?? "all"}`),
+ *  which remounts it: a reader three minutes into the ribbon who narrowed
+ *  it to one house was put back at the mouth of it, facing the first plate
+ *  again. Filtering is meant to be a narrowing of what is in front of you,
+ *  not a way of starting over.
+ *
+ *  `DepthRibbon` can already take a new set in place — its effect writes
+ *  `itemsRef` and calls `sync()`, which rebuilds the path, the card
+ *  assignment and the atlas while leaving travel and velocity alone. So
+ *  the key is gone and the plates change around a reader who stays where
+ *  they are. */
 export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
   const [house, setHouse] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -35,6 +47,10 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
      and a phone has no hover). Tapping a plate brings it forward; the
      link appears under it, quiet, and goes when the plate is let go. */
   const [front, setFront] = useState<number>(-1);
+  /* The plate in front is dropped when the filter moves — see the menu's
+     own handler, which already does it: narrowing renumbers the list, and
+     a kept index would point the Shop link at a house the reader has just
+     filtered out. */
   const shown = house ? rooms.filter((r) => r.eyebrow === house) : rooms;
   const items = shown.flatMap((room) =>
     room.plates.map((p) => ({
@@ -51,7 +67,6 @@ export function GalleryRibbon({ rooms }: { rooms: readonly GalleryRoom[] }) {
   return (
     <section className="on-ink bg-ink relative h-svh w-full">
       <DepthRibbon
-        key={house ?? "all"}
         items={items}
         backgroundColor="#000000"
         radius={0}

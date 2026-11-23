@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState, type MouseEvent } from "react";
 
 /**
- * The collection tiles: one per house, a square plate, with the house
+ * The collection tiles: one per house, a horizontal 5:4, with the house
  * name and a dot per colourway under it. Clicking a dot shows that
  * colourway's photograph in the tile (crossfaded); the tile's link then
  * opens that colourway. Data is built on the server (HomeCollections).
@@ -30,8 +30,8 @@ export type CollectionTile = {
  *  the two-column grid. From sm up it is the grid either way. */
 /** `single`: the product page's grid: one column on a phone, and the
  *  run's four across with hairline gaps on a wide screen. */
-/** `row`: the story pages' Other Collections: a side-scrolling slider
- *  below lg, every tile on one row from lg up, however many there are. */
+/** `row`: the story pages' Other Collections: one side-scrolling row at
+ *  every width, four tiles to a screen from lg up, the rest swiped to. */
 export function CollectionTiles({
   items,
   scroll = false,
@@ -57,7 +57,7 @@ export function CollectionTiles({
       className={
         (gutter === "ink" ? "bg-ink " : "bg-paper ") +
         (row
-          ? "tiles-scroll flex gap-px snap-x snap-mandatory overflow-x-auto lg:grid lg:auto-cols-fr lg:grid-flow-col lg:overflow-visible"
+          ? "tiles-scroll flex gap-px snap-x snap-mandatory overflow-x-auto"
           : scroll
           ? "tiles-scroll flex gap-1.5 snap-x snap-mandatory overflow-x-auto sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3"
           : single
@@ -131,30 +131,25 @@ function Tile({
        the hover. Static: the name. Hover: the name, the photograph zooms,
        the colour dots appear. */
     <li
-      className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""} ${row ? "w-[78vw] shrink-0 snap-start sm:w-[42vw] lg:w-auto" : ""}`}
+      className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""} ${row ? "w-[78vw] shrink-0 snap-start sm:w-[42vw] lg:w-[calc((100%-3px)/4)]" : ""}`}
       onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
-      {/* ---- Square cell, whole photograph, caption beneath ----
+      {/* ---- Square cell, uncropped photograph ----
 
           Raviv, 20 Nov: "something slightly taller, like the ratio of a
-          phone screen". Then, on seeing it: "make sure there is no
+          phone screen", then, on seeing it: "make sure there is no
           cropping on the photos, meaning ARCA I is not cropped out."
 
-          Every plate this tile can show is square — the houses' covers
-          and the colourway cards alike, 1515 to 1884px, all 1:1. So the
-          cell is square too, and the picture fills it exactly: no crop,
-          and no letterbox either.
+          The first answer was a portrait cell with the plate contained
+          inside it. Nothing was cut, but every tile then carried a band
+          of dead ground under its picture, the name had to be dragged
+          back up over it by a negative margin, and the gaps between rows
+          came out uneven (Rems, 23 Nov: "this alignment and spacing is
+          still broken").
 
-          The TILE is still taller than it is wide, because the name and
-          the colourway dots sit under the picture in normal flow rather
-          than on top of it. That is what makes the ratio, not a portrait
-          box with empty room in it.
-
-          This replaces a 3:4 / 4:5 cell whose caption was pulled back up
-          over the picture with a negative margin. At the sm breakpoint
-          that margin (26% of the tile's width) was larger than the room
-          the square plate left under it (25%), so the name landed on the
-          photograph's bottom edge — and the hover zoom then pushed the
-          picture over it. */}
+          The house plates are square files (cover/square.webp, all six).
+          So the CELL is square: the plate fills it edge to edge with
+          nothing cropped and nothing left over, and the name sits in flow
+          underneath on the same spacing in every tile. */}
       <Link href={href} onClick={toRun} className="relative isolate block aspect-square w-full overflow-hidden">
         {/* The zoom lives on this wrapper so it never fights the
             crossfade's own scale on each picture. */}
@@ -170,8 +165,10 @@ function Tile({
               sizes="(min-width: 1024px) 33vw, 50vw"
               /* A slow crossfade, and the incoming picture settles from a
                  touch larger, so the change reads as one movement. */
-              /* contain, not cover: the whole plate, never a crop of it. */
-              className="object-contain object-top transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+              /* The cell matches the square plates, so this crops nothing;
+                 a colourway card shot taller is centred in it, as the shop
+                 grid's square cards already do. */
+              className="object-cover object-center transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
               style={{ opacity: on ? 1 : 0, transform: on ? "scale(1)" : "scale(1.02)", zIndex: on ? 1 : 0 }}
               onLoad={() => setLoaded((s) => (s.has(layer.key) ? s : new Set(s).add(layer.key)))}
             />
@@ -182,10 +179,11 @@ function Tile({
 
       {/* Outside the link: the dots are buttons, and a button inside an
           anchor is invalid. Positioned over the tile's foot. */}
-      {/* In flow, under the picture, at every width: with the plate
-          whole rather than cropped there is no dark corner left to set a
-          white name on. */}
-      <div className="pointer-events-none relative z-10 flex flex-col items-center gap-1.5 px-2 pt-3 pb-4 text-center sm:gap-3 sm:px-6 sm:pt-4 sm:pb-6">
+      {/* Phone: a caption under the photograph, so it never sits on the
+          frame. Wider: over the foot of the tile, as before. */}
+      {/* In flow, under the picture, at every width, on one spacing step:
+          the same distance below every plate and above every row. */}
+      <div className="pointer-events-none relative z-10 flex flex-col items-center gap-2 px-2 pt-3 pb-5 text-center sm:gap-3 sm:px-6 sm:pt-4 sm:pb-7">
         {/* Same size as the product names in the frames grid. */}
         <h3 className="font-display text-base leading-tight text-[var(--fg-primary)] sm:text-2xl">
           {item.name}

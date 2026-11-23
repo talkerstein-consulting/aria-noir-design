@@ -201,7 +201,24 @@ export function HomeFronts() {
 /** One light grey tile per colourway: the cut-out front, the quarter view
  *  on hover, name and price inside. Shared by the home page's frames and
  *  the product page's run. Colourways with no render are left out. */
-export function FrontTiles({ house: slug, colorways }: { house: string; colorways: readonly string[] }) {
+export function FrontTiles({
+  house: slug,
+  colorways,
+  row = false,
+}: {
+  house: string;
+  colorways: readonly string[];
+  /**
+   * The buy page's Run: ONE side-scrolling row at every width, four
+   * across on a wide screen, the rest swiped to — the same shape, and the
+   * same widths, as the story pages' Other Collections.
+   *
+   * The home page's own grid of fronts keeps the two-by-four block: it is
+   * the page's inventory of the house, meant to be seen whole, and there
+   * is no run beneath it to be consistent with.
+   */
+  row?: boolean;
+}) {
   const house = allHouses.find((h) => h.slug === slug);
   if (!house) return null;
   const tiles = colorways.flatMap((colorway) => {
@@ -209,11 +226,20 @@ export function FrontTiles({ house: slug, colorways }: { house: string; colorway
     return file ? [{ colorway, file }] : [];
   });
   return (
-    <ul className="grid grid-cols-2 gap-px bg-paper lg:grid-cols-4">
+    <ul
+      className={
+        row
+          ? "tiles-scroll flex gap-px snap-x snap-mandatory overflow-x-auto bg-paper"
+          : "grid grid-cols-2 gap-px bg-paper lg:grid-cols-4"
+      }
+    >
       {tiles.map((f) => {
         const entry = CATALOGUE[slug]?.find((e) => e.colorway === f.colorway);
         return (
-          <li key={f.file} className="rise shop-tile">
+          <li
+            key={f.file}
+            className={`rise shop-tile${row ? " w-[78vw] shrink-0 snap-start sm:w-[42vw] lg:w-[calc((100%-3px)/4)]" : ""}`}
+          >
             <Link
               href={`${shopPath(house)}?colourway=${encodeURIComponent(f.colorway)}`}
               className="group relative block aspect-square w-full"

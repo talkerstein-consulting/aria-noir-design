@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Close } from "@/lib/product";
 import type { House } from "@/lib/navigation";
@@ -25,6 +25,7 @@ import { RevealText } from "@/components/reveal";
 import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
 import { RotateHint } from "@/components/shop/rotate-hint";
 import { turntableStem } from "@/lib/turntable";
+import { setStoryOffer } from "@/lib/story-offer";
 
 /**
  * The page closes on the thing it has been arguing about, and the reader
@@ -78,6 +79,12 @@ export function ProductBuy({
     () => defaultColorway(house) || null,
   );
   const [qty, setQty] = useState(1);
+  /* The threshold at the foot of the page carries this acetate into the
+     buy page, so it has to know which one the counter is showing. See
+     lib/story-offer for why it travels through a store. */
+  useEffect(() => {
+    setStoryOffer({ slug: house.slug, colourway: chosen });
+  }, [house.slug, chosen]);
   /* What went in, held so the sheet can name it. Null when the sheet is
      down. It is a SNAPSHOT rather than a read of `chosen` and `qty`: the
      picker behind the sheet stays live, and a confirmation that changed
