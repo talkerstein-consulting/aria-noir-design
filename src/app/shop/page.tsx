@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ShopAll } from "@/components/shop/shop-all";
 import { ShopSkeleton } from "@/components/shop/shop-skeleton";
-import { CollectionsIndex } from "@/components/shop/collections-index";
+import { HomeCollections } from "@/components/home/home-sections";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/shop" },
@@ -30,12 +30,24 @@ export default function ShopAllPage() {
       <SmoothScroll />
       <SiteNav />
       <main id="main" tabIndex={-1} className="relative bg-ink">
-        {/* The same opener as /collections, not a second one.
-            Raviv, 20 Nov: "if they press Shop All and they come here this
-            way, it's cool — but I want to keep the page consistent." The
-            gallery carries the page's h1, so there is no second heading
-            here. */}
-        <CollectionsIndex />
+        {/* No visible heading: the page opens on the collections. The h1
+            stays for screen readers and the outline.
+
+            The dolly gallery opened this page for one day, so that /shop
+            and /collections would read as one room (Raviv, 20 Nov: "I
+            want to keep the page consistent"). It is pulled: reaching the
+            inventory meant turning through all seven chapters first.
+            Shop All opens on the grid again (Rems, 20 Nov). /collections
+            keeps the gallery; that is what it is for. */}
+        <h1 className="sr-only">Shop all</h1>
+        {/* Clear the fixed navbar. */}
+        {/* Black all the way down to the filter bar (Rems, 9 Nov): ink
+            gutters between the tiles, and the room under them is ink too. */}
+        <div className="pt-16 pb-10 sm:pt-[5.5rem] sm:pb-14">
+          {/* Full span, the same grid as the home page: one set of
+              collection tiles across the site. */}
+          <HomeCollections anchors gutter="ink" />
+        </div>
         {/* Not a black rectangle. The boundary suspends on every cold
             entry, and what it hands over is the page's own shape; see
             ShopSkeleton. */}

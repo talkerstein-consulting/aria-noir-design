@@ -111,7 +111,7 @@ export function HomeStatement() {
     </section>
   );
 }
-/* ── Collections: the product photograph of each house, a horizontal 5:4,
+/* ── Collections: the product photograph of each house, square,
       three across in two rows (two across on a phone), no gutter. The
       dots switch the photograph to that colourway (CollectionTiles). ── */
 

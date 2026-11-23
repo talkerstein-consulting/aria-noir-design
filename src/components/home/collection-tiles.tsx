@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState, type MouseEvent } from "react";
 
 /**
- * The collection tiles: one per house, a horizontal 5:4, with the house
+ * The collection tiles: one per house, a square plate, with the house
  * name and a dot per colourway under it. Clicking a dot shows that
  * colourway's photograph in the tile (crossfaded); the tile's link then
  * opens that colourway. Data is built on the server (HomeCollections).
@@ -133,23 +133,29 @@ function Tile({
     <li
       className={`tile group relative ${scroll ? "w-[78vw] shrink-0 snap-start sm:w-auto" : ""} ${row ? "w-[78vw] shrink-0 snap-start sm:w-[42vw] lg:w-auto" : ""}`}
       onPointerEnter={() => setWarm(true)} onFocusCapture={() => setWarm(true)}>
-      {/* ---- Portrait cell, uncropped photograph ----
+      {/* ---- Square cell, whole photograph, caption beneath ----
 
           Raviv, 20 Nov: "something slightly taller, like the ratio of a
           phone screen". Then, on seeing it: "make sure there is no
           cropping on the photos, meaning ARCA I is not cropped out."
 
-          Those two pull against each other. The campaign plates are
-          landscape; a portrait cell filled with `object-cover` has to
-          throw away the sides, which is exactly what took the frame out
-          of the ARCA I tile.
+          Every plate this tile can show is square — the houses' covers
+          and the colourway cards alike, 1515 to 1884px, all 1:1. So the
+          cell is square too, and the picture fills it exactly: no crop,
+          and no letterbox either.
 
-          So the CELL is portrait and the PICTURE is whole: `object-contain`,
-          held to the top of the cell, and the room that leaves underneath
-          is where the name and the colourway dots live. The tile is
-          taller, nothing is cut, and the space below the photograph is a
-          caption rather than a letterbox. */}
-      <Link href={href} onClick={toRun} className="relative isolate block aspect-[3/4] w-full overflow-hidden sm:aspect-[4/5]">
+          The TILE is still taller than it is wide, because the name and
+          the colourway dots sit under the picture in normal flow rather
+          than on top of it. That is what makes the ratio, not a portrait
+          box with empty room in it.
+
+          This replaces a 3:4 / 4:5 cell whose caption was pulled back up
+          over the picture with a negative margin. At the sm breakpoint
+          that margin (26% of the tile's width) was larger than the room
+          the square plate left under it (25%), so the name landed on the
+          photograph's bottom edge — and the hover zoom then pushed the
+          picture over it. */}
+      <Link href={href} onClick={toRun} className="relative isolate block aspect-square w-full overflow-hidden">
         {/* The zoom lives on this wrapper so it never fights the
             crossfade's own scale on each picture. */}
         <div className="absolute inset-0 isolate transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
@@ -176,12 +182,10 @@ function Tile({
 
       {/* Outside the link: the dots are buttons, and a button inside an
           anchor is invalid. Positioned over the tile's foot. */}
-      {/* Phone: a caption under the photograph, so it never sits on the
-          frame. Wider: over the foot of the tile, as before. */}
       {/* In flow, under the picture, at every width: with the plate
-          contained rather than cropped there is no dark corner left to
-          set a white name on. */}
-      <div className="pointer-events-none relative z-10 -mt-[22%] flex flex-col items-center gap-1.5 px-2 pb-4 text-center sm:-mt-[26%] sm:gap-3 sm:px-6 sm:pb-6">
+          whole rather than cropped there is no dark corner left to set a
+          white name on. */}
+      <div className="pointer-events-none relative z-10 flex flex-col items-center gap-1.5 px-2 pt-3 pb-4 text-center sm:gap-3 sm:px-6 sm:pt-4 sm:pb-6">
         {/* Same size as the product names in the frames grid. */}
         <h3 className="font-display text-base leading-tight text-[var(--fg-primary)] sm:text-2xl">
           {item.name}
