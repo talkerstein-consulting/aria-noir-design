@@ -10,6 +10,11 @@ import type { NextConfig } from "next";
 const HOUSE_API_URL = (process.env.HOUSE_API_URL || "http://127.0.0.1:3101").replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
+  /* Set by `next upgrade --agent=security` (16.4.1 -> 16.4.6). It records
+     that this app's last agent-run upgrade was a security one. */
+  experimental: {
+    agentUpgrade: "security",
+  },
   /**
    * Next 16 only serves the qualities listed here, and silently falls
    * back to 75 for anything else — which is why `quality={90}` on the
