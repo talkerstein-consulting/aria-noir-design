@@ -242,6 +242,20 @@ export function FrontTiles({
           >
             <Link
               href={`${shopPath(house)}?colourway=${encodeURIComponent(f.colorway)}`}
+              /* ---- the Run does not jump to the top ----
+
+                 As the buy page's Run (`row`), this link points at the
+                 page the reader is already on: same route, different
+                 `?colourway`. Next scrolls to the top on navigation by
+                 default, so picking an acetate from the run threw the
+                 reader back to the plate they had already scrolled past
+                 — they asked to change a colour, not to start the page
+                 again.
+
+                 On the home page it is a link to somewhere else, and
+                 landing at the top of that page is the whole point, so
+                 the default stands there. */
+              scroll={!row}
               className="group relative block aspect-square w-full"
             >
               <Image

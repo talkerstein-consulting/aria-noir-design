@@ -65,6 +65,25 @@ export function ColourwayPicker({
      it: the frame that opens the page turning has to be the frame this
      control says is selected. */
   const [own, setChosen] = useState(() => defaultColorway(house, asked));
+  /* ---- follow the address when it changes under us ----
+
+     The initialiser above runs ONCE. The Run at the foot of this page
+     links to this same route with a different `?colourway`, so picking an
+     acetate there is a navigation that does not remount this component:
+     `asked` became "Dreamy Rose" while `own` stayed on whatever was
+     selected, the effect below announced the stale one, and buy-hero's
+     `choose` wrote it back over the address. Pressing Dreamy Rose in the
+     run selected Noir.
+
+     React's own pattern for a prop the state has to follow — compare
+     against the last value seen during render, no effect, no extra pass.
+     The reset runs only when the address actually names something new, so
+     a reader pressing swatches is never overruled by it. */
+  const [seen, setSeen] = useState(asked);
+  if (asked !== seen) {
+    setSeen(asked);
+    setChosen(defaultColorway(house, asked));
+  }
   const chosen = value ?? own;
   /* Saves are per colourway, so the picker is where they show: a heart
      badge on every saved swatch, and the save control beside the chosen

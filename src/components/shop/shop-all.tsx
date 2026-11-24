@@ -22,7 +22,6 @@ import {
 } from "@/components/shop/filter-drawer";
 import { useBag } from "@/lib/cart";
 import { TURNTABLE } from "@/lib/turntable";
-import { RotateHint } from "@/components/shop/rotate-hint";
 import {
   activeFilters,
   collections,
@@ -163,28 +162,18 @@ function ShopTile({ piece }: { piece: Piece }) {
             sizes="(min-width: 1024px) 25vw, 50vw"
             className="scale-110 object-cover pb-[34%] sm:pb-[22%] opacity-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100"
           />
-          {/* ---- the mark that says this one is an object ----
+          {/* No mark on the tile. There was a RotateHint and a "3D"
+              label in the top-left corner of every tile with a rendered
+              turn behind it, put there on 24 Nov because the buy page's
+              plate had stopped turning by itself and the invitation had
+              to be made before the reader arrived.
 
-              The same mark the buy page wears at the foot of its plate
-              (RotateHint), on every tile whose frame has a rendered turn
-              behind it — which is exactly the set that has one to turn.
-              The buy page's plate stands still until it is dragged now,
-              so the invitation has to be made before the reader gets
-              there, not after (Rems, 24 Nov).
-
-              Top left, clear of the name, the price and the sold-out
-              line at the foot of the tile. It is a signifier, not a
-              control: the tile is a link, and what it leads to is the
-              page where the thing turns. */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute top-3 left-3 flex flex-col items-center gap-0.5 text-ink/25 sm:top-4 sm:left-4"
-          >
-            <RotateHint className="w-7 sm:w-8" />
-            <span className="font-ui text-[10px] leading-none font-semibold tracking-[0.12em] sm:text-[11px]">
-              3D
-            </span>
-          </span>
+              The plate turns on its own again (see SpinPlate), so the
+              invitation makes itself on the page that can answer it. A
+              badge on a grid of eight tiles was eight copies of a promise
+              about somewhere else, in the corner of a photograph of the
+              thing being sold. The buy page still wears the mark at the
+              foot of its plate, where there is something to drag. */}
         </>
       ) : piece.card.image ? (
         <Image
