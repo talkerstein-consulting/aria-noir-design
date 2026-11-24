@@ -14,9 +14,7 @@ import {
 import { ProductOffering } from "@/components/product/product-offering";
 import { ProductSpec } from "@/components/product/product-spec";
 import { ProductWorn } from "@/components/product/product-worn";
-import { ProductBuy } from "@/components/product/product-buy";
-import { OtherCollections } from "@/components/product/other-collections";
-import { StoryThreshold } from "@/components/product/story-threshold";
+import { StoryHandoff } from "@/components/product/story-handoff";
 import { ProductClose } from "@/components/product/product-close";
 import type {
   AriaNoir,
@@ -33,7 +31,6 @@ import type {
 } from "@/lib/product";
 import { houseBySlug, priceOf } from "@/lib/shop";
 import { StoryIndex } from "@/components/product/story-index";
-import { InvertFade } from "@/components/product/invert-fade";
 import {
   ProductLookbook,
   type Lookbook,
@@ -148,7 +145,12 @@ export function StoryPage({
           { id: "approach-film", label: "Approach" },
           { id: "offering", label: "The Object" },
           { id: "specification", label: "Specification" },
-          { id: "worn", label: "Worn" },
+          /* "Faces of ARCA I", not "Worn" (Rems, 24 Nov). The section is
+             the people the cut was shot on; "Worn" names the state of an
+             object instead, and it reads as a condition. The house name
+             comes from the catalogue, so a chapter cannot be labelled for
+             a house the page is not about. */
+          { id: "worn", label: house ? `Faces of ${house.name}` : "Faces" },
           { id: "acquire", label: house ? "Acquire" : "The Offer" },
         ]}
         name={house?.name}
@@ -202,48 +204,42 @@ export function StoryPage({
         <ProductWorn worn={story.worn} buyHref={buyHref} />
           </>
         )}
-        {/* The page ends at a counter rather than at a fourth link to
-            one. See ProductBuy for what it is and is not.
+        {/* ---- The story ends at the faces, and the next scroll is the
+             buy page ----
 
-            Unless there is nothing here to take an order with. The counter
-            is the bag, the picker and the price, all three read off the
-            eyewear catalogue; a story about something the catalogue does
-            not carry gets the closing block instead, which makes the offer
-            and hands the reader to the storefront. That is the honest
-            shape of "you cannot buy this here", and it is one branch
-            rather than a second template. */}
-        {story.lookbook && house ? (
-          /* The lookbook stories end on paper: the counter, the other
-             houses and the footer share one ground that fades up from ink
-             as it rises, so the inversion fills the screen. The counter is
-             centred on the house's turntable. */
-          <InvertFade reveal={<ProductBuy close={story.close} house={house} centered />}>
-            <OtherCollections current={house} tone="paper" />
-            <SiteFooter tone="paper" />
-          </InvertFade>
-        ) : (
-          <>
+            There was a counter here: a copy of the buy page's hero —
+            plate, panel, picker, price — drawn on the story page from the
+            buy page's own stylesheet, revealed through a circle of ink
+            (InvertFade) and walked into the real thing by StoryHandoff,
+            with the other houses and the footer behind it.
+
+            It is gone, and the whole apparatus with it. A story page that
+            ends by rebuilding the buy page is selling the same screen
+            twice, and every change to the offer had to be made in two
+            places that were free to disagree. The offer lives on the PDP
+            now and only there.
+
+            So the last thing read is the faces the cut was shot on, and
+            the scroll that would have gone past it goes to /shop/<slug>
+            instead. Nothing follows: no other-houses rail, no footer. A
+            document that ends where the next one begins has nothing to
+            scroll through, which is the whole point — see StoryHandoff.
+
+            Unless there is nothing here to take an order with. A story
+            about something the eyewear catalogue does not carry (ALPACA,
+            which is knitwear) has no buy page to hand to, so it still
+            closes on the closing block and its own footer. That is the
+            honest shape of "you cannot buy this here". */}
         {house ? (
-          <ProductBuy close={story.close} house={house} />
+          <StoryHandoff house={house} />
         ) : (
           <ProductClose close={story.close} buyHref={buyHref} />
         )}
-        {/* The way out of the page that is not the nav and not Back.
-            After the counter, because it is what a reader who did NOT buy
-            wants, and putting it before would be interrupting the offer
-            to name five alternatives to it. See OtherCollections. */}
-        {house ? <OtherCollections current={house} /> : null}
-          </>
-        )}
       </main>
-      {story.lookbook && house ? null : (
-        <SiteFooter tone={house ? "ink" : "paper"} />
-      )}
-      {/* Past the last pixel of the page: keep scrolling and the counter
-          comes up. Only where there is a counter to come up — a story
-          about something this site does not sell has nowhere to go. See
-          StoryThreshold. */}
-      {house && !sellsAt ? <StoryThreshold house={house} /> : null}
+      {/* Only the branch that has somewhere to stand still. A house story
+          hands over at the foot of the faces, so a footer below them would
+          be a page the reader can never reach the bottom of. */}
+      {house ? null : <SiteFooter tone="paper" />}
     </>
   );
 }

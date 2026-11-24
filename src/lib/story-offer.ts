@@ -23,14 +23,25 @@ import { useSyncExternalStore } from "react";
  * the buy page.
  */
 
-export type StoryOffer = { slug: string; colourway: string | null };
+export type StoryOffer = {
+  slug: string;
+  colourway: string | null;
+  /** How many the stepper is on, so the walk into the buy page can carry
+   *  the counter's own row rather than a row that always says one. */
+  qty: number;
+};
 
-let offer: StoryOffer = { slug: "", colourway: null };
+let offer: StoryOffer = { slug: "", colourway: null, qty: 1 };
 const listeners = new Set<() => void>();
 
 /** Called by the counter whenever its picker moves. */
 export function setStoryOffer(next: StoryOffer) {
-  if (next.slug === offer.slug && next.colourway === offer.colourway) return;
+  if (
+    next.slug === offer.slug &&
+    next.colourway === offer.colourway &&
+    next.qty === offer.qty
+  )
+    return;
   offer = next;
   for (const l of listeners) l();
 }
@@ -44,7 +55,7 @@ function subscribe(l: () => void) {
 
 /* One frozen object for the server and the first client render, so the two
    agree and `useSyncExternalStore` has nothing to complain about. */
-const EMPTY: StoryOffer = { slug: "", colourway: null };
+const EMPTY: StoryOffer = { slug: "", colourway: null, qty: 1 };
 
 export function useStoryOffer(): StoryOffer {
   return useSyncExternalStore(

@@ -57,6 +57,15 @@ function TurntablePlate({
   className?: string;
 }) {
   const [drawnFor, setDrawnFor] = useState<string | null>(null);
+  /* See the hint at the foot of this plate: it fades up a beat after the
+     plate itself, and it slides up the way the photographs below do, so
+     it is not the first thing that moves on a page the reader has just
+     walked into from the story. */
+  const [hintUp, setHintUp] = useState(false);
+  useEffect(() => {
+    const t = window.setTimeout(() => setHintUp(true), 900);
+    return () => window.clearTimeout(t);
+  }, []);
   /* A rendered image sequence wins over the 3D model: a third of the
      download, and it runs on a phone too. */
   const spin = !!stem && SPIN.has(stem);
@@ -101,9 +110,22 @@ function TurntablePlate({
         </div>
       ) : null}
       {/* The hint that it turns, small and grey at the foot of the plate:
-          wherever the plate can be dragged, sequence or 3D model. */}
+          wherever the plate can be dragged, sequence or 3D model.
+
+          It arrives a beat after the page does. A reader coming from the
+          story's counter lands on a plate that is the same photograph
+          they were already looking at, and a mark appearing on it in the
+          same frame as the route changes is the one thing on this screen
+          that would say "a new page". A second later it is the plate
+          telling them it turns. */}
       {(spin && stem) || model ? (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-ink/25">
+        <div
+          className="pointer-events-none absolute bottom-3 left-1/2 flex flex-col items-center gap-1 text-ink/25 transition-[opacity,transform] duration-700 ease-out"
+          style={{
+            opacity: hintUp ? 1 : 0,
+            transform: `translate(-50%, ${hintUp ? "0" : "0.7rem"})`,
+          }}
+        >
           <RotateHint className="w-9" />
           <span aria-hidden className="font-ui text-[11px] font-semibold leading-none tracking-[0.12em]">3D</span>
         </div>
@@ -681,7 +703,14 @@ export function BuyHero({ house }: { house: House }) {
                  manifest has never seen. */
               <RevealPlate
                 key={src}
-                className="relative w-full overflow-hidden bg-ink"
+                /* The tile's grey, not ink. A reader walking in from the
+                   story's counter is looking at a grey plate and an empty
+                   grey box below it (see ProductBuy): the photograph
+                   rises INTO that box, so the ground under it has to be
+                   the ground that was already there. A black slab
+                   appearing where the grey was is the pop this whole
+                   hand-off exists to remove. */
+                className="shop-tile relative w-full overflow-hidden"
                 /* Square, because the plate IS the square render. The
                    measured ratio is the fallback for the one house whose
                    run has no square and shows its own first plate. */
@@ -702,6 +731,12 @@ export function BuyHero({ house }: { house: House }) {
                   /* cover, not contain: the box now IS the plate's ratio,
                      so the two agree and there is nothing to letterbox. */
                   className="arca-rise object-cover"
+                  /* A beat after the page lands, and one photograph after
+                     another. The first screen of this page is the screen
+                     the story's counter was already showing; what it adds
+                     is this column, and it slides in rather than being
+                     there in the frame the route changes on. */
+                  style={{ animationDelay: `${260 + i * 120}ms` }}
                 />
               </RevealPlate>
             ))

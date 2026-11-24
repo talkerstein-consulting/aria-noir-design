@@ -18,7 +18,11 @@ export function BuyWorn({ house }: { house: House }) {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <p className="t-eyebrow">{`${house.name}, worn`}</p>
+      {/* "Faces of ARCA I", not "ARCA I, worn" (Rems, 24 Nov). The
+          section is the people the house was shot on; "worn" names the
+          state of an object instead, and on a line of its own it reads
+          as a condition rather than a cast. */}
+      <p className="t-eyebrow">{`Faces of ${house.name}`}</p>
 
       <div className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))]">
         {plates.map((plate, i) => (

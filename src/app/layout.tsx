@@ -84,6 +84,23 @@ const BOOT_MAX_MS = 4000;
 const BOOT_MORPH_MS = 850;
 const BOOT_LIFT = `(function(){
   var d=document.documentElement,t0=Date.now(),done=false;
+  /* ---- The buy pages open with no sheet at all ----
+     Every other route is introduced: black, the mark, then the mark flies
+     to the nav while the black fades. A buy page is not introduced. It is
+     arrived at — from a tile, from a link, and above all from the end of
+     a story, where the counter the reader is looking at IS this page's
+     first screen and the route changes under a frame that does not move
+     (see StoryHandoff). Half a second of black fading off the top of that
+     is the one thing on the screen saying "a different page", so it is
+     not drawn here (Rems, 24 Nov).
+     \`done\` straight away, so everything that waits on the boot — the nav's
+     own mark, the home opening — carries on as if the sheet had lifted. */
+  if(/^\\/shop\\/[^\\/]+$/.test(location.pathname)){
+    d.classList.add("boot-skip");
+    d.dataset.boot="done";
+    window.dispatchEvent(new Event("aria:boot"));
+    return;
+  }
   function finish(){
     d.dataset.boot="done";
     window.dispatchEvent(new Event("aria:boot"));

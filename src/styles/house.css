@@ -239,6 +239,10 @@ input, textarea, select, button { font-family: var(--font-ui-stack); }
    underneath it; the nav's own mark stays hidden until the hand-over, so
    there is only ever one logo on screen. */
 html:not([data-boot="done"]) .site-nav .nav-mark svg { visibility: hidden; }
+/* The buy pages take no sheet: see the skip at the top of BOOT_LIFT in
+   layout.tsx. Removed outright rather than faded, since a sheet that is
+   never shown has nothing to lift. */
+html.boot-skip .boot-loader { display: none; }
 html[data-boot="morph"] .boot-loader {
   transform: none;
   background-color: transparent;
@@ -537,9 +541,65 @@ html:has(.route-burn) .site-nav .nav-mark svg { visibility: hidden; }
 ::view-transition-old(.page) { animation: page-fade 220ms ease-out both reverse; }
 ::view-transition-new(.page) { animation: page-fade 320ms ease-out 80ms both; }
 @keyframes page-fade { from { opacity: 0; } }
+
+/* ── Story foot → buy page: a pinwipe (app/template.tsx, StoryHandoff) ──
+
+   The buy page opens through the story rather than replacing it. The
+   story is held exactly where the reader left it — not faded, not
+   scaled, not moved — and the buy page is wiped in over the top of it
+   from a point at the centre of the screen, a circle growing out past
+   the corners.
+
+   Two things make it read as one continuous move rather than a cut, and
+   both are easy to lose:
+
+   The old page does not animate AT ALL. `animation: none` on the outgoing
+   snapshot is the whole trick. Give it so much as a fade and the story
+   starts leaving while the buy page is still arriving, and the middle of
+   the transition is two half-transparent pages stacked on each other —
+   which is a dissolve wearing a wipe's clothes.
+
+   The new page is on top. The pseudo-elements paint in DOM order, so
+   without the z-index the circle opens UNDER the page it is supposed to
+   be revealing and nothing happens on screen.
+
+   Before any of this runs the reader has already scrolled a screen of
+   empty ground past the last picture (see StoryHandoff): the story
+   carries on moving up, comes to rest, and only then does the circle
+   open. The wait is the point. A wipe that starts while the page is
+   still travelling is the thing that read as a jump.
+
+   150% rather than 100%: `circle()` is resolved against the box's
+   diagonal, so a circle at 100% has only just reached the corners of a
+   square. On a wide window it has to keep going well past that before
+   the last of the story is gone from the bottom corners. */
+::view-transition-old(.story-wipe) {
+  animation: none;
+  z-index: 0;
+}
+::view-transition-new(.story-wipe) {
+  animation: story-wipe 1450ms cubic-bezier(0.62, 0.02, 0.3, 1) both;
+  z-index: 1;
+}
+@keyframes story-wipe {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(150% at 50% 50%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(.page),
-  ::view-transition-new(.page) { animation: none; }
+  ::view-transition-new(.page),
+  /* Belt and braces: StoryHandoff does not fire at all under reduced
+     motion, so this pair should never be asked for. If it is reached by
+     some other route, the buy page is simply there — no circle, no
+     travel. `clip-path: none` and not just `animation: none`, since the
+     keyframes' own `from` would otherwise leave it clipped to nothing. */
+  ::view-transition-old(.story-wipe),
+  ::view-transition-new(.story-wipe) { animation: none; clip-path: none; }
 }
 
 /* ── Pinhole (lookbook stories) ──

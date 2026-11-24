@@ -12,6 +12,7 @@ import {
   plateRatio,
   priceOf,
   sillFor,
+  squareFor,
   stockFor,
   swatchFor,
 } from "@/lib/shop";
@@ -22,8 +23,8 @@ import { ColourwayPicker } from "@/components/shop/colourway-picker";
 import { HoldToggle } from "@/components/shop/hold-toggle";
 import { QtyStepper } from "@/components/shop/qty-stepper";
 import { RevealText } from "@/components/reveal";
-import { SpinPlate, SPIN } from "@/components/shop/spin-plate";
-import { RotateHint } from "@/components/shop/rotate-hint";
+import { SPIN } from "@/components/shop/spin-plate";
+import { QuarterPlate } from "@/components/shop/quarter-plate";
 import { turntableStem } from "@/lib/turntable";
 import { setStoryOffer } from "@/lib/story-offer";
 
@@ -60,17 +61,18 @@ import { setStoryOffer } from "@/lib/story-offer";
 export function ProductBuy({
   close,
   house,
-  centered = false,
+  pdpHero = false,
 }: {
   close: Close;
   house: House;
   /**
-   * The lookbook stories' counter: one column, centred, the 72-frame
-   * turntable of the chosen acetate in place of the two photographs (the
-   * reader has just come down a lookbook of them), and no ground of its
-   * own, so it sits on the InvertFade's paper.
+   * The counter drawn as the buy page's own hero: `.buy-grid`, the offer
+   * panel, and a still of the frame at the quarter in place of the two
+   * photographs. It is the shape the walk into `/shop/[slug]` lands in
+   * (see StoryHandoff), so standing in it already is what makes that walk
+   * seamless. No ground of its own, so it sits on the InvertFade's paper.
    */
-  centered?: boolean;
+  pdpHero?: boolean;
 }) {
   /* Seeded with the same rule the picker seeds itself with, so the first
      photograph shown and the first swatch marked agree on the first
@@ -79,12 +81,12 @@ export function ProductBuy({
     () => defaultColorway(house) || null,
   );
   const [qty, setQty] = useState(1);
-  /* The threshold at the foot of the page carries this acetate into the
-     buy page, so it has to know which one the counter is showing. See
-     lib/story-offer for why it travels through a store. */
+  /* The walk into the buy page draws a copy of this counter, so it has to
+     know which acetate and how many it is showing. See lib/story-offer
+     for why it travels through a store. */
   useEffect(() => {
-    setStoryOffer({ slug: house.slug, colourway: chosen });
-  }, [house.slug, chosen]);
+    setStoryOffer({ slug: house.slug, colourway: chosen, qty });
+  }, [house.slug, chosen, qty]);
   /* What went in, held so the sheet can name it. Null when the sheet is
      down. It is a SNAPSHOT rather than a read of `chosen` and `qty`: the
      picker behind the sheet stays live, and a confirmation that changed
@@ -137,6 +139,31 @@ export function ProductBuy({
   const stem = turntableStem(house.slug, chosen);
   const spin = !!stem && SPIN.has(stem);
 
+  /* ---- the empty grey box under the plate ----
+
+     The buy page's photograph column is the turntable's plate and then
+     one photograph of the acetate. The counter has the plate and nothing
+     under it, so the bottom of its first screen was paper where the buy
+     page's is a picture — the last element the hand-off had left to
+     disagree about.
+
+     It stands the picture's GROUND here, at the picture's own box: the
+     same tile grey, the same width, the same ratio, empty. The counter
+     does not show the photograph (a reader has just come down a page of
+     them), the buy page slides it into this box a beat after it lands,
+     and the frame the route changes on is the same on both sides.
+
+     The box is worked out the way buy-hero works out what to draw, from
+     the same two helpers, so a colourway shot square and one shot 16:9
+     each reserve the room their own photograph needs. */
+  const nextSquare = squareFor(house, chosen ?? undefined);
+  const nextShot = nextSquare ?? galleryFor(house, chosen ?? undefined)[0];
+  const nextRatio = nextShot
+    ? nextSquare
+      ? 1
+      : (plateRatio(nextShot) ?? 16 / 9)
+    : null;
+
   const addToBag = () => {
     if (!chosen) return;
     add(house.slug, chosen, qty);
@@ -159,11 +186,20 @@ export function ProductBuy({
   return (
     <section
       id="acquire"
-      className={`relative px-6 sm:px-10 ${centered ? "pb-24 sm:pb-32" : "section on-ink bg-ink"}`}
+      className={`relative px-6 sm:px-10 ${pdpHero ? "on-paper buy-section pb-24 sm:pb-32" : "section on-ink bg-ink"}`}
     >
       <div className="mx-auto max-w-7xl">
-        {/* The close, still the close. */}
-        <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+        {/* The close, still the close.
+
+            `data-counter="close"` where the walk is watching: these are
+            the words the buy page does not have, and they are the last
+            of this section to pass under the nav. StoryHandoff fades
+            them out as they go, so the screen the route changes on holds
+            nothing the destination lacks. */}
+        <div
+          data-counter="close"
+          className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center"
+        >
           {close.eyebrow ? <p className="hidden t-eyebrow preheader">{close.eyebrow}</p> : null}
           {close.heading ? (
             <RevealText
@@ -183,88 +219,199 @@ export function ProductBuy({
         </div>
 
         {/* ---- the counter ---- */}
-        {centered ? (
-          <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-            {/* One screen: the frame, its name, the acetate, the bag.
-                The pinhole opens on this screen, so all of it is what the
-                hole uncovers. */}
-            {/* `min-h-svh`, not `h-svh`: on a phone in landscape the stack is
-                taller than the screen, and a fixed-height centred column
-                pushed the turntable up out of its own box and under the
-                pinhole sheet - the "disappears in landscape" bug. On a short
-                screen the turntable takes most of the height instead of 46%.
+        {pdpHero ? (
+          /* ---- the counter, in the buy page's own shape ----
 
-                `z-[3]` lifts the turntable over the pinhole's ink sheet (z 2),
-                which takes pointer hits until the hole is fully open; the
-                frame was undraggable until the counter reached the top of
-                the screen. Multiplied onto ink it stays invisible until the
-                hole uncovers it, so nothing shows early. */}
-            <div className="flex min-h-svh w-full flex-col items-center justify-center pt-16">
-            <div className="relative z-[3] aspect-square w-full max-w-[min(560px,46svh)] [@media(orientation:landscape)_and_(max-height:540px)]:max-w-[min(560px,78svh)]">
-              {stem ? (
-                <Image
-                  key={stem}
-                  src={`/images/fronts-cut/${stem}.webp`}
-                  alt=""
+              Not a centred stack any more. This section is the first
+              frame of the walk into `/shop/[slug]` (see StoryHandoff),
+              and the walk is only as seamless as the distance it has to
+              cover: a centred column going to a two-column panel was a
+              whole layout changing while the reader scrolled, covered by
+              a cross-fade.
+
+              So the counter IS the buy page's hero: `.buy-grid`, the
+              panel on the right with the same lines in the same order,
+              the square plate on the left, and the phone's lead copy of
+              it above the panel — the same three children, the same
+              classes, the same stylesheet. What the walk moves is now the
+              gap between two instances of one layout, which on a wide
+              screen is close to nothing.
+
+              `data-counter` on each piece is what StoryHandoff measures.
+              Nothing here is styled by them. */
+          <div className="buy-grid mx-auto mt-16 grid max-w-7xl grid-cols-1 items-start sm:mt-20">
+            {/* ---- the offer ---- */}
+            <div className="buy-panel buy-grid-panel">
+              <div className="buy-panel-inner">
+                {/* The buy page's own first line, and hidden here for
+                    the same reason it is hidden there: the house rule
+                    against preheaders takes out any eyebrow sitting on
+                    top of a heading. It stays in the markup because this
+                    panel is the buy page's panel; it never draws, so the
+                    walk never measures it. */}
+                <p data-counter="eyebrow" className="t-eyebrow">
+                  {COLLECTION_LABEL}
+                </p>
+                <h3 data-counter="name" className="t-display-lg mt-3">
+                  {house.name}
+                </h3>
+                <p data-counter="colourway" className="buy-colourway mt-2">
+                  {chosen}
+                </p>
+
+                <div data-counter="picker" className="mt-6">
+                  <Suspense fallback={null}>
+                    <ColourwayPicker house={house} onChoose={setChosen} />
+                  </Suspense>
+                </div>
+
+                <p
+                  data-counter="note"
+                  className="t-body mt-6 text-[var(--fg-tertiary)]"
+                >
+                  {house.note}
+                </p>
+
+                <p
+                  data-counter="price"
+                  className="buy-price mt-6 tabular-nums"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  {priceOf(house, chosen ?? undefined)}
+                </p>
+
+                <div className="hairline mt-6 pt-6">
+                  <div className="buy-slot max-lg:mt-0 mt-2">
+                    <div data-counter="row" className="buy-row">
+                      <QtyStepper value={qty} onChange={setQty} />
+                      {available ? (
+                        <CtaButton
+                          className="flex-1"
+                          alt="Add again"
+                          swapped={inBag}
+                          onClick={addToBag}
+                        >
+                          Add to bag
+                        </CtaButton>
+                      ) : (
+                        <button type="button" className="cta-main flex-1" disabled>
+                          Out of the workshop
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* The hook goes on a wrapper, not on the CTA: CtaButton
+                      and CtaLink read their props and draw their own
+                      element, so a `data-` attribute handed to either of
+                      them never reaches the DOM and the walk would have
+                      found nothing to measure. */}
+                  {available ? (
+                    <div data-counter="buynow" className="mt-3">
+                      <CtaButton
+                        kind="secondary"
+                        className="cta-buy-now w-full"
+                        onClick={buyNow}
+                      >
+                        Buy now
+                      </CtaButton>
+                    </div>
+                  ) : null}
+                  {/* The buy page's own last block, condition and all:
+                      Try these on beside a phone-only Add to bag. It is
+                      rendered whenever either of them has something to
+                      say, because the buy page renders it then — and a
+                      block the destination has and the counter does not
+                      is 12px of drift in everything below it. */}
+                  {tryOn || available ? (
+                    <div
+                      data-counter="tryon"
+                      className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-1"
+                    >
+                      {tryOn ? (
+                        <CtaLink
+                          href={tryOn}
+                          kind="secondary"
+                          className={
+                            available
+                              ? "w-full"
+                              : "col-span-2 w-full lg:col-span-1"
+                          }
+                        >
+                          Try these on
+                        </CtaLink>
+                      ) : null}
+                      {available ? (
+                        <div className={tryOn ? "lg:hidden" : "col-span-2 lg:hidden"}>
+                          <CtaButton
+                            className="w-full"
+                            alt="Add again"
+                            swapped={inBag}
+                            onClick={addToBag}
+                          >
+                            Add to bag
+                          </CtaButton>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  <p data-counter="caption" className="t-caption mt-6">
+                    {available
+                      ? "Ships in 3–5 days. Free worldwide standard shipping."
+                      : "Made in runs. This colourway returns with the next one."}
+                  </p>
+
+                  {available ? null : (
+                    <HoldToggle
+                      slug={house.slug}
+                      colorway={chosen}
+                      className="mt-6"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ---- the frame, still, at the quarter ----
+
+                A STILL, and the still is the quarter — the angle every
+                turntable opens on and the one the shop tiles show. The
+                plate the buy page opens on is the same photograph at the
+                same angle in the same box, so the walk carries one
+                picture from here to there rather than cross-fading
+                between three views of one object.
+
+                The turn itself is not lost: the offering section higher
+                up the page has the full turntable, which is where a
+                reader who wants to turn the frame already is.
+
+                Twice, as the buy page draws it: the lead above the panel
+                on a phone, the first plate of the column on a wide
+                screen. The stylesheet hides whichever is not wanted, and
+                both carry the hook — StoryHandoff measures the one that
+                is actually drawn. */}
+            <CounterPlate
+              stem={stem}
+              spin={spin}
+              alt={`${house.name} in ${chosen}`}
+              className="buy-grid-lead"
+              priority={false}
+            />
+            <div className="buy-grid-photos stack stack--sm">
+              <CounterPlate
+                stem={stem}
+                spin={spin}
+                alt={`${house.name} in ${chosen}`}
+              />
+              {nextRatio ? (
+                <div
                   aria-hidden
-                  fill
-                  sizes="560px"
-                  className="object-contain p-[8%] mix-blend-multiply"
-                  style={{ opacity: spin ? 0 : 1 }}
+                  className="shop-tile w-full"
+                  style={{ aspectRatio: nextRatio }}
                 />
               ) : null}
-              {spin && stem ? (
-                <SpinPlate key={stem} stem={stem} alt={`${house.name} in ${chosen}, turn to view`} />
-              ) : null}
-              {spin ? (
-                <div className="pointer-events-none absolute bottom-0 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-ink/25">
-                  <RotateHint className="w-8" />
-                  <span aria-hidden className="font-ui text-[11px] font-semibold leading-none tracking-[0.12em]">3D</span>
-                </div>
-              ) : null}
-            </div>
-
-            <h3 className="t-display-lg mt-4">{house.name}</h3>
-            <p className="buy-colourway mt-1">{chosen}</p>
-            <p className="buy-price mt-3 tabular-nums" aria-live="polite" aria-atomic="true">
-              {priceOf(house, chosen ?? undefined)}
-            </p>
-
-            <div className="mt-5 flex w-full max-w-md flex-col items-center">
-              <Suspense fallback={null}>
-                <ColourwayPicker house={house} onChoose={setChosen} />
-              </Suspense>
-              <div className="buy-row mt-6 w-full">
-                <QtyStepper value={qty} onChange={setQty} />
-                {available ? (
-                  <CtaButton className="flex-1" alt="Add again" swapped={inBag} onClick={addToBag}>
-                    Add to bag
-                  </CtaButton>
-                ) : (
-                  <button type="button" className="cta-main flex-1" disabled>
-                    Out of the workshop
-                  </button>
-                )}
-              </div>
-              {available ? (
-                <CtaButton kind="secondary" className="cta-buy-now mt-3 w-full" onClick={buyNow}>
-                  Buy now
-                </CtaButton>
-              ) : null}
-              {tryOn ? (
-                <CtaLink href={tryOn} kind="secondary" className="mt-3 w-full">
-                  Try these on
-                </CtaLink>
-              ) : null}
-              <p className="t-caption mx-auto mt-4">
-                {available
-                  ? "Ships in 3–5 days. Free worldwide standard shipping."
-                  : "Made in runs. This colourway returns with the next one."}
-              </p>
-              {available ? null : (
-                <HoldToggle slug={house.slug} colorway={chosen} className="mt-6" />
-              )}
-            </div>
             </div>
           </div>
         ) : (
@@ -369,5 +516,55 @@ export function ProductBuy({
       </div>
 
     </section>
+  );
+}
+
+/**
+ * The square plate the counter stands the frame on.
+ *
+ * The buy page's `.shop-tile` box at the buy page's own ratio, holding
+ * the quarter still — see QuarterPlate for why the quarter and why it is
+ * drawn edge to edge rather than inset. Where a house has no rendered
+ * turn, the cut-out still stands in, inset by its own 8%: the honest
+ * difference between a render and a cut-out, not a layout to match.
+ *
+ * `data-counter="plate"` is the hook StoryHandoff measures. It is on both
+ * copies — the phone's lead and the column's first plate — because the
+ * stylesheet hides one of them at every width and the walk asks for
+ * whichever is drawn.
+ */
+function CounterPlate({
+  stem,
+  spin,
+  alt,
+  className = "",
+  priority = false,
+}: {
+  stem: string | null | undefined;
+  spin: boolean;
+  alt: string;
+  className?: string;
+  priority?: boolean;
+}) {
+  if (!stem) return null;
+  return (
+    <div
+      data-counter="plate"
+      className={`shop-tile relative aspect-square w-full overflow-hidden [@media(orientation:landscape)_and_(max-height:540px)]:mx-auto [@media(orientation:landscape)_and_(max-height:540px)]:max-w-[78svh] ${className}`}
+    >
+      {spin ? (
+        <QuarterPlate key={stem} stem={stem} alt={alt} priority={priority} />
+      ) : (
+        <Image
+          key={stem}
+          src={`/images/fronts-cut/${stem}.webp`}
+          alt={alt}
+          fill
+          sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
+          priority={priority}
+          className="object-contain p-[8%] mix-blend-multiply"
+        />
+      )}
+    </div>
   );
 }

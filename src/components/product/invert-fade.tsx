@@ -13,17 +13,44 @@ import { useEffect, useRef, type ReactNode } from "react";
  * gone and the counter scrolls on like any section, followed by
  * `children` (the other collections, the footer) on the same paper.
  *
- * The sheet carries `.on-ink` and takes pointer hits while it is up, so
- * the nav's tone probe reads ink through the whole opening and turns the
- * bar white only once the screen is filled. Progress is written straight
- * to `--hole`; scrolling never renders.
+ * Progress is written straight to `--hole`; scrolling never renders.
  *
- * Once a reader heading down stops part-way through the opening, the page
- * settles the rest of the way, so the counter sits at the top with its
- * turntable ready (Jai, review PDF: snap to the store section after the
- * dark-to-light transition). Only on the way down, only from past a third
- * open, and never while the reader is still scrolling.
+ * ---- The sheet stops answering for the nav once the hole is under it ----
+ *
+ * The sheet carries `.on-ink`, and the nav's tone probe works by asking
+ * what is under the band (site-nav.tsx). A mask does not affect hit
+ * testing, so a sheet whose hole had already opened past the top of the
+ * screen still answered "ink" — and the bar kept its wash of ink over
+ * what was by then the counter's paper. On a phone that is a grey smear
+ * across the wordmark for the whole opening (Rems, 24 Nov).
+ *
+ * So the sheet stops taking hits the moment the hole reaches the band:
+ * the probe falls through to the paper underneath and the wash goes out
+ * on its own transition. It is still drawn — this is about what it
+ * ANSWERS, not about what it covers.
+ *
+ * ---- Nothing snaps here any more ----
+ *
+ * A reader who stopped part-way through the opening used to be carried
+ * the rest of the way by an animated scroll, so the counter came to rest
+ * at the top (Jai, review PDF: snap to the store section after the
+ * dark-to-light transition).
+ *
+ * That snap was written when the counter was a destination. It is not
+ * one now: it is the buy page's first screen, and scrolling on at it
+ * changes the route (see StoryHandoff). The ink opening, the counter
+ * rising and the hand-off are one continuous move driven by nothing but
+ * scroll position, and a 0.9s animated scroll in the middle of it was
+ * the one thing in the sequence that took the scroll away from the
+ * reader. The intent behind the note is still met — a reader going down
+ * this passage lands on the store — by the hand-off at the end of it.
  */
+/** Where the nav takes its reading, in pixels from the top of the screen:
+ *  the middle of a 68px band. The probe's own line, in one number, so the
+ *  sheet below steps aside at the moment the bar would otherwise still be
+ *  washed in ink. */
+const NAV_PROBE_Y = 34;
+
 export function InvertFade({
   reveal,
   children,
@@ -46,35 +73,28 @@ export function InvertFade({
       const p = Math.min(1, Math.max(0, 1 - el.getBoundingClientRect().top / (vh * 0.85)));
       sh.style.setProperty("--hole", p.toFixed(4));
       sh.dataset.open = p > 0.99 ? "true" : "false";
-    };
-    let lastY = window.scrollY;
-    let down = false;
-    let idle = 0;
-    const settle = () => {
-      if (!down) return;
-      const vh = window.innerHeight;
-      const top = el.getBoundingClientRect().top;
-      const p = 1 - top / (vh * 0.85);
-      if (p < 0.33 || p > 0.99) return;
-      const target = window.scrollY + top;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (window.__lenis) window.__lenis.scrollTo(target, { duration: 0.9, immediate: reduce });
-      else window.scrollTo({ top: target, behavior: reduce ? "auto" : "smooth" });
-    };
-    const onScroll = () => {
-      const y = window.scrollY;
-      if (y !== lastY) down = y > lastY;
-      lastY = y;
-      update();
-      window.clearTimeout(idle);
-      idle = window.setTimeout(settle, 160);
+
+      /* Is the nav's band standing over the hole? The mask is a circle at
+         the sheet's own centre whose radius is the same `75vmax` the
+         stylesheet draws it with, and the band probes down its middle a
+         few pixels from the top of the screen. Inside the circle — or the
+         sheet gone up past the band altogether — and the sheet stands
+         aside, so what answers for the ground is the paper it is
+         uncovering. */
+      const r = sh.getBoundingClientRect();
+      const vmax = Math.max(window.innerWidth, vh);
+      const radius = p * 0.75 * vmax;
+      const dx = window.innerWidth / 2 - (r.left + r.width / 2);
+      const dy = NAV_PROBE_Y - (r.top + r.height / 2);
+      const uncovered =
+        Math.hypot(dx, dy) < radius || r.bottom < NAV_PROBE_Y || r.top > vh;
+      sh.style.pointerEvents = uncovered ? "none" : "";
     };
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
-      window.clearTimeout(idle);
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
   }, []);

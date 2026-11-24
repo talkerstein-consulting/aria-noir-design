@@ -45,9 +45,13 @@ const PROBE_X = [0.12, 0.5, 0.88];
  * side of the mark: the shop's rooms with the way in, the house's rooms
  * with the errands. Home is dropped from both — the mark is the way back.
  */
-/* Maison and Contact sit with the errands; Gallery moved across to the
-   way in (Rems, 23 Nov: "swap positions of maison and gallery"). */
-const RIGHT_HREFS = ["/house/about", "/contact"];
+/* Contact alone sits with the errands. Gallery came across to the way in
+   earlier in the day ("swap positions of maison and gallery"), and Maison
+   has followed it (Rems, 23 Nov: "move maison on the left group"): it is a
+   room of the house to be read, not an errand to be run, so it belongs
+   with the rooms. It lands after Gallery, which is `menu.primary`'s own
+   order — the left group never sorts, it filters. */
+const RIGHT_HREFS = ["/contact"];
 const navWords = menu.primary.filter((l) => l.href !== "/");
 const navLeft = navWords.filter((l) => !RIGHT_HREFS.includes(l.href));
 const navRight = navWords.filter((l) => RIGHT_HREFS.includes(l.href));
@@ -377,8 +381,8 @@ export function SiteNav({ visible = true, showMark = true }: SiteNavProps) {
             mount the count is unknown, not zero, and a 0 that becomes a 2
             a frame later reads as the shop finding things it had lost. */}
         <div className="nav-cluster relative justify-self-end">
-          {/* Search leads this group (Rems, 23 Nov): Search, Maison,
-              Contact, Account, Bag.
+          {/* Search leads this group (Rems, 23 Nov): Search, Contact,
+              Account, Bag.
 
               It belongs on this side and not with the way in: the field
               grows out of the bar to the LEFT of its button, so in the

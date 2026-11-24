@@ -37,8 +37,20 @@ import { HoldToggle } from "@/components/shop/hold-toggle";
 export function ColourwayPicker({
   house,
   onChoose,
+  value,
 }: {
   house: House;
+  /**
+   * Shown as chosen, overriding what this picker has been told itself.
+   *
+   * For the copies that travel: the walk from the story's counter into
+   * the buy page draws a picker that is not the one the reader has been
+   * pressing, and an uncontrolled copy would seed itself from the URL and
+   * mark the house's default — the wrong acetate, ringed, for the length
+   * of the walk. Left out everywhere else, which is every picker a reader
+   * can actually press.
+   */
+  value?: string | null;
   /** Told whenever the acetate changes, so the column of photographs beside
    *  the picker can re-shoot itself and the price can follow. */
   onChoose?: (colourway: string) => void;
@@ -52,7 +64,8 @@ export function ColourwayPicker({
   /* The same rule the panel and the turntable use, not a second copy of
      it: the frame that opens the page turning has to be the frame this
      control says is selected. */
-  const [chosen, setChosen] = useState(() => defaultColorway(house, asked));
+  const [own, setChosen] = useState(() => defaultColorway(house, asked));
+  const chosen = value ?? own;
   /* Saves are per colourway, so the picker is where they show: a heart
      badge on every saved swatch, and the save control beside the chosen
      colour's name. */

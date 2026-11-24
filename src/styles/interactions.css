@@ -1192,19 +1192,29 @@
    number, so it is already at its pinned position on the first frame.
    The phone's is the nav bar plus a breath, since the lead photograph is
    the first thing on the page and wants no gulf above it. */
-/* ---- The plate is flush to the top ----
-   `--buy-top` was 5rem/7rem of air above the whole grid, which was the
-   runway the opening choreography needed. There is no opening now, so it
-   is header clearance and nothing else: the variant photograph starts
-   directly under the chrome, and the offer beside it pins at the same
-   line. The value is the nav's own height. */
+/* ---- Air above the plate ----
+   `--buy-top` was 5rem/7rem of air for the old opening choreography, then
+   5.25rem — the nav's own height — once that went, which put the plate
+   directly under the chrome with nothing between them.
+
+   Flush is right for a page you arrive at by pressing a link, because the
+   press itself is the beat. It is wrong for one that opens through a wipe
+   out of the story: the circle finishes and the frame is already hard
+   against the header, with no moment of ground before the object. So the
+   clearance is now the nav plus a breath — the plate and the offer beside
+   it both start below it, since the sticky panel reads the same number
+   and is at its pinned position on the first frame.
+
+   The phone keeps less of it. The lead photograph is the first thing on
+   the page there, with no second column to line up against, and a gulf
+   above it is just a screen that opens on nothing. */
 .buy-section {
-  --buy-top: 5.25rem;
+  --buy-top: 7.5rem;
   padding-top: var(--buy-top);
 }
 @media (min-width: 640px) {
   .buy-section {
-    --buy-top: 5.25rem;
+    --buy-top: 10rem;
     padding-top: var(--buy-top);
   }
 }

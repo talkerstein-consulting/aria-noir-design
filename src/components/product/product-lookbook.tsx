@@ -62,19 +62,41 @@ export function ProductLookbook({ lookbook }: { lookbook: Lookbook }) {
       </div>
 
       <div className="flex flex-col gap-16 sm:gap-28">
-        {lookbook.rows.map((row) =>
+        {/* ---- the first plate is eager, the rest are not ----
+
+            The hero above is film, so the first PICTURE on the page is
+            row zero, and on a short window it is already at the fold
+            while the film is still a poster. Left lazy it is fetched
+            after hydration, lands last, and is measured as the Largest
+            Contentful Paint — which is what next/image was warning about
+            in the console, correctly.
+
+            Only row zero. Marking the rest eager would silence the same
+            warning by fetching twenty full-width plates at once, which
+            is not a fix, it is the bug the warning exists to prevent.
+            The plates further down are flagged only when nothing on the
+            page has been clicked or pressed — LCP keeps updating until
+            the first real input, so an automated scroll walks it down
+            the document. A reader finalises it at the top. */}
+        {lookbook.rows.map((row, r) =>
           "pair" in row ? (
             <div
               key={row.pair[0].src}
               className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-4 px-6 sm:grid-cols-2 sm:gap-6 sm:px-10"
             >
               {row.pair.map((plate, i) => (
-                <Plate key={plate.src} plate={plate} delay={i * 90} sizes="(min-width: 1280px) 620px, (min-width: 640px) 50vw, 100vw" />
+                <Plate
+                  key={plate.src}
+                  plate={plate}
+                  delay={i * 90}
+                  priority={r === 0 && i === 0}
+                  sizes="(min-width: 1280px) 620px, (min-width: 640px) 50vw, 100vw"
+                />
               ))}
             </div>
           ) : (
             <div key={row.src} className={FRAME[row.kind]}>
-              <Plate plate={row} sizes={SIZES[row.kind]} />
+              <Plate plate={row} sizes={SIZES[row.kind]} priority={r === 0} />
             </div>
           ),
         )}
@@ -95,10 +117,13 @@ function Plate({
   plate,
   sizes,
   delay = 0,
+  priority = false,
 }: {
   plate: LookbookPlate;
   sizes: string;
   delay?: number;
+  /** The opening plate only. See the note at the call site. */
+  priority?: boolean;
 }) {
   return (
     <RevealPlate delay={delay} className="relative overflow-hidden">
@@ -108,6 +133,7 @@ function Plate({
         width={plate.width}
         height={plate.height}
         sizes={sizes}
+        priority={priority}
         className="block h-auto w-full"
       />
     </RevealPlate>

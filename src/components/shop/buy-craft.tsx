@@ -77,7 +77,9 @@ export function BuyCraft({ house }: { house: House }) {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">
           <p className="t-eyebrow">The case</p>
-          <h2 className="t-display-md">What it arrives in.</h2>
+          {/* "How they arrive", not "What it arrives in" (Rems, 24 Nov).
+              A frame is a they, not an it. */}
+          <h2 className="t-display-md">How they arrive.</h2>
         </div>
         {/* The box films first (Jai's showcase, Film), the photographs under. */}
         <ul className="grid grid-cols-2 gap-3 sm:gap-6">

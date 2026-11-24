@@ -4,7 +4,7 @@
    frames, and `Image` from next/image would shadow it. */
 import NextImage from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { spinScaleFor } from "@/lib/turntable";
+import { QUARTER, spinFrame, spinScaleFor } from "@/lib/turntable";
 
 /**
  * Colourways with a rendered turntable in /images/spin/<stem>/000..359.avif.
@@ -59,13 +59,36 @@ export const SPIN = new Set([
  * counts, so this constant is the only place the resolution lives.
  */
 const FRAMES = 360;
-/** The frame that matches the tiles' hover view (the quarter, 30 degrees). */
-const START = Math.round((30 / 360) * FRAMES);
+/** The frame that matches the tiles' hover view, and the still the story
+ *  page's counter stands on: the quarter. See QUARTER in lib/turntable. */
+const START = Math.round((QUARTER / 360) * FRAMES);
 /** Pixels of drag per degree of turn. */
 const DRAG_PX = 2;
-/** A slow, deliberate turn: 18 degrees a second, 20s a revolution. */
-const DEG_PER_SEC = 18;
-const FRAMES_PER_SEC = (DEG_PER_SEC * FRAMES) / 360;
+
+/**
+ * Frames a second for the turn of its own.
+ *
+ * One frame per degree, so 30fps is thirty degrees a second and a full
+ * revolution in twelve. The old walk was 18 degrees a second against a
+ * 180-frame set — nine frames a second, which is where the stepping came
+ * from. At one frame a degree, 30 is the rate the renders were made for.
+ *
+ * Advanced from elapsed TIME, not once per animation frame: a 120Hz
+ * laptop and a 60Hz monitor would otherwise turn the object at two
+ * different speeds, and a frame the browser drops would slow it down
+ * rather than skip it.
+ */
+const FPS = 30;
+
+/** How much of the turn has to be in hand before it starts walking.
+ *
+ *  `nearest` will always find something to draw, so a walk that began on
+ *  frame one would still move — in lurches, snapping between whichever
+ *  frames had landed. A quarter of the set is the first point at which
+ *  the gaps are small enough to read as a turn rather than as a stutter,
+ *  and on the coarse-first load order (every 30th, then every 10th) it
+ *  arrives within a second or so. */
+const WALK_AT = 0.25;
 
 /** Fetch order: a coarse ring first so the turn is possible at once, then
  *  the gaps. At 360 frames that is every 30th, then every 10th, then every
@@ -90,10 +113,15 @@ function loadOrder() {
 /**
  * The turntable as an image sequence, drawn onto a canvas.
  *
- * No play button: it turns slowly on its own while it is on screen, stops
- * for good the moment it is grabbed (the reader has taken it), and never
- * moves for a reader who asks for reduced motion. Off screen it does no
- * work. The renders are flattened onto white, so the canvas multiplies onto
+ * No play button: it opens on the quarter — the frame every tile and
+ * still on the site agrees on — and then turns on its own at 30fps, one
+ * frame a degree, twelve seconds a revolution. A finger takes it over at
+ * any point and the walk resumes from wherever the finger left it. It
+ * holds still while it is off screen and under reduced motion. See the
+ * note by `open` below for why it stands still no longer, and FPS for
+ * why the rate is what it is.
+ *
+ * The renders are flattened onto white, so the canvas multiplies onto
  * whatever ground it stands on.
  *
  * `house` picks the per-house size knob (see SPIN_SCALE in lib/turntable):
@@ -116,11 +144,6 @@ export function SpinPlate({ stem, alt, house }: { stem: string; alt: string; hou
     let pos = START;
     let shown = -1;
     let drag: { x: number; at: number } | null = null;
-    let held = false; /* grabbed once: the reader has it now */
-    let visible = false;
-    let raf = 0;
-    let last = 0;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     /* A colourway swap starts its own load: the plate goes back to its
        holding opacity and the fill back to empty rather than carrying the
@@ -191,48 +214,76 @@ export function SpinPlate({ stem, alt, house }: { stem: string; alt: string; hou
     };
     const index = () => ((Math.round(pos) % FRAMES) + FRAMES) % FRAMES;
 
-    const tick = (now: number) => {
-      raf = 0;
-      if (!alive || held || drag || !visible || reduced.matches) return;
-      if (last) pos += ((now - last) / 1000) * FRAMES_PER_SEC;
-      last = now;
-      draw(index());
-      raf = requestAnimationFrame(tick);
-    };
-    const run = () => {
-      if (raf || held || !visible || reduced.matches) return;
-      last = 0;
-      raf = requestAnimationFrame(tick);
-    };
-    const stop = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-    };
+    /* ---- It turns by itself again, at 30fps ----
 
+       It was parked at the quarter and moved only under a finger (Rems,
+       24 Nov). The reason given was the frame the reader arrives on: the
+       story page's counter stood on frame 030 and handed this page over
+       at that exact angle, so a plate that started turning on mount had
+       moved the object between the last frame of one page and the first
+       frame of the next — the one difference that hand-off could not
+       hide.
+
+       That counter does not exist any more. The story page ends at the
+       faces and opens this one through a wipe (see StoryHandoff), which
+       shares no frame with it and so has nothing to keep still for. The
+       objection went with the thing it was protecting.
+
+       So the turn is back, at the rate the renders were made for. It
+       still opens ON the quarter, so the first thing seen is the frame
+       every tile and still on the site agrees on; it just does not stay
+       there.
+
+       Three things stop it, all of them cheap:
+
+         a finger on the plate. A drag takes over mid-walk and the walk
+         picks up from wherever the finger left it, rather than snapping
+         back to some remembered angle;
+
+         being off screen. A turntable nobody can see costs a decode and
+         a paint a frame for nothing, and this page has several of them
+         down the column;
+
+         reduced motion. The one picture on the page revolving on its own
+         is exactly what that setting is asked for, so it stays on the
+         quarter and the drag is the whole interaction. */
     const first = frames[START];
     const open = () => {
       if (!alive) return;
       if (shown < 0) draw(START);
-      run();
     };
     if (first.complete) open();
     else first.addEventListener("load", open, { once: true });
 
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    let last = 0;
+    let seen = true;
     const io = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting;
-        if (visible) run();
-        else stop();
+      ([e]) => {
+        seen = e.isIntersecting;
       },
-      { threshold: 0.2 },
+      { threshold: 0 },
     );
     io.observe(cv);
-    const onMotion = () => (reduced.matches ? stop() : run());
-    reduced.addEventListener("change", onMotion);
+
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      /* First frame of the loop, and the first after anything that
+         paused it: take the clock and spend nothing. Without this, the
+         gap since the last tick — a tab in the background, a long drag —
+         is spent all at once and the object jumps. */
+      if (!last || drag || !seen || arrived < FRAMES * WALK_AT) {
+        last = now;
+        return;
+      }
+      pos += ((now - last) / 1000) * FPS;
+      last = now;
+      draw(index());
+    };
+    if (!calm) raf = requestAnimationFrame(tick);
 
     const down = (e: PointerEvent) => {
-      held = true;
-      stop();
       drag = { x: e.clientX, at: pos };
       cv.setPointerCapture(e.pointerId);
     };
@@ -253,9 +304,8 @@ export function SpinPlate({ stem, alt, house }: { stem: string; alt: string; hou
 
     return () => {
       alive = false;
-      stop();
+      cancelAnimationFrame(raf);
       io.disconnect();
-      reduced.removeEventListener("change", onMotion);
       first.removeEventListener("load", open);
       cv.removeEventListener("pointerdown", down);
       cv.removeEventListener("pointermove", move);
@@ -266,37 +316,57 @@ export function SpinPlate({ stem, alt, house }: { stem: string; alt: string; hou
     };
   }, [stem]);
 
-  /* The holding state: the first frame to land is shown faint, and the
-     picture comes up to full as the set fills in. Full at half the frames
-     — by then the turn is smooth and the reader is looking at a finished
-     object, not a loading one. */
-  const lit = 0.4 + 0.6 * Math.min(1, progress / 0.5);
+  /* No holding opacity any more. See the still below: there is a real
+     picture of this frame under the canvas from the first paint, so a
+     plate that came up from 40% was dimming something already finished. */
   const settled = progress >= 1;
 
   return (
     <>
-      {/* Something to look at while 360 frames are in flight: the same
-         cut-out still the tiles use, held faint under the plate and gone
-         the moment the first frame is drawn. The callers' own still is
-         switched off wherever a turntable runs, so this is the only one. */}
+      {/* ---- the first paint: frame 030, the quarter ----
+
+         What stands here while 360 frames are in flight has to be the
+         picture the canvas will open on, because the canvas opens on
+         START — this exact frame — and because the story page's counter
+         is standing on the same file when it hands the reader over. It
+         was the `fronts-cut` cut-out at 35%: a different crop, inset by
+         8%, two thirds transparent. Landing on the buy page from the
+         walk meant a crisp frame becoming a small pale ghost of itself,
+         which is the whole seam the hand-off exists to avoid.
+
+         So: the turn's own frame 030, at the turn's own proportion,
+         blend and scale knob, at full strength, swapped for the canvas
+         with no transition once the canvas has drawn it. The two are the
+         same pixels, so the swap cannot be seen.
+
+         `unoptimized`, like QuarterPlate: it is already an AVIF the
+         loader below fetches raw, and re-encoding it would put a second
+         copy of one picture in flight. */}
       <NextImage
-        src={`/images/fronts-cut/${stem}.webp`}
+        src={spinFrame(stem)}
         alt=""
         aria-hidden
         fill
+        unoptimized
         sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
         priority
-        className="object-contain p-[8%] mix-blend-multiply transition-opacity duration-500"
-        style={{ opacity: ready ? 0 : 0.35 }}
+        className="object-contain mix-blend-multiply [transform:scale(var(--spin-m,1))] lg:[transform:scale(var(--spin-d,1))]"
+        style={
+          {
+            opacity: ready ? 0 : 1,
+            "--spin-m": scale.mobile,
+            "--spin-d": scale.desktop,
+          } as React.CSSProperties
+        }
       />
       <canvas
         ref={canvas}
         role="img"
         aria-label={alt}
-        className="absolute inset-0 h-full w-full cursor-grab touch-pan-y object-contain mix-blend-multiply transition-opacity duration-500 active:cursor-grabbing [transform:scale(var(--spin-m,1))] lg:[transform:scale(var(--spin-d,1))]"
+        className="absolute inset-0 h-full w-full cursor-grab touch-pan-y object-contain mix-blend-multiply active:cursor-grabbing [transform:scale(var(--spin-m,1))] lg:[transform:scale(var(--spin-d,1))]"
         style={
           {
-            opacity: ready ? lit : 0,
+            opacity: ready ? 1 : 0,
             "--spin-m": scale.mobile,
             "--spin-d": scale.desktop,
           } as React.CSSProperties

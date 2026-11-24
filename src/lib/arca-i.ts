@@ -246,7 +246,7 @@ export const worn: Worn = {
     [
       { src: `${P}/worn-06.webp`, alt: "Aria and Noir wearing ARCA I" },
       { src: `${P}/worn-07.webp`, alt: "Bust turtleneck closeup" },
-      { src: `${P}/worn-08.webp`, alt: "Glasses portrait" },
+      { src: `${P}/worn-08.webp`, alt: "Portrait, wearing ARCA I" },
       { src: `${P}/worn-09.webp`, alt: "Low-angle perspective" },
       { src: `${P}/worn-10.webp`, alt: "Mirror shot" },
     ],

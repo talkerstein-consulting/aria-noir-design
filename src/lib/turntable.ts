@@ -53,6 +53,23 @@ export function spinScaleFor(slugOrStem: string) {
   return { mobile: s.mobile ?? 1, desktop: s.desktop ?? 1 };
 }
 
+/**
+ * The angle the turntable rests on, in degrees: the quarter.
+ *
+ * It is where every spinning plate opens (see SpinPlate's START) and the
+ * same view the shop tiles show on hover, so it is the house's agreed
+ * three-quarter view of a frame. The story page's closing section stands
+ * on it as a STILL, which is what lets the walk into the buy page be
+ * seamless: the reader is looking at the quarter when the route changes
+ * and the buy page's turntable opens on the quarter.
+ */
+export const QUARTER = 30;
+
+/** One frame of a rendered turn, by angle. The turntable's own loader
+ *  builds the same path from the same parts. */
+export const spinFrame = (stem: string, deg: number = QUARTER) =>
+  `/images/spin/${stem}/${String(((deg % 360) + 360) % 360).padStart(3, "0")}.avif`;
+
 /** The cut-out render for one acetate, if it has been rendered. */
 export const turntableStem = (collection: string, colorway: string | null | undefined) =>
   colorway ? TURNTABLE[`${collection}/${colorway}`] : undefined;
