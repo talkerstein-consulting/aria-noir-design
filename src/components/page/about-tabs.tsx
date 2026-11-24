@@ -24,7 +24,7 @@ export function AboutTabs() {
   const pathname = usePathname();
   return (
     <nav aria-label="Maison" className="on-ink border-b border-[var(--fg-rule)] bg-ink">
-      <ul className="about-tabs mx-auto flex max-w-7xl overflow-x-auto px-6 sm:justify-center sm:px-10">
+      <ul className="shell about-tabs flex overflow-x-auto sm:justify-center">
         {ABOUT_TABS.map((t) => {
           const here = pathname === t.href;
           return (

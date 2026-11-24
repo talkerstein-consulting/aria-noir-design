@@ -33,7 +33,7 @@ export function HomeSocial() {
   const ig = menu.contact.instagram;
   return (
     <section aria-labelledby="social-heading" className="on-ink bg-ink py-24 sm:py-32">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-end sm:justify-between sm:px-10">
+      <div className="shell flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-3">
           <p className="t-eyebrow text-paper/70">Instagram</p>
           <h2 id="social-heading" className="t-display-lg text-paper">

@@ -362,10 +362,14 @@ html:has(.route-cover) .site-nav .nav-mark svg { visibility: hidden; }
 .shop-bar.on-ink { background: var(--ink); color: var(--paper); }
 .shop-bar.on-ink .shop-tool { color: var(--paper); }
 
-/* Centred grid: four across on desktop, two on phones, and a short
-   collection sits in the middle of the row rather than at its left. */
-.shop-cell { width: calc((100% - 0.375rem) / 2); }
-@media (min-width: 1024px) { .shop-cell { width: calc((100% - 3 * 0.375rem) / 4); } }
+/* The cell no longer sets its own width.
+   It was `calc((100% - 0.375rem) / 2)` / `... / 4)` because the grid was a
+   `flex-wrap` row and every tile had to work out its own share of it. The
+   grid is a real grid now (`.shop-run__items`, commerce.css), so the track
+   is the width and a cell that still declared one would be fighting it.
+   Four across and two across are the same two numbers; they are just
+   stated once, by the thing that owns the columns. */
+.shop-cell { min-width: 0; }
 /* ── Sort menu (sort-menu.tsx): branded dropdown ── */
 .sort-menu { position: relative; }
 .sort-menu-chevron { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }

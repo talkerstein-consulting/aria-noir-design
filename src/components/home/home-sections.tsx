@@ -66,7 +66,7 @@ function Stage({
           className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-ink to-transparent lg:h-[55%] lg:via-ink/70"
         />
       </div>
-      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-5 px-6 pt-6 pb-14 text-center sm:px-10 lg:absolute lg:inset-x-0 lg:bottom-0 lg:gap-6 lg:pt-0 lg:pb-20">
+      <div className="shell relative flex flex-col items-center gap-5 pt-6 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:gap-6 lg:pt-0 lg:pb-20">
         {children}
       </div>
     </section>

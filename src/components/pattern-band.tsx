@@ -12,7 +12,7 @@
  */
 export function Breaker({ className = "" }: { className?: string }) {
   return (
-    <div aria-hidden className={`mx-auto max-w-7xl px-6 py-6 sm:px-10 ${className}`}>
+    <div aria-hidden className={`shell py-6 ${className}`}>
       <div className="breaker" />
     </div>
   );

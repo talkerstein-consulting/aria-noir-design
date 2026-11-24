@@ -2282,8 +2282,42 @@ html[data-boot="done"] .boot-loader {
    their way past; while the bar is STUCK (`data-stuck`, set from a
    sentinel in shop-all.tsx) it paints that band itself, and the header
    sits on it. Not while in flow: there the band would cover the lede. */
-.shop-bar {
+/* ── Shop All: where the lid sits ──────────────────────────────
+   `--bar-top` is how far down the filter bar sticks, and `--run-top` is the
+   bar's underside -- where a collection cover has to stop. They were one
+   value declared on `.shop-bar` itself, which meant nothing else on the
+   page could ask "how far down does the lid reach" without copying three
+   breakpoints. The section answers it once. */
+/* The grid runs to the edges of the screen, so each half of a run is a
+   true half of it. The section still holds the page gutter for everything
+   above the grid (the head, the bar's band, the search notice), so the
+   grid steps back out of it the same way `.shop-bar` does. */
+.shop-grid {
+  margin-inline: calc(-1 * var(--gutter));
+}
+@media (min-width: 640px) {
+  .shop-grid {
+    margin-inline: calc(-1 * var(--gutter-wide));
+  }
+}
+
+.shop-section {
   --bar-top: 3.75rem;
+  --bar-h: 4.5rem; /* 1rem padding, a 2.5rem cluster, 1rem padding */
+  --run-top: calc(var(--bar-top) + var(--bar-h));
+}
+@media (min-width: 640px) {
+  .shop-section {
+    --bar-top: 4.25rem;
+  }
+}
+@media (min-width: 768px) {
+  .shop-section {
+    --bar-top: 5.25rem;
+  }
+}
+
+.shop-bar {
   position: sticky;
   top: var(--bar-top);
   z-index: 40;
@@ -2302,14 +2336,8 @@ html[data-boot="done"] .boot-loader {
 }
 @media (min-width: 640px) {
   .shop-bar {
-    --bar-top: 4.25rem;
     margin-inline: calc(-1 * var(--gutter-wide));
     padding-inline: var(--gutter-wide);
-  }
-}
-@media (min-width: 768px) {
-  .shop-bar {
-    --bar-top: 5.25rem;
   }
 }
 
@@ -2612,6 +2640,77 @@ html[data-boot="done"] .boot-loader {
 }
 .shop-promo:hover .shop-promo-art img {
   transform: scale(1.03);
+}
+
+/* ── Shop All: one run per collection ───────────────────────────
+ *
+ * The cover used to be a full-width band laid ACROSS the grid before each
+ * collection's frames: 1280 x 488 of photograph, then four columns of
+ * product, then the next band. Seven of them down one page, and every one
+ * of them pushed the shelf a screen further away.
+ *
+ * It now holds the left half of the run and stays there while its own
+ * frames scroll past it, so the collection is named for as long as you are
+ * looking at it and the page is the shelf again.
+ *
+ * ---- Two halves, one frame to a row ----
+ *
+ * The run is two equal tracks of the SCREEN. The cover takes the left one
+ * at full height; the right one is a single column, so a frame is the
+ * whole remaining half and its height follows that width -- one piece to a
+ * row, at the scale the photography was shot for, rather than four packshots
+ * across a page.
+ *
+ *     track   (100vw - 6px) / 2   = 879 at 1763
+ *     frame   the whole track     = 879, square, so 879 tall
+ *
+ * ---- Phone ----
+ *
+ * No sticking under 1024px, and no halves to speak of: the run collapses to
+ * one track -- cover as a 16/9 band, then its frames two across, which is
+ * what the grid has always done at that width.
+ */
+.shop-run {
+  display: grid;
+  gap: var(--grid-gutter);
+  /* Where a tile linking to this run should land it. On a phone the cover
+     is a band stacked above its frames, so the run has to arrive clear of
+     the stuck bar; on a wide screen the cover IS the screen, and anything
+     other than 0 would land it showing a slice of the run above. Read by
+     collection-tiles.tsx, so the breakpoint lives here with the layout it
+     belongs to rather than as a number in a scroll handler. */
+  --run-anchor: var(--run-top);
+}
+.shop-run__cover {
+  position: relative;
+  overflow: hidden;
+}
+.shop-run__items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--grid-gutter);
+  /* Frames start at the top of the run. Without this a short collection
+     stretches its tiles down the height of the cover beside it. */
+  align-content: start;
+}
+@media (min-width: 1024px) {
+  .shop-run {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    --run-anchor: 0px;
+  }
+  /* One frame to a row, filling the half the cover leaves. */
+  .shop-run__items {
+    grid-template-columns: 1fr;
+  }
+  .shop-run__cover {
+    position: sticky;
+    /* The screen, not the room under the bar: the cover is a full-height
+       plate and the bar is a strip that floats over its head. */
+    top: 0;
+    height: 100svh;
+    align-self: start;
+  }
 }
 
 /* "In the bag", at the corner of the card's picture. Words on ink, not

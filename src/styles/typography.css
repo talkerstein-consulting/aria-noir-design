@@ -232,6 +232,38 @@ body {
   padding-block: 0;
 }
 
+/* ── The page's column, for a block that carries its own gutter ──
+ *
+ * Two patterns were both in the build, and they do not land on the same
+ * measure:
+ *
+ *   A  `.section` holds the gutter, `mx-auto max-w-7xl` sits flush inside
+ *      it           → content column = min(100vw - 2g, 80rem)
+ *   B  the section is full-bleed and `mx-auto max-w-7xl px-6 sm:px-10`
+ *      holds the gutter → content column = min(100vw - 2g, 80rem - 2g)
+ *
+ * Above ~1360px that is a 1280 column against a 1200 one: the home hero's
+ * words sat 40px inside the shop grid's first tile, all the way down the
+ * page, on every route that used B.
+ *
+ * B exists for a reason — a plate that must bleed cannot put the gutter on
+ * its section — so the fix is not to delete it but to make it resolve to
+ * the same column. `.shell` is B with the padding added BACK to the
+ * max-width, so the content box is `--page-measure` either way.
+ */
+.shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: calc(var(--page-measure) + 2 * var(--gutter));
+  padding-inline: var(--gutter);
+}
+@media (min-width: 640px) {
+  .shell {
+    max-width: calc(var(--page-measure) + 2 * var(--gutter-wide));
+    padding-inline: var(--gutter-wide);
+  }
+}
+
 /* ---- Two sections do not get two paddings ----
  *
  * `--section-pad-wide` is 12rem, and it is the air AROUND a section. Stack

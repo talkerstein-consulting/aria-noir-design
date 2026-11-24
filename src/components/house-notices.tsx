@@ -180,7 +180,7 @@ function CookieNotice({ onAnswer }: { onAnswer: (v: "all" | "necessary") => void
       {/* Slim (Rems, 23 Nov): one line on a desktop, two on a phone. The
           "Cookies" heading is gone — the bar is already labelled for a
           screen reader, and the sentence says what it is. */}
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-10 sm:py-2.5">
+      <div className="shell flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:py-2.5">
         <p className="t-caption max-w-2xl text-paper/70">
           The house keeps what the site needs to work. With your yes, also a record of what is
           looked at.{" "}

@@ -35,13 +35,13 @@ export type Lookbook = {
 
 const SIZES: Record<LookbookPlate["kind"], string> = {
   full: "100vw",
-  inset: "(min-width: 1280px) 1200px, 100vw",
+  inset: "(min-width: 1360px) 1280px, 100vw",
   portrait: "(min-width: 640px) 520px, 100vw",
 };
 
 const FRAME: Record<LookbookPlate["kind"], string> = {
   full: "w-full",
-  inset: "mx-auto w-full max-w-7xl px-6 sm:px-10",
+  inset: "shell w-full",
   portrait: "mx-auto w-full max-w-[520px] px-6 sm:px-0",
 };
 
@@ -82,7 +82,7 @@ export function ProductLookbook({ lookbook }: { lookbook: Lookbook }) {
           "pair" in row ? (
             <div
               key={row.pair[0].src}
-              className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-4 px-6 sm:grid-cols-2 sm:gap-6 sm:px-10"
+              className="shell grid w-full grid-cols-1 items-center gap-4 sm:grid-cols-2 sm:gap-6"
             >
               {row.pair.map((plate, i) => (
                 <Plate

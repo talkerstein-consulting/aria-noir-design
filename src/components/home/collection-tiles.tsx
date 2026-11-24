@@ -104,12 +104,20 @@ function Tile({
       ? `/shop/${item.slug}?colourway=${encodeURIComponent(current.name)}`
       : item.href;
 
-  /* Under the sticky shop bar, through Lenis when it is running. */
+  /* Under the sticky shop bar, through Lenis when it is running.
+     The clearance is the layout's own: `--run-anchor` is declared on
+     `.shop-run` and says where that run wants to land — clear of the
+     stuck bar on a phone, flush with the top of the screen where the
+     cover is full height. A hardcoded 140 was right for neither. 140
+     only if the page has no run to ask. */
   const toRun = (e: MouseEvent) => {
     const run = document.getElementById(`run-${item.slug}`);
     if (!anchors || !run) return;
     e.preventDefault();
-    const top = run.getBoundingClientRect().top + window.scrollY - 140;
+    const declared = getComputedStyle(run).getPropertyValue("--run-anchor").trim();
+    const lid = declared ? parseFloat(declared) : NaN;
+    const clear = Number.isFinite(lid) ? lid : 140;
+    const top = run.getBoundingClientRect().top + window.scrollY - clear;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       window.scrollTo({ top });
     } else if (window.__lenis) {

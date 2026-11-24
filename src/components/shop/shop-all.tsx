@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -12,7 +12,6 @@ import { allHouses } from "@/lib/navigation";
 import { CtaButton, CtaLink } from "@/components/cta-link";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 import { ProductCard } from "@/components/product-card";
-import { framingFor } from "@/lib/card-framing";
 import {
   FilterDrawer,
   FilterGroup,
@@ -112,16 +111,97 @@ const slide = (i: number) => ({
    band two rows into the grid, pointing at /lookbook/ss26. The page it
    sold no longer exists, and a shop that interrupts itself to advertise
    nothing is worse than one that just shows the shelf. */
-type Tile =
-  | { kind: "piece"; piece: Piece }
-  | { kind: "family"; slug: string; pieces: Piece[] }
-  | { kind: "heading"; slug: string; name: string }
-  | { kind: "highlight" }
-  | { kind: "breaker"; slug: string; name: string; image: string | null | undefined; href: string };
+/**
+ * One collection's stretch of the page: the cover, and the frames.
+ *
+ * This was a flat list of five tile kinds flowing through one wrapping
+ * row. Three of the five -- `highlight`, `family`, `heading` -- had not
+ * been emitted by the builder in some time; they were a 2x2 hero image, a
+ * one-card-per-model grouping and a plain text divider, each still
+ * carrying its render branch, its slice of the type and in one case a
+ * fifty-line component nothing reached. They are gone with the flat list.
+ *
+ * What is left says what the page actually is: a run per collection.
+ */
+type Run = {
+  slug: string;
+  name: string;
+  /** The wide band, for the phone's cover. 2400x914. */
+  image: string;
+  /** The upright worn shot, for the full-height cover. See COVER. */
+  portrait: string | null;
+  /** The acetate in that photograph, where it is known. See WORN. */
+  worn: string | null;
+  href: string;
+  pieces: Piece[];
+};
 
-/** The highlight image takes the first 2x2 of the grid, but only when there
- *  are enough products to flow around it. */
-const HIGHLIGHT_MIN = 6;
+/* ---- The cover is a lifestyle shot, upright ----
+ *
+ * Twice wrong before this. The band it started as (`shop/breakers`, all
+ * 2400x914) IS the right picture, the house worn in its setting, but
+ * standing full height in half the screen `object-cover` scales a 2.63
+ * photograph until its height fits and shows about a quarter of its width.
+ * Swapping in `cover/mobile.webp` fixed the crop and lost the subject: that
+ * cut is the still life, the frames alone on concrete, which is not a cover.
+ *
+ * The answer was already in `navigation.ts`. Every house carries a
+ * `lifestyle` plate, upright at 1547x1920, and five of the six are exactly
+ * the shot this wants. So the cover reads that field, and this map holds
+ * only the two it cannot:
+ *
+ *   matriarca  its `lifestyle` plate is the obelisk courtyard, and Aria is
+ *              not wearing the frames in it. A cover for an eyewear house
+ *              with no eyewear in it cannot carry the line below either,
+ *              so the run takes the golden profile, where the acetate and
+ *              its plaque are the subject.
+ *   the knit   apparel has no `lifestyle` field; the run's own hero stands in.
+ *
+ * The wide band stays as the phone's cover, where its shape is the shape of
+ * the hole. Not `house.plate`: that is `cover/square.webp`, the same still
+ * life the collection tiles want and this does not.
+ */
+const COVER: Record<string, string> = {
+  matriarca: "/images/matriarca/campaign/worn-aria-closeup-02-profile-golden.webp",
+  "alpaca-sweater": "/images/alpaca-sweater/run/hero-aria-solo-gallery.webp",
+};
+
+/* ---- Which acetate is in the picture ----
+ *
+ * Nothing in the build records this. The campaign data carries `src` and
+ * `alt` only, and the alt says who and where ("Aria on the lantern
+ * bridge"), never which frame. `heroColorway` is the nearest thing and it
+ * is NOT this: it is the acetate the buy page opens on, and on the
+ * PATRIARCA plate it is demonstrably not the one being worn.
+ *
+ * So each line below was read off the photograph against that house's own
+ * cut-out renders in /images/fronts-cut, and only where the answer is not
+ * in doubt:
+ *
+ *   arca-i     black acetate, gold plaque. The only black ARCA I makes
+ *              (309 Blue, K Black, Proceso Brown, Z White).
+ *   arca-ii    black. The only plain black in a run of stripes and roses,
+ *              and `pages.ts` calls this same plate "ARCA II Noir, in the
+ *              cloister".
+ *   ahava      black, gold plaque. The only black AHAVA makes.
+ *   matriarca  warm wood grain under heavy gold, which is the `brown`
+ *              render and not the `noir` one. Black Wood is the house's
+ *              other wood, it is black, and it is out of the workshop.
+ *   monarca    black. The only plain black MONARCA makes.
+ *
+ * PATRIARCA is left out on purpose. Its plaque is gold, which rules
+ * `midnight-noir` out (that render's plaque is black), but low sun on the
+ * staircase leaves Black and Brown apart only in a light nobody can judge
+ * from, and the shoot has no worn closeup to settle it. A collection with
+ * nothing certain to say says nothing.
+ */
+const WORN: Record<string, string> = {
+  "arca-i": "K Black",
+  "arca-ii": "Noir",
+  ahava: "Noir",
+  matriarca: "Brown",
+  monarca: "Noir",
+};
 
 /* ---- The product tile ----
    DITA's: light grey ground, the frame alone from the front (the
@@ -152,14 +232,14 @@ function ShopTile({ piece }: { piece: Piece }) {
             src={`/images/fronts-cut/${stem}.webp`}
             alt={`${piece.collectionName}, ${piece.name}, from the front`}
             fill
-            sizes="(min-width: 1024px) 25vw, 50vw"
+            sizes="50vw"
             className="scale-110 object-cover pb-[34%] sm:pb-[22%] transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-0"
           />
           <Image
             src={`/images/fronts-cut/${stem}-quarter.webp`}
             alt=""
             fill
-            sizes="(min-width: 1024px) 25vw, 50vw"
+            sizes="50vw"
             className="scale-110 object-cover pb-[34%] sm:pb-[22%] opacity-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100"
           />
           {/* No mark on the tile. There was a RotateHint and a "3D"
@@ -180,7 +260,7 @@ function ShopTile({ piece }: { piece: Piece }) {
           src={piece.card.image}
           alt={`${piece.collectionName}, ${piece.name}`}
           fill
-          sizes="(min-width: 1024px) 25vw, 50vw"
+          sizes="50vw"
           /* The garment's photographs are rooms, not packshots, and in the
              taller cell they ran under the name. More ground reserved
              below the picture rather than a scrim over it: nothing of the
@@ -336,9 +416,8 @@ export function ShopAll() {
      breaks the grid after the first two rows, when there are enough
      cards for it to sit between. */
   /* Divided by collection, in the order the filtered list first meets
-     each one (so sort and search still decide what leads): a full-width
-     breaker image for the collection, then its frames. */
-  const tiles = useMemo<Tile[]>(() => {
+     each one, so sort and search still decide what leads. */
+  const runs = useMemo<Run[]>(() => {
     const order: string[] = [];
     const by = new Map<string, Piece[]>();
     for (const piece of list) {
@@ -348,15 +427,23 @@ export function ShopAll() {
       }
       by.get(piece.collection)!.push(piece);
     }
-    return order.flatMap((slug): Tile[] => {
+    return order.map((slug): Run => {
       const group = by.get(slug)!;
       const house = allHouses.find((h) => h.slug === slug);
-      /* A wide lifestyle photograph per collection (public/images/shop/breakers). */
-      const image = `/images/shop/breakers/${slug}.webp`;
-      return [
-        { kind: "breaker", slug, name: group[0].collectionName, image, href: house?.href ?? `/shop/${slug}` },
-        ...group.map((piece) => ({ kind: "piece" as const, piece })),
-      ];
+      return {
+        slug,
+        name: group[0].collectionName,
+        /* A wide lifestyle photograph per collection
+           (public/images/shop/breakers). */
+        image: `/images/shop/breakers/${slug}.webp`,
+        /* The upright worn shot for the full-height cover; see COVER.
+           Any collection without one falls back to the band at both
+           widths rather than to a crop nobody chose. */
+        portrait: COVER[slug] ?? house?.lifestyle ?? null,
+        worn: WORN[slug] ?? null,
+        href: house?.href ?? `/shop/${slug}`,
+        pieces: group,
+      };
     });
   }, [list]);
 
@@ -398,7 +485,7 @@ export function ShopAll() {
     <section
       /* The room above the bar is ink, in app/shop/page.tsx; only a named
          collection's heading needs paper above the bar. */
-      className={`on-paper section relative bg-paper ${current ? "!pt-10 sm:!pt-14" : "!pt-0"}`}
+      className={`shop-section on-paper section relative bg-paper ${current ? "!pt-10 sm:!pt-14" : "!pt-0"}`}
       aria-labelledby="shop-heading"
     >
       {/* The page's heading lives in app/shop/page.tsx, above the
@@ -538,7 +625,7 @@ export function ShopAll() {
             {suggestions.length ? (
               <>
                 <h2 className="t-display-lg mt-20">The house leads with these.</h2>
-                <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+                <ul className="mt-8 grid grid-cols-2 gap-[var(--grid-gutter)] lg:grid-cols-4">
                   {suggestions.map((piece) => (
                     <li key={piece.id} className="flex">
                       <ProductCard {...piece.card} />
@@ -550,199 +637,111 @@ export function ShopAll() {
           </div>
         ) : null}
 
-        {/* ---- the grid ----
-            One grid, whatever the grouping: the dividers are grid children
-            spanning every column, so the pieces stay in one set of columns
-            across every collection. Seven separate grids would each solve
-            their own last row and the page would step in and out. */}
-        <div
-          ref={gridRef}
-          /* DITA's grid: four across, narrow gaps, light grey tiles; the
-             highlight image takes the first 2x2. */
-          className="shop-grid mt-4 flex flex-wrap justify-center gap-1.5 sm:mt-8"
-        >
-          <AnimatePresence mode="popLayout" initial={false}>
-            {tiles.map((tile, i) =>
-              tile.kind === "breaker" ? (
-                /* The grid breaker: one per collection, every column wide,
-                   its photograph and its name, before its frames. */
-                <motion.figure
-                  key={`breaker-${tile.slug}`}
-                  id={`run-${tile.slug}`}
-                  layout
-                  className="shop-breaker relative w-full overflow-hidden"
-                  {...slide(i)}
-                >
-                  <Link href={tile.href} className="group block">
-                    <div className="relative aspect-[16/9] w-full sm:aspect-[21/8]">
-                      {tile.image ? (
-                        <Image
-                          src={tile.image}
-                          alt=""
-                          fill
-                          sizes="100vw"
-                          className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
-                        />
+      </div>
+
+      {/* ---- the grid ----
+          One run per collection, and it is the only thing on this page
+          that leaves the column: each run is two halves OF THE SCREEN.
+          The cover holds the left half at full height and stays there
+          while its own frames scroll past it on the right, two across,
+          each one square — so their height follows the half it is in.
+          See `.shop-run` in styles/commerce.css. */}
+      <div ref={gridRef} className="shop-grid mt-4 grid gap-[var(--grid-gutter)] sm:mt-8">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {runs.map((run, r) => {
+            /* Art direction, the documented way: one <picture>, and the
+               browser picks the cut BEFORE it requests anything. Two
+               <Image>s with one hidden would have the phone paying for
+               the upright plate and the desktop for the band. */
+            const band = getImageProps({
+              alt: "",
+              fill: true,
+              sizes: "100vw",
+              src: run.image,
+            }).props;
+            const tall = run.portrait
+              ? getImageProps({ alt: "", fill: true, sizes: "50vw", src: run.portrait }).props
+              : null;
+            return (
+            <motion.div
+              key={`run-${run.slug}`}
+              /* The anchor the collection tiles above jump to. */
+              id={`run-${run.slug}`}
+              layout
+              className="shop-run"
+              {...slide(r)}
+            >
+              <figure className="shop-run__cover">
+                <Link href={run.href} className="group block h-full">
+                  {/* Full height where it sticks, a band where it does
+                      not: the 16/9 is the phone's, stacked above its
+                      frames. */}
+                  <div className="relative h-full w-full max-lg:aspect-[16/9]">
+                    <picture>
+                      {tall ? (
+                        <source media="(min-width: 1024px)" srcSet={tall.srcSet} sizes={tall.sizes} />
                       ) : null}
-                      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
-                      <figcaption className="absolute inset-x-0 bottom-0 flex justify-center p-6 sm:p-10">
-                        {/* White over the photograph: the paper section's heading colour
-                            was winning over text-paper and setting it black. */}
-                        <h2 className="t-display-md" style={{ color: "#fff" }}>{tile.name}</h2>
-                      </figcaption>
-                    </div>
-                  </Link>
-                </motion.figure>
-              ) : tile.kind === "highlight" ? (
-                /* The image that breaks the grid: two columns by two rows,
-                   first in the grid, the products flowing around it. */
-                <motion.figure
-                  key="highlight"
-                  layout
-                  className="shop-highlight relative col-span-2 overflow-hidden lg:row-span-2"
-                  {...slide(i)}
-                >
-                  <Link href="/arca-ii" className="group block h-full">
-                    <div className="relative aspect-square h-full w-full">
-                      <Image
-                        src="/images/home/hero-m.webp"
-                        alt="Aria and Noir, together, in ARCA I"
-                        fill
-                        sizes="(min-width: 1024px) 50vw, 100vw"
-                        className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
+                      {/* eslint-disable-next-line jsx-a11y/alt-text */}
+                      <img
+                        {...band}
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
                       />
-                    </div>
-                  </Link>
-                </motion.figure>
-              ) : tile.kind === "family" ? (
-                <motion.article
-                  key={`family-${tile.slug}`}
-                  layout
-                  className="relative flex"
-                  {...slide(i)}
-                >
-                  <FamilyCard
-                    pieces={tile.pieces}
-                    inBag={(id) => ready && inBag.has(id)}
-                  />
-                </motion.article>
-              ) : tile.kind === "heading" ? (
-                <motion.h2
-                  key={`heading-${tile.slug}`}
-                  id={`run-${tile.slug}`}
-                  layout
-                  className="shop-divider t-display-md"
-                  {...slide(i)}
-                >
-                  {tile.name}
-                </motion.h2>
-              ) : (
-                <motion.article
-                  key={tile.piece.id}
-                  layout
-                  className="shop-cell relative flex"
-                  {...slide(i)}
-                >
-                  <ShopTile piece={tile.piece} />
-                  {/* Already chosen. Said in words, at the corner of the
-                      picture, and only once the bag is known: a mark that
-                      appears a frame after the card reads as the shop
-                      finding things it had lost. */}
-                  {ready && tile.piece.bagKey && inBag.has(tile.piece.id) ? (
-                    <span className="shop-in-bag t-eyebrow">In the bag</span>
-                  ) : null}
-                </motion.article>
-              ),
-            )}
-          </AnimatePresence>
-        </div>
+                    </picture>
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent"
+                    />
+                    <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 p-6 text-center sm:p-10">
+                      {/* White over the photograph: the paper section's
+                          heading colour was winning over text-paper and
+                          setting it black. */}
+                      <h2 className="t-display-md" style={{ color: "#fff" }}>
+                        {run.name}
+                      </h2>
+                      {/* The acetate in the picture, stated once and
+                          quietly. Only where WORN knows it: a line naming
+                          the wrong frame under a photograph of the right
+                          one is worse than no line at all. */}
+                      {run.worn ? (
+                        <p className="t-caption italic" style={{ color: "rgb(255 255 255 / 0.78)" }}>
+                          Worn in {run.worn}
+                        </p>
+                      ) : null}
+                    </figcaption>
+                  </div>
+                </Link>
+              </figure>
+
+              {/* Its own presence boundary, not the outer one: with the
+                  frames nested a level down, `initial={false}` on the run
+                  list no longer reaches them, and thirty-five tiles would
+                  cascade in on first paint. */}
+              <div className="shop-run__items">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {run.pieces.map((piece, i) => (
+                    <motion.article
+                      key={piece.id}
+                      layout
+                      className="shop-cell relative flex"
+                      {...slide(i)}
+                    >
+                      <ShopTile piece={piece} />
+                      {/* Already chosen. Said in words, at the corner of
+                          the picture, and only once the bag is known: a
+                          mark that appears a frame after the card reads
+                          as the shop finding things it had lost. */}
+                      {ready && piece.bagKey && inBag.has(piece.id) ? (
+                        <span className="shop-in-bag t-eyebrow">In the bag</span>
+                      ) : null}
+                    </motion.article>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </section>
-  );
-}
-
-/**
- * One model with its colourways. The big card is the chosen colour;
- * the row underneath is every colour this list holds for the model, as
- * small product shots. Tapping one swaps the card (picture, name, price,
- * the heart, the link) to that colour, so saving and buying stay per
- * colour.
- */
-function FamilyCard({
-  pieces,
-  inBag,
-}: {
-  pieces: Piece[];
-  inBag: (id: string) => boolean;
-}) {
-  const [at, setAt] = useState(0);
-  const piece = pieces[Math.min(at, pieces.length - 1)];
-  return (
-    <div className="flex w-full flex-col">
-      <div className="relative flex">
-        <ProductCard {...piece.card} />
-        {piece.bagKey && inBag(piece.id) ? (
-          <span className="shop-in-bag t-eyebrow">In the bag</span>
-        ) : null}
-      </div>
-      {pieces.length > 1 ? (
-        <div
-          role="radiogroup"
-          aria-label={`${piece.collectionName} colours`}
-          className="family-thumbs mt-4"
-          /* Every colour visible, spanning the photo's width: one row up
-             to five, then two even rows (eight colours = 4 + 4). Never
-             fewer than four columns, so a two-colour model keeps small
-             thumbnails, flush left. */
-          style={
-            {
-              "--thumb-cols":
-                pieces.length <= 5
-                  ? Math.max(4, pieces.length)
-                  : Math.max(4, Math.ceil(pieces.length / 2)),
-            } as React.CSSProperties
-          }
-        >
-          {pieces.map((p, i) => (
-            <button
-              key={p.id}
-              type="button"
-              role="radio"
-              aria-checked={i === at}
-              aria-label={p.name}
-              title={p.name}
-              data-on={i === at}
-              onClick={() => setAt(i)}
-              className="family-thumb"
-            >
-              {p.card.image ? (
-                <Image
-                  src={p.card.image}
-                  alt=""
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                  /* The same measured crop as the big card, so the
-                     thumbnails line up with it and with each other. */
-                  style={(() => {
-                    /* Tighter than the card: at thumbnail size the frame
-                       is the whole point, the room around it is noise. */
-                    const [z, x, y] = framingFor(p.card.image);
-                    const k = 1.45;
-                    return { scale: String(z * k), translate: `${x * k}% ${y * k}%` };
-                  })()}
-                />
-              ) : (
-                <span
-                  aria-hidden
-                  className="absolute inset-0"
-                  style={{ background: p.card.swatch }}
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      ) : null}
-    </div>
   );
 }

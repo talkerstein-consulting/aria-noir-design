@@ -20,16 +20,22 @@
  *
  * Every measurement here is copied from `ShopAll`'s own markup rather
  * than approximated: the section's padding, the `stack--sm` head, the
- * `shop-bar` band outside the `max-w-7xl` wrapper, and the grid's exact
- * column counts and gaps. A skeleton that is close but not equal is worse
- * than none, because the swap then lands as a jump — which is the one
- * thing the reader is guaranteed to notice.
+ * `shop-bar` band outside the `max-w-7xl` wrapper, and the grid's own
+ * classes. A skeleton that is close but not equal is worse than none,
+ * because the swap then lands as a jump — which is the one thing the
+ * reader is guaranteed to notice.
  *
- * The tile count is 8: enough to fill the fold at every width the grid
- * has a rule for, and a whole number of rows at 1, 3 and 4 columns.
+ * And it HAD drifted. While the grid was four square tiles at a 6px
+ * gutter this drew three tiles at 24px across and 40px down, so the swap
+ * moved every card on the page. It now borrows `.shop-run` itself —
+ * the cover on the left two columns, the frames two across on the right —
+ * so the shape cannot drift again without the real grid drifting with it.
+ *
+ * Three frames: one to a row beside the cover, as the real run draws
+ * them on a wide screen.
  */
 
-const TILES = 8;
+const TILES = 3;
 
 /* The rail's chips are not all one width in the real bar — they are named
    colours — so the placeholder is not either. Fixed rather than random:
@@ -40,7 +46,7 @@ const CHIP_WIDTHS = ["5.5rem", "4rem", "9rem", "4.5rem"];
 export function ShopSkeleton() {
   return (
     <section
-      className="on-ink section relative bg-ink pt-20 sm:pt-40"
+      className="shop-section on-ink section relative bg-ink pt-20 sm:pt-40"
       /* The whole region is one status: the marks inside it carry no
          information of their own, so they are hidden from the reader who
          is being read to and the region says the one true thing instead. */
@@ -67,18 +73,26 @@ export function ShopSkeleton() {
       </div>
 
       <div className="mx-auto max-w-7xl" aria-hidden>
-        <div className="shop-grid mt-12 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: TILES }, (_, i) => (
-            <div key={i} className="flex flex-col gap-4">
-              {/* `card-shot` is the real class, so the square is the
-                  card's own aspect ratio rather than a guess at it. */}
-              <div className="skeleton card-shot" />
-              <div>
-                <span className="skeleton skeleton--name mt-5" />
-                <span className="skeleton skeleton--caption mt-1" />
-              </div>
+        <div className="shop-grid mt-12 grid gap-[var(--grid-gutter)]">
+          <div className="shop-run">
+            {/* The collection cover, holding the left two columns. */}
+            <div className="shop-run__cover">
+              <div className="skeleton h-full w-full max-lg:aspect-[16/9]" />
             </div>
-          ))}
+            <div className="shop-run__items">
+              {Array.from({ length: TILES }, (_, i) => (
+                <div key={i} className="flex flex-col gap-4">
+                  {/* `card-shot` is the real class, so the square is the
+                      card's own aspect ratio rather than a guess at it. */}
+                  <div className="skeleton card-shot" />
+                  <div>
+                    <span className="skeleton skeleton--name mt-5" />
+                    <span className="skeleton skeleton--caption mt-1" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

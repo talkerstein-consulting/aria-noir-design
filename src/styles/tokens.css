@@ -120,6 +120,13 @@
      it here so they can stand in the same column instead of running out to
      the gutter. Change it and the whole page moves together. */
   --page-measure: 80rem; /* max-w-7xl */
+  /* The gutter BETWEEN tiles, as distinct from the gutter around the
+     page. Shop All's grid, the collection tiles and the fronts all sit on
+     this one number; it was written three ways for the same 6px — Tailwind's
+     `gap-1.5`, `gap-px` where a hairline was wanted, and a bare `0.375rem`
+     inside the cell-width calc, which is the kind of triple that drifts
+     the moment one of them is nudged. */
+  --grid-gutter: 0.375rem; /* 6px */
   /* 5rem on a phone, not the 8rem the wide value scaled down to: two
      sections met with 256px of black between them, which on a screen
      812px tall is a third of a screen of nothing. 160px still separates

@@ -63,7 +63,7 @@ export function HomeTeaser() {
         />
       </div>
 
-      <div className="pointer-events-none relative mx-auto flex max-w-7xl flex-col items-center gap-5 px-6 pt-6 pb-14 text-center sm:px-10 lg:absolute lg:inset-x-0 lg:bottom-0 lg:pt-0 lg:pb-20">
+      <div className="shell pointer-events-none relative flex flex-col items-center gap-5 pt-6 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:pt-0 lg:pb-20">
         <h2 id="teaser-heading" className="t-display-xl text-paper rise">
           Before it exists.
         </h2>
