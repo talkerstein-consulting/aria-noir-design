@@ -67,11 +67,11 @@ export function HomeIntake() {
     try {
       await house.subscribe(email.trim());
       setState("sent");
-      setMessage("You are on the list.");
+      setMessage("You’re subscribed.");
       setEmail("");
-    } catch (err) {
+    } catch {
       setState("error");
-      setMessage(err instanceof Error ? err.message : "That didn't go through. Try again.");
+      setMessage("We couldn’t subscribe you. Please try again.");
     }
   }
 
@@ -122,9 +122,8 @@ export function HomeIntake() {
       >
         <div className="pointer-events-auto flex w-full max-w-[34rem] flex-col items-center gap-5 text-center max-sm:max-w-[68vw]">
           <h2 id="intake-heading" className="t-display-lg engraved">
-            The house letter.
+            Letters from Aria Noir.
           </h2>
-          <p className="t-body engraved text-paper/70">New collections reach this list first.</p>
           {/* Two rows (Rems, 23 Nov): the chiselled line belongs to the
               field alone, so it is the FIELD that carries `chisel` now
               and not the form, and Join stands on its own line under
@@ -164,7 +163,7 @@ export function HomeIntake() {
                 disabled={state === "busy"}
                 aria-busy={state === "busy"}
               >
-                Join
+                Subscribe
               </button>
             </form>
           )}

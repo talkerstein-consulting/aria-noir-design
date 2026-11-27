@@ -71,7 +71,7 @@ export function HomeTeaser() {
           The next Aria Noir collection is now taking form. A small number of frames will be offered by pre-order before production begins.
         </p>
         <CtaLink href="/contact" className="pointer-events-auto rise">
-          Reserve a frame
+          Enquire about the next collection
         </CtaLink>
       </div>
     </section>

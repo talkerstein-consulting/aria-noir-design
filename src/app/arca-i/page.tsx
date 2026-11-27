@@ -5,8 +5,9 @@ import * as arca from "@/lib/arca-i";
 export const metadata: Metadata = {
   alternates: { canonical: "/arca-i" },
   title: "ARCA I | Aria Noir",
-  description:
-    "An architectural frame defined by hard lines, deep structure, and a quiet gold detail.",
+  description: "The first vessel. A study in four shapes, from Z White to 309 Blue.",
+  openGraph: { title: "ARCA I | Aria Noir", description: "The first vessel. A study in four shapes, from Z White to 309 Blue." },
+  twitter: { card: "summary_large_image", title: "ARCA I | Aria Noir", description: "The first vessel. A study in four shapes, from Z White to 309 Blue." },
 };
 
 /**

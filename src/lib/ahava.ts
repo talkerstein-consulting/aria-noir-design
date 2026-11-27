@@ -43,8 +43,8 @@ export const hero: Hero = {
   eyebrow: "AHAVA",
   /* The deck's H1, which is a sentence and not the product name. The name
      is the preheader above it. */
-  name: "Nothing louder than stillness.",
-  line: "A sculptural frame designed for quiet mornings, soft light, and moments entirely your own.",
+  name: "AHAVA",
+  line: "",
   image: "/images/ahava/cover/desktop.webp",
   imagePortrait: "/images/ahava/cover/mobile.webp",
   alt: "AHAVA, front on, in early window light",

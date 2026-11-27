@@ -12,8 +12,9 @@ import { AboutTabs } from "@/components/page/about-tabs";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/craftsmanship" },
   title: "Craftsmanship | Aria Noir",
-  description:
-    "Each frame begins as a solid block of cellulose acetate, milled to our drawings, then shaped, tumbled and polished by hand.",
+  description: "A closer look at the line of the frame and the details inside the temple.",
+  openGraph: { title: "Craftsmanship | Aria Noir", description: "A closer look at the line of the frame and the details inside the temple." },
+  twitter: { card: "summary_large_image", title: "Craftsmanship | Aria Noir", description: "A closer look at the line of the frame and the details inside the temple." },
 };
 
 /**

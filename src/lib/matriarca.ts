@@ -37,8 +37,8 @@ const V = "/images/matriarca/variants";
 
 export const hero: Hero = {
   eyebrow: "MATRIARCA",
-  name: "Made for monumental scale.",
-  line: "A sculptural frame where precise gold hardware meets the enduring language of ancient architecture.",
+  name: "MATRIARCA",
+  line: "",
   image: "/images/matriarca/cover/desktop.webp",
   imagePortrait: "/images/matriarca/cover/mobile.webp",
   /* The frame runs to the left edge of the wide plate, so on a squarer

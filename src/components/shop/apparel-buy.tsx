@@ -208,7 +208,7 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
             </div>
             {asking ? (
               <p className="t-caption size-ask mt-3" role="status">
-                Choose a size first.
+                Choose a size.
               </p>
             ) : null}
 

@@ -9,8 +9,9 @@ import { contact } from "@/lib/pages";
 export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
   title: "Contact | Aria Noir",
-  description:
-    "Support, adjustments and warranty. Write to the studio.",
+  description: "Contact the Aria Noir showroom about an order, fit, warranty or press.",
+  openGraph: { title: "Contact | Aria Noir", description: "Contact the Aria Noir showroom about an order, fit, warranty or press." },
+  twitter: { card: "summary_large_image", title: "Contact | Aria Noir", description: "Contact the Aria Noir showroom about an order, fit, warranty or press." },
 };
 
 /**

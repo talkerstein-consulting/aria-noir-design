@@ -24,6 +24,10 @@ import { HomeSocial } from "@/components/home/home-social";
  * no longer mounted; it is kept until the new page is signed off.
  */
 export const metadata: Metadata = {
+  title: "Aria Noir | For those who notice the details.",
+  description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear.",
+  openGraph: { images: ["/images/home/featured-2560.webp"], title: "Aria Noir | For those who notice the details.", description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear." },
+  twitter: { images: ["/images/home/featured-2560.webp"], card: "summary_large_image", title: "Aria Noir | For those who notice the details.", description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear." },
   alternates: { canonical: "/" },
 };
 

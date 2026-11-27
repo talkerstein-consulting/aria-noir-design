@@ -5,8 +5,9 @@ import * as arca from "@/lib/arca-ii";
 export const metadata: Metadata = {
   alternates: { canonical: "/arca-ii" },
   title: "ARCA II | Aria Noir",
-  description:
-    "The second cut. One shape, eight colourways, and an inlaid gold plaque that is the only part of the frame finished to catch light.",
+  description: "ARCA II, seen in low light. Explore the campaign and the frame as worn.",
+  openGraph: { title: "ARCA II | Aria Noir", description: "ARCA II, seen in low light. Explore the campaign and the frame as worn." },
+  twitter: { card: "summary_large_image", title: "ARCA II | Aria Noir", description: "ARCA II, seen in low light. Explore the campaign and the frame as worn." },
 };
 
 /**

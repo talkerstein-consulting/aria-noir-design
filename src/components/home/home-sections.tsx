@@ -87,7 +87,7 @@ export function HomeHero() {
     >
       <h1 className="t-display-xl max-w-3xl text-paper rise-now">Frame your mind.</h1>
       <CtaLink href="/collections" className="rise-now">
-        The collections
+        The Collection
       </CtaLink>
     </Stage>
   );
@@ -104,8 +104,7 @@ export function HomeStatement() {
           Made to hold a gaze.
         </h2>
         <p className="t-body t-body--lede max-w-xl text-paper/70 rise">
-          Each frame begins with proportion, material, and restraint. Cut from Italian acetate and
-          finished by hand, every line has a reason to remain.
+          Each frame begins with a story.
         </p>
       </div>
     </section>
@@ -149,7 +148,7 @@ export function HomeCollections({
 }: { scroll?: boolean; anchors?: boolean; gutter?: "paper" | "ink" } = {}) {
   const items = collectionItems();
   return (
-    <section aria-label="The collections" className="bg-ink">
+    <section aria-label="The Collection" className="bg-ink">
       <CollectionTiles items={items} scroll={scroll} anchors={anchors} gutter={gutter} />
     </section>
   );
@@ -166,10 +165,10 @@ export function HomeFeatured() {
     >
       <h2 className="t-display-xl text-paper rise">ARCA II</h2>
       <p className="t-body t-body--lede max-w-md text-paper/80 rise">
-        A darker study in proportion and light. Concrete, shadow, and a single source.
+        ARCA II, seen in low light.
       </p>
       <CtaLink href="/arca-ii" className="rise">
-        See ARCA II
+        Explore ARCA II
       </CtaLink>
     </Stage>
   );

@@ -45,10 +45,7 @@ const P = "/images/arca-ii";
 export const hero: Hero = {
   eyebrow: "The Second Cut",
   name: "ARCA II",
-  line: [
-    { text: "Cut for the darker room.", italic: true },
-    { text: "NINETY-SEVEN PARTS DARK, THREE PARTS GOLD.", italic: false },
-  ],
+  line: "ARCA II, seen in low light.",
   image: `${P}/hero-poster.webp`,
   alt: "Aria and Noir in the dark in ARCA II, the room glowing behind them",
   video: "/video/arca-ii-hero.mp4",

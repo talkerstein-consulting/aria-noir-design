@@ -9,9 +9,10 @@ import { ShopSkeleton } from "@/components/shop/shop-skeleton";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/collections" },
-  title: "Collections | Aria Noir",
-  description:
-    "Every collection the house has cut, indexed: six houses of block acetate eyewear and one garment knitted in Peru.",
+  title: "The Collection | Aria Noir",
+  description: "Six eyewear families, from the four shapes of ARCA I to the sculptural bridge of PATRIARCA.",
+  openGraph: { title: "The Collection | Aria Noir", description: "Six eyewear families, from the four shapes of ARCA I to the sculptural bridge of PATRIARCA." },
+  twitter: { card: "summary_large_image", title: "The Collection | Aria Noir", description: "Six eyewear families, from the four shapes of ARCA I to the sculptural bridge of PATRIARCA." },
 };
 
 /**

@@ -461,7 +461,7 @@ export function ShopAll() {
   const kindOptions: FilterOption<Kind | "any">[] = [
     { id: "any", label: "Both", count: countInKind(query, null) },
     { id: "eyewear", label: "Eyewear", count: countInKind(query, "eyewear") },
-    { id: "apparel", label: "Apparel", count: countInKind(query, "apparel") },
+    { id: "apparel", label: "Knitwear", count: countInKind(query, "apparel") },
   ];
   /* Families that would leave nothing are dropped rather than shown at
      zero: five dead ends under a one-colour house is five rows that cost
@@ -478,7 +478,7 @@ export function ShopAll() {
   ];
   const sortOptions: FilterOption<Sort>[] = SORTS.map((s) => ({ id: s.id, label: s.label }));
 
-  const heading = current ? current.name : "Shop all";
+  const heading = current ? current.name : "Shop All";
   const suggestions = useMemo(() => fallback(), []);
 
   return (
@@ -603,7 +603,7 @@ export function ShopAll() {
               onClick={() => patch({ q: "" })}
               className="link-quiet underline underline-offset-4"
             >
-              Clear
+              Clear filters
             </button>
           </p>
         ) : null}
@@ -615,11 +615,11 @@ export function ShopAll() {
             <p className="t-body t-body--lede">
               {query.q
                 ? `Nothing here is called “${query.q}”.`
-                : `Nothing in ${current ? current.name : "the house"} answers to that.`}
+                : "No pieces match these filters."}
             </p>
             <div className="mt-6">
               <CtaLink href="/shop" onClick={() => setQuery(EMPTY_QUERY)} kind="secondary">
-                Shop all
+                Clear filters
               </CtaLink>
             </div>
             {suggestions.length ? (

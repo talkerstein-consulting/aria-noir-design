@@ -9,7 +9,9 @@ import { careers } from "@/lib/maison";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/careers" },
   title: "Careers | Aria Noir",
-  description: "Careers at Aria Noir. No open positions today; designers and makers may write at any time.",
+  description: "Current openings at Aria Noir.",
+  openGraph: { title: "Careers | Aria Noir", description: "Current openings at Aria Noir." },
+  twitter: { card: "summary_large_image", title: "Careers | Aria Noir", description: "Current openings at Aria Noir." },
 };
 
 /**

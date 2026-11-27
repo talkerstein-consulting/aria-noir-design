@@ -57,7 +57,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Aria Noir",
-  description: "Eyewear, carved not assembled.",
+  description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear.",
 };
 
 /**

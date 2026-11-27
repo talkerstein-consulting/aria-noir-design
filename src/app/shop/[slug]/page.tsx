@@ -16,8 +16,8 @@ import {
 import { AlsoLike } from "@/components/shop/also-like";
 import { apparel } from "@/lib/apparel";
 import { ApparelBuy } from "@/components/shop/apparel-buy";
-import { colorwayCount, houses, type House } from "@/lib/navigation";
-import { houseBySlug, priceOf } from "@/lib/shop";
+import { houses, type House } from "@/lib/navigation";
+import { houseBySlug } from "@/lib/shop";
 import { shipping } from "@/lib/policies";
 import { FRAME_FIT } from "@/lib/product";
 import { BuyCraft } from "@/components/shop/buy-craft";
@@ -113,6 +113,15 @@ export function generateStaticParams() {
   ];
 }
 
+const frameDescriptions: Partial<Record<string, string>> = {
+  "arca-i": "Choose from four ARCA I shapes: Z White, K Black, Proceso Brown and 309 Blue.",
+  "arca-ii": "Explore ARCA II colourways, including Noir, Dark Tortoise and Dreamy Rose.",
+  "ahava": "Explore AHAVA by colourway and see the frame from the front and in profile.",
+  "monarca": "Explore MONARCA colourways and see the frame in close-up and from the side.",
+  "matriarca": "See MATRIARCA’s bridge and temples in close-up, then choose a colourway.",
+  "patriarca": "See the sculptural bridge of PATRIARCA and compare the available colourways.",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -123,15 +132,23 @@ export async function generateMetadata({
   if (!house) {
     const garment = apparel.find((a) => a.slug === slug);
     if (!garment) return {};
+    const title = `${garment.name} | Aria Noir`;
+    const description = "El Patrón by Aria Noir. Baby alpaca knitwear, knitted in Peru.";
     return {
-      title: `${garment.name} | Aria Noir`,
-      description: `${garment.note} ${garment.colourways.length} colourways, ${garment.sizes.length} sizes.`,
+      title,
+      description,
+      openGraph: { title, description },
+      twitter: { card: "summary_large_image", title, description },
       alternates: { canonical: `/shop/${slug}` },
     };
   }
+  const title = `Shop ${house.name} | Aria Noir`;
+  const description = frameDescriptions[slug] ?? `Explore ${house.name} by Aria Noir.`;
   return {
-    title: `${house.name} | Aria Noir`,
-    description: `${house.note} ${colorwayCount(house)} colourways, from ${priceOf(house)}.`,
+    title,
+    description,
+    openGraph: { title, description },
+    twitter: { card: "summary_large_image", title, description },
     /* One URL per house: the ?colourway= variants are the same page. */
     alternates: { canonical: `/shop/${slug}` },
   };

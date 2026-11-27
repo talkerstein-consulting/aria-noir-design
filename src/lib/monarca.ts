@@ -34,8 +34,8 @@ const V = "/images/monarca/variants";
 
 export const hero: Hero = {
   eyebrow: "MONARCA",
-  name: "Some things are better left unseen.",
-  line: "A cinematic frame shaped by shadow, reflection, and the quiet drama of forgotten places.",
+  name: "MONARCA",
+  line: "MONARCA, in reflected light.",
   image: "/images/monarca/cover/desktop.webp",
   imagePortrait: "/images/monarca/cover/mobile.webp",
   alt: "MONARCA in Noir, low light",

@@ -9,9 +9,10 @@ import { HomeCollections } from "@/components/home/home-sections";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/shop" },
-  title: "Shop all | Aria Noir",
-  description:
-    "Every piece the house makes, priced. Six houses of eyewear cut from block acetate, and one garment knitted in Peru.",
+  title: "Shop All | Aria Noir",
+  description: "Browse the eyewear collection by frame and colourway, alongside El Patrón knitwear.",
+  openGraph: { title: "Shop All | Aria Noir", description: "Browse the eyewear collection by frame and colourway, alongside El Patrón knitwear." },
+  twitter: { card: "summary_large_image", title: "Shop All | Aria Noir", description: "Browse the eyewear collection by frame and colourway, alongside El Patrón knitwear." },
 };
 
 /**

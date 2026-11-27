@@ -12,9 +12,10 @@ import { AboutTabs } from "@/components/page/about-tabs";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/house/about" },
-  title: "About | Aria Noir",
-  description:
-    "Eyewear by designers, for designers. The brand, the company, and the vision behind six houses and nine frames.",
+  title: "About the Maison | Aria Noir",
+  description: "Eyewear by designers, for designers. Meet the Aria Noir Maison.",
+  openGraph: { title: "About the Maison | Aria Noir", description: "Eyewear by designers, for designers. Meet the Aria Noir Maison." },
+  twitter: { card: "summary_large_image", title: "About the Maison | Aria Noir", description: "Eyewear by designers, for designers. Meet the Aria Noir Maison." },
 };
 
 /**

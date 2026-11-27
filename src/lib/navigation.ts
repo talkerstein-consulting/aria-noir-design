@@ -1148,13 +1148,13 @@ export const architecture: readonly RouteGroup[] = [
         kind: "designed",
       },
       {
-        label: "Collections",
+        label: "The Collection",
         href: "/collections",
         note: "Every collection, indexed and numbered, then each one as a chapter with all its colourways.",
         kind: "designed",
       },
       {
-        label: "Shop all",
+        label: "Shop All",
         href: "/shop",
         note: "Every piece, priced: the colourways of six houses and the garment, with a rail and a filter.",
         kind: "designed",

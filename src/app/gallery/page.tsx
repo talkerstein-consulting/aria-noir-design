@@ -26,8 +26,9 @@ const rooms = gallery.rooms.map((room) => {
 export const metadata: Metadata = {
   alternates: { canonical: "/gallery" },
   title: "Gallery | Aria Noir",
-  description:
-    "Six houses, six rooms. The campaign photography, house by house, from a Paris apartment to Giza.",
+  description: "The frames, worn. Campaign photographs from the Aria Noir collection.",
+  openGraph: { title: "Gallery | Aria Noir", description: "The frames, worn. Campaign photographs from the Aria Noir collection." },
+  twitter: { card: "summary_large_image", title: "Gallery | Aria Noir", description: "The frames, worn. Campaign photographs from the Aria Noir collection." },
 };
 
 /** Shared section-page shell — see house/about/page.tsx. */

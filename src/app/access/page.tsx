@@ -6,7 +6,7 @@ import { AccessForm } from "@/components/shop/access-form";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Access | Aria Noir",
+  title: "Sign in | Aria Noir",
   description: "Orders, addresses, and anything already on the bench.",
   robots: { index: false, follow: false },
 };
@@ -43,7 +43,7 @@ export default function AccessPage() {
           <div className="mx-auto w-full max-w-md">
             <div className="stack stack--sm">
               <CrumbEyebrow label="Access" className="t-eyebrow" />
-              <h1 className="t-display-lg">Your bench.</h1>
+              <h1 className="t-display-lg">Sign in</h1>
               <p className="t-body t-body--lede mt-2">
                 Orders, addresses, and anything already cut for you. An
                 account is not needed to buy a frame — it is for afterwards.

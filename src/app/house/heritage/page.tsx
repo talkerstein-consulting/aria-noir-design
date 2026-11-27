@@ -12,7 +12,9 @@ import { heritage } from "@/lib/heritage";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/heritage" },
   title: "Heritage | Aria Noir",
-  description: "A Toronto design house. Eyewear, and knitwear in baby alpaca.",
+  description: "A Toronto design house working in eyewear and baby alpaca knitwear.",
+  openGraph: { title: "Heritage | Aria Noir", description: "A Toronto design house working in eyewear and baby alpaca knitwear." },
+  twitter: { card: "summary_large_image", title: "Heritage | Aria Noir", description: "A Toronto design house working in eyewear and baby alpaca knitwear." },
 };
 
 /**

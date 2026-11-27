@@ -35,8 +35,8 @@ export const hero: Hero = {
      the preheader above it now, so the page states what it is once and
      then says something. HeroName sets whatever it is given at hero scale;
      it was never required to be the noun. */
-  name: "Built from the shadows.",
-  line: "An architectural frame defined by hard lines, deep structure, and a quiet gold detail.",
+  name: "ARCA I",
+  line: "The first vessel.",
   image: `${P}/hero-arca.webp`,
   alt: "ARCA I, amber-lit portrait, layered foreground",
   video: "/video/arca-i-hero.mp4",

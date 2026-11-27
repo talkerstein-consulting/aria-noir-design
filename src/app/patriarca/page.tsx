@@ -5,8 +5,9 @@ import * as patriarca from "@/lib/patriarca";
 export const metadata: Metadata = {
   alternates: { canonical: "/patriarca" },
   title: "PATRIARCA | Aria Noir",
-  description:
-    "A sculptural frame with the weight, presence, and permanence of an heirloom.",
+  description: "PATRIARCA, worn among stone columns. A closer look at its sculptural bridge.",
+  openGraph: { title: "PATRIARCA | Aria Noir", description: "PATRIARCA, worn among stone columns. A closer look at its sculptural bridge." },
+  twitter: { card: "summary_large_image", title: "PATRIARCA | Aria Noir", description: "PATRIARCA, worn among stone columns. A closer look at its sculptural bridge." },
 };
 
 export default function PatriarcaPage() {

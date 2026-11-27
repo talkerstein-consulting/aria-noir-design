@@ -119,12 +119,14 @@ export function ProductHero({ hero }: { hero: Hero }) {
           />
           {/* the atelier heading mechanic — italic lowercase set against
               roman caps — carried onto the hero's own line */}
-          <RevealText
-            as="p"
-            text={hero.line}
-            delay={ENTER_MS + 320}
-            className="t-display-xs mt-1 max-w-xl"
-          />
+          {hero.line && (
+            <RevealText
+              as="p"
+              text={hero.line}
+              delay={ENTER_MS + 320}
+              className="t-display-xs mt-1 max-w-xl"
+            />
+          )}
         </div>
       </div>
     </section>

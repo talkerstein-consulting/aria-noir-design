@@ -349,7 +349,7 @@ export const eyewear = {
 export const contact = {
   hero: {
     eyebrow: "Contact",
-    title: "Talk to the studio.",
+    title: "Talk to the showroom.",
     plate: "/images/contact/window-light.webp",
     platePortrait: "/images/contact/window-light-mobile.webp",
     alt: "Dust in a shaft of window light, in the studio",
@@ -363,11 +363,11 @@ export const contact = {
    * last step hands off to `mailto:` with everything filled in.
    */
   intake: {
-    eyebrow: "Write to the bench",
-    steps: ["What it is about", "Who is asking", "The message"],
+    eyebrow: "Contact the showroom",
+    steps: ["What is your enquiry about?", "Your details", "Message"],
     subjects: [
       { label: "An order", to: "support@arianoir.com" },
-      { label: "Fit & adjustments", to: "support@arianoir.com" },
+      { label: "Fit and adjustments", to: "support@arianoir.com" },
       { label: "A warranty claim", to: "support@arianoir.com" },
       { label: "Press", to: "press@arianoir.com" },
       { label: "Something else", to: "admin@arianoir.com" },
@@ -386,7 +386,7 @@ export const contact = {
      address, no returns desk: the storefront publishes none, so this page
      does not invent them. */
   intro:
-    "If you need help with your purchase, or to find the information you require, write to us.",
+    "For orders, fit, warranty or press, choose a topic below.",
   form: {
     name: "Name",
     email: "Email",
@@ -417,8 +417,8 @@ export const contact = {
 
 export const notFound = {
   code: "404",
-  heading: "Nothing here.",
-  body: "The page you asked for has been moved, retired, or was never cut in the first place.",
-  cta: "Back to the house",
+  heading: "Page not found",
+  body: "This page may have moved.",
+  cta: "Return to Home",
   href: "/",
 } as const;

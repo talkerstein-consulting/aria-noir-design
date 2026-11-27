@@ -6,7 +6,7 @@ import { HeldView } from "@/components/shop/held-view";
 import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
-  title: "Saved | Aria Noir",
+  title: "Saved frames | Aria Noir",
   description: "What you have saved.",
   /* Same reason the bag is not indexed: the contents are a person's, not
      the house's, and there is nothing here for a crawler to find. */
@@ -40,7 +40,7 @@ export default function HeldPage() {
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
               <CrumbEyebrow label="Saved" className="t-eyebrow" />
-              <h1 className="t-display-lg">Saved.</h1>
+              <h1 className="t-display-lg">Saved frames</h1>
               <p className="t-body t-body--lede mt-2">
                 Not bought, not forgotten. The workshop cuts to order, so a
                 colourway can go out between one visit and the next.

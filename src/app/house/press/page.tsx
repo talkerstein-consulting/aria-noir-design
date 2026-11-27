@@ -12,7 +12,9 @@ import { press } from "@/lib/maison";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/press" },
   title: "Press | Aria Noir",
-  description: "What has been written about Aria Noir, each entry linked to the page as published. Press enquiries.",
+  description: "Aria Noir press releases and showroom enquiries.",
+  openGraph: { title: "Press | Aria Noir", description: "Aria Noir press releases and showroom enquiries." },
+  twitter: { card: "summary_large_image", title: "Press | Aria Noir", description: "Aria Noir press releases and showroom enquiries." },
 };
 
 const fmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });

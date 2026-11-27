@@ -32,8 +32,8 @@ const V = "/images/patriarca/variants";
 
 export const hero: Hero = {
   eyebrow: "PATRIARCA",
-  name: "Made to command the room.",
-  line: "A sculptural frame with the weight, presence, and permanence of an heirloom.",
+  name: "PATRIARCA",
+  line: "",
   image: "/images/patriarca/cover/desktop.webp",
   imagePortrait: "/images/patriarca/cover/mobile.webp",
   alt: "PATRIARCA in black, front on",
