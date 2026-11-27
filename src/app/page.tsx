@@ -25,9 +25,9 @@ import { HomeSocial } from "@/components/home/home-social";
  */
 export const metadata: Metadata = {
   title: "Aria Noir | For those who notice the details.",
-  description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear.",
-  openGraph: { images: ["/images/home/featured-2560.webp"], title: "Aria Noir | For those who notice the details.", description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear." },
-  twitter: { images: ["/images/home/featured-2560.webp"], card: "summary_large_image", title: "Aria Noir | For those who notice the details.", description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear." },
+  description: "Aria Noir designs eyewear around the face: the line of the brow, the shape of the bridge and the profile of the temple. See the collection worn and in close-up.",
+  openGraph: { images: ["/images/home/featured-2560.webp"], title: "Aria Noir | For those who notice the details.", description: "Aria Noir designs eyewear around the face: the line of the brow, the shape of the bridge and the profile of the temple. See the collection worn and in close-up." },
+  twitter: { images: ["/images/home/featured-2560.webp"], card: "summary_large_image", title: "Aria Noir | For those who notice the details.", description: "Aria Noir designs eyewear around the face: the line of the brow, the shape of the bridge and the profile of the temple. See the collection worn and in close-up." },
   alternates: { canonical: "/" },
 };
 

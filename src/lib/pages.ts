@@ -45,7 +45,8 @@ export const about = {
     preheader: "The Brand",
     heading: "For those who notice the details.",
     body: [
-      "The line of the frame. The way it sits on the face.",
+      "A frame has two lives: the one it has on the table, and the one it takes on a face. Aria Noir designs for the second. The bridge sets the frame on the nose; the brow line can follow an expression or change it. Both matter as much as the silhouette.",
+      "Look at PATRIARCA among the columns and AHAVA in the reading chair. The settings make the difference easy to see: the first gives the face a strong outline, while the second draws the eye closer. We photograph the frames worn as well as on their own so you can see what a product shot leaves out.",
     ],
     /* Two houses, two worlds, both worn — the claim is about the whole
        catalogue, so the evidence cannot be one frame twice. */
@@ -103,7 +104,7 @@ export const about = {
       /* Was "See the process" → /house/process, a page that no longer
          exists. The gallery is the nearest true answer to a claim about
          restraint: the frames in their rooms, and no prices. */
-      cta: "See the rooms",
+      cta: "Explore the collection",
       href: "/collections",
     },
     /* Two light studies and no product in either. After the feature's

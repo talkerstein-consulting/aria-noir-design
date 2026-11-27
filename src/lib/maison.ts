@@ -181,14 +181,15 @@ export const careers = {
 
 export const craftsmanship = {
   title: "Craftsmanship",
-  line: "Each frame begins with a story.",
+  line: "Each frame begins with proportion.",
   film: {
     src: "/video/house/making.mp4",
     poster: "/video/house/making-poster.webp",
     alt: "Inside the workshop: acetate on the mill, the frame in a hand",
   },
   paragraphs: [
-    "The workshop, in motion.",
+    "The workshop film follows a frame from the mill to the hand. Watch the cut around the lens and the way it meets the bridge. Those lines are easy to judge on a workbench, but the design has to make sense when the frame is worn.",
+    "Look at a frame from the side and a second set of details comes into view: the profile of the temple, the hinge it meets and the mark on its inside face. They rarely show up in a straight-on photograph. They are the parts you get to know when you put the frame on each day.",
   ],
   /* The 888. Stated once and not explained: COPY.md asks for exactly one
      thing withheld, and this is it. */
