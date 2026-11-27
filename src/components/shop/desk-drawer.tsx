@@ -115,8 +115,7 @@ export function DeskDrawer({
             <>
               <p className="t-body t-body--lede">Welcome back.</p>
               <p className="t-body t-body--tight mt-2 text-[var(--fg-tertiary)]">
-                Orders, addresses and the card on file are kept here. What
-                this browser has saved is below.
+                Manage your orders, delivery addresses and payment details.
               </p>
 
               {/* Read from the desk's own VIEWS rather than restated.
@@ -142,8 +141,7 @@ export function DeskDrawer({
             <>
               <p className="t-body t-body--lede">Not signed in.</p>
               <p className="t-body t-body--tight mt-2 text-[var(--fg-tertiary)]">
-                An account keeps your orders and addresses. Nothing here needs
-                one: the bag and the checkout both work without it.
+                Sign in to see past orders and delivery addresses, or continue shopping as a guest.
               </p>
 
               <CtaLink href="/access" onClick={onClose} className="mt-8">

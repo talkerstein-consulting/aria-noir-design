@@ -262,5 +262,5 @@ export const lookbook: Lookbook = {
     { src: `${L}/06.webp`, alt: "MATRIARCA on a stone block", kind: "full", width: 2400, height: 1350 },
     { src: `${L}/23.webp`, alt: "MATRIARCA on cracked earth", kind: "full", width: 2400, height: 1350 },
   ],
-  closing: "The object was always the monument.",
+  closing: "MATRIARCA, seen against the grain of the stone.",
 };

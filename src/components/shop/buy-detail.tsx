@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { kickPlay } from "@/lib/autoplay";
 import { useState } from "react";
 import { SizeGuide, type GuideStep, type FrameFront } from "@/components/shop/size-guide";
@@ -39,6 +40,7 @@ export type DetailTab = {
   id: string;
   label: string;
   paragraphs: readonly string[];
+  link?: { href: string; label: string };
   /** The sizing guide (diagram + how to measure), between the paragraphs
    *  and the table. Fit row only. */
   guide?: readonly GuideStep[];
@@ -115,6 +117,9 @@ export function BuyDetail({
                           {line}
                         </p>
                       ))}
+                      {tab.link && (
+                        <Link href={tab.link.href} className="link-quiet">{tab.link.label}</Link>
+                      )}
                       {tab.guide?.length ? <SizeGuide steps={tab.guide} frame={tab.frame} /> : null}
                       {tab.rows?.length ? (
                         <dl className="max-w-[var(--measure)] border-t border-[var(--fg-rule)]">

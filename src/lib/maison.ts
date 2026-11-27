@@ -55,8 +55,8 @@ export const press: {
   };
 } = {
   title: "Press.",
-  line: "What has been written about Aria Noir.",
-  intro: "Each entry links to the page as it was published.",
+  line: "Aria Noir in print and on screen.",
+  intro: "Selected coverage of the collections, the Kyiv music video and the Casa Modular collaboration.",
   items: [
     {
       date: "2023-07-21",
@@ -212,10 +212,10 @@ export const craftsmanship = {
 
 export const registration = {
   title: "Register your frame.",
-  line: "Registration records your frame against the warranty.",
+  line: "Request warranty registration through the showroom.",
   body: [
-    "Keep your order number to hand.",
-    "A numbered digital certificate of authenticity will follow for every registered frame. It is being prepared.",
+    "You’ll need your order number, purchase date and frame colourway.",
+    "The form prepares an email with your details. Send it from your email app to complete your request.",
   ],
   to: "support@arianoir.com",
   subject: "Frame registration",
@@ -227,7 +227,7 @@ export const registration = {
     order: "Order number",
     date: "Date of purchase",
   },
-  send: "Register",
+  send: "Prepare registration email",
   sent: "Your mail app has the registration ready to send.",
   fallback: "Nothing opened. Write to",
   warrantyLink: { label: "Read the warranty", href: "/policies/warranty" },

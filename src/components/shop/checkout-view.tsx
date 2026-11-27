@@ -1253,8 +1253,8 @@ export function CheckoutView() {
             {withheld > 0 ? (
               <p className="t-caption mt-6 text-[var(--fg-accent)]">
                 {withheld === 1
-                  ? "One line is out of the workshop and is not in this order."
-                  : `${withheld} lines are out of the workshop and are not in this order.`}
+                  ? "One sold-out item has been excluded from your order."
+                  : `${withheld} sold-out items have been excluded from your order.`}
               </p>
             ) : null}
             <dl className="review-facts mt-8">

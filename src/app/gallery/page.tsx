@@ -26,9 +26,9 @@ const rooms = gallery.rooms.map((room) => {
 export const metadata: Metadata = {
   alternates: { canonical: "/gallery" },
   title: "Gallery | Aria Noir",
-  description: "The frames, worn. Campaign photographs from the Aria Noir collection.",
-  openGraph: { title: "Gallery | Aria Noir", description: "The frames, worn. Campaign photographs from the Aria Noir collection." },
-  twitter: { card: "summary_large_image", title: "Gallery | Aria Noir", description: "The frames, worn. Campaign photographs from the Aria Noir collection." },
+  description: "Browse the six eyewear campaigns, from AHAVA’s Parisian apartment to MATRIARCA’s temple courtyards, alongside portraits of the frames as worn.",
+  openGraph: { title: "Gallery | Aria Noir", description: "Browse the six eyewear campaigns, from AHAVA’s Parisian apartment to MATRIARCA’s temple courtyards, alongside portraits of the frames as worn." },
+  twitter: { card: "summary_large_image", title: "Gallery | Aria Noir", description: "Browse the six eyewear campaigns, from AHAVA’s Parisian apartment to MATRIARCA’s temple courtyards, alongside portraits of the frames as worn." },
 };
 
 /** Shared section-page shell — see house/about/page.tsx. */

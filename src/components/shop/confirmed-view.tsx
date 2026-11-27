@@ -66,10 +66,10 @@ export function ConfirmedView() {
   if (!order) {
     return (
       <div className="stack stack--sm">
-        <p className="t-eyebrow">Confirmed</p>
-        <h1 className="t-display-lg">On the bench.</h1>
+        <p className="t-eyebrow">Orders</p>
+        <h1 className="t-display-lg">Order details</h1>
         <p className="t-body t-body--lede mt-2 max-w-xl">
-          The receipt is in your email, and the order is in your account if you have one.
+          There are no order details in this tab. If you placed an order, check your confirmation email or sign in to view your order history.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/desk">Your account</CtaLink>
@@ -84,10 +84,9 @@ export function ConfirmedView() {
   return (
     <>
       <div className="stack stack--sm mb-16">
-        <h1 className="t-display-lg">On the bench, {order.contact.firstName}.</h1>
+        <h1 className="t-display-lg">Thank you, {order.contact.firstName}.</h1>
         <p className="t-body t-body--lede mt-2 max-w-xl">
-          The workshop has it. A receipt is on its way to {order.contact.email}, and a second
-          note follows with the tracking number the day it ships.
+          Your order is confirmed. Your receipt and dispatch updates go to {order.contact.email}.
         </p>
         {/* Below the lede, not as an eyebrow: house.css hides any eyebrow
             that opens a heading stack, and the number went with it. */}
@@ -162,7 +161,7 @@ export function ConfirmedView() {
             <dd className="t-body t-body--tight">{order.estimate}, by tracked courier.</dd>
           </div>
           <div>
-            <dt className="t-eyebrow">If anything</dt>
+            <dt className="t-eyebrow">Order support</dt>
             <dd className="t-body t-body--tight">
               <Link href="/policies/returns" className="link-quiet">How a return works</Link>
               <br />
@@ -174,12 +173,10 @@ export function ConfirmedView() {
 
       {order.guest ? (
         <section className="hairline mt-20 pt-10">
-          <p className="t-eyebrow">Keep it</p>
-          <h2 className="t-display-xs mt-3">An account for this order.</h2>
+          <p className="t-eyebrow">Your account</p>
+          <h2 className="t-display-xs mt-3">Create an account</h2>
           <p className="t-body mt-4 max-w-xl text-[var(--fg-tertiary)]">
-            An account was not needed to buy the frame. It is useful afterwards: the order, its
-            tracking, and any warranty claim are found by signing in rather than by proving a
-            receipt. Made from the details this order already has — only a password is new.
+            Use the email address from this order to set up your account. Your contact details are filled in below.
           </p>
           <div className="mt-10 max-w-md">
             <AccessForm

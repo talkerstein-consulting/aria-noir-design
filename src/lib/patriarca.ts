@@ -258,5 +258,5 @@ export const lookbook: Lookbook = {
     { src: `${L}/09.webp`, alt: "The temple engraving, close", kind: "full", width: 2400, height: 1350 },
     { pair: [{ src: `${L}/17.webp`, alt: "PATRIARCA in black on warm stone", kind: "full", width: 2400, height: 1350 }, { src: `${L}/18.webp`, alt: "PATRIARCA in brown on warm stone", kind: "full", width: 2400, height: 1350 }] },
   ],
-  closing: "The stone outlasts everyone standing in front of it.",
+  closing: "PATRIARCA in black and brown.",
 };

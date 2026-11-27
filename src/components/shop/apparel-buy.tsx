@@ -242,7 +242,7 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
                 </CtaButton>
               ) : (
                 <button type="button" className="cta-main flex-1" disabled>
-                  Out of the workshop
+                  Sold out
                 </button>
               )}
             </div>
@@ -259,13 +259,13 @@ function ApparelBuyInner({ line }: { line: ApparelCollection }) {
             {inBag ? (
               <p className="t-caption mt-3">
                 <Link href="/bag" className="link-quiet link-quiet--micro">
-                  In the bag — review it
+                  View bag
                 </Link>
               </p>
             ) : null}
 
             <p className="t-caption mt-4">
-              Ships in 3–5 days. Free worldwide standard shipping.
+              <Link href="/policies/shipping" className="link-quiet">Shipping times and destinations</Link>
             </p>
 
             <HoldToggle

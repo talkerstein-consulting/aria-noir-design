@@ -44,9 +44,7 @@ export function HeldView() {
       <div className="stack stack--sm">
         <p className="t-body t-body--lede">You haven’t saved any pieces yet.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
-          Press the bookmark on any colourway and it waits here. The list lives
-          in this browser, not in your account, so it will not follow you to
-          another machine.
+          Use the bookmark beside a colourway to save it here.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
           <CtaLink href="/collections">Explore the frames</CtaLink>
@@ -76,7 +74,7 @@ export function HeldView() {
     <>
       <div className="flex flex-wrap items-baseline justify-between gap-6">
         <p className="t-caption">
-          {resolved.length} {resolved.length === 1 ? "piece" : "pieces"} held
+          {resolved.length} {resolved.length === 1 ? "piece" : "pieces"} saved
         </p>
         {addable.length > 0 ? (
           <CtaButton
@@ -96,8 +94,8 @@ export function HeldView() {
       {skipped > 0 ? (
         <p className="t-caption mt-3 text-[var(--fg-quiet)]">
           {skipped === 1
-            ? "One held colourway is out of the workshop and cannot be added."
-            : `${skipped} held colourways are out of the workshop and cannot be added.`}
+            ? "One saved colourway is sold out."
+            : `${skipped} saved colourways are sold out.`}
         </p>
       ) : null}
 
@@ -132,12 +130,12 @@ export function HeldView() {
               soldOut={gone}
               holdSlug={line.slug}
               holdColorway={line.colorway}
-              detail={gone ? "Out of the workshop" : undefined}
+              detail={gone ? "Sold out" : undefined}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
               action={
                 gone && house ? (
                   <Link href={shopHref(house, line.colorway)} className="link-quiet link-quiet--micro">
-                    Ask to be written to
+                    View colourway
                   </Link>
                 ) : !gone && r.garment ? (
                   /* See the note on `addable`: the size is chosen on the

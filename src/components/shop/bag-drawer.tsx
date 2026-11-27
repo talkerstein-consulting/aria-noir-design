@@ -145,7 +145,7 @@ export function BagDrawer({
           <p role="status" aria-live="polite" className="t-caption">
             {removed ? (
               <span className="mb-4 flex items-baseline justify-between gap-4">
-                <span>{removed.title} is out of the bag.</span>
+                <span>{removed.title} removed.</span>
                 <button
                   type="button"
                   className="t-micro underline underline-offset-4 min-h-[2.75rem] px-2"
@@ -165,8 +165,7 @@ export function BagDrawer({
             <div className="stack stack--sm">
               <p className="t-body t-body--lede">Your bag is empty.</p>
               <p className="t-body t-body--tight mt-2 text-[var(--fg-tertiary)]">
-                Six houses, cut from block acetate. Every one of them is made
-                to order.
+                Choose a frame or explore the El Patrón knitwear collection.
               </p>
               <CtaLink href="/collections" onClick={onClose} className="mt-8">
                 See the showcase

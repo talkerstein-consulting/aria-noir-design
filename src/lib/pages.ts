@@ -46,7 +46,7 @@ export const about = {
     heading: "For those who notice the details.",
     body: [
       "Aria Noir draws its eyewear in three dimensions. In the original ARCA, a gold emblem sits at the centre of a sharply cut acetate front. In PATRIARCA, a crown medallion marks the bridge.",
-      "The El Patrón sweaters bring those geometric lines into knitwear. Made in Peru, they use jacquard to work the pattern directly into the baby alpaca fabric.",
+      "El Patrón translates those lines into jacquard. In Peru, the geometric motifs are knitted directly into the baby alpaca fabric.",
     ],
     /* Two houses, two worlds, both worn — the claim is about the whole
        catalogue, so the evidence cannot be one frame twice. */
@@ -118,7 +118,7 @@ export const about = {
   },
   close: {
     heading: "Eyewear by Aria Noir.",
-    body: "Explore the collection by frame.",
+    body: "Compare shapes, colourways and fit.",
     cta: "Explore the frames",
     href: "/collections",
   },
@@ -189,8 +189,8 @@ export const gallery = {
   rooms: [
     {
       eyebrow: "ARCA I",
-      heading: "Concrete, and one shaft of light.",
-      line: "The first vessel, in the building it was cut in.",
+      heading: "The concrete corridor",
+      line: "The original ARCA against bare concrete.",
       href: "/arca-i",
       cta: "See ARCA I",
       plates: [
@@ -211,8 +211,8 @@ export const gallery = {
     },
     {
       eyebrow: "ARCA II",
-      heading: "A cloister, after the light has gone.",
-      line: "The second vessel. Quieter, and cut closer.",
+      heading: "The cloister",
+      line: "Patterned acetate in warm light.",
       href: "/arca-ii",
       cta: "See ARCA II",
       plates: [
@@ -229,8 +229,8 @@ export const gallery = {
     },
     {
       eyebrow: "AHAVA",
-      heading: "Paris. A sixth floor, before the street is awake.",
-      line: "Nothing in the room competes with it.",
+      heading: "The Parisian Apartment",
+      line: "AHAVA in morning window light.",
       href: "/shop/ahava",
       cta: "Acquire AHAVA",
       plates: [
@@ -247,8 +247,8 @@ export const gallery = {
     },
     {
       eyebrow: "MONARCA",
-      heading: "A palazzo out of season. Canals, lantern light, rain.",
-      line: "The sovereign, and the water it looks over.",
+      heading: "The canal quarter",
+      line: "Reflections at the water’s edge.",
       href: "/shop/monarca",
       cta: "Acquire MONARCA",
       plates: [
@@ -265,8 +265,8 @@ export const gallery = {
     },
     {
       eyebrow: "PATRIARCA",
-      heading: "Rome. Marble, and the last hour of the light.",
-      line: "Worn like something issued rather than bought.",
+      heading: "Imperial Rome",
+      line: "Roman columns and modern tailoring.",
       href: "/shop/patriarca",
       cta: "Acquire PATRIARCA",
       plates: [
@@ -283,8 +283,8 @@ export const gallery = {
     },
     {
       eyebrow: "MATRIARCA",
-      heading: "Karnak. Abu Simbel. Giza.",
-      line: "The monuments are enormous. The object is not.",
+      heading: "Ancient Egypt",
+      line: "A gateway echoed in the bridge.",
       href: "/shop/matriarca",
       cta: "Acquire MATRIARCA",
       plates: [
@@ -365,6 +365,7 @@ export const contact = {
       { label: "Fit and adjustments", to: "support@arianoir.com" },
       { label: "A warranty claim", to: "support@arianoir.com" },
       { label: "Press", to: "press@arianoir.com" },
+      { label: "A showroom appointment", to: "admin@arianoir.com" },
       { label: "Something else", to: "admin@arianoir.com" },
     ],
     back: "Back",

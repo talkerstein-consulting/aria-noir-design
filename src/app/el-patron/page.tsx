@@ -12,7 +12,9 @@ import { apparel, elPatronPage } from "@/lib/apparel";
 export const metadata: Metadata = {
   alternates: { canonical: "/el-patron" },
   title: "El Patrón | Aria Noir",
-  description: "El Patrón. Baby alpaca, knitted in Peru, in five yarns.",
+  description: "Discover El Patrón, Aria Noir’s Peruvian baby alpaca knitwear, through the Tweed lookbook and five jacquard colourways.",
+  openGraph: { title: "El Patrón | Aria Noir", description: "The Tweed lookbook pairs geometric baby alpaca knits with the galleries of the Louvre." },
+  twitter: { card: "summary_large_image", title: "El Patrón | Aria Noir", description: "The Tweed lookbook pairs geometric baby alpaca knits with the galleries of the Louvre." },
 };
 
 /**

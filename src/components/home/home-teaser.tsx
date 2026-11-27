@@ -65,13 +65,13 @@ export function HomeTeaser() {
 
       <div className="shell pointer-events-none relative flex flex-col items-center gap-5 pt-6 pb-14 text-center lg:absolute lg:inset-x-0 lg:bottom-0 lg:pt-0 lg:pb-20">
         <h2 id="teaser-heading" className="t-display-xl text-paper rise">
-          Before it exists.
+          The next collection.
         </h2>
         <p className="t-body t-body--lede max-w-xl text-paper/80 rise">
-          The next Aria Noir collection is now taking form. A small number of frames will be offered by pre-order before production begins.
+          For collection enquiries and showroom appointments, speak with our team in Markham.
         </p>
         <CtaLink href="/contact" className="pointer-events-auto rise">
-          Enquire about the next collection
+          Contact the showroom
         </CtaLink>
       </div>
     </section>

@@ -182,8 +182,7 @@ function CookieNotice({ onAnswer }: { onAnswer: (v: "all" | "necessary") => void
           screen reader, and the sentence says what it is. */}
       <div className="shell flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:py-2.5">
         <p className="t-caption max-w-2xl text-paper/70">
-          The house keeps what the site needs to work. With your yes, also a record of what is
-          looked at.{" "}
+          We use essential cookies to run the site. With your permission, we also measure which pages visitors view.{" "}
           <Link href="/policies/privacy" className="underline underline-offset-4 hover:text-paper">
             Privacy
           </Link>
@@ -309,7 +308,7 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
     try {
       await house.subscribe(email.trim());
       setState("sent");
-      setMessage("Your code is on its way.");
+      setMessage("You’re on the mailing list.");
     } catch (err) {
       setState("error");
       setMessage(err instanceof Error ? err.message : "That didn't go through. Try again.");
@@ -382,11 +381,10 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
           </button>
 
           <h2 id="gift-heading" className="t-display-md">
-            Something new is taking shape.
+            A gift with your frame.
           </h2>
           <p className="t-body text-ink/75">
-            Join the list for a complimentary gift with your frame and first access to what comes
-            next.
+            Join our mailing list for the frame gift offer and news of upcoming collections.
           </p>
 
           {state === "sent" ? (
@@ -416,16 +414,17 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
                 className="field w-full px-4 py-3"
               />
               <button type="submit" className="cta-main w-full" disabled={state === "busy"} aria-busy={state === "busy"}>
-                Send my code
+                Join the list
               </button>
               <label className="t-caption flex items-start gap-3 text-ink/75">
                 <input
                   type="checkbox"
+                  required
                   checked={optIn}
                   onChange={(e) => setOptIn(e.target.checked)}
                   className="mt-0.5 size-4 accent-ink"
                 />
-                Write to me about new frames and the house.
+                I’d like to receive emails from Aria Noir.
               </label>
               <p id="gift-status" role="status" aria-live="polite" className="t-caption min-h-[1lh] text-ink/80">
                 {state === "error" ? message : ""}
@@ -436,7 +435,7 @@ function GiftSheet({ open, onClose }: { open: boolean; onClose: (joined: boolean
           {/* Plain fine print: normal spacing and case, not the spaced caps
               the micro style carries. */}
           <p className="font-ui text-xs leading-relaxed tracking-normal normal-case text-ink/55">
-            Unsubscribe at any time from any letter. See the{" "}
+            Unsubscribe using the link in any email. Read our{" "}
             <Link href="/policies/privacy" className="underline underline-offset-2">
               privacy policy
             </Link>

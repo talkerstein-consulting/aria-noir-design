@@ -43,8 +43,8 @@ export const heritage = {
     alt: "Four people in ARIA NOIR tees and frames, lying on the studio floor",
   },
   intro: [
-    "Eyewear, and knitwear in baby alpaca.",
-    "Every frame is drawn in 3D before it is cut. The turntables on this site turn the same files.",
+    "The house works in acetate and baby alpaca. Its archive follows both through portraits, film and the seasonal lookbooks.",
+    "Each frame begins as a three-dimensional drawing. The rotating views in the collection come from those original design files.",
   ],
   photos: [
     {
@@ -66,12 +66,12 @@ export const heritage = {
       height: 1541,
     },
   ],
-  photosCaption: "From the house's own books.",
+  photosCaption: "Portraits from Book I and Book II.",
   milestones: [
     {
       date: "2022-08",
       label: "August 2022",
-      text: "Film students, not influencers, make the house's marketing film.",
+      text: "Aria Noir commissions film students to make a campaign film.",
       source: {
         outlet: "California Herald",
         href: "https://www.californiaherald.com/fashion-brand-aria-noir-creating-opportunities-for-young-creatives/",
@@ -89,7 +89,7 @@ export const heritage = {
     {
       date: "2023-04",
       label: "April 2023",
-      text: "A music video for the house, shot in Kyiv.",
+      text: "Aria Noir completes its music video shoot in Kyiv.",
       source: {
         outlet: "Yahoo Finance",
         href: "https://finance.yahoo.com/news/aria-noir-completes-shooting-music-201500910.html",
@@ -107,8 +107,8 @@ export const heritage = {
     {
       date: "2026",
       label: "Today",
-      text: "Six houses of eyewear. El Patrón, in baby alpaca.",
+      text: "The collection comprises six eyewear families and El Patrón knitwear.",
     },
   ] satisfies readonly Milestone[],
-  close: { label: "Every article, in full", href: "/house/press" },
+  close: { label: "Press archive", href: "/house/press" },
 } as const;

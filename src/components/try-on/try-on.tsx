@@ -447,9 +447,9 @@ export function TryOn({
 
           <div className="section mx-auto grid min-h-[100svh] max-w-6xl content-center items-center gap-x-20 gap-y-12 pt-28 lg:grid-cols-[1fr_minmax(0,24rem)] lg:pt-32">
             <div>
-              <h1 className="t-display-xl rise-now">The mirror.</h1>
+              <h1 className="t-display-xl rise-now">Virtual try-on</h1>
               <p className="t-body t-body--lede rise-now mt-6 max-w-md">
-                Every frame in the house, on your face, live.
+                Open your camera to see how a frame sits on your face.
               </p>
               <div className="mt-10">
                 <CtaButton

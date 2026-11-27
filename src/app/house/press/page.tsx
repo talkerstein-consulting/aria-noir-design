@@ -116,7 +116,7 @@ export default function PressPage() {
               <MailtoForm
                 to={press.enquiries.email}
                 subject="Press enquiry"
-                send="Send"
+                send="Prepare press enquiry"
                 sent="Your mail app has the enquiry ready to send."
                 fallback="Nothing opened. Write to"
                 fields={[

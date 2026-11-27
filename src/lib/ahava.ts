@@ -284,5 +284,5 @@ export const lookbook: Lookbook = {
     { src: `${L}/06.webp`, alt: "AHAVA on a round table", kind: "full", width: 2400, height: 1340 },
     { pair: [{ src: `${L}/18.webp`, alt: "AHAVA in rose on the table", kind: "full", width: 2400, height: 1350 }, { src: `${L}/19.webp`, alt: "AHAVA in black on the sill", kind: "full", width: 2400, height: 1350 }] },
   ],
-  closing: "Still the quietest of the five. That was the point.",
+  closing: "AHAVA in rose and black.",
 };

@@ -165,7 +165,7 @@ export function HomeFeatured() {
     >
       <h2 className="t-display-xl text-paper rise">ARCA II</h2>
       <p className="t-body t-body--lede max-w-md text-paper/80 rise">
-        ARCA II, seen in low light.
+        One silhouette in eight colourways, from Caramel Stripe to Dark Tortoise.
       </p>
       <CtaLink href="/arca-ii" className="rise">
         Explore ARCA II

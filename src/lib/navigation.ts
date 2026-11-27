@@ -1120,19 +1120,19 @@ export type RouteGroup = {
 
 export const architecture: readonly RouteGroup[] = [
   {
-    title: "The door",
+    title: "Overview",
     note: "Where a visit starts, and the chrome that is on every page after it.",
     routes: [
       {
         label: "Home",
         href: "/",
-        note: "The opening. Carries the whole house in one scroll and closes on the shop.",
+        note: "Introducing Aria Noir and the current collection.",
         kind: "designed",
       },
       {
         label: "All pages",
         href: "/sitemap",
-        note: "This page. Every route, linked, with nothing held back.",
+        note: "An index of the site.",
         kind: "tool",
       },
     ],
@@ -1144,26 +1144,26 @@ export const architecture: readonly RouteGroup[] = [
       {
         label: "Eyewear",
         href: "/collections",
-        note: `The index. ${housesOnShow()}, with a turntable above the grid.`,
+        note: `Browse the eyewear collections.`,
         kind: "designed",
       },
       {
         label: "The Collection",
         href: "/collections",
-        note: "Every collection, indexed and numbered, then each one as a chapter with all its colourways.",
+        note: "View the lookbooks and colourways for each collection.",
         kind: "designed",
       },
       {
         label: "Shop All",
         href: "/shop",
-        note: "Every piece, priced: the colourways of six houses and the garment, with a rail and a filter.",
+        note: "Browse eyewear and El Patrón knitwear by colourway.",
         kind: "designed",
       },
       ...allHouses.flatMap((house): Route[] => [
         ...(house.href
           ? [
               {
-                label: `${house.name} — the story`,
+                label: `${house.name} lookbook`,
                 href: house.href,
                 note: house.note,
                 kind: "designed" as const,
@@ -1171,7 +1171,7 @@ export const architecture: readonly RouteGroup[] = [
             ]
           : []),
         {
-          label: `${house.name} — buy`,
+          label: `Shop ${house.name}`,
           href: shopPath(house),
           note: `${colorwayCount(house)} colourways, ${house.material.toLowerCase()}.${
             VISIBLE_SLUGS.has(house.slug) ? "" : " Not on show — this route 404s."
@@ -1188,55 +1188,55 @@ export const architecture: readonly RouteGroup[] = [
       {
         label: "The House",
         href: "/house/about",
-        note: "The brand, the company, the vision.",
+        note: "Design, craftsmanship and the history of Aria Noir.",
         kind: "designed",
       },
       {
         label: "Gallery",
         href: "/gallery",
-        note: "Six houses, six rooms. The campaigns, walked.",
+        note: "Campaign images and portraits from the six eyewear collections.",
         kind: "designed",
       },
       {
         label: "Contact",
         href: "/contact",
-        note: "The desk a question goes to.",
+        note: "Showroom appointments, customer care and press enquiries.",
         kind: "designed",
       },
     ],
   },
   {
-    title: "The transaction",
+    title: "Shopping and account",
     note: "Everything after the reader has decided. The card itself is the account host's.",
     routes: [
       {
         label: "The Bag",
         href: "/bag",
-        note: "The list, then three folding questions, then out to the secure checkout.",
+        note: "Review the pieces in your bag.",
         kind: "private",
       },
       {
         label: "Saved",
         href: "/held",
-        note: "Saved, not bought. Lives in this browser and says so.",
+        note: "View pieces bookmarked in this browser.",
         kind: "private",
       },
       {
         label: "Account",
         href: "/desk",
-        note: "Orders, Saved and Profile, one view at a time. The view is in the hash.",
+        note: "Manage orders, delivery addresses and payment details.",
         kind: "private",
       },
       {
         label: "Access",
         href: "/access",
-        note: "The branded door. Hands off to the account host.",
+        note: "Sign in or create an account.",
         kind: "built",
       },
       {
         label: "Cart",
         href: "/cart",
-        note: "The old route. Kept so an old link still lands somewhere.",
+        note: "Open your shopping bag.",
         kind: "built",
       },
     ],

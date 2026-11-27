@@ -136,7 +136,7 @@ export function ColourwayPicker({
                 type="button"
                 role="radio"
                 aria-checked={on}
-                aria-label={`${inStock ? name : `${name} — out of the workshop`}${saved ? ", saved" : ""}`}
+                aria-label={`${inStock ? name : `${name}, sold out`}${saved ? ", saved" : ""}`}
                 disabled={!inStock}
                 tabIndex={name === stop ? 0 : -1}
                 data-colorway={name}

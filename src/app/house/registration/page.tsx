@@ -11,7 +11,7 @@ import { registration } from "@/lib/maison";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/registration" },
   title: "Register your frame | Aria Noir",
-  description: "Register your frame against the warranty. A numbered digital certificate of authenticity will follow.",
+  description: "Send the showroom your purchase details to request warranty registration for an Aria Noir frame.",
 };
 
 /**

@@ -18,13 +18,13 @@ import { collections, pieces } from "@/lib/shop-all";
 
 /** One line per collection, from the house. */
 const LINES: Record<string, string> = {
-  "arca-i": "Concrete, shadow, and restraint. The original study in form.",
-  "arca-ii": "Concrete meets chiaroscuro. Darker, warmer, more intimate.",
-  patriarca: "Ancient stone. Modern power. A frame built for presence.",
-  matriarca: "Monumental scale. Gold, stone, and a frame made to endure.",
-  monarca: "A faded palazzo. Deep shadow, quiet light, and something left unsaid.",
-  ahava: "A Parisian interior. Soft light, still air, and a frame at rest.",
-  "alpaca-sweater": "A study in knit. Diamond, texture, and the weight of the Louvre.",
+  "arca-i": "The original ARCA pairs four solid colours with four distinct shapes. A gold emblem links them at the bridge.",
+  "arca-ii": "The ARCA silhouette returns in patterned acetate, from the bands of Caramel Stripe to the mottled finish of Dark Tortoise.",
+  patriarca: "A crown medallion sits between the lenses. Fine gold edging traces the rim of the dark frame.",
+  matriarca: "The bridge suggested a temple gateway. Its outline became the starting point for the Egyptian lookbook.",
+  monarca: "A geometric front crowned at the bridge. The darker colourways pick up reflections in the canal-side portraits.",
+  ahava: "A black-and-gold bridge joins AHAVA’s angled rims. Its lookbook grew from a conversation about French cinema.",
+  "alpaca-sweater": "Baby alpaca jacquard, knitted in Peru. The Tweed edition appears in a lookbook inspired by the Louvre.",
 };
 
 const chapters = collections.map((c, i) => {

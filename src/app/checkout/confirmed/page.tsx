@@ -6,7 +6,7 @@ import { ConfirmedView } from "@/components/shop/confirmed-view";
 
 export const metadata: Metadata = {
   title: "Order confirmed | Aria Noir",
-  description: "On the bench.",
+  description: "Review your Aria Noir order details.",
   robots: { index: false, follow: false },
 };
 

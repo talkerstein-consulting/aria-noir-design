@@ -7,7 +7,7 @@ import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "Saved frames | Aria Noir",
-  description: "What you have saved.",
+  description: "View the Aria Noir pieces you’ve bookmarked in this browser.",
   /* Same reason the bag is not indexed: the contents are a person's, not
      the house's, and there is nothing here for a crawler to find. */
   robots: { index: false, follow: false },
@@ -42,8 +42,7 @@ export default function HeldPage() {
               <CrumbEyebrow label="Saved" className="t-eyebrow" />
               <h1 className="t-display-lg">Saved frames</h1>
               <p className="t-body t-body--lede mt-2">
-                Not bought, not forgotten. The workshop cuts to order, so a
-                colourway can go out between one visit and the next.
+                Your bookmarked pieces are saved in this browser. Availability is shown for each colourway.
               </p>
             </div>
             <HeldView />

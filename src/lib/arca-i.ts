@@ -308,5 +308,5 @@ export const lookbook: Lookbook = {
        than the real one. The hinge macro is a photograph and stays. */
     { src: `${L}/spec-macro-inner-right.webp`, alt: "The hinge and the house mark", kind: "full", width: 2400, height: 1599 },
   ],
-  closing: "Geometry, reduced.",
+  closing: "ARCA I. The house mark at the hinge.",
 };

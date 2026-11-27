@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import Image from "next/image";
 import {
   Suspense,
@@ -538,7 +540,7 @@ export function BuyHero({ house }: { house: House }) {
 
           {askedSoldOut ? (
             <p className="t-caption mt-4" role="status">
-              {askedSoldOut} is out of the workshop for now. Showing {chosen}.
+              {askedSoldOut} is sold out. Showing {chosen}.
             </p>
           ) : null}
 
@@ -576,7 +578,7 @@ export function BuyHero({ house }: { house: House }) {
                 </CtaButton>
               ) : (
                 <button type="button" className="cta-main flex-1" disabled>
-                  Out of the workshop
+                  Sold out
                 </button>
               )}
               </div>
@@ -625,8 +627,8 @@ export function BuyHero({ house }: { house: House }) {
 
             <p className="t-caption mt-6">
               {available
-                ? "Ships in 3–5 days. Free worldwide standard shipping."
-                : "Made in runs. Save this colour and it stays on your desk until it returns."}
+                ? <Link href="/policies/shipping" className="link-quiet">Shipping times and destinations</Link>
+                : "Bookmark this colourway to find it again."}
             </p>
 
 

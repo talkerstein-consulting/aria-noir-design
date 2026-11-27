@@ -327,5 +327,5 @@ export const lookbook: Lookbook = {
     { src: `${L}/spec-macro-temple.webp`, alt: "The temple, close", kind: "full", width: 1920, height: 1080 },
     { src: `${L}/object-front.webp`, alt: "ARCA II, front on", kind: "full", width: 2000, height: 1116 },
   ],
-  closing: "Best seen in the last light of the room.",
+  closing: "ARCA II, front view.",
 };

@@ -30,7 +30,7 @@ export default function CheckoutPage() {
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
               <CrumbEyebrow label="Checkout" className="t-eyebrow" />
-              <h1 className="t-display-lg">Nearly yours.</h1>
+              <h1 className="t-display-lg">Checkout</h1>
               {/* No lede. The four steps below name themselves and the
                   step indices say how many are left, so a sentence here
                   was the page explaining what the reader could already

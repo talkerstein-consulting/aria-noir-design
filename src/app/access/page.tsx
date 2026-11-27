@@ -7,7 +7,7 @@ import { CrumbEyebrow } from "@/components/crumb-eyebrow";
 
 export const metadata: Metadata = {
   title: "Sign in | Aria Noir",
-  description: "Orders, addresses, and anything already on the bench.",
+  description: "Sign in to see past orders and manage your delivery addresses.",
   robots: { index: false, follow: false },
 };
 
@@ -45,8 +45,7 @@ export default function AccessPage() {
               <CrumbEyebrow label="Access" className="t-eyebrow" />
               <h1 className="t-display-lg">Sign in</h1>
               <p className="t-body t-body--lede mt-2">
-                Orders, addresses, and anything already cut for you. An
-                account is not needed to buy a frame — it is for afterwards.
+                Sign in to view your orders and manage delivery addresses. Guest checkout is also available.
               </p>
             </div>
 

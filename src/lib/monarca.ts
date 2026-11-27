@@ -268,5 +268,5 @@ export const lookbook: Lookbook = {
     { src: `${L}/06.webp`, alt: "MONARCA on marble, by candlelight", kind: "full", width: 2400, height: 1340 },
     { pair: [{ src: `${L}/18.webp`, alt: "MONARCA on the canal wall", kind: "full", width: 2400, height: 1350 }, { src: `${L}/19.webp`, alt: "MONARCA in red on the canal wall", kind: "inset", width: 2048, height: 1152 }] },
   ],
-  closing: "Ninety-seven percent shadow. The rest was never the point.",
+  closing: "MONARCA on the canal wall.",
 };

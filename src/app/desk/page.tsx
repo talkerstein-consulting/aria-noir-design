@@ -28,7 +28,7 @@ export default function DeskPage() {
           <div className="mx-auto max-w-6xl">
             <div className="stack stack--sm mb-16">
               <CrumbEyebrow label="Account" className="t-eyebrow" />
-              <h1 className="t-display-lg">Yours.</h1>
+              <h1 className="t-display-lg">Your account</h1>
             </div>
             <DeskView />
           </div>

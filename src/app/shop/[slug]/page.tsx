@@ -171,6 +171,14 @@ export async function generateMetadata({
  * no measured row gets no Fit row rather than a guess.
  */
 function fitTab(house: House): DetailTab[] {
+  if (house.models > 1) {
+    return [{
+      id: "fit",
+      label: "Fit",
+      paragraphs: [`Each ${house.name} colourway has its own shape. Include the colourway name when asking for measurements.`],
+      link: { href: "/contact", label: "Ask the showroom about fit" },
+    }];
+  }
   const fit = FRAME_FIT[house.slug];
   if (!fit) return [];
   const mm = (n: number) => `${n} mm`;
@@ -188,20 +196,20 @@ function fitTab(house: House): DetailTab[] {
         {
           n: "01",
           title: "Face width",
-          body: "Temple to temple, across the widest part of your face. This is the one that decides everything. A front should be about as wide as your face, a couple of millimetres proud on each side.",
+          body: "Measure the widest part of your face, from temple to temple, and compare it with the front width below.",
           range: "Most adults: 128 to 150 mm",
         },
         {
           n: "02",
           title: "Pupil distance",
-          body: "Centre of one pupil to the centre of the other, usually written PD. Every frame has one too: its lens width plus its bridge. When yours is close to the frame's, your eyes sit in the middle of the lenses.",
+          body: "Pupillary distance (PD) is the distance between your pupils. The frame PD below is the sum of one lens width and the bridge width.",
           range: "Most adults: 54 to 74 mm, average 63",
         },
         {
           n: "03",
           title: "Lens depth",
-          body: "How much vertical room there is between your pupil and the top of your cheek. A lens taller than that room rests on the cheek and lifts every time you smile.",
-          range: "Measured from the pupil to the base of the nose",
+          body: "Lens height is measured from the top to the bottom of the lens. Compare it with a pair that clears your cheeks comfortably.",
+          range: "See lens height below.",
         },
       ],
       rows: [
@@ -214,7 +222,7 @@ function fitTab(house: House): DetailTab[] {
         { term: "Temple length", value: mm(fit.temple) },
         { term: "Suits a face of", value: `${fit.suits[0]} to ${fit.suits[1]} mm` },
       ],
-      note: "Our frames are cut generously and fit large. If your face measures under 130 mm across, start with the narrowest front in the house.",
+      note: "For help comparing these measurements with your current pair, contact the showroom.",
     },
   ];
 }

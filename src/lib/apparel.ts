@@ -135,7 +135,7 @@ export const apparel: readonly ApparelCollection[] = [
       },
     ],
     material: "100% baby alpaca · Peru",
-    note: "Knitted in Peru from baby alpaca — softer than cashmere, warmer than wool, and naturally hypoallergenic.",
+    note: "El Patrón is knitted in Peru from baby alpaca. Its geometric pattern is worked into the fabric using jacquard.",
     /* One garment, three sizes, and the same three on every colourway. Held
        on the collection rather than repeated on all five. */
     sizes: ["Small", "Medium", "Large"],
@@ -272,14 +272,14 @@ const RR = "/images/alpaca-sweater/rerun";
 export const elPatronPage = {
   hero: {
     eyebrow: "El Patrón",
-    name: "Worn in the long rooms.",
+    name: "El Patrón",
     line: "Baby alpaca, knitted in Peru.",
     image: `${RR}/wide/the-staircase-ascent-noir.webp`,
     imagePortrait: `${RR}/medium/daru-staircase-noir.webp`,
     alt: "El Patrón in Tweed under a long coat, at the foot of a stone staircase",
   },
   lookbook: {
-    intro: ["One garment. A gallery after hours, and the knit doing the only loud thing in it."],
+    intro: ["The Tweed lookbook began with a conversation about French painting. Against the Louvre’s long galleries, the diamond pattern of the sweater is visible even beneath a coat."],
     rows: [
       { src: `${RR}/environment/the-glass-pyramid-blue-hour.webp`, alt: "A glass pyramid at blue hour", kind: "full", width: 2400, height: 1340 },
       {
@@ -313,10 +313,10 @@ export const elPatronPage = {
       { src: `${RR}/garment-only/draped-over-gallery-chair.webp`, alt: "El Patrón draped over a gallery chair", kind: "full", width: 2400, height: 1340 },
       { src: `${RR}/wide/the-pyramid-at-blue-hour-aria.webp`, alt: "Aria before the glass pyramid at blue hour", kind: "full", width: 2400, height: 1340 },
     ],
-    closing: "The room is very old. The knit is not.",
+    closing: "El Patrón, in Tweed.",
   },
   colourways: {
-    heading: "Five yarns.",
+    heading: "Five colourways.",
     body: "Pastel, Perdiz, Pink, Tweed and X.",
     /* hero-front from each colourway's garment-only set, in apparel order. */
     shots: [
@@ -329,7 +329,7 @@ export const elPatronPage = {
   },
   close: {
     heading: "El Patrón",
-    body: "100% baby alpaca, knitted in Peru. Small, Medium, Large.",
+    body: "Available in small, medium and large.",
     cta: "Buy El Patrón",
   },
 } as const;
