@@ -247,8 +247,7 @@ const L = "/images/monarca/lookbook";
 
 export const lookbook: Lookbook = {
   intro: [
-    "In praise of shadow rather than light.",
-    "The shadow does more of the talking than the gold ever could.",
+    "A crown sits at the bridge of MONARCA. In the canal scenes, reflections pick out the crown and the upper edge of the frame.",
   ],
   rows: [
     { src: `${L}/22.webp`, alt: "A canal bridge in the fog", kind: "full", width: 2400, height: 1350 },

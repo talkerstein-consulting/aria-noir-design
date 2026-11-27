@@ -57,19 +57,13 @@ export function BuyCraft({ house }: { house: House }) {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-20">
         <div className="flex flex-col gap-5">
           <p className="t-eyebrow">The making</p>
-          <h2 className="t-display-lg">Made slowly, on purpose.</h2>
+          <h2 className="t-display-lg">From the drawing.</h2>
         </div>
         <div className="stack stack--sm">
           <p className="t-body">
-            Each {house.name} frame begins as a solid block of cellulose acetate. It is milled to
-            our drawings, not poured into a mould. Then it is shaped, tumbled for days and polished
-            by hand.
+            The house designs {house.name} in three dimensions. The same drawings are the source
+            for its rotating views, which show the front, the bridge and the full length of the temples.
           </p>
-          <p className="t-body">
-            The emblem is a separate piece, gold-plated, with its own tooling. It is set into the
-            acetate.
-          </p>
-          <p className="t-body">Fewer frames, made properly, meant to be worn for years.</p>
         </div>
       </div>
 

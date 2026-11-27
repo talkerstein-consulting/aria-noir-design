@@ -88,7 +88,7 @@ export function ProsePage({
           <p className="t-micro">
             Questions about this document?{" "}
             <Link href="/contact" className="link-quiet link-quiet--accent">
-              Contact the studio
+              Contact the showroom
             </Link>
             .
           </p>

@@ -288,7 +288,7 @@ const L = "/images/arca-i";
 
 export const lookbook: Lookbook = {
   intro: [
-    "ARCA I strips eyewear back to its essential forms. Precise lines, considered proportions, and a sculptural silhouette create a frame that feels as deliberate as the architecture around it.",
+    "The original ARCA pairs solid acetate with a gold bridge emblem. Four shapes make up the first edition, each paired with its own colour.",
   ],
   rows: [
     { src: `${L}/ground-corridor.webp`, alt: "The corridor, empty", kind: "full", width: 2752, height: 1536 },

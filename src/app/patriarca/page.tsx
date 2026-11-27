@@ -5,9 +5,9 @@ import * as patriarca from "@/lib/patriarca";
 export const metadata: Metadata = {
   alternates: { canonical: "/patriarca" },
   title: "PATRIARCA | Aria Noir",
-  description: "PATRIARCA, worn among stone columns. A closer look at its sculptural bridge.",
-  openGraph: { title: "PATRIARCA | Aria Noir", description: "PATRIARCA, worn among stone columns. A closer look at its sculptural bridge." },
-  twitter: { card: "summary_large_image", title: "PATRIARCA | Aria Noir", description: "PATRIARCA, worn among stone columns. A closer look at its sculptural bridge." },
+  description: "PATRIARCA’s dark frame and crown medallion appear alongside modern tailoring in a campaign inspired by imperial Rome.",
+  openGraph: { title: "PATRIARCA | Aria Noir", description: "PATRIARCA’s dark frame and crown medallion appear alongside modern tailoring in a campaign inspired by imperial Rome." },
+  twitter: { card: "summary_large_image", title: "PATRIARCA | Aria Noir", description: "PATRIARCA’s dark frame and crown medallion appear alongside modern tailoring in a campaign inspired by imperial Rome." },
 };
 
 export default function PatriarcaPage() {

@@ -102,7 +102,7 @@ export const menu = {
   contact: {
     label: "Contact",
     email: "support@arianoir.com",
-    studio: "Los Angeles, California",
+    showroom: "125 Gibson Drive, Markham, Ontario. By appointment.",
     instagram: {
       label: "Instagram",
       href: "https://www.instagram.com/ARIANOIR_OFFICIAL/",
@@ -546,7 +546,7 @@ export const allHouses: readonly House[] = [
        in front of it was the third and fourth pair of glasses on screen. */
     ground: "/images/arca-i/ground-corridor.webp",
     lifestyle: "/images/arca-i/lifestyle/aria-low-angle.webp",
-    note: "The founding model, and the only house cut in four distinct shapes: Z White, K Black, Proceso Brown and 309 Blue.",
+    note: "The original ARCA. Four shapes in solid acetate share the gold emblem at the bridge.",
   },
   {
     name: "ARCA II",
@@ -630,7 +630,7 @@ export const allHouses: readonly House[] = [
        same reason as above. */
     ground: "/images/arca-ii/ground-hall.webp",
     lifestyle: "/images/arca-ii/lifestyle/noir-cloister.webp",
-    note: "The second cut, and the widest colourway run in the house: eight, from Noir to Pixie Dust.",
+    note: "The second ARCA carries the original bridge emblem into patterned acetate, from the fine bands of Caramel Stripe to Dark Tortoise.",
   },
   {
     name: "AHAVA",
@@ -713,8 +713,8 @@ export const allHouses: readonly House[] = [
     video: "/video/ahava/closing.mp4",
     videoPoster: "/video/ahava/closing-poster.webp",
     campaign: {
-      place: "Paris. A sixth floor, before the street is awake.",
-      line: "Nothing in the room competes with it.",
+      place: "The Parisian Apartment",
+      line: "Morning light on the AHAVA bridge.",
       /* ---- 2nd Rerun (Nov 2026 review) ----
          Jai: "mood shots with no product in them" stop, and every frame
          shows the real thing. The world was the salon with nobody in it;
@@ -728,14 +728,14 @@ export const allHouses: readonly House[] = [
       ],
       macro: "/images/ahava/rerun/detail/bridge-main-symbol.webp",
     },
-    note: "The house's most considered frame, and the one it prices highest.",
+    note: "AHAVA means love in Hebrew. Angled rims meet at a black-and-gold bridge.",
   },
   {
     name: "MATRIARCA",
     slug: "matriarca",
     href: "/matriarca",
     index: "04",
-    material: "Acetate · Wood",
+    material: "Acetate",
     models: 1,
     /* Black Wood is in the catalogue and not in the 3D set — it is out of
        the workshop, so there is nothing on the bench to model. Listed here
@@ -788,8 +788,8 @@ export const allHouses: readonly House[] = [
     video: "/video/matriarca/closing.mp4",
     videoPoster: "/video/matriarca/closing-poster.webp",
     campaign: {
-      place: "Karnak. Abu Simbel. Giza.",
-      line: "The monuments are enormous. The object is not.",
+      place: "Ancient Egypt",
+      line: "The shape of the bridge suggested the temple gateway.",
       /* 2nd Rerun (Nov 2026 review): the dune with Noir in it rather than
          the dune alone, two faces close enough to read the frame, and the
          bridge emblem. See AHAVA. */
@@ -800,7 +800,7 @@ export const allHouses: readonly House[] = [
       ],
       macro: "/images/matriarca/rerun/detail/bridge-main-symbol.webp",
     },
-    note: "Midnight Noir, Black Wood, Brown. The Black Wood is currently out of the workshop.",
+    note: "MATRIARCA takes its profile from a broad, angular front. A gold accent follows the temple.",
   },
   {
     name: "PATRIARCA",
@@ -857,8 +857,8 @@ export const allHouses: readonly House[] = [
     video: "/video/patriarca/closing.mp4",
     videoPoster: "/video/patriarca/closing-poster.webp",
     campaign: {
-      place: "Rome. Marble, and the last hour of the light.",
-      line: "Worn like something issued rather than bought.",
+      place: "Imperial Rome",
+      line: "Dark tailoring against pale stone.",
       /* 2nd Rerun (Nov 2026 review): Aria among the columns and her
          reflection, in place of the empty basilica; Noir close, Aria at the
          threshold; the bridge emblem on stone. See AHAVA. */
@@ -869,7 +869,7 @@ export const allHouses: readonly House[] = [
       ],
       macro: "/images/patriarca/rerun/loose/macro-01-bridge-stone.webp",
     },
-    note: "The widest frame the house cuts, in three finishes and no more.",
+    note: "A crown medallion marks the bridge of PATRIARCA. Fine gold edging follows the dark rim.",
   },
   {
     name: "MONARCA",
@@ -952,8 +952,8 @@ export const allHouses: readonly House[] = [
     video: "/video/monarca/closing.mp4",
     videoPoster: "/video/monarca/closing-poster.webp",
     campaign: {
-      place: "A palazzo out of season. Canals, lantern light, rain.",
-      line: "Nobody says what happened in the room before.",
+      place: "The canal quarter",
+      line: "The crown in reflected light.",
       /* 2nd Rerun (Nov 2026 review): the frame on a wet ledge by the
          canal in place of the empty gallery hall; the two of them by
          lantern and doorway; the gold emblem, front on. Not the Noir sill,
@@ -965,7 +965,7 @@ export const allHouses: readonly House[] = [
       ],
       macro: "/images/monarca/rerun/macro/center-front-gold-emblem.webp",
     },
-    note: "Seven colourways, including the Velvet Rose the house prices as a premium acetate.",
+    note: "MONARCA means monarch. The crown at the bridge sits just above the geometric front.",
   },
 ];
 

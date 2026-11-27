@@ -5,9 +5,9 @@ import * as monarca from "@/lib/monarca";
 export const metadata: Metadata = {
   alternates: { canonical: "/monarca" },
   title: "MONARCA | Aria Noir",
-  description: "MONARCA, in reflected light. View the frame from the front and in profile.",
-  openGraph: { title: "MONARCA | Aria Noir", description: "MONARCA, in reflected light. View the frame from the front and in profile." },
-  twitter: { card: "summary_large_image", title: "MONARCA | Aria Noir", description: "MONARCA, in reflected light. View the frame from the front and in profile." },
+  description: "A crown at the bridge and reflections along the canal define the MONARCA lookbook.",
+  openGraph: { title: "MONARCA | Aria Noir", description: "A crown at the bridge and reflections along the canal define the MONARCA lookbook." },
+  twitter: { card: "summary_large_image", title: "MONARCA | Aria Noir", description: "A crown at the bridge and reflections along the canal define the MONARCA lookbook." },
 };
 
 export default function MonarcaPage() {

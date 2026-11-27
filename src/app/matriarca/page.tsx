@@ -5,9 +5,9 @@ import * as matriarca from "@/lib/matriarca";
 export const metadata: Metadata = {
   alternates: { canonical: "/matriarca" },
   title: "MATRIARCA | Aria Noir",
-  description: "MATRIARCA in close-up. See the bridge, temples and profile.",
-  openGraph: { title: "MATRIARCA | Aria Noir", description: "MATRIARCA in close-up. See the bridge, temples and profile." },
-  twitter: { card: "summary_large_image", title: "MATRIARCA | Aria Noir", description: "MATRIARCA in close-up. See the bridge, temples and profile." },
+  description: "The gateway shape of MATRIARCA’s bridge inspired a campaign set against the architecture of ancient Egypt.",
+  openGraph: { title: "MATRIARCA | Aria Noir", description: "The gateway shape of MATRIARCA’s bridge inspired a campaign set against the architecture of ancient Egypt." },
+  twitter: { card: "summary_large_image", title: "MATRIARCA | Aria Noir", description: "The gateway shape of MATRIARCA’s bridge inspired a campaign set against the architecture of ancient Egypt." },
 };
 
 export default function MatriarcaPage() {

@@ -104,7 +104,7 @@ export function HomeStatement() {
           Made to hold a gaze.
         </h2>
         <p className="t-body t-body--lede max-w-xl text-paper/70 rise">
-          Each frame begins with proportion. The brow line changes an expression; the bridge decides where the frame sits. Look at the collection on a face and in profile to see the difference.
+          Each frame begins with a story.
         </p>
       </div>
     </section>

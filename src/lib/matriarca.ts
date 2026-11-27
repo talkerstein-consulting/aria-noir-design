@@ -240,7 +240,7 @@ const L = "/images/matriarca/lookbook";
 
 export const lookbook: Lookbook = {
   intro: [
-    "Matriarca started with a shape, not a place. The bridge already looked like a temple gateway before anyone built a campaign around it.",
+    "The bridge of MATRIARCA suggested an Egyptian temple gateway. That resemblance became the starting point for the campaign, from the silhouette of a pylon to the scale of its courtyard.",
   ],
   rows: [
     { src: `${L}/24.webp`, alt: "A lone figure before the pyramids", kind: "full", width: 2389, height: 1344 },

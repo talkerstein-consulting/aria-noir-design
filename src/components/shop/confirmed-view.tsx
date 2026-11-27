@@ -166,7 +166,7 @@ export function ConfirmedView() {
             <dd className="t-body t-body--tight">
               <Link href="/policies/returns" className="link-quiet">How a return works</Link>
               <br />
-              <Link href="/contact" className="link-quiet">Talk to the studio</Link>
+              <Link href="/contact" className="link-quiet">Talk to the showroom</Link>
             </dd>
           </div>
         </dl>

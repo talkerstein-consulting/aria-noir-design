@@ -201,5 +201,5 @@ export function query(raw: string): readonly Hit[] {
 /** What the sheet offers when it has nothing. */
 export const NO_RESULT_ROUTES: readonly MenuLink[] = [
   { label: "All frames", href: "/collections" },
-  { label: "Ask the studio", href: "/contact" },
+  { label: "Contact the showroom", href: "/contact" },
 ];

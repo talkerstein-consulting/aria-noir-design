@@ -55,7 +55,7 @@ export default function Error({
               All frames
             </CtaLink>
             <CtaLink href="/contact" kind="secondary">
-              Tell the studio
+              Contact the showroom
             </CtaLink>
           </div>
 

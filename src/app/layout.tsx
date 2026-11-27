@@ -57,7 +57,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Aria Noir",
-  description: "Aria Noir studies the line of a frame and how it sits on the face. Explore the eyewear collection, campaign images and El Patrón knitwear.",
+  description: "Aria Noir is a Toronto design house. Faceted acetate and gold bridge emblems define its eyewear. The El Patrón knits carry its geometric patterns into baby alpaca.",
 };
 
 /**

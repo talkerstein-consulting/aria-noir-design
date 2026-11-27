@@ -263,7 +263,7 @@ const L = "/images/ahava/lookbook";
 
 export const lookbook: Lookbook = {
   intro: [
-    "A room instead of a monument. Morning light, and AHAVA doing the only loud thing in the picture.",
+    "AHAVA has an angular front and gold fittings. A conversation about French cinema shaped its lookbook, set in the morning light of a Paris apartment.",
   ],
   rows: [
     { src: `${L}/24.webp`, alt: "A Paris street in the morning", kind: "full", width: 2400, height: 1350 },

@@ -666,7 +666,7 @@ export function CheckoutView() {
   if (configError || sessionError) {
     return (
       <div className="stack stack--sm">
-        <p className="t-body t-body--lede">The studio&rsquo;s checkout is not answering.</p>
+        <p className="t-body t-body--lede">Checkout is temporarily unavailable.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
           {configError || sessionError} The bag is kept on this device. It will be here
           when the desk answers again.

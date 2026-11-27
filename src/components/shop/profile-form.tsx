@@ -65,7 +65,7 @@ function complaint(key: keyof Profile, value: string): string {
   if (key === "line2") return "";
   if (!v) return "This one is needed before an order can be sent.";
   if (key === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
-    return "An address with an @ and a domain, so the studio can write back.";
+    return "Enter an email address with an @ and a domain.";
   }
   if (key === "phone" && v.replace(/\D/g, "").length < 7) {
     return "A number the courier can reach on the day.";

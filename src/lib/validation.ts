@@ -16,7 +16,7 @@ export const isValidEmail = (value: string) =>
 
 export const emailError = (value: string) =>
   value.trim() && !isValidEmail(value)
-    ? "An address with an @ and a domain, so the studio can write back."
+    ? "Enter an email address with an @ and a domain."
     : "";
 
 /** Loose on purpose: digits, at least seven of them, from anywhere. A

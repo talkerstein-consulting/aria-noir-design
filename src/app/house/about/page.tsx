@@ -13,9 +13,9 @@ import { AboutTabs } from "@/components/page/about-tabs";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/about" },
   title: "About the Maison | Aria Noir",
-  description: "Eyewear by designers, for designers. Meet the Aria Noir Maison.",
-  openGraph: { title: "About the Maison | Aria Noir", description: "Eyewear by designers, for designers. Meet the Aria Noir Maison." },
-  twitter: { card: "summary_large_image", title: "About the Maison | Aria Noir", description: "Eyewear by designers, for designers. Meet the Aria Noir Maison." },
+  description: "Inside Aria Noir, the Toronto house behind the ARCA frame and El Patrón knitwear. Explore its work in sculpted acetate and Peruvian baby alpaca.",
+  openGraph: { title: "About the Maison | Aria Noir", description: "Inside Aria Noir, the Toronto house behind the ARCA frame and El Patrón knitwear. Explore its work in sculpted acetate and Peruvian baby alpaca." },
+  twitter: { card: "summary_large_image", title: "About the Maison | Aria Noir", description: "Inside Aria Noir, the Toronto house behind the ARCA frame and El Patrón knitwear. Explore its work in sculpted acetate and Peruvian baby alpaca." },
 };
 
 /**

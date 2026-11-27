@@ -441,7 +441,7 @@ function ProfilePane({
         lockedKeys={u ? ["email"] : undefined}
         note={
           u
-            ? "Your name, the number a courier can reach, and the address a frame goes to unless an order says otherwise. The email is the account itself and is changed by writing to the studio."
+            ? "Update your name, phone number and delivery address here. To change the email on your account, contact the showroom."
             : "A name, the address a frame goes to, and a number a courier can reach. Sign in and these write as well as read."
         }
       />

@@ -58,7 +58,7 @@ export async function api<T = unknown>(
     });
   } catch {
     throw new HouseError(
-      "The studio's checkout service could not be reached. Please try again shortly.",
+      "We couldn’t reach checkout. Please try again shortly.",
       0,
       "OFFLINE",
     );
@@ -67,7 +67,7 @@ export async function api<T = unknown>(
   if (response.status === 204) return null as T;
   if (!response.headers.get("content-type")?.includes("application/json")) {
     throw new HouseError(
-      "The studio's checkout service is unavailable. Please try again shortly.",
+      "Checkout is temporarily unavailable. Please try again shortly.",
       response.status,
       "UNAVAILABLE",
     );

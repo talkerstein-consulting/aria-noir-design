@@ -307,7 +307,7 @@ const L = "/images/arca-ii";
 
 export const lookbook: Lookbook = {
   intro: [
-    "We built the room before the frame that stands in it.",
+    "ARCA II brings pattern to the original silhouette. The lookbook returns to ARCA I’s concrete interiors, this time with warm light catching the gold at the bridge.",
   ],
   rows: [
     { src: `${L}/ground-hall.webp`, alt: "The hall, empty", kind: "full", width: 2752, height: 1536 },

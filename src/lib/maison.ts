@@ -147,7 +147,7 @@ export const press: {
   ],
   enquiries: {
     heading: "Press enquiries.",
-    body: "Images, interviews and loans. Write, and the studio answers.",
+    body: "Contact the showroom for press images, interviews and sample loans.",
     /* The repo's own press desk (lib/pages, contact.desks). The showcase
        lists admin@arianoir.com for the same purpose; confirm which. */
     email: "press@arianoir.com",
@@ -181,15 +181,15 @@ export const careers = {
 
 export const craftsmanship = {
   title: "Craftsmanship",
-  line: "Each frame begins with proportion.",
+  line: "Each frame begins with a story.",
   film: {
     src: "/video/house/making.mp4",
     poster: "/video/house/making-poster.webp",
     alt: "Inside the workshop: acetate on the mill, the frame in a hand",
   },
   paragraphs: [
-    "The workshop film follows a frame from the mill to the hand. Watch the cut around the lens and the way it meets the bridge. Those lines are easy to judge on a workbench, but the design has to make sense when the frame is worn.",
-    "Look at a frame from the side and a second set of details comes into view: the profile of the temple, the hinge it meets and the mark on its inside face. They rarely show up in a straight-on photograph. They are the parts you get to know when you put the frame on each day.",
+    "The film follows a piece of acetate on the mill. As the lens opening takes shape, a narrow span of material remains for the bridge.",
+    "Inside the left temple, an engraved serial identifies the individual frame.",
   ],
   /* The 888. Stated once and not explained: COPY.md asks for exactly one
      thing withheld, and this is it. */

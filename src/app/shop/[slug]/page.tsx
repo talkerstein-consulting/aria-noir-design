@@ -114,12 +114,12 @@ export function generateStaticParams() {
 }
 
 const frameDescriptions: Partial<Record<string, string>> = {
-  "arca-i": "Choose from four ARCA I shapes: Z White, K Black, Proceso Brown and 309 Blue.",
-  "arca-ii": "Explore ARCA II colourways, including Noir, Dark Tortoise and Dreamy Rose.",
-  "ahava": "Explore AHAVA by colourway and see the frame from the front and in profile.",
-  "monarca": "Explore MONARCA colourways and see the frame in close-up and from the side.",
-  "matriarca": "See MATRIARCA’s bridge and temples in close-up, then choose a colourway.",
-  "patriarca": "See the sculptural bridge of PATRIARCA and compare the available colourways.",
+  "arca-i": "Choose an ARCA I shape in Z White, K Black, Proceso Brown or 309 Blue. A gold emblem sits at the bridge of each frame.",
+  "arca-ii": "ARCA II carries the ARCA bridge emblem into patterned acetate. Compare Caramel Stripe, Dark Tortoise and the other colourways.",
+  "ahava": "AHAVA pairs sharply angled acetate with gold fittings. Choose a solid Noir finish or a pattern such as Caramel Stripe.",
+  "monarca": "A crown marks the bridge of MONARCA’s geometric front. Compare its profile in Dreamy Rose, Dark Tortoise and Noir.",
+  "matriarca": "MATRIARCA has an angular front, a gateway-shaped bridge and gold accents along the temples. View the frame in profile.",
+  "patriarca": "PATRIARCA pairs a dark front with gold edging and a crown medallion at the bridge. See the detail up close and compare colourways.",
 };
 
 export async function generateMetadata({
@@ -179,7 +179,7 @@ function fitTab(house: House): DetailTab[] {
       id: "fit",
       label: "Fit",
       paragraphs: [
-        "Eyewear is not sized S, M, L. It is sized in millimetres, and three of them decide whether a frame will sit on your face or slide off it.",
+        "Compare the measurements below with a frame that fits you well. All dimensions are in millimetres.",
       ],
       /* How to choose your size, with a diagram (call, 5 Nov; Rems, 9 Nov).
          Wording from the house's Fit & Sizing page. */
@@ -226,7 +226,6 @@ function tabsFor(house: House): readonly DetailTab[] {
       label: "Description",
       paragraphs: [
         house.note,
-        "Milled from a solid block rather than poured into a mould, which is why the pattern runs through the frame instead of across its surface and why a cut edge holds colour where a moulded one shows a seam.",
       ],
     },
     {
@@ -234,10 +233,9 @@ function tabsFor(house: House): readonly DetailTab[] {
       label: "Details",
       paragraphs: [
         house.models === 1
-          ? `One shape, held in every colourway the house makes: ${house.colorwayNames.join(", ")}.`
+          ? `One shape, available in ${house.colorwayNames.join(", ")}.`
           : `${house.models} distinct shapes, each in its own colourway: ${house.colorwayNames.join(", ")}.`,
-        `${house.material}. A colourway is the acetate, not a different frame: the cut and the measurements are the same across the run, though the price is not. Each colour is priced on its own.`,
-        "Fit is decided at the bridge and the brow, and adjustable at five points. A frame that sits wrong is usually minutes at a bench rather than a return.",
+        "For advice on fit or adjustments, contact the showroom.",
       ],
     },
     ...fitTab(house),
@@ -245,8 +243,8 @@ function tabsFor(house: House): readonly DetailTab[] {
       id: "packaging",
       label: "Packaging",
       paragraphs: [
-        "Each piece is packed with intention: the frame in its protective case, with a pouch, and the accessories and tags alongside it.",
-        "Keep the case and the pouch. A return has to come back in them, and the case is also the answer to the most common warranty claim. Frames stored loose are frames that come back with a hinge complaint.",
+        "Your frame comes with a protective case and pouch.",
+        "Keep the original packaging in case you need to return your frame.",
         "Clean the lenses with the microfiber cloth only, and with approved solutions.",
       ],
     },

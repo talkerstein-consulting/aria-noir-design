@@ -25,9 +25,9 @@ import { HomeSocial } from "@/components/home/home-social";
  */
 export const metadata: Metadata = {
   title: "Aria Noir | For those who notice the details.",
-  description: "Aria Noir designs eyewear around the face: the line of the brow, the shape of the bridge and the profile of the temple. See the collection worn and in close-up.",
-  openGraph: { images: ["/images/home/featured-2560.webp"], title: "Aria Noir | For those who notice the details.", description: "Aria Noir designs eyewear around the face: the line of the brow, the shape of the bridge and the profile of the temple. See the collection worn and in close-up." },
-  twitter: { images: ["/images/home/featured-2560.webp"], card: "summary_large_image", title: "Aria Noir | For those who notice the details.", description: "Aria Noir designs eyewear around the face: the line of the brow, the shape of the bridge and the profile of the temple. See the collection worn and in close-up." },
+  description: "Aria Noir is a Toronto design house. Faceted acetate and gold bridge emblems define its eyewear. The El Patrón knits carry its geometric patterns into baby alpaca.",
+  openGraph: { images: ["/images/home/featured-2560.webp"], title: "Aria Noir | For those who notice the details.", description: "Aria Noir is a Toronto design house. Faceted acetate and gold bridge emblems define its eyewear. The El Patrón knits carry its geometric patterns into baby alpaca." },
+  twitter: { images: ["/images/home/featured-2560.webp"], card: "summary_large_image", title: "Aria Noir | For those who notice the details.", description: "Aria Noir is a Toronto design house. Faceted acetate and gold bridge emblems define its eyewear. The El Patrón knits carry its geometric patterns into baby alpaca." },
   alternates: { canonical: "/" },
 };
 

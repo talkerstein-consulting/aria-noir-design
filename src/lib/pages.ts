@@ -45,8 +45,8 @@ export const about = {
     preheader: "The Brand",
     heading: "For those who notice the details.",
     body: [
-      "A frame has two lives: the one it has on the table, and the one it takes on a face. Aria Noir designs for the second. The bridge sets the frame on the nose; the brow line can follow an expression or change it. Both matter as much as the silhouette.",
-      "Look at PATRIARCA among the columns and AHAVA in the reading chair. The settings make the difference easy to see: the first gives the face a strong outline, while the second draws the eye closer. We photograph the frames worn as well as on their own so you can see what a product shot leaves out.",
+      "Aria Noir draws its eyewear in three dimensions. In the original ARCA, a gold emblem sits at the centre of a sharply cut acetate front. In PATRIARCA, a crown medallion marks the bridge.",
+      "The El Patrón sweaters bring those geometric lines into knitwear. Made in Peru, they use jacquard to work the pattern directly into the baby alpaca fabric.",
     ],
     /* Two houses, two worlds, both worn — the claim is about the whole
        catalogue, so the evidence cannot be one frame twice. */
@@ -100,7 +100,7 @@ export const about = {
     ],
     feature: {
       heading: "The Collection",
-      body: "See the frames in close-up and as worn.",
+      body: "ARCA began in solid colours. Its second edition carries the same bridge emblem into striped and tortoiseshell acetates.",
       /* Was "See the process" → /house/process, a page that no longer
          exists. The gallery is the nearest true answer to a claim about
          restraint: the frames in their rooms, and no prices. */
@@ -347,7 +347,7 @@ export const contact = {
     title: "Talk to the showroom.",
     plate: "/images/contact/window-light.webp",
     platePortrait: "/images/contact/window-light-mobile.webp",
-    alt: "Dust in a shaft of window light, in the studio",
+    alt: "Dust in a shaft of window light",
   },
   /**
    * The intake, one question at a time.
@@ -381,7 +381,7 @@ export const contact = {
      address, no returns desk: the storefront publishes none, so this page
      does not invent them. */
   intro:
-    "For orders, fit, warranty or press, choose a topic below.",
+    "The showroom at 125 Gibson Drive in Markham welcomes visitors by appointment. For a visit, fit advice or help with an order, choose a topic below.",
   form: {
     name: "Name",
     email: "Email",

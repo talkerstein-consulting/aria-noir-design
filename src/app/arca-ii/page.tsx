@@ -5,9 +5,9 @@ import * as arca from "@/lib/arca-ii";
 export const metadata: Metadata = {
   alternates: { canonical: "/arca-ii" },
   title: "ARCA II | Aria Noir",
-  description: "ARCA II, seen in low light. Explore the campaign and the frame as worn.",
-  openGraph: { title: "ARCA II | Aria Noir", description: "ARCA II, seen in low light. Explore the campaign and the frame as worn." },
-  twitter: { card: "summary_large_image", title: "ARCA II | Aria Noir", description: "ARCA II, seen in low light. Explore the campaign and the frame as worn." },
+  description: "ARCA II revisits the original silhouette in patterned acetate. The campaign pairs concrete interiors with warm light and touches of gold.",
+  openGraph: { title: "ARCA II | Aria Noir", description: "ARCA II revisits the original silhouette in patterned acetate. The campaign pairs concrete interiors with warm light and touches of gold." },
+  twitter: { card: "summary_large_image", title: "ARCA II | Aria Noir", description: "ARCA II revisits the original silhouette in patterned acetate. The campaign pairs concrete interiors with warm light and touches of gold." },
 };
 
 /**

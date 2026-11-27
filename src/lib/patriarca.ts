@@ -227,8 +227,7 @@ const L = "/images/patriarca/lookbook";
 
 export const lookbook: Lookbook = {
   intro: [
-    "Patriarca is the most Piranesi of the five, ruins made to feel larger than the people standing in them.",
-    "The idea was never costume. Sharp modern tailoring against two thousand year old stone does more work than a toga ever could.",
+    "A crown medallion sits between the lenses of PATRIARCA, with a fine gold edge tracing the dark front. Modern tailoring and Roman ruins set the scale for its lookbook.",
   ],
   /* Laid out rather than transcribed: the PDF gives every plate its own
      page, which on a scroll leaves an upright alone in a screen of ink.

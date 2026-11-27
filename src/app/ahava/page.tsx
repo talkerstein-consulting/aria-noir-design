@@ -5,9 +5,9 @@ import * as ahava from "@/lib/ahava";
 export const metadata: Metadata = {
   alternates: { canonical: "/ahava" },
   title: "AHAVA | Aria Noir",
-  description: "A closer look at AHAVA, from the line of the frame to the way it sits on the face.",
-  openGraph: { title: "AHAVA | Aria Noir", description: "A closer look at AHAVA, from the line of the frame to the way it sits on the face." },
-  twitter: { card: "summary_large_image", title: "AHAVA | Aria Noir", description: "A closer look at AHAVA, from the line of the frame to the way it sits on the face." },
+  description: "AHAVA’s angular acetate meets the soft morning light of a Paris apartment in the Aria Noir lookbook.",
+  openGraph: { title: "AHAVA | Aria Noir", description: "AHAVA’s angular acetate meets the soft morning light of a Paris apartment in the Aria Noir lookbook." },
+  twitter: { card: "summary_large_image", title: "AHAVA | Aria Noir", description: "AHAVA’s angular acetate meets the soft morning light of a Paris apartment in the Aria Noir lookbook." },
 };
 
 export default function AhavaPage() {

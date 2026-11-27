@@ -12,9 +12,9 @@ import { AboutTabs } from "@/components/page/about-tabs";
 export const metadata: Metadata = {
   alternates: { canonical: "/house/craftsmanship" },
   title: "Craftsmanship | Aria Noir",
-  description: "Inside the Aria Noir workshop: see a frame at the mill, then look closely at the bridge, hinge and temple.",
-  openGraph: { title: "Craftsmanship | Aria Noir", description: "Inside the Aria Noir workshop: see a frame at the mill, then look closely at the bridge, hinge and temple." },
-  twitter: { card: "summary_large_image", title: "Craftsmanship | Aria Noir", description: "Inside the Aria Noir workshop: see a frame at the mill, then look closely at the bridge, hinge and temple." },
+  description: "Follow an acetate frame through the mill and see the engraved detail inside the left temple.",
+  openGraph: { title: "Craftsmanship | Aria Noir", description: "Follow an acetate frame through the mill and see the engraved detail inside the left temple." },
+  twitter: { card: "summary_large_image", title: "Craftsmanship | Aria Noir", description: "Follow an acetate frame through the mill and see the engraved detail inside the left temple." },
 };
 
 /**
