@@ -160,14 +160,13 @@ export const press: {
    is added here, by name. Until then the page says so plainly. */
 
 export const careers = {
-  title: "Careers.",
-  line: "A small house. It grows slowly, and on purpose.",
+  title: "Careers",
+  line: "",
   body: [
-    "There are no open positions today. When a seat opens, it is named here.",
-    "Designers, makers and image people may write at any time. Send work, not a résumé.",
+    "There are no open roles.",
   ],
   email: "admin@arianoir.com",
-  cta: "Write to the studio",
+  cta: "Contact the showroom",
 } as const;
 
 /* ── Craftsmanship ────────────────────────────────────────────────────
@@ -181,24 +180,22 @@ export const careers = {
    and white cut), re-encoded at web weight into public/video/house. */
 
 export const craftsmanship = {
-  title: "Made slowly, on purpose.",
-  line: "The making.",
+  title: "Craftsmanship",
+  line: "Each frame begins with a story.",
   film: {
     src: "/video/house/making.mp4",
     poster: "/video/house/making-poster.webp",
     alt: "Inside the workshop: acetate on the mill, the frame in a hand",
   },
   paragraphs: [
-    "Each ARIA NOIR frame begins as a solid block of cellulose acetate, a plant-based material. It is milled to our drawings, not poured into a mould, then shaped, tumbled for days and polished by hand.",
-    "Our emblem is a separate, gold-plated piece set into the acetate. It needs its own tooling, plating and fitting, which is why our frames can't be made quickly or in bulk.",
-    "We don't make many. That's the point. Fewer frames, made properly, meant to be worn for years.",
+    "The workshop, in motion.",
   ],
   /* The 888. Stated once and not explained: COPY.md asks for exactly one
      thing withheld, and this is it. */
   number: {
     figure: "888",
-    line: "Inscribed inside the temple of every frame.",
-    note: "It is not explained.",
+    line: "Inside the temple.",
+    note: "",
   },
 } as const;
 

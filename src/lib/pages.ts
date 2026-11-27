@@ -23,10 +23,6 @@ export const about = {
     /* The house motto, restored (Jai's review, 5 Nov): "By designers, for
        designers." Not "for visionaries". */
     title: "Eyewear by designers, for designers.",
-    line: [
-      { text: "Symmetry, style,", italic: true },
-      { text: "AND SOUL.", italic: false },
-    ],
     /* ---- The house's own photography, and only that ----
     
        Every plate on this page used to be a `plate-NN-*.webp` — the stock
@@ -47,10 +43,9 @@ export const about = {
   /** The live store's About page, in its three named parts. */
   opening: {
     preheader: "The Brand",
-    heading: "We design with intention.",
+    heading: "For those who notice the details.",
     body: [
-      "Aria Noir crafts frames that balance artistry and function — where timeless elegance meets bold innovation. Each piece is a reflection of symmetry, style, and soul.",
-      "Our work is driven by a deep passion for design and craftsmanship. We pursue the perfect harmony of form and vision, creating eyewear that is not only a statement but an experience.",
+      "The line of the frame. The way it sits on the face.",
     ],
     /* Two houses, two worlds, both worn — the claim is about the whole
        catalogue, so the evidence cannot be one frame twice. */
@@ -70,7 +65,7 @@ export const about = {
        picture on the page that can evidence it. */
     image: "/images/patriarca/campaign/macro-macro-04-temple-woodgrain.webp",
     alt: "The temple's woodgrain acetate and gold hinge, close",
-    line: "Aria Noir does not produce disposable objects. Each frame is made with the expectation of years — not seasons.",
+    line: "Inside the temple.",
   },
 
   /**
@@ -103,8 +98,8 @@ export const about = {
       "/images/patriarca/campaign/worn-noir-marble-staircase.webp",
     ],
     feature: {
-      heading: "Limited by intent.",
-      body: "Aria Noir lives in a space of limited-edition collections, where each pair speaks through exceptional materials, elevated design, and undeniable authenticity. Six houses, nine frames, and no intention of making a tenth until it earns the name.",
+      heading: "The Collection",
+      body: "See the frames in close-up and as worn.",
       /* Was "See the process" → /house/process, a page that no longer
          exists. The gallery is the nearest true answer to a claim about
          restraint: the frames in their rooms, and no prices. */
@@ -118,13 +113,12 @@ export const about = {
       "/images/ahava/campaign/vibe-dust-in-window-light.webp",
       "/images/patriarca/campaign/vibe-vibe-01-lattice-shadows.webp",
     ],
-    quote: "A frame should disappear on the face and survive the century.",
-    quoteAttribution: "Aria Noir, founding note",
+
   },
   close: {
-    heading: "Nine frames, and the reasons for each.",
-    body: "The houses are where the thinking ends up. Start there, or read how a block of acetate becomes one of them.",
-    cta: "See the frames",
+    heading: "Eyewear by Aria Noir.",
+    body: "Explore the collection by frame.",
+    cta: "Explore the frames",
     href: "/collections",
   },
 } as const;

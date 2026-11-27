@@ -163,7 +163,7 @@ export function BagDrawer({
             <p className="t-caption">Opening the bag…</p>
           ) : !resolved.length ? (
             <div className="stack stack--sm">
-              <p className="t-body t-body--lede">The bag is empty.</p>
+              <p className="t-body t-body--lede">Your bag is empty.</p>
               <p className="t-body t-body--tight mt-2 text-[var(--fg-tertiary)]">
                 Six houses, cut from block acetate. Every one of them is made
                 to order.

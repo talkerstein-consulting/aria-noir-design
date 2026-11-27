@@ -42,14 +42,14 @@ export function HeldView() {
   if (!resolved.length) {
     return (
       <div className="stack stack--sm">
-        <p className="t-body t-body--lede">Nothing is saved.</p>
+        <p className="t-body t-body--lede">You haven’t saved any pieces yet.</p>
         <p className="t-body max-w-xl text-[var(--fg-tertiary)]">
           Press the bookmark on any colourway and it waits here. The list lives
           in this browser, not in your account, so it will not follow you to
           another machine.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <CtaLink href="/collections">Browse all frames</CtaLink>
+          <CtaLink href="/collections">Explore the frames</CtaLink>
           <CtaLink href="/bag" kind="secondary">
             The bag
           </CtaLink>
